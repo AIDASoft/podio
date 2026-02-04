@@ -101,6 +101,66 @@ and via direct object access:
     }
 ```
 
+
+## Constructing Collections from Ranges
+
+PODIO collections can be constructed from any compatible range (i.e. at least
+`std::input_range`) using the static `from` method or the tagged range
+constructor (C++23).
+
+::::{note}
+PODIO collections themselves are compatible ranges.
+::::
+
+### Basic Usage
+
+```cpp
+// Create a collection from a vector of mutable objects
+std::vector<MutableExampleCluster> clusters(10);
+auto clusterColl = ExampleClusterCollection::from(clusters);
+
+// Create a subset collection from immutable objects
+const auto subset = ExampleClusterCollection::from(std::as_const(clusterColl));
+```
+
+The `from` method accepts any C++20 input range whose elements are convertible
+to the collection's handle type. It automatically determines whether to create a
+normal (owned) collection or a subset collection based on the element type:
+
+- **Ranges of mutable handles** → Creates a normal collection that owns the objects
+- **Ranges of immutable handles** → Creates a subset collection (non-owning view)
+
+::::{warning}
+Depending on the ownership of the handles in the input range it is possible that
+this constructor throws as it uses `push_back` internally. Concretely, mutable
+handles must not be owned by another collection already and immutable handles
+must be owned by another collection already.
+::::
+
+### Range Pipeline Integration (C++23)
+
+When compiled with C++23 ranges support, collections support the standard
+`std::ranges::to` interface via a tagged constructor:
+
+```cpp
+#include <ranges>
+
+// Create from a ranges pipeline
+auto coll = std::views::iota(0, 5)
+    | std::views::transform([](auto v) { return MutableExampleCluster(v); })
+    | std::ranges::to<ExampleClusterCollection>();
+
+// Create subset from a view
+const auto subset = coll
+    | std::views::take(2)
+    | std::ranges::to<ExampleClusterCollection>();
+```
+
+This provides seamless integration with the C++ ranges library, enabling
+functional-style collection construction.
+
+
+
 ## Cloning objects
 
 In order to clone objects it is necessary to use the `clone` method which

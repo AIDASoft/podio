@@ -68,7 +68,7 @@ public:
   }
 
   /// Constructor with weight
-  LinkT(float weight) : m_obj(new LinkObjT{}, podio::utils::MarkOwned) {
+  explicit LinkT(float weight) : m_obj(new LinkObjT{}, podio::utils::MarkOwned) {
     m_obj->data.weight = weight;
   }
 

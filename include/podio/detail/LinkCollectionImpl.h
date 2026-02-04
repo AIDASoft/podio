@@ -19,7 +19,9 @@
 #include "podio/utilities/StaticConcatenate.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include <algorithm>
 #include <iterator>
+#include <ranges>
 #include <string_view>
 
 #ifdef PODIO_JSON_OUTPUT
@@ -68,10 +70,58 @@ public:
   LinkCollection& operator=(const LinkCollection&) = delete;
   LinkCollection(LinkCollection&&) = default;
   LinkCollection& operator=(LinkCollection&&) = default;
+#if defined(__cpp_lib_containers_ranges)
+  /// Constructor from range in order to enable the use of std::ranges::to see
+  /// @ref from.
+  template <detail::RangeConvertibleTo<value_type> R>
+  LinkCollection(std::from_range_t, R&& range) : LinkCollection() {
+    if constexpr (detail::RangeOf<R, value_type>) {
+      setSubsetCollection();
+    }
+
+    for (auto&& elem : range) {
+      push_back(std::forward<decltype(elem)>(elem));
+    }
+  }
+#endif
 
   ~LinkCollection() override {
     // Need to tell the storage how to clean up
     m_storage.clear(m_isSubsetColl);
+  }
+
+  /// Construct a LinkCollection from a range of mutable or immutable links
+  ///
+  /// If the range is over mutable Link handles, the collection will (try) to
+  /// take ownership of the handles. If the range is over immutable Link handles
+  /// the collection will be a subset collection and not take ownership of the
+  /// handles.
+  ///
+  /// @tparam R A range type (at least std::input_range) that contains for which
+  ///           the range_value_t is convertible to an immutable link.
+  /// @param  range The range from which the collection should be constructed
+  ///
+  /// @returns  A LinkCollection populated with the values from the range
+  ///
+  /// @throws std::invalid_argument if a range of immutable handles that are not
+  ///           yet owned by a collection
+  template <detail::RangeConvertibleTo<value_type> R>
+  static LinkCollection from(R&& range) {
+    LinkCollection coll;
+    if constexpr (detail::RangeOf<R, value_type>) {
+      coll.setSubsetCollection();
+    }
+
+    // NOTE: We cannot use ranges::copy here, because that will always resolve
+    // to only one of the push_back overloads, specifically the one taking
+    // value_type. See, e.g.: https://godbolt.org/z/seqdh79rr
+    // Additionally, we want no reference in the loop variable to make sure we
+    // get the correct handle type depending on the range we pass in
+    for (auto&& elem : range) {
+      coll.push_back(std::forward<decltype(elem)>(elem));
+    }
+
+    return coll;
   }
 
   /// Append a new link to the collection and return this object

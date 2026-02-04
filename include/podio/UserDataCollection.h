@@ -94,6 +94,26 @@ public:
   UserDataCollection(UserDataCollection&&) = default;
   UserDataCollection& operator=(UserDataCollection&&) = default;
   ~UserDataCollection() override = default;
+#if defined(__cpp_lib_containers_ranges)
+  /// Constructor to enable construction via std::ranges::to. See @ref from
+  template <detail::RangeConvertibleTo<BasicType> R>
+  UserDataCollection(std::from_range_t, R&& range) : UserDataCollection() {
+    _vec = detail::to_vector<BasicType>(std::forward<R>(range));
+  }
+#endif
+
+  /// Construct a UserDataCollection from a range of values
+  ///
+  /// @param range A range of values that can convert to BasicType
+  ///
+  /// @returns a UserDataCollection populated with the values from the input
+  ///          range
+  template <detail::RangeConvertibleTo<BasicType> R>
+  static UserDataCollection from(R&& range) {
+    UserDataCollection coll;
+    coll._vec = detail::to_vector<BasicType>(std::forward<R>(range));
+    return coll;
+  }
 
   /// The schema version of UserDataCollections
   static constexpr SchemaVersionT schemaVersion = 1;
