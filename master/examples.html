@@ -91,6 +91,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#object-references">Object References</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#subset-collections">Subset collections</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#looping-through-collections">Looping through Collections</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#constructing-collections-from-ranges">Constructing Collections from Ranges</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">Basic Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#range-pipeline-integration-c-23">Range Pipeline Integration (C++23)</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#cloning-objects">Cloning objects</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#support-for-notebook-pattern">Support for Notebook-Pattern</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#podio-frame-container"><code class="docutils literal notranslate"><span class="pre">podio::Frame</span></code> container</a></li>
@@ -864,6 +869,61 @@ more details.</p>
 <span class="w">    </span><span class="p">}</span>
 </pre></div>
 </div>
+</section>
+<section id="constructing-collections-from-ranges">
+<h2>Constructing Collections from Ranges<a class="headerlink" href="#constructing-collections-from-ranges" title="Link to this heading"></a></h2>
+<p>PODIO collections can be constructed from any compatible range (i.e. at least
+<code class="docutils literal notranslate"><span class="pre">std::input_range</span></code>) using the static <code class="docutils literal notranslate"><span class="pre">from</span></code> method or the tagged range
+constructor (C++23).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PODIO collections themselves are compatible ranges.</p>
+</div>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// Create a collection from a vector of mutable objects</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">MutableExampleCluster</span><span class="o">&gt;</span><span class="w"> </span><span class="n">clusters</span><span class="p">(</span><span class="mi">10</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">clusterColl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExampleClusterCollection</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="n">clusters</span><span class="p">);</span>
+
+<span class="c1">// Create a subset collection from immutable objects</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ExampleClusterCollection</span><span class="o">::</span><span class="n">from</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">as_const</span><span class="p">(</span><span class="n">clusterColl</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">from</span></code> method accepts any C++20 input range whose elements are convertible
+to the collection’s handle type. It automatically determines whether to create a
+normal (owned) collection or a subset collection based on the element type:</p>
+<ul class="simple">
+<li><p><strong>Ranges of mutable handles</strong> → Creates a normal collection that owns the objects</p></li>
+<li><p><strong>Ranges of immutable handles</strong> → Creates a subset collection (non-owning view)</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Depending on the ownership of the handles in the input range it is possible that
+this constructor throws as it uses <code class="docutils literal notranslate"><span class="pre">push_back</span></code> internally. Concretely, mutable
+handles must not be owned by another collection already and immutable handles
+must be owned by another collection already.</p>
+</div>
+</section>
+<section id="range-pipeline-integration-c-23">
+<h3>Range Pipeline Integration (C++23)<a class="headerlink" href="#range-pipeline-integration-c-23" title="Link to this heading"></a></h3>
+<p>When compiled with C++23 ranges support, collections support the standard
+<code class="docutils literal notranslate"><span class="pre">std::ranges::to</span></code> interface via a tagged constructor:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;ranges&gt;</span>
+
+<span class="c1">// Create from a ranges pipeline</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">coll</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">iota</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">)</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">transform</span><span class="p">([](</span><span class="k">auto</span><span class="w"> </span><span class="n">v</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">MutableExampleCluster</span><span class="p">(</span><span class="n">v</span><span class="p">);</span><span class="w"> </span><span class="p">})</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">to</span><span class="o">&lt;</span><span class="n">ExampleClusterCollection</span><span class="o">&gt;</span><span class="p">();</span>
+
+<span class="c1">// Create subset from a view</span>
+<span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">subset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">coll</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">views</span><span class="o">::</span><span class="n">take</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="w">    </span><span class="o">|</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">to</span><span class="o">&lt;</span><span class="n">ExampleClusterCollection</span><span class="o">&gt;</span><span class="p">();</span>
+</pre></div>
+</div>
+<p>This provides seamless integration with the C++ ranges library, enabling
+functional-style collection construction.</p>
+</section>
 </section>
 <section id="cloning-objects">
 <h2>Cloning objects<a class="headerlink" href="#cloning-objects" title="Link to this heading"></a></h2>
