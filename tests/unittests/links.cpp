@@ -15,6 +15,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/format.h>
+
 #include <map>
 #include <set>
 #include <type_traits>
@@ -441,6 +443,19 @@ TEST_CASE("LinkCollection basics", "[links]") {
   for (auto l : links) {
     REQUIRE(l.id().collectionID == 42);
   }
+}
+
+TEST_CASE("LinkCollection formatting", "[links][formatting]") {
+  podio::LinkCollection<ExampleHit, ExampleCluster> links;
+
+  auto formatted = fmt::format("{}", links);
+  REQUIRE_FALSE(formatted.empty());
+
+  links.create();
+  links.create();
+
+  auto formatted2 = fmt::format("{}", links);
+  REQUIRE(formatted2.size() > formatted.size());
 }
 
 auto createLinkCollections(const size_t nElements = 3u) {

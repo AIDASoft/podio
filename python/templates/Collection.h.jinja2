@@ -30,6 +30,8 @@
 #include <memory>
 #include <cstddef>
 
+#include <fmt/ostream.h>
+
 namespace podio {
   struct RelationNames;
 }
@@ -279,6 +281,9 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collectio
 #endif
 
 {{ utils.namespace_close(class.namespace) }}
+
+template <>
+struct fmt::formatter<{% if class.namespace %}{{ class.namespace }}::{% endif %}{{ class.bare_type }}Collection> : fmt::ostream_formatter {};
 
 {{ workarounds.ld_library_path(class, "Collection", ["valueTypeName", "dataTypeName"]) }}
 
