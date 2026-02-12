@@ -66,6 +66,8 @@
 
 #include "podio/UserDataCollection.h"
 
+#include <fmt/format.h>
+
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
   auto hit1 = MutableEventInfo();
@@ -413,6 +415,9 @@ TEST_CASE("UserDataCollection print", "[basics]") {
   coll.print(sstr);
 
   REQUIRE(sstr.str() == "[1, 2, 3]");
+
+  auto formatted = fmt::format("{}", coll);
+  REQUIRE_FALSE(formatted.empty());
 }
 
 TEST_CASE("UserDataCollection access", "[basics]") {
@@ -635,6 +640,19 @@ TEST_CASE("Equality", "[basics]") {
   REQUIRE(clu == clu2);
   // They never compare equal to a non-empty handle
   REQUIRE(clu != cluster);
+}
+
+TEST_CASE("Collection formatting", "[basics]") {
+  ExampleClusterCollection clusters;
+  auto cluster = clusters.create();
+  cluster.energy(42.5f);
+  auto formatted = fmt::format("{}", clusters);
+  REQUIRE_FALSE(formatted.empty());
+
+  ExampleWithComponentCollection components;
+  auto comp = components.create();
+  formatted = fmt::format("{}", components);
+  REQUIRE_FALSE(formatted.empty());
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
