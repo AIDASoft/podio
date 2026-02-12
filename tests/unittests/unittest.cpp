@@ -152,6 +152,22 @@ TEST_CASE("makeEmpty", "[basics]") {
   REQUIRE(hit.energy() == 0);
 }
 
+TEST_CASE("Object formatting", "[basics][formatting]") {
+  ExampleCluster cluster;
+  auto formatted = fmt::format("{}", cluster);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not avaialble]");
+
+  cluster = ExampleCluster::makeEmpty();
+  formatted = fmt::format("{}", cluster);
+  REQUIRE(formatted == "[not available]");
+
+  auto mutCluster = MutableExampleCluster{};
+  formatted = fmt::format("{}", mutCluster);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not available]");
+}
+
 TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
   auto coll1 = ExampleForCyclicDependency1Collection();
   auto start = coll1.create();
