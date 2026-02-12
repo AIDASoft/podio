@@ -377,24 +377,6 @@ private:
   mutable CollectionDataT m_storage{};
 };
 
-template <typename FromT, typename ToT>
-std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
-  const auto old_flags = o.flags();
-  o << "          id:      weight:" << '\n';
-  for (const auto&& el : v) {
-    o << std::scientific << std::showpos << std::setw(12) << el.id() << " " << std::setw(12) << " " << el.getWeight()
-      << '\n';
-
-    o << "     from : ";
-    o << el.getFrom().id() << std::endl;
-    o << "       to : ";
-    o << el.getTo().id() << std::endl;
-  }
-
-  o.flags(old_flags);
-  return o;
-}
-
 namespace detail {
   template <typename FromT, typename ToT>
   podio::CollectionReadBuffers createLinkBuffers(bool subsetColl) {
@@ -463,6 +445,34 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
 } // namespace podio
 
 template <typename FromT, typename ToT>
-struct fmt::formatter<podio::LinkCollection<FromT, ToT>> : fmt::ostream_formatter {};
+struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. LinkCollections do not support specifiers");
+    }
+    return it;
+  }
+
+  auto format(const podio::LinkCollection<FromT, ToT>& coll, fmt::format_context& ctx) const {
+    auto out = ctx.out();
+
+    out = fmt::format_to(out, "          id:      weight:\n");
+    for (const auto&& elem : coll) {
+      out = fmt::format_to(out, "{}  {:+12e}\n", elem.id(), elem.getWeight());
+      out = fmt::format_to(out, "     from : {}\n       to : {}\n", elem.getFrom().id(), elem.getTo().id());
+    }
+
+    return out;
+  }
+};
+
+namespace podio {
+template <typename FromT, typename ToT>
+std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
+  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", v);
+  return o;
+}
+} // namespace podio
 
 #endif // PODIO_DETAIL_LINKCOLLECTIONIMPL_H
