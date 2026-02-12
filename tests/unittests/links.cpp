@@ -301,6 +301,22 @@ TEST_CASE("Links templated accessors", "[links]") {
   }
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+TEST_CASE("Link formatting", "[links]") {
+  TestL link;
+  auto formatted = fmt::format("{}", link);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not available]");
+
+  auto emptyLink = TestL::makeEmpty();
+  auto emptyFmt = fmt::format("{}", emptyLink);
+  REQUIRE(emptyFmt == "[not available]");
+
+  TestMutL mutLink;
+  formatted = fmt::format("{}", mutLink);
+  REQUIRE(formatted != "[not avialable]");
+}
+
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<TestLColl>);
   STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<TestLColl>, TestL>);
