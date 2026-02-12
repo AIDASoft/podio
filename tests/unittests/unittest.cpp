@@ -70,6 +70,8 @@
 
 #include <fmt/format.h>
 
+#include <sstream>
+
 TEST_CASE("ObjectID formatting", "[basics][formatting]") {
   auto objId = podio::ObjectID{};
   auto formatted = fmt::format("{}", objId);
@@ -79,6 +81,10 @@ TEST_CASE("ObjectID formatting", "[basics][formatting]") {
   objId.index = 123;
   formatted = fmt::format("{}", objId);
   REQUIRE(formatted == fmt::format("{:8x}|123", 42));
+
+  std::stringstream sstr;
+  sstr << objId;
+  REQUIRE(sstr.str() == fmt::format("{:8x}|123", 42));
 }
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
