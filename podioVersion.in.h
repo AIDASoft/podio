@@ -1,9 +1,11 @@
 #ifndef PODIO_PODIOVERSION_H
 #define PODIO_PODIOVERSION_H
 
+#include <fmt/core.h>
+
 #include <cstdint>
 #include <ostream>
-#include <sstream>
+#include <iterator>
 #include <tuple>
 
 // Some preprocessor constants and macros for the use cases where they might be
@@ -55,18 +57,8 @@ struct Version {
 
   #undef DEFINE_COMP_OPERATOR
 
-  explicit operator std::string() const {
-    std::stringstream ss;
-    ss << *this;
-    return ss.str();
-  }
-
-  friend std::ostream& operator<<(std::ostream&, const Version& v);
+  explicit operator std::string() const;
 };
-
-inline std::ostream& operator<<(std::ostream& os, const Version& v) {
-  return os << v.major << "." << v.minor << "." << v.patch;
-}
 
 /// The current build version
 static constexpr Version build_version{podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH};
@@ -79,4 +71,29 @@ static constexpr Version decode_version(unsigned long version) noexcept {
 }
 } // namespace podio::version
 
+template <>
+struct fmt::formatter<podio::version::Version> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. Version does not support specifiers");
+    }
+    return it;
+  }
+
+  auto format(const podio::version::Version& version, fmt::format_context& ctx) {
+    return fmt::format_to(ctx.out(), "{}.{}.{}", version.major, version.minor, version.patch);
+  }
+};
+
+namespace podio::version {
+inline std::ostream& operator<<(std::ostream& os, const Version& v) {
+  fmt::format_to(std::ostreambuf_iterator<char>(os), "{}", v);
+  return os;
+}
+
+inline Version::operator std::string() const {
+  return fmt::format("{}", *this);
+}
+} // namespace podio::version
 #endif
