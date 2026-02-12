@@ -12,7 +12,7 @@
   #include "nlohmann/json.hpp"
 #endif
 
-#include <fmt/ostream.h>
+#include <fmt/core.h>
 
 #include <functional>
 #include <ostream>
@@ -350,18 +350,6 @@ private:
   podio::utils::MaybeSharedPtr<LinkObjT> m_obj{nullptr};
 };
 
-template <typename FromT, typename ToT, bool Mutable>
-std::ostream& operator<<(std::ostream& os, const LinkT<FromT, ToT, Mutable>& link) {
-  if (!link.isAvailable()) {
-    return os << "[not available]";
-  }
-
-  return os << " id: " << link.id() << '\n'
-            << " weight: " << link.getWeight() << '\n'
-            << " from: " << link.getFrom().id() << '\n'
-            << " to: " << link.getTo().id() << '\n';
-}
-
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 template <typename FromT, typename ToT>
 void to_json(nlohmann::json& j, const podio::LinkT<FromT, ToT, false>& link) {
@@ -385,6 +373,30 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
 };
 
 template <typename FromT, typename ToT, bool Mutable>
-struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> : fmt::ostream_formatter {};
+struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. Links do not support specifiers");
+    }
+    return it;
+  }
+
+  auto format(const podio::LinkT<FromT, ToT, Mutable>& link, fmt::format_context& ctx) const {
+    if (!link.isAvailable()) {
+      return fmt::format_to(ctx.out(), "[not available]");
+    }
+    return fmt::format_to(ctx.out(), " id: {}\n weight: {}\n from: {}\n to: {}\n", link.id(), link.getWeight(),
+                          link.getFrom().id(), link.getTo().id());
+  }
+};
+
+namespace podio {
+template <typename FromT, typename ToT, bool Mutable>
+std::ostream& operator<<(std::ostream& os, const LinkT<FromT, ToT, Mutable>& link) {
+  fmt::format_to(std::ostreambuf_iterator<char>(os), "{}", link);
+  return os;
+}
+} // namespace podio
 
 #endif // PODIO_DETAIL_LINK_H

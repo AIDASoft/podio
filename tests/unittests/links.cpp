@@ -307,6 +307,12 @@ TEST_CASE("Link formatting", "[links]") {
   auto formatted = fmt::format("{}", link);
   REQUIRE_FALSE(formatted.empty());
   REQUIRE(formatted != "[not available]");
+  std::stringstream manual;
+  manual << " id: " << link.id() << '\n'
+         << " weight: " << link.getWeight() << '\n'
+         << " from: " << link.getFrom().id() << '\n'
+         << " to: " << link.getTo().id() << '\n';
+  REQUIRE(formatted == manual.str());
 
   auto emptyLink = TestL::makeEmpty();
   auto emptyFmt = fmt::format("{}", emptyLink);
