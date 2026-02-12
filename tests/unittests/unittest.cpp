@@ -20,6 +20,7 @@
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
+#include "podio/ObjectID.h"
 #include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
@@ -67,6 +68,17 @@
 #include "podio/UserDataCollection.h"
 
 #include <fmt/format.h>
+
+TEST_CASE("ObjectID formatting", "[basics][formatting]") {
+  auto objId = podio::ObjectID{};
+  auto formatted = fmt::format("{}", objId);
+  REQUIRE(formatted == "ffffffff|-1");
+
+  objId.collectionID = 42;
+  objId.index = 123;
+  formatted = fmt::format("{}", objId);
+  REQUIRE(formatted == fmt::format("{:8x}|123", 42));
+}
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
