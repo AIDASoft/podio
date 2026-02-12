@@ -61,6 +61,7 @@
 #include "datamodel/MutableExampleWithArray.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
+#include "datamodel/NamespaceInNamespaceStruct.h"
 #include "datamodel/StructWithExtraCode.h"
 #include "datamodel/datamodel.h"
 #include "extension_model/extension_model.h"
@@ -166,6 +167,14 @@ TEST_CASE("Object formatting", "[basics][formatting]") {
   formatted = fmt::format("{}", mutCluster);
   REQUIRE_FALSE(formatted.empty());
   REQUIRE(formatted != "[not available]");
+
+  auto typeWithComponent = ExampleWithArrayComponent{};
+  formatted = fmt::format("{}", typeWithComponent);
+  REQUIRE_FALSE(formatted.empty());
+
+  auto nspComp = ex2::NamespaceInNamespaceStruct{};
+  formatted = fmt::format("{}", nspComp);
+  REQUIRE_FALSE(formatted.empty());
 }
 
 TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
