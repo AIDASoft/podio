@@ -1,6 +1,8 @@
 #ifndef PODIO_OBJECTID_H
 #define PODIO_OBJECTID_H
 
+#include <fmt/ostream.h>
+
 #include <compare>
 #include <cstdint>
 #include <functional>
@@ -65,5 +67,8 @@ struct std::hash<podio::ObjectID> {
     return hash_collectionID ^ hash_index;
   }
 };
+
+template <>
+struct fmt::formatter<podio::ObjectID> : fmt::ostream_formatter {};
 
 #endif
