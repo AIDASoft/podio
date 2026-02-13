@@ -13,6 +13,7 @@
 #endif
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <functional>
 #include <ostream>
@@ -390,6 +391,12 @@ struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
                           link.getFrom().id(), link.getTo().id());
   }
 };
+
+// Disable fmt's tuple formatter for LinkT to avoid ambiguity with the custom
+// formatter above. This is necessary because opting tuple_size and
+// tuple_element makes LinkT behave like a tuple to the compiler
+template <typename FromT, typename ToT, bool Mutable, typename Char>
+struct fmt::is_tuple_formattable<podio::LinkT<FromT, ToT, Mutable>, Char> : std::false_type {};
 
 namespace podio {
 template <typename FromT, typename ToT, bool Mutable>
