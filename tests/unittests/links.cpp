@@ -16,6 +16,7 @@
 #endif
 
 #include <fmt/format.h>
+#include "podio/utilities/FormatHelpers.h"
 
 #include <map>
 #include <set>
@@ -30,6 +31,21 @@ using TestMutL = podio::MutableLink<ExampleHit, ExampleCluster>;
 using TestLColl = podio::LinkCollection<ExampleHit, ExampleCluster>;
 using TestLIter = podio::LinkCollectionIterator<ExampleHit, ExampleCluster>;
 using TestLMutIter = podio::LinkMutableCollectionIterator<ExampleHit, ExampleCluster>;
+
+// Custom format overloads for testing the 'u' format specifier
+namespace podio {
+fmt::format_context::iterator customFormat(const TestL& link, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-link(w={})", link.getWeight());
+}
+
+fmt::format_context::iterator customFormat(const TestMutL& link, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-mut-link(w={})", link.getWeight());
+}
+
+fmt::format_context::iterator customFormat(const TestLColl& coll, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-link-coll(n={})", coll.size());
+}
+} // namespace podio
 
 TEST_CASE("Link constness", "[links][static-checks]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutL>().getFrom()), const ExampleHit>);
@@ -345,6 +361,18 @@ TEST_CASE("Link formatting", "[links]") {
     auto formatted_basic = fmt::format("{:b}", mutLink);
     REQUIRE_FALSE(formatted_basic.empty());
   }
+
+  SECTION("User-defined format") {
+    auto formatted = fmt::format("{:u}", link);
+    REQUIRE(formatted == "custom-link(w=1)");
+  }
+
+  SECTION("User-defined format for mutable link") {
+    TestMutL mutLink;
+    mutLink.setWeight(3.5f);
+    auto formatted = fmt::format("{:u}", mutLink);
+    REQUIRE(formatted == "custom-mut-link(w=3.5)");
+  }
 }
 
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
@@ -548,6 +576,18 @@ TEST_CASE("LinkCollection formatting", "[links][formatting]") {
     // Test that basic format doesn't contain detailed information
     REQUIRE(formatted_basic.find("from") == std::string::npos);
     REQUIRE(formatted_basic.find("to") == std::string::npos);
+  }
+
+  SECTION("User-defined format") {
+    auto link1 = links.create();
+    link1.setFrom(hit1);
+    link1.setTo(cluster1);
+    auto link2 = links.create();
+    link2.setFrom(hit2);
+    link2.setTo(cluster2);
+
+    auto formatted = fmt::format("{:u}", links);
+    REQUIRE(formatted == "custom-link-coll(n=2)");
   }
 }
 

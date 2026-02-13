@@ -69,8 +69,19 @@
 #include "podio/UserDataCollection.h"
 
 #include <fmt/format.h>
+#include "podio/utilities/FormatHelpers.h"
 
 #include <sstream>
+
+// Custom format overloads for testing the 'u' format specifier.
+// These must be in the same namespace as the type for ADL to find them.
+fmt::format_context::iterator customFormat(const ExampleCluster& cluster, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-cluster(e={})", cluster.energy());
+}
+
+fmt::format_context::iterator customFormat(const ExampleClusterCollection& coll, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-cluster-coll(n={})", coll.size());
+}
 
 TEST_CASE("ObjectID formatting", "[basics][formatting]") {
   auto objId = podio::ObjectID{};
@@ -185,6 +196,23 @@ TEST_CASE("Object formatting", "[basics][formatting]") {
   auto nspComp = ex2::NamespaceInNamespaceStruct{};
   formatted = fmt::format("{}", nspComp);
   REQUIRE_FALSE(formatted.empty());
+
+  // User-defined format for object
+  auto customCluster = MutableExampleCluster{};
+  customCluster.energy(42.5f);
+  // MutableT's formatter inherits from T's formatter, so conversion to
+  // immutable type happens and the ExampleCluster overload is called
+  formatted = fmt::format("{:u}", customCluster);
+  REQUIRE(formatted == "custom-cluster(e=42.5)");
+
+  // User-defined format via immutable type
+  ExampleCluster immutableCluster = customCluster;
+  formatted = fmt::format("{:u}", immutableCluster);
+  REQUIRE(formatted == "custom-cluster(e=42.5)");
+
+  // User-defined format throws for types without a customFormat overload
+  auto hitForFmt = ExampleHit{};
+  REQUIRE_THROWS_AS(fmt::format("{:u}", hitForFmt), fmt::format_error);
 }
 
 TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
@@ -706,6 +734,13 @@ TEST_CASE("Collection formatting", "[basics]") {
   REQUIRE_FALSE(formatted.empty());
 
   formatted = fmt::format("{}", cluster.Hits());
+
+  // User-defined format for collection
+  formatted = fmt::format("{:u}", clusters);
+  REQUIRE(formatted == "custom-cluster-coll(n=1)");
+
+  // User-defined format throws for collections without a customFormat overload
+  REQUIRE_THROWS_AS(fmt::format("{:u}", components), fmt::format_error);
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
