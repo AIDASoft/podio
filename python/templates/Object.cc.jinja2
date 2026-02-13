@@ -8,6 +8,8 @@
 {{ include }}
 {% endfor %}
 
+#include <fmt/ranges.h>
+
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
@@ -34,9 +36,10 @@
 
 {{ macros.common_object_funcs(class) }}
 
-{{ macros.ostream_operator(class.bare_type, Members,
-                           OneToOneRelations, OneToManyRelations + VectorMembers,
-                           use_get_syntax) }}
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value) {
+  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", value);
+  return o;
+}
 
 {{ macros.json_output(class, Members,
                       OneToOneRelations, OneToManyRelations,
@@ -47,3 +50,5 @@
 podio::detail::OrderKey podio::detail::getOrderKey(const {{ class.namespace }}::{{ class.bare_type }}& obj) {
   return podio::detail::OrderKey{obj.m_obj.get()};
 }
+
+{{ macros.formatter(class, Members, OneToOneRelations, OneToManyRelations + VectorMembers, use_get_syntax) }}

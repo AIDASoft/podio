@@ -173,6 +173,10 @@ TEST_CASE("Object formatting", "[basics][formatting]") {
   formatted = fmt::format("{}", mutCluster);
   REQUIRE_FALSE(formatted.empty());
   REQUIRE(formatted != "[not available]");
+  // Ensure operator<< is still working
+  std::stringstream sstr;
+  sstr << mutCluster;
+  REQUIRE(sstr.str() == formatted);
 
   auto typeWithComponent = ExampleWithArrayComponent{};
   formatted = fmt::format("{}", typeWithComponent);

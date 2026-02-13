@@ -8,6 +8,8 @@
 {{ include }}
 {% endfor %}
 
+#include <fmt/ranges.h>
+
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json.hpp"
 #endif
