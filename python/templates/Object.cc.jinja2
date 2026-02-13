@@ -37,7 +37,7 @@
 {{ macros.common_object_funcs(class) }}
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value) {
-  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", value);
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", value);
   return o;
 }
 

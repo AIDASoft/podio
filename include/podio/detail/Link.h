@@ -401,7 +401,7 @@ struct fmt::is_tuple_formattable<podio::LinkT<FromT, ToT, Mutable>, Char> : std:
 namespace podio {
 template <typename FromT, typename ToT, bool Mutable>
 std::ostream& operator<<(std::ostream& os, const LinkT<FromT, ToT, Mutable>& link) {
-  fmt::format_to(std::ostreambuf_iterator<char>(os), "{}", link);
+  fmt::format_to(std::ostreambuf_iterator(os), "{}", link);
   return os;
 }
 } // namespace podio
