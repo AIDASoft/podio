@@ -319,7 +319,7 @@ using UserDataCollectionTypes = decltype(std::apply(
 
 template <SupportedUserDataType BasicType>
 std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicType>& coll) {
-  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", coll);
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", coll);
   return o;
 }
 

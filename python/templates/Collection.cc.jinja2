@@ -254,7 +254,7 @@ void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
 {{ iterator_definitions(class, prefix='Mutable' ) }}
 
 std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& coll) {
-  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", coll);
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", coll);
   return o;
 }
 

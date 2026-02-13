@@ -72,7 +72,7 @@ struct fmt::formatter<podio::ObjectID> {
 
 namespace podio {
 inline std::ostream& operator<<(std::ostream& os, const podio::ObjectID& id) {
-  fmt::format_to(std::ostreambuf_iterator<char>(os), "{}", id);
+  fmt::format_to(std::ostreambuf_iterator(os), "{}", id);
   return os;
 }
 } // namespace podio

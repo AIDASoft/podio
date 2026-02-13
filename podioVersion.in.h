@@ -88,7 +88,7 @@ struct fmt::formatter<podio::version::Version> {
 
 namespace podio::version {
 inline std::ostream& operator<<(std::ostream& os, const Version& v) {
-  fmt::format_to(std::ostreambuf_iterator<char>(os), "{}", v);
+  fmt::format_to(std::ostreambuf_iterator(os), "{}", v);
   return os;
 }
 

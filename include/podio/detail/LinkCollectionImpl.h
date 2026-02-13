@@ -475,7 +475,7 @@ struct fmt::is_range<podio::LinkCollection<FromT, ToT>, char> : std::false_type 
 namespace podio {
 template <typename FromT, typename ToT>
 std::ostream& operator<<(std::ostream& o, const LinkCollection<FromT, ToT>& v) {
-  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", v);
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", v);
   return o;
 }
 } // namespace podio
