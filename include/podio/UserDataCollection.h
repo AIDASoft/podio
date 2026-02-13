@@ -224,14 +224,7 @@ public:
 
   /// Print this collection to the passed stream
   void print(std::ostream& os = std::cout, bool flush = true) const override {
-    os << "[";
-    if (!_vec.empty()) {
-      os << _vec[0];
-      for (size_t i = 1; i < _vec.size(); ++i) {
-        os << ", " << _vec[i];
-      }
-    }
-    os << "]";
+    os << fmt::format("{}", _vec);
 
     if (flush) {
       os.flush(); // Necessary for python
