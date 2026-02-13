@@ -31,6 +31,7 @@
 #include <cstddef>
 
 #include <fmt/core.h>
+#include "podio/utilities/FormatHelpers.h"
 
 namespace podio {
   struct RelationNames;
@@ -284,15 +285,32 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collectio
 
 template <>
 struct fmt::formatter<{% if class.namespace %}{{ class.namespace }}::{% endif %}{{ class.bare_type }}Collection> {
+  char presentation = 'd';
+
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
-    if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. {{ class.bare_type }}Collections do not support specifiers");
+    auto end = ctx.end();
+    if (it != end && *it != '}') {
+      presentation = *it++;
+      if (presentation != 'd' && presentation != 'u') {
+        fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}Collection. Use 'u' for user-defined or 'd' for detailed");
+      }
+    }
+    if (it != end && *it != '}') {
+      fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}Collection");
     }
     return it;
   }
 
-  fmt::format_context::iterator format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const;
+  template <typename T = {{ class.full_type }}Collection>
+  fmt::format_context::iterator format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const {
+    if (presentation == 'u') {
+      return podio::detail::dispatchCustomFormat<T>(coll, ctx);
+    }
+    return formatDefault(coll, ctx);
+  }
+
+  fmt::format_context::iterator formatDefault(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const;
 };
 
 {{ workarounds.ld_library_path(class, "Collection", ["valueTypeName", "dataTypeName"]) }}

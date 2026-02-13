@@ -12,6 +12,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include "podio/utilities/FormatHelpers.h"
+
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
@@ -383,8 +385,8 @@ struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
 
     if (it != end && *it != '}') {
       presentation = *it++;
-      if (presentation != 'b' && presentation != 'd') {
-        fmt::throw_format_error("Invalid format specifier for Link. Use 'b' for brief or 'd' for detailed");
+      if (presentation != 'b' && presentation != 'd' && presentation != 'u') {
+        fmt::throw_format_error("Invalid format specifier for Link. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
       }
     }
 
@@ -396,6 +398,9 @@ struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
   }
 
   auto format(const podio::LinkT<FromT, ToT, Mutable>& link, fmt::format_context& ctx) const {
+    if (presentation == 'u') {
+      return podio::detail::dispatchCustomFormat(link, ctx);
+    }
     if (!link.isAvailable()) {
       return fmt::format_to(ctx.out(), "[not available]");
     }
