@@ -446,23 +446,39 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
 
 template <typename FromT, typename ToT>
 struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
+  char presentation = 'd'; // 'd' for default/detailed, 'b' for brief
+
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
-    if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. LinkCollections do not support specifiers");
+    auto end = ctx.end();
+
+    if (it != end && *it != '}') {
+      presentation = *it++;
+      if (presentation != 'b' && presentation != 'd') {
+        fmt::throw_format_error(
+            "Unsupported format specifier for LinkCollection. Use 'b' for brief or 'd' for detailed");
+      }
     }
+
+    if (it != end && *it != '}') {
+      fmt::throw_format_error("Invalid format specifier for LinkCollection");
+    }
+
     return it;
   }
 
   auto format(const podio::LinkCollection<FromT, ToT>& coll, fmt::format_context& ctx) const {
     auto out = ctx.out();
 
+    if (presentation == 'b') {
+      return fmt::format_to(out, "{} (id: {:8x}, size: {})", coll.getTypeName(), coll.getID(), coll.size());
+    }
+
     out = fmt::format_to(out, "          id:      weight:\n");
     for (const auto&& elem : coll) {
       out = fmt::format_to(out, "{}  {:+12e}\n", elem.id(), elem.getWeight());
       out = fmt::format_to(out, "     from : {}\n       to : {}\n", elem.getFrom().id(), elem.getTo().id());
     }
-
     return out;
   }
 };

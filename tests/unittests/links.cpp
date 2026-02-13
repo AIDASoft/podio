@@ -492,16 +492,63 @@ TEST_CASE("LinkCollection basics", "[links]") {
 }
 
 TEST_CASE("LinkCollection formatting", "[links][formatting]") {
+  ExampleHitCollection hits;
+  ExampleClusterCollection clusters;
+  auto hit1 = hits.create();
+  auto hit2 = hits.create();
+  auto cluster1 = clusters.create();
+  auto cluster2 = clusters.create();
+
   podio::LinkCollection<ExampleHit, ExampleCluster> links;
+  links.setID(42);
+  const auto idHex = fmt::format("{:8x}", 42);
 
-  auto formatted = fmt::format("{}", links);
-  REQUIRE_FALSE(formatted.empty());
+  SECTION("Empty collection") {
+    auto formatted = fmt::format("{}", links);
+    REQUIRE_FALSE(formatted.empty());
 
-  links.create();
-  links.create();
+    auto formatted_basic = fmt::format("{:b}", links);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic.find(idHex) != std::string::npos); // Should contain collection ID
+    REQUIRE(formatted_basic.find("0") != std::string::npos);   // Should contain size = 0
+  }
 
-  auto formatted2 = fmt::format("{}", links);
-  REQUIRE(formatted2.size() > formatted.size());
+  SECTION("Non-empty collection") {
+    auto link1 = links.create();
+    link1.setFrom(hit1);
+    link1.setTo(cluster1);
+    link1.setWeight(1.5f);
+
+    auto link2 = links.create();
+    link2.setFrom(hit2);
+    link2.setTo(cluster2);
+    link2.setWeight(2.5f);
+
+    // Test default format (detailed)
+    auto formatted_default = fmt::format("{}", links);
+    REQUIRE_FALSE(formatted_default.empty());
+    REQUIRE(formatted_default.find("id:") != std::string::npos);
+    REQUIRE(formatted_default.find("weight:") != std::string::npos);
+    REQUIRE(formatted_default.find("from") != std::string::npos);
+    REQUIRE(formatted_default.find("to") != std::string::npos);
+
+    // Test explicit detailed format
+    auto formatted_detailed = fmt::format("{:d}", links);
+    REQUIRE(formatted_detailed == formatted_default);
+
+    // Test basic format
+    auto formatted_basic = fmt::format("{:b}", links);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic.find(idHex) != std::string::npos);                   // Should contain collection ID
+    REQUIRE(formatted_basic.find("2") != std::string::npos);                     // Should contain size = 2
+    REQUIRE(formatted_basic.find("podio::LinkCollection") != std::string::npos); // Should contain type name
+    // Basic format should be much shorter than detailed
+    REQUIRE(formatted_basic.size() < formatted_default.size());
+
+    // Test that basic format doesn't contain detailed information
+    REQUIRE(formatted_basic.find("from") == std::string::npos);
+    REQUIRE(formatted_basic.find("to") == std::string::npos);
+  }
 }
 
 auto createLinkCollections(const size_t nElements = 3u) {
