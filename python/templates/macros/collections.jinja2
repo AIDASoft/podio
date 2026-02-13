@@ -98,7 +98,7 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
 
 
 {% macro formatter(class, members, single_relations, multi_relations, vector_members, get_syntax, settings) %}
-fmt::format_context::iterator fmt::formatter<{{ class.full_type }}Collection>::format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const {
+fmt::format_context::iterator fmt::formatter<{{ class.full_type }}Collection>::formatDefault(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const {
   auto out = ctx.out();
   {% set cw = 12 %}
   out = fmt::format_to(out, "{:>{{ cw }}}:", "id");

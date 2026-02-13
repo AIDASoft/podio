@@ -454,9 +454,9 @@ struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
 
     if (it != end && *it != '}') {
       presentation = *it++;
-      if (presentation != 'b' && presentation != 'd') {
+      if (presentation != 'b' && presentation != 'd' && presentation != 'u') {
         fmt::throw_format_error(
-            "Unsupported format specifier for LinkCollection. Use 'b' for brief or 'd' for detailed");
+            "Unsupported format specifier for LinkCollection. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
       }
     }
 
@@ -468,6 +468,9 @@ struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
   }
 
   auto format(const podio::LinkCollection<FromT, ToT>& coll, fmt::format_context& ctx) const {
+    if (presentation == 'u') {
+      return podio::detail::dispatchCustomFormat(coll, ctx);
+    }
     auto out = ctx.out();
 
     if (presentation == 'b') {

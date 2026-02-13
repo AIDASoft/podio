@@ -193,7 +193,7 @@ bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
 
 {% macro formatter(class, members, single_relations, multi_relations, get_syntax, prefix='') %}
 {% set namespace = class.namespace + '::' if class.namespace else '' %}
-fmt::format_context::iterator fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}>::format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const {
+fmt::format_context::iterator fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}>::formatDefault(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const {
   if (!value.isAvailable()) {
     return fmt::format_to(ctx.out(), "[not available]");
   }

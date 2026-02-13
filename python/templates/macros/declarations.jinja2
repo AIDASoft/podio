@@ -163,15 +163,32 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
 {% set namespace = class.namespace + '::' if class.namespace else '' %}
 template <>
 struct fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
+  char presentation = 'd';
+
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
-    if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. {{ class.bare_type }} does not support specifiers");
+    auto end = ctx.end();
+    if (it != end && *it != '}') {
+      presentation = *it++;
+      if (presentation != 'd' && presentation != 'u') {
+        fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}. Use 'u' for user-defined or 'd' for detailed");
+      }
+    }
+    if (it != end && *it != '}') {
+      fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}");
     }
     return it;
   }
 
-  fmt::format_context::iterator format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const;
+  template <typename T = {{ namespace }}{{ prefix }}{{ class.bare_type }}>
+  fmt::format_context::iterator format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const {
+    if (presentation == 'u') {
+      return podio::detail::dispatchCustomFormat<T>(value, ctx);
+    }
+    return formatDefault(value, ctx);
+  }
+
+  fmt::format_context::iterator formatDefault(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const;
 };
 
 {% endmacro %}
