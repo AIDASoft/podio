@@ -460,7 +460,11 @@ TEST_CASE("UserDataCollection print", "[basics]") {
   REQUIRE(sstr.str() == "[1, 2, 3]");
 
   auto formatted = fmt::format("{}", coll);
-  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted == "[1, 2, 3]");
+
+  std::stringstream sstr2;
+  sstr2 << coll;
+  REQUIRE(sstr2.str() == formatted);
 }
 
 TEST_CASE("UserDataCollection access", "[basics]") {
@@ -696,6 +700,8 @@ TEST_CASE("Collection formatting", "[basics]") {
   auto comp = components.create();
   formatted = fmt::format("{}", components);
   REQUIRE_FALSE(formatted.empty());
+
+  formatted = fmt::format("{}", cluster.Hits());
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {

@@ -9,6 +9,9 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
+#include <iterator>
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \
@@ -323,7 +326,7 @@ using UserDataCollectionTypes = decltype(std::apply(
 
 template <SupportedUserDataType BasicType>
 std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicType>& coll) {
-  coll.print(o);
+  fmt::format_to(std::ostreambuf_iterator<char>(o), "{}", coll);
   return o;
 }
 
@@ -355,8 +358,5 @@ constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
 #endif
 
 } // namespace podio
-
-template <typename BasicType>
-struct fmt::formatter<podio::UserDataCollection<BasicType>> : fmt::ostream_formatter {};
 
 #endif
