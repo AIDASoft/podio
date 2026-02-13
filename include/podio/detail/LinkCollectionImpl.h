@@ -28,7 +28,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
-#include <fmt/ostream.h>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <iomanip>
 #include <memory>
@@ -466,6 +467,11 @@ struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
     return out;
   }
 };
+
+// Disable fmt's range formatter for LinkCollection to avoid ambiguity with the
+// custom formatter above
+template <typename FromT, typename ToT>
+struct fmt::is_range<podio::LinkCollection<FromT, ToT>, char> : std::false_type {};
 
 namespace podio {
 template <typename FromT, typename ToT>
