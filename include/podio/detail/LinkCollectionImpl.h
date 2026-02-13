@@ -31,7 +31,6 @@
 #include <fmt/core.h>
 #include <fmt/ranges.h>
 
-#include <iomanip>
 #include <memory>
 #include <mutex>
 #include <ostream>
@@ -213,7 +212,7 @@ public:
   }
 
   void print(std::ostream& os = std::cout, bool flush = true) const override {
-    os << *this;
+    os << fmt::format("{}", *this);
     if (flush) {
       os.flush();
     }
