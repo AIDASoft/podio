@@ -1,6 +1,7 @@
 #include "podio/GenericParameters.h"
 
-#include <iomanip>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 namespace podio {
 
@@ -18,41 +19,23 @@ GenericParameters::GenericParameters(const GenericParameters& other) {
   _doubleMap = other._doubleMap;
 }
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
-  os << "[";
-  if (!values.empty()) {
-    os << values[0];
-    for (size_t i = 1; i < values.size(); ++i) {
-      os << ", " << values[i];
-    }
-  }
-
-  return os << "]";
-}
-
 template <typename MapType>
-void printMap(const MapType& map, std::ostream& os) {
-  const auto osflags = os.flags();
-  os << std::left << std::setw(30) << "Key "
-     << "Value " << '\n';
-  os << "--------------------------------------------------------------------------------\n";
+void formatMap(const MapType& map, std::ostream& os) {
+  fmt::format_to(std::ostreambuf_iterator(os), "{:<30}{}\n{:-<80}", "Key", "Value", "");
   for (const auto& [key, value] : map) {
-    os << std::left << std::setw(30) << key << value << '\n';
+    fmt::format_to(std::ostreambuf_iterator(os), "{:<30}{}\n", key, value);
   }
-
-  os.flags(osflags);
 }
 
 void GenericParameters::print(std::ostream& os, bool flush) const {
   os << "int parameters\n\n";
-  printMap(getMap<int>(), os);
-  os << "\nfloat parameters\n";
-  printMap(getMap<float>(), os);
-  os << "\ndouble parameters\n";
-  printMap(getMap<double>(), os);
-  os << "\nstd::string parameters\n";
-  printMap(getMap<std::string>(), os);
+  formatMap(getMap<int>(), os);
+  os << "float parameters\n\n";
+  formatMap(getMap<float>(), os);
+  os << "double parameters\n\n";
+  formatMap(getMap<double>(), os);
+  os << "string parameters\n\n";
+  formatMap(getMap<std::string>(), os);
 
   if (flush) {
     os.flush();
