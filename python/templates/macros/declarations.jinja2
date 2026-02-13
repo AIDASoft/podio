@@ -159,8 +159,19 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
 };
 {% endmacro %}
 
-{% macro ostream_formatter(class, prefix='') %}
+{% macro formatter(class, prefix='') %}
 {% set namespace = class.namespace + '::' if class.namespace else '' %}
 template <>
-struct fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}> : fmt::ostream_formatter {};
+struct fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. {{ class.bare_type }} does not support specifiers");
+    }
+    return it;
+  }
+
+  fmt::format_context::iterator format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const;
+};
+
 {% endmacro %}

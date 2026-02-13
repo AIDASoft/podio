@@ -15,7 +15,7 @@
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/detail/OrderKey.h"
 
-#include <fmt/ostream.h>
+#include <fmt/core.h>
 
 #include <ostream>
 #include <cstdint>
@@ -81,7 +81,7 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ macros.std_hash(class) }}
 
-{{ macros.ostream_formatter(class) }}
+{{ macros.formatter(class) }}
 
 {{ workarounds.ld_library_path(class) }}
 
