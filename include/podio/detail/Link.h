@@ -375,11 +375,23 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
 
 template <typename FromT, typename ToT, bool Mutable>
 struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
+  char presentation = 'd'; // 'd' for default/detailed, 'b' for brief
+
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
-    if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. Links do not support specifiers");
+    auto end = ctx.end();
+
+    if (it != end && *it != '}') {
+      presentation = *it++;
+      if (presentation != 'b' && presentation != 'd') {
+        fmt::throw_format_error("Invalid format specifier for Link. Use 'b' for brief or 'd' for detailed");
+      }
     }
+
+    if (it != end && *it != '}') {
+      fmt::throw_format_error("Invalid format specifier for Link");
+    }
+
     return it;
   }
 
@@ -387,6 +399,11 @@ struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
     if (!link.isAvailable()) {
       return fmt::format_to(ctx.out(), "[not available]");
     }
+    if (presentation == 'b') {
+      return fmt::format_to(ctx.out(), "{} | {} {} {}", link.id(), link.getFrom().id(), link.getTo().id(),
+                            link.getWeight());
+    }
+
     return fmt::format_to(ctx.out(), " id: {}\n weight: {}\n from: {}\n to: {}\n", link.id(), link.getWeight(),
                           link.getFrom().id(), link.getTo().id());
   }

@@ -304,23 +304,47 @@ TEST_CASE("Links templated accessors", "[links]") {
 
 TEST_CASE("Link formatting", "[links]") {
   TestL link;
-  auto formatted = fmt::format("{}", link);
-  REQUIRE_FALSE(formatted.empty());
-  REQUIRE(formatted != "[not available]");
-  std::stringstream manual;
-  manual << " id: " << link.id() << '\n'
-         << " weight: " << link.getWeight() << '\n'
-         << " from: " << link.getFrom().id() << '\n'
-         << " to: " << link.getTo().id() << '\n';
-  REQUIRE(formatted == manual.str());
 
-  auto emptyLink = TestL::makeEmpty();
-  auto emptyFmt = fmt::format("{}", emptyLink);
-  REQUIRE(emptyFmt == "[not available]");
+  SECTION("Default format (detailed)") {
+    auto formatted = fmt::format("{}", link);
+    REQUIRE_FALSE(formatted.empty());
+    REQUIRE(formatted != "[not available]");
+    std::stringstream manual;
+    manual << " id: " << link.id() << '\n'
+           << " weight: " << link.getWeight() << '\n'
+           << " from: " << link.getFrom().id() << '\n'
+           << " to: " << link.getTo().id() << '\n';
+    REQUIRE(formatted == manual.str());
 
-  TestMutL mutLink;
-  formatted = fmt::format("{}", mutLink);
-  REQUIRE(formatted != "[not avialable]");
+    // Explicit detailed format should be the same
+    auto formatted_detailed = fmt::format("{:d}", link);
+    REQUIRE(formatted_detailed == formatted);
+  }
+
+  SECTION("Brief format") {
+    auto formatted_basic = fmt::format("{:b}", link);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic == "ffffffff|-1 | ffffffff|-1 ffffffff|-1 1");
+  }
+
+  SECTION("Empty link") {
+    auto emptyLink = TestL::makeEmpty();
+    auto emptyFmt = fmt::format("{}", emptyLink);
+    REQUIRE(emptyFmt == "[not available]");
+
+    // Basic format should also show [not available] for empty link
+    auto emptyFmtBasic = fmt::format("{:b}", emptyLink);
+    REQUIRE(emptyFmtBasic == "[not available]");
+  }
+
+  SECTION("Mutable link") {
+    TestMutL mutLink;
+    auto formatted = fmt::format("{}", mutLink);
+    REQUIRE(formatted != "[not avialable]");
+
+    auto formatted_basic = fmt::format("{:b}", mutLink);
+    REQUIRE_FALSE(formatted_basic.empty());
+  }
 }
 
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
