@@ -97,57 +97,41 @@ std::vector<{{ member.full_type }}> {{ class.bare_type }}Collection::{{ member.n
 {% endmacro %}
 
 
-{% macro ostream_operator(class, members, single_relations, multi_relations, vector_members, get_syntax, settings) %}
-std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& v) {
-{% set col_width = 12 %}
-  const auto old_flags = o.flags();
-  o << "{{ 'id' | ostream_collection_header(col_width=col_width) }}:
-{%- for header in settings.header_contents -%}
-  {{ header | ostream_collection_header(col_width=col_width) }}:
-{%- endfor -%}" << '\n';
+{% macro formatter(class, members, single_relations, multi_relations, vector_members, get_syntax, settings) %}
+fmt::format_context::iterator fmt::formatter<{{ class.full_type }}Collection>::format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const {
+  auto out = ctx.out();
+  {% set cw = 12 %}
+  out = fmt::format_to(out, "{:>{{ cw }}}:", "id");
+{% for header in settings.header_contents %}
+  out = fmt::format_to(out, "{}", "{{ header | ostream_collection_header(col_width=cw) }}");
+{% endfor %}
+  out = fmt::format_to(out, "\n");
 
-  for (const auto&& el : v) {
-    o << std::scientific << std::showpos << std::setw({{ col_width }}) << el.id() << " "
+  for (const auto& el : coll) {
+    out = fmt::format_to(out, "{}    ", el.id());
 {% for member in members %}
 {% if not member.is_array %}
-      << std::setw({{ col_width }}) << el.{{ member.getter_name(get_syntax) }}() << " "
+    out = fmt::format_to(out, "{:^{{ cw }}} ", el.{{ member.getter_name(get_syntax) }}());
 {% endif %}
 {% endfor %}
-      << std::endl;
+    out = fmt::format_to(out, "\n");
 
 {% for relation in multi_relations %}
-    o << "      {{ relation.name }} : ";
-    for (unsigned j = 0, N = el.{{ relation.name }}_size(); j < N; ++j) {
-      o << el.{{ relation.getter_name(get_syntax) }}(j).id() << " ";
-    }
-    o << std::endl;
+     out = fmt::format_to(out, "      {{ relation.name }} : {}\n", fmt::join(el.{{ relation.getter_name(get_syntax) }}() | std::views::transform(&{{ relation.full_type }}::id), " "));
 {% endfor %}
 
 {% for relation in single_relations %}
-    o << "      {{ relation.name }} : ";
-    o << el.{{ relation.getter_name(get_syntax) }}().id() << std::endl;
+     out = fmt::format_to(out, "      {{ relation.name }} : {}\n", el.{{ relation.getter_name(get_syntax) }}().id());
 {% endfor %}
 
 {% for member in vector_members %}
-    o << "      {{ member.name }} : ";
-    for (unsigned j = 0, N = el.{{ member.name }}_size(); j < N; ++j) {
-      o << el.{{ member.getter_name(get_syntax) }}(j) << " ";
-    }
-    o << std::endl;
+     out = fmt::format_to(out, "      {{ member.name }} : {}\n", fmt::join(el.{{ member.getter_name(get_syntax) }}(), " "));
 {% endfor %}
-
   }
 
-  o.flags(old_flags);
-  return o;
+  return out;
 }
 
-void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const {
-  os << *this;
-  if (flush) {
-    os.flush();
-  }
-}
 {% endmacro %}
 
 {% macro create_buffers(class, package_name, collection_type, OneToManyRelations, OneToOneRelations, VectorMembers, schemaVersion) %}

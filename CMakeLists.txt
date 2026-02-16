@@ -172,6 +172,8 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/python/__version__.py.in
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE
         DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
+find_package(fmt 9 REQUIRED)
+
 #--- project specific subdirectories -------------------------------------------
 add_subdirectory(src)
 
@@ -187,8 +189,6 @@ if(BUILD_TESTING)
   include(cmake/podioTest.cmake)
   add_subdirectory(tests)
 endif()
-
-find_package(fmt 9 REQUIRED)
 
 add_subdirectory(tools)
 add_subdirectory(python)
