@@ -3,42 +3,75 @@
 
 #include <fmt/format.h>
 
+#include <algorithm>
+#include <array>
+#include <string_view>
+
 namespace podio {
 
-/// Concept to detect if customFormat is defined for type T.
-/// Uses unqualified lookup so that ADL can find overloads defined in the same
-/// namespace as the type. Users should define their customFormat overloads in
-/// the same namespace as their type (following the same pattern as std::swap).
-template <typename T>
-concept HasCustomFormat = requires(const T& val, fmt::format_context& ctx) {
-  { customFormat(val, ctx) } -> std::same_as<fmt::format_context::iterator>;
-};
-
 namespace detail {
+  /// Concept to detect if customFormat is defined for type T.
+  /// Uses unqualified lookup so that ADL can find overloads defined in the same
+  /// namespace as the type. Users should define their customFormat overloads in
+  /// the same namespace as their type (following the same pattern as std::swap).
+  template <typename T>
+  concept HasCustomFormat = requires(const T& val, fmt::format_context& ctx) {
+    { customFormat(val, ctx) } -> std::same_as<fmt::format_context::iterator>;
+  };
+
   /// Dispatch helper: calls customFormat if available, otherwise throws a format
-  /// error. The requireCustomFormat check in parse() catches this earlier (at
-  /// compile time for compile-time format strings), but this serves as a safety
-  /// net for runtime format strings.
+  /// error.
   template <typename T>
   fmt::format_context::iterator dispatchCustomFormat(const T& val, fmt::format_context& ctx) {
     if constexpr (HasCustomFormat<T>) {
       return customFormat(val, ctx);
     } else {
-      fmt::throw_format_error("Format specifier 'u' requires a podio::customFormat overload for this type");
+      fmt::throw_format_error("Format specifier 'u' requires a defineCustomPodioFormat for this type");
       return ctx.out(); // unreachable, silences warnings
     }
   }
 
-  /// Call from a constexpr parse() method to reject the 'u' format specifier
-  /// for types that don't provide a customFormat overload. With compile-time
-  /// format strings (the default for fmt::format), this produces a compile-time
-  /// error. With fmt::runtime() format strings it produces a runtime error.
-  template <typename T>
-  constexpr void requireCustomFormat() {
-    if constexpr (!HasCustomFormat<T>) {
-      fmt::throw_format_error("Format specifier 'u' requires a podio::customFormat overload for this type");
+  /// Build a compile-time error message listing supported format specifiers.
+  /// Produces a message like: "Invalid format specifier. Supported: 'b', 'd', 'u'"
+  template <char... Specs>
+  consteval auto buildSpecErrorMessage() {
+    constexpr std::size_t N = sizeof...(Specs);
+    constexpr std::string_view prefix = "Invalid format specifier. Supported: ";
+    constexpr std::string_view delim = ", ";
+
+    // result buffer size = prefix + 3 chars per spec and appropriate number of
+    // delimiters and null terminator
+    constexpr auto bufLen = prefix.size() + (N * 3) + (N > 0 ? (N - 1) * delim.size() : 0) + 1;
+    std::array<char, bufLen> result{};
+    auto out = result.begin();
+    out = std::ranges::copy(prefix, out).out;
+
+    if constexpr (N == 0) {
+      return result;
     }
+
+    // Sort specifiers alphabetically for consistent display
+    std::array<char, N> specs{Specs...};
+    std::ranges::sort(specs);
+
+    auto format_spec = [&](char c) {
+      const std::array wrapped = {'\'', c, '\''};
+      out = std::ranges::copy(wrapped, out).out;
+    };
+    // First spec without leading delimiter
+    format_spec(specs[0]);
+    // The rest with leading delimieter
+    std::ranges::for_each(std::ranges::subrange(specs.begin() + 1, specs.end()), [&](char c) {
+      out = std::ranges::copy(delim, out).out;
+      format_spec(c);
+    });
+
+    return result;
   }
+
+  template <char... Specs>
+  inline constexpr auto specErrorMsg = buildSpecErrorMessage<Specs...>();
+
 } // namespace detail
 
 /// CRTP base for fmt::formatters that support ADL-based custom formatting.
@@ -63,15 +96,24 @@ struct ADLFormatter {
     auto end = ctx.end();
     if (it != end && *it != '}') {
       presentation = *it++;
-      if (presentation != 'd' && presentation != 'u' && ((presentation != ExtraSpecifiers) && ...)) {
-        fmt::throw_format_error("Invalid format specifier");
-      }
+      bool valid = (it == end) || (*it == '}');
+      // First check if we have a custom format available and can use it
       if (presentation == 'u') {
-        detail::requireCustomFormat<T>();
+        if (detail::HasCustomFormat<T> && valid) {
+          return it;
+        }
+        fmt::throw_format_error("Format specifier 'u' requires an overload of defineCustomPodioFormat for this type");
       }
-    }
-    if (it != end && *it != '}') {
-      fmt::throw_format_error("Invalid format specifier");
+
+      // Now check the rest and emit a corresponding error message depending on
+      // whether 'u' is available or not
+      if (valid && presentation != 'd' && ((presentation != ExtraSpecifiers) && ...)) {
+        if constexpr (detail::HasCustomFormat<T>) {
+          fmt::throw_format_error(detail::specErrorMsg<'d', 'u', ExtraSpecifiers...>.data());
+        } else {
+          fmt::throw_format_error(detail::specErrorMsg<'d', ExtraSpecifiers...>.data());
+        }
+      }
     }
     return it;
   }
