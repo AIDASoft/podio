@@ -379,8 +379,8 @@ template <typename FromT, typename ToT, bool Mutable>
 struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>>
     : podio::ADLFormatter<podio::LinkT<FromT, ToT, Mutable>, fmt::formatter<podio::LinkT<FromT, ToT, Mutable>>, 'b'> {
 
-  fmt::format_context::iterator formatDefault(const podio::LinkT<FromT, ToT, Mutable>& link,
-                                              fmt::format_context& ctx) const {
+  fmt::format_context::iterator formatImpl(const podio::LinkT<FromT, ToT, Mutable>& link,
+                                           fmt::format_context& ctx) const {
     if (!link.isAvailable()) {
       return fmt::format_to(ctx.out(), "[not available]");
     }

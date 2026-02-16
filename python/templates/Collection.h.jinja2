@@ -286,7 +286,7 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collectio
 template <>
 struct fmt::formatter<{{ class.full_type }}Collection>
     : podio::ADLFormatter<{{ class.full_type }}Collection, fmt::formatter<{{ class.full_type }}Collection>> {
-  fmt::format_context::iterator formatDefault(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const;
+  fmt::format_context::iterator formatImpl(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const;
 };
 
 {{ workarounds.ld_library_path(class, "Collection", ["valueTypeName", "dataTypeName"]) }}

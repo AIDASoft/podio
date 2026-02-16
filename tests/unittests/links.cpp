@@ -15,7 +15,6 @@
   #include "nlohmann/json.hpp"
 #endif
 
-#include "podio/utilities/FormatHelpers.h"
 #include <fmt/format.h>
 
 #include <map>
@@ -327,8 +326,9 @@ TEST_CASE("Links templated accessors", "[links]") {
 TEST_CASE("Link formatting", "[links]") {
   TestL link;
 
-  SECTION("Default format (detailed)") {
-    auto formatted = fmt::format("{}", link);
+  SECTION("Code-generated format (detailed)") {
+    // TestL has a custom format defined, so use {:g} to test code-generated format
+    auto formatted = fmt::format("{:g}", link);
     REQUIRE_FALSE(formatted.empty());
     REQUIRE(formatted != "[not available]");
     std::stringstream manual;
@@ -337,10 +337,14 @@ TEST_CASE("Link formatting", "[links]") {
            << " from: " << link.getFrom().id() << '\n'
            << " to: " << link.getTo().id() << '\n';
     REQUIRE(formatted == manual.str());
+  }
 
-    // Explicit detailed format should be the same
-    auto formatted_detailed = fmt::format("{:d}", link);
-    REQUIRE(formatted_detailed == formatted);
+  SECTION("Default format uses custom if available") {
+    // Default format ({} or {:d}) should use custom format when available
+    auto formatted_default = fmt::format("{}", link);
+    auto formatted_d = fmt::format("{:d}", link);
+    REQUIRE(formatted_default == "custom-link(w=1)");
+    REQUIRE(formatted_d == "custom-link(w=1)");
   }
 
   SECTION("Brief format") {
@@ -351,7 +355,7 @@ TEST_CASE("Link formatting", "[links]") {
 
   SECTION("Empty link") {
     auto emptyLink = TestL::makeEmpty();
-    auto emptyFmt = fmt::format("{}", emptyLink);
+    auto emptyFmt = fmt::format("{:g}", emptyLink);
     REQUIRE(emptyFmt == "[not available]");
 
     // Basic format should also show [not available] for empty link
@@ -361,7 +365,7 @@ TEST_CASE("Link formatting", "[links]") {
 
   SECTION("Mutable link") {
     TestMutL mutLink;
-    auto formatted = fmt::format("{}", mutLink);
+    auto formatted = fmt::format("{:g}", mutLink);
     REQUIRE(formatted != "[not avialable]");
 
     auto formatted_basic = fmt::format("{:b}", mutLink);
@@ -538,7 +542,8 @@ TEST_CASE("LinkCollection formatting", "[links][formatting]") {
   const auto idHex = fmt::format("{:8x}", 42);
 
   SECTION("Empty collection") {
-    auto formatted = fmt::format("{}", links);
+    // TestLColl has a custom format defined, so use {:g} for code-generated format
+    auto formatted = fmt::format("{:g}", links);
     REQUIRE_FALSE(formatted.empty());
 
     auto formatted_basic = fmt::format("{:b}", links);
@@ -558,17 +563,19 @@ TEST_CASE("LinkCollection formatting", "[links][formatting]") {
     link2.setTo(cluster2);
     link2.setWeight(2.5f);
 
-    // Test default format (detailed)
-    auto formatted_default = fmt::format("{}", links);
-    REQUIRE_FALSE(formatted_default.empty());
-    REQUIRE(formatted_default.find("id:") != std::string::npos);
-    REQUIRE(formatted_default.find("weight:") != std::string::npos);
-    REQUIRE(formatted_default.find("from") != std::string::npos);
-    REQUIRE(formatted_default.find("to") != std::string::npos);
+    // Test code-generated format (detailed)
+    auto formatted_codegen = fmt::format("{:g}", links);
+    REQUIRE_FALSE(formatted_codegen.empty());
+    REQUIRE(formatted_codegen.find("id:") != std::string::npos);
+    REQUIRE(formatted_codegen.find("weight:") != std::string::npos);
+    REQUIRE(formatted_codegen.find("from") != std::string::npos);
+    REQUIRE(formatted_codegen.find("to") != std::string::npos);
 
-    // Test explicit detailed format
-    auto formatted_detailed = fmt::format("{:d}", links);
-    REQUIRE(formatted_detailed == formatted_default);
+    // Test default format (should use custom)
+    auto formatted_default = fmt::format("{}", links);
+    auto formatted_d = fmt::format("{:d}", links);
+    REQUIRE(formatted_default == "custom-link-coll(n=2)");
+    REQUIRE(formatted_d == "custom-link-coll(n=2)");
 
     // Test basic format
     auto formatted_basic = fmt::format("{:b}", links);
@@ -577,7 +584,7 @@ TEST_CASE("LinkCollection formatting", "[links][formatting]") {
     REQUIRE(formatted_basic.find("2") != std::string::npos);                     // Should contain size = 2
     REQUIRE(formatted_basic.find("podio::LinkCollection") != std::string::npos); // Should contain type name
     // Basic format should be much shorter than detailed
-    REQUIRE(formatted_basic.size() < formatted_default.size());
+    REQUIRE(formatted_basic.size() < formatted_codegen.size());
 
     // Test that basic format doesn't contain detailed information
     REQUIRE(formatted_basic.find("from") == std::string::npos);

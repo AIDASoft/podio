@@ -160,7 +160,7 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
 template <>
 struct fmt::formatter<{{ fulltype }}>
     : podio::ADLFormatter<{{ fulltype }}, fmt::formatter<{{ fulltype }}>> {
-  fmt::format_context::iterator formatDefault(const {{ fulltype }}& value, fmt::format_context& ctx) const;
+  fmt::format_context::iterator formatImpl(const {{ fulltype }}& value, fmt::format_context& ctx) const;
 };
 
 {% endmacro %}

@@ -451,8 +451,8 @@ template <typename FromT, typename ToT>
 struct fmt::formatter<podio::LinkCollection<FromT, ToT>>
     : podio::ADLFormatter<podio::LinkCollection<FromT, ToT>, fmt::formatter<podio::LinkCollection<FromT, ToT>>, 'b'> {
 
-  fmt::format_context::iterator formatDefault(const podio::LinkCollection<FromT, ToT>& coll,
-                                              fmt::format_context& ctx) const {
+  fmt::format_context::iterator formatImpl(const podio::LinkCollection<FromT, ToT>& coll,
+                                           fmt::format_context& ctx) const {
     auto out = ctx.out();
 
     if (this->presentation == 'b') {

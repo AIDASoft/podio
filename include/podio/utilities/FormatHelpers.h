@@ -79,15 +79,16 @@ namespace detail {
 ///
 /// Provides the common parse/format logic shared by all podio formatters that
 /// support the 'u' (user-defined via ADL) format specifier. The default format
-/// specifier is 'd' (detailed). Additional specifiers (e.g. 'b' for brief) can
-/// be added via the ExtraSpecifiers template parameter pack.
+/// specifier is 'd' (default - tries user-defined, falls back to code-generated).
+/// The 'g' specifier always uses code-generated formatting. Additional specifiers
+/// (e.g. 'b' for brief) can be added via the ExtraSpecifiers template parameter pack.
 ///
 /// @tparam T               The type being formatted
 /// @tparam Derived         The concrete fmt::formatter specialization (CRTP)
-/// @tparam ExtraSpecifiers Additional single-char format specifiers beyond 'd' and 'u'
+/// @tparam ExtraSpecifiers Additional single-char format specifiers beyond 'd', 'g', and 'u'
 ///
 /// Derived classes must implement:
-///   fmt::format_context::iterator formatDefault(const T& value, fmt::format_context& ctx) const;
+///   fmt::format_context::iterator formatImpl(const T& value, fmt::format_context& ctx) const;
 template <typename T, typename Derived, char... ExtraSpecifiers>
 struct ADLFormatter {
   char presentation = 'd';
@@ -108,11 +109,11 @@ struct ADLFormatter {
 
       // Now check the rest and emit a corresponding error message depending on
       // whether 'u' is available or not
-      if (valid && presentation != 'd' && ((presentation != ExtraSpecifiers) && ...)) {
+      if (valid && presentation != 'd' && presentation != 'g' && ((presentation != ExtraSpecifiers) && ...)) {
         if constexpr (detail::HasCustomFormat<T>) {
-          fmt::throw_format_error(detail::specErrorMsg<'d', 'u', ExtraSpecifiers...>.data());
+          fmt::throw_format_error(detail::specErrorMsg<'d', 'g', 'u', ExtraSpecifiers...>.data());
         } else {
-          fmt::throw_format_error(detail::specErrorMsg<'d', ExtraSpecifiers...>.data());
+          fmt::throw_format_error(detail::specErrorMsg<'d', 'g', ExtraSpecifiers...>.data());
         }
       }
     }
@@ -123,7 +124,16 @@ struct ADLFormatter {
     if (presentation == 'u') {
       return detail::dispatchCustomFormat(value, ctx);
     }
-    return static_cast<const Derived&>(*this).formatDefault(value, ctx);
+    if (presentation == 'd') {
+      // For 'd', try user-defined formatting if available, otherwise fall back to code-generated
+      if constexpr (detail::HasCustomFormat<T>) {
+        return detail::dispatchCustomFormat(value, ctx);
+      } else {
+        return static_cast<const Derived&>(*this).formatImpl(value, ctx);
+      }
+    }
+    // For 'g' and any ExtraSpecifiers, always use code-generated formatting
+    return static_cast<const Derived&>(*this).formatImpl(value, ctx);
   }
 };
 

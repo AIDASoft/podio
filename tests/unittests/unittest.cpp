@@ -172,23 +172,25 @@ TEST_CASE("makeEmpty", "[basics]") {
 }
 
 TEST_CASE("Object formatting", "[basics][formatting]") {
+  // ExampleCluster has a custom format defined, so use {:g} to test code-generated format
   ExampleCluster cluster;
-  auto formatted = fmt::format("{}", cluster);
+  auto formatted = fmt::format("{:g}", cluster);
   REQUIRE_FALSE(formatted.empty());
   REQUIRE(formatted != "[not avaialble]");
 
   cluster = ExampleCluster::makeEmpty();
-  formatted = fmt::format("{}", cluster);
+  formatted = fmt::format("{:g}", cluster);
   REQUIRE(formatted == "[not available]");
 
   auto mutCluster = MutableExampleCluster{};
-  formatted = fmt::format("{}", mutCluster);
+  formatted = fmt::format("{:g}", mutCluster);
   REQUIRE_FALSE(formatted.empty());
   REQUIRE(formatted != "[not available]");
-  // Ensure operator<< is still working
+  // Ensure operator<< is still working (uses default format, which uses custom if available)
   std::stringstream sstr;
   sstr << mutCluster;
-  REQUIRE(sstr.str() == formatted);
+  auto formatted_default = fmt::format("{}", mutCluster);
+  REQUIRE(sstr.str() == formatted_default);
 
   auto typeWithComponent = ExampleWithArrayComponent{};
   formatted = fmt::format("{}", typeWithComponent);
