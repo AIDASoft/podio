@@ -40,6 +40,50 @@ namespace detail {
     }
   }
 } // namespace detail
+
+/// CRTP base for fmt::formatters that support ADL-based custom formatting.
+///
+/// Provides the common parse/format logic shared by all podio formatters that
+/// support the 'u' (user-defined via ADL) format specifier. The default format
+/// specifier is 'd' (detailed). Additional specifiers (e.g. 'b' for brief) can
+/// be added via the ExtraSpecifiers template parameter pack.
+///
+/// @tparam T               The type being formatted
+/// @tparam Derived         The concrete fmt::formatter specialization (CRTP)
+/// @tparam ExtraSpecifiers Additional single-char format specifiers beyond 'd' and 'u'
+///
+/// Derived classes must implement:
+///   fmt::format_context::iterator formatDefault(const T& value, fmt::format_context& ctx) const;
+template <typename T, typename Derived, char... ExtraSpecifiers>
+struct ADLFormatter {
+  char presentation = 'd';
+
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    auto end = ctx.end();
+    if (it != end && *it != '}') {
+      presentation = *it++;
+      if (presentation != 'd' && presentation != 'u' && ((presentation != ExtraSpecifiers) && ...)) {
+        fmt::throw_format_error("Invalid format specifier");
+      }
+      if (presentation == 'u') {
+        detail::requireCustomFormat<T>();
+      }
+    }
+    if (it != end && *it != '}') {
+      fmt::throw_format_error("Invalid format specifier");
+    }
+    return it;
+  }
+
+  fmt::format_context::iterator format(const T& value, fmt::format_context& ctx) const {
+    if (presentation == 'u') {
+      return detail::dispatchCustomFormat(value, ctx);
+    }
+    return static_cast<const Derived&>(*this).formatDefault(value, ctx);
+  }
+};
+
 } // namespace podio
 
 #endif // PODIO_UTILITIES_FORMATHELPERS_H

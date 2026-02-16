@@ -448,38 +448,14 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
 } // namespace podio
 
 template <typename FromT, typename ToT>
-struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
-  char presentation = 'd'; // 'd' for default/detailed, 'b' for brief
+struct fmt::formatter<podio::LinkCollection<FromT, ToT>>
+    : podio::ADLFormatter<podio::LinkCollection<FromT, ToT>, fmt::formatter<podio::LinkCollection<FromT, ToT>>, 'b'> {
 
-  constexpr auto parse(fmt::format_parse_context& ctx) {
-    auto it = ctx.begin();
-    auto end = ctx.end();
-
-    if (it != end && *it != '}') {
-      presentation = *it++;
-      if (presentation != 'b' && presentation != 'd' && presentation != 'u') {
-        fmt::throw_format_error(
-            "Unsupported format specifier for LinkCollection. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
-      }
-      if (presentation == 'u') {
-        podio::detail::requireCustomFormat<podio::LinkCollection<FromT, ToT>>();
-      }
-    }
-
-    if (it != end && *it != '}') {
-      fmt::throw_format_error("Invalid format specifier for LinkCollection");
-    }
-
-    return it;
-  }
-
-  auto format(const podio::LinkCollection<FromT, ToT>& coll, fmt::format_context& ctx) const {
-    if (presentation == 'u') {
-      return podio::detail::dispatchCustomFormat(coll, ctx);
-    }
+  fmt::format_context::iterator formatDefault(const podio::LinkCollection<FromT, ToT>& coll,
+                                              fmt::format_context& ctx) const {
     auto out = ctx.out();
 
-    if (presentation == 'b') {
+    if (this->presentation == 'b') {
       return fmt::format_to(out, "{} (id: {:8x}, size: {})", coll.getTypeName(), coll.getID(), coll.size());
     }
 

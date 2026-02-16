@@ -376,38 +376,15 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
 };
 
 template <typename FromT, typename ToT, bool Mutable>
-struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
-  char presentation = 'd'; // 'd' for default/detailed, 'b' for brief
+struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>>
+    : podio::ADLFormatter<podio::LinkT<FromT, ToT, Mutable>, fmt::formatter<podio::LinkT<FromT, ToT, Mutable>>, 'b'> {
 
-  constexpr auto parse(fmt::format_parse_context& ctx) {
-    auto it = ctx.begin();
-    auto end = ctx.end();
-
-    if (it != end && *it != '}') {
-      presentation = *it++;
-      if (presentation != 'b' && presentation != 'd' && presentation != 'u') {
-        fmt::throw_format_error("Invalid format specifier for Link. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
-      }
-      if (presentation == 'u') {
-        podio::detail::requireCustomFormat<podio::LinkT<FromT, ToT, Mutable>>();
-      }
-    }
-
-    if (it != end && *it != '}') {
-      fmt::throw_format_error("Invalid format specifier for Link");
-    }
-
-    return it;
-  }
-
-  auto format(const podio::LinkT<FromT, ToT, Mutable>& link, fmt::format_context& ctx) const {
-    if (presentation == 'u') {
-      return podio::detail::dispatchCustomFormat(link, ctx);
-    }
+  fmt::format_context::iterator formatDefault(const podio::LinkT<FromT, ToT, Mutable>& link,
+                                              fmt::format_context& ctx) const {
     if (!link.isAvailable()) {
       return fmt::format_to(ctx.out(), "[not available]");
     }
-    if (presentation == 'b') {
+    if (this->presentation == 'b') {
       return fmt::format_to(ctx.out(), "{} | {} {} {}", link.id(), link.getFrom().id(), link.getTo().id(),
                             link.getWeight());
     }

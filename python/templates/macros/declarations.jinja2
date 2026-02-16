@@ -156,36 +156,11 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
 
 {% macro formatter(class, prefix='') %}
 {% set namespace = class.namespace + '::' if class.namespace else '' %}
+{% set fulltype = namespace + prefix + class.bare_type %}
 template <>
-struct fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
-  char presentation = 'd';
-
-  constexpr auto parse(fmt::format_parse_context& ctx) {
-    auto it = ctx.begin();
-    auto end = ctx.end();
-    if (it != end && *it != '}') {
-      presentation = *it++;
-      if (presentation != 'd' && presentation != 'u') {
-        fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}. Use 'u' for user-defined or 'd' for detailed");
-      }
-      if (presentation == 'u') {
-        podio::detail::requireCustomFormat<{{ namespace }}{{ prefix }}{{ class.bare_type }}>();
-      }
-    }
-    if (it != end && *it != '}') {
-      fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}");
-    }
-    return it;
-  }
-
-  fmt::format_context::iterator format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const {
-    if (presentation == 'u') {
-      return podio::detail::dispatchCustomFormat(value, ctx);
-    }
-    return formatDefault(value, ctx);
-  }
-
-  fmt::format_context::iterator formatDefault(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const;
+struct fmt::formatter<{{ fulltype }}>
+    : podio::ADLFormatter<{{ fulltype }}, fmt::formatter<{{ fulltype }}>> {
+  fmt::format_context::iterator formatDefault(const {{ fulltype }}& value, fmt::format_context& ctx) const;
 };
 
 {% endmacro %}
