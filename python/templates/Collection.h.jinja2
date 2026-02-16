@@ -295,6 +295,9 @@ struct fmt::formatter<{% if class.namespace %}{{ class.namespace }}::{% endif %}
       if (presentation != 'd' && presentation != 'u') {
         fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}Collection. Use 'u' for user-defined or 'd' for detailed");
       }
+      if (presentation == 'u') {
+        podio::detail::requireCustomFormat<{{ class.full_type }}Collection>();
+      }
     }
     if (it != end && *it != '}') {
       fmt::throw_format_error("Invalid format specifier for {{ class.bare_type }}Collection");
@@ -302,10 +305,9 @@ struct fmt::formatter<{% if class.namespace %}{{ class.namespace }}::{% endif %}
     return it;
   }
 
-  template <typename T = {{ class.full_type }}Collection>
   fmt::format_context::iterator format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const {
     if (presentation == 'u') {
-      return podio::detail::dispatchCustomFormat<T>(coll, ctx);
+      return podio::detail::dispatchCustomFormat(coll, ctx);
     }
     return formatDefault(coll, ctx);
   }

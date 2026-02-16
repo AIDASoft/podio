@@ -461,6 +461,9 @@ struct fmt::formatter<podio::LinkCollection<FromT, ToT>> {
         fmt::throw_format_error(
             "Unsupported format specifier for LinkCollection. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
       }
+      if (presentation == 'u') {
+        podio::detail::requireCustomFormat<podio::LinkCollection<FromT, ToT>>();
+      }
     }
 
     if (it != end && *it != '}') {

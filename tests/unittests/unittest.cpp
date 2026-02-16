@@ -210,9 +210,11 @@ TEST_CASE("Object formatting", "[basics][formatting]") {
   formatted = fmt::format("{:u}", immutableCluster);
   REQUIRE(formatted == "custom-cluster(e=42.5)");
 
-  // User-defined format throws for types without a customFormat overload
+  // User-defined format fails for types without a customFormat overload.
+  // With compile-time format strings this would be a compile error; use
+  // fmt::runtime to verify the runtime error path.
   auto hitForFmt = ExampleHit{};
-  REQUIRE_THROWS_AS(fmt::format("{:u}", hitForFmt), fmt::format_error);
+  REQUIRE_THROWS_AS(fmt::format(fmt::runtime("{:u}"), hitForFmt), fmt::format_error);
 }
 
 TEST_CASE("Cyclic dependencies", "[LEAK-FAIL][basics][relations][memory-management]") {
@@ -749,8 +751,10 @@ TEST_CASE("Collection formatting", "[basics]") {
   formatted = fmt::format("{:u}", clusters);
   REQUIRE(formatted == "custom-cluster-coll(n=1)");
 
-  // User-defined format throws for collections without a customFormat overload
-  REQUIRE_THROWS_AS(fmt::format("{:u}", components), fmt::format_error);
+  // User-defined format fails for collections without a customFormat overload.
+  // With compile-time format strings this would be a compile error; use
+  // fmt::runtime to verify the runtime error path.
+  REQUIRE_THROWS_AS(fmt::format(fmt::runtime("{:u}"), components), fmt::format_error);
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {

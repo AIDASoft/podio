@@ -388,6 +388,9 @@ struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
       if (presentation != 'b' && presentation != 'd' && presentation != 'u') {
         fmt::throw_format_error("Invalid format specifier for Link. Use 'b' for brief, 'd' for detailed, or 'u' for user-defined");
       }
+      if (presentation == 'u') {
+        podio::detail::requireCustomFormat<podio::LinkT<FromT, ToT, Mutable>>();
+      }
     }
 
     if (it != end && *it != '}') {

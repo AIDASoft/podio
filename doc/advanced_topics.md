@@ -496,16 +496,18 @@ fmt::format("{:u}", mut);  // calls customFormat(const Cluster&, ...)
 #### Error handling
 
 If you use the `u` specifier on a type that has no `customFormat` overload
-defined, an `fmt::format_error` is thrown at runtime:
+defined, you will get a **compile-time error** when using compile-time format
+strings (the default for `fmt::format`):
 
 ```cpp
-fmt::format("{:u}", someHit);  // throws if no customFormat for Hit exists
+fmt::format("{:u}", someHit);  // compile error if no customFormat for Hit exists
 ```
 
-The existence of a suitable overload is checked at compile time via a C++20
-concept (`podio::HasCustomFormat<T>`), but because the `fmt::formatter` uses a
-runtime-parsed format specifier, the error manifests as a runtime exception
-rather than a compilation failure.
+The check uses `fmt::throw_format_error` inside the `constexpr` `parse()`
+method. Since `fmt::format` validates format strings at compile time, an
+unsupported `u` specifier is caught before the program runs. For runtime format
+strings (via `fmt::runtime()`), the error manifests as a runtime
+`fmt::format_error` exception instead.
 
 ### `operator<<` support
 
