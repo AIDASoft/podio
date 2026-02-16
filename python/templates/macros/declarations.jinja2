@@ -158,3 +158,9 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
   }
 };
 {% endmacro %}
+
+{% macro ostream_formatter(class, prefix='') %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+template <>
+struct fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}> : fmt::ostream_formatter {};
+{% endmacro %}

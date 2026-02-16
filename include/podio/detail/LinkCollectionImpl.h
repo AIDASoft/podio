@@ -28,6 +28,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/ostream.h>
+
 #include <iomanip>
 #include <memory>
 #include <mutex>
@@ -459,5 +461,8 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
 #endif
 
 } // namespace podio
+
+template <typename FromT, typename ToT>
+struct fmt::formatter<podio::LinkCollection<FromT, ToT>> : fmt::ostream_formatter {};
 
 #endif // PODIO_DETAIL_LINKCOLLECTIONIMPL_H
