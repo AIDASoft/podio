@@ -175,6 +175,37 @@ for (const auto& [reco, weight] : linkedRecs) {
 Alternatively, you can access the object via the `o` member and the weight via
 the `weight` member.
 
+## Formatting `Link`s and `LinkCollection`s
+
+`Link`s and `LinkCollection`s support the same `fmt::format` integration as
+generated datatypes (see [formatting](advanced_topics.md#formatting) for full details). In
+addition to the `d` (detailed, default) and `u` (user-defined) specifiers, they
+also support a `b` (brief) specifier for compact output:
+
+```cpp
+using TestLink = podio::Link<ExampleHit, ExampleCluster>;
+TestLink link = /* ... */;
+
+fmt::format("{}",   link);  // detailed: one member per line
+fmt::format("{:b}", link);  // brief:    "id | from.id to.id weight"  (single line)
+fmt::format("{:u}", link);  // user-defined: calls customFormat via ADL
+```
+
+For `LinkCollection`s, the brief format shows the collection type name, ID, and
+size on a single line, while the detailed format lists each element in a table.
+
+Since `Link` types live in the `podio` namespace, `customFormat` overloads for
+the `u` specifier must also be placed in the `podio` namespace:
+
+```cpp
+namespace podio {
+fmt::format_context::iterator customFormat(const TestLink& link,
+                                           fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "link(w={})", link.getWeight());
+}
+} // namespace podio
+```
+
 (implementation-details)=
 ## Implementation details
 
