@@ -9,9 +9,10 @@ if ROOT.gInterpreter.LoadFile("podio/LinkNavigator.h") != 0:
         "Could not load podio/LinkNavigator.h. Make sure it is available on ROOT_INCLUDE_PATH."
     )
 
-from ROOT import podio  # noqa: E402
+from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 
+# pylint: disable-next=invalid-name
 def LinkNavigator(link_collection):
     """Create a LinkNavigator for the given LinkCollection.
 
