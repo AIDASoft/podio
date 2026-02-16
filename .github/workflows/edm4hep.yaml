@@ -19,7 +19,7 @@ jobs:
       matrix:
         LCG: ["LCG_107/x86_64-el9-gcc13-opt",
               "dev4/x86_64-el9-gcc15-opt",
-              "dev3/x86_64-el9-clang16-opt"]
+              "dev3/x86_64-el9-clang19-opt"]
     steps:
       - uses: actions/checkout@v4
         with:
