@@ -15,8 +15,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
-#include <fmt/format.h>
 #include "podio/utilities/FormatHelpers.h"
+#include <fmt/format.h>
 
 #include <map>
 #include <set>
@@ -34,15 +34,15 @@ using TestLMutIter = podio::LinkMutableCollectionIterator<ExampleHit, ExampleClu
 
 // Custom format overloads for testing the 'u' format specifier
 namespace podio {
-fmt::format_context::iterator customFormat(const TestL& link, fmt::format_context& ctx) {
+fmt::format_context::iterator customPodioFormat(const TestL& link, fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "custom-link(w={})", link.getWeight());
 }
 
-fmt::format_context::iterator customFormat(const TestMutL& link, fmt::format_context& ctx) {
+fmt::format_context::iterator customPodioFormat(const TestMutL& link, fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "custom-mut-link(w={})", link.getWeight());
 }
 
-fmt::format_context::iterator customFormat(const TestLColl& coll, fmt::format_context& ctx) {
+fmt::format_context::iterator customPodioFormat(const TestLColl& coll, fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "custom-link-coll(n={})", coll.size());
 }
 } // namespace podio

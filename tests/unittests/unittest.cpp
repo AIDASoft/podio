@@ -68,18 +68,19 @@
 
 #include "podio/UserDataCollection.h"
 
-#include <fmt/format.h>
 #include "podio/utilities/FormatHelpers.h"
+
+#include <fmt/format.h>
 
 #include <sstream>
 
 // Custom format overloads for testing the 'u' format specifier.
 // These must be in the same namespace as the type for ADL to find them.
-fmt::format_context::iterator customFormat(const ExampleCluster& cluster, fmt::format_context& ctx) {
+fmt::format_context::iterator customPodioFormat(const ExampleCluster& cluster, fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "custom-cluster(e={})", cluster.energy());
 }
 
-fmt::format_context::iterator customFormat(const ExampleClusterCollection& coll, fmt::format_context& ctx) {
+fmt::format_context::iterator customPodioFormat(const ExampleClusterCollection& coll, fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "custom-cluster-coll(n={})", coll.size());
 }
 
@@ -210,7 +211,7 @@ TEST_CASE("Object formatting", "[basics][formatting]") {
   formatted = fmt::format("{:u}", immutableCluster);
   REQUIRE(formatted == "custom-cluster(e=42.5)");
 
-  // User-defined format fails for types without a customFormat overload.
+  // User-defined format fails for types without a customPodioFormat overload.
   // With compile-time format strings this would be a compile error; use
   // fmt::runtime to verify the runtime error path.
   auto hitForFmt = ExampleHit{};
@@ -751,7 +752,7 @@ TEST_CASE("Collection formatting", "[basics]") {
   formatted = fmt::format("{:u}", clusters);
   REQUIRE(formatted == "custom-cluster-coll(n=1)");
 
-  // User-defined format fails for collections without a customFormat overload.
+  // User-defined format fails for collections without a customPodioFormat overload.
   // With compile-time format strings this would be a compile error; use
   // fmt::runtime to verify the runtime error path.
   REQUIRE_THROWS_AS(fmt::format(fmt::runtime("{:u}"), components), fmt::format_error);

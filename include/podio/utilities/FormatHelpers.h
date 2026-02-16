@@ -10,23 +10,24 @@
 namespace podio {
 
 namespace detail {
-  /// Concept to detect if customFormat is defined for type T.
-  /// Uses unqualified lookup so that ADL can find overloads defined in the same
-  /// namespace as the type. Users should define their customFormat overloads in
-  /// the same namespace as their type (following the same pattern as std::swap).
+  /// Concept to detect if customPodioFormat is defined for type T. Uses
+  /// unqualified lookup so that ADL can find overloads defined in the same
+  /// namespace as the type. Users should define their customPodioFormat
+  /// overloads in the same namespace as their type (following the same pattern
+  /// as std::swap).
   template <typename T>
   concept HasCustomFormat = requires(const T& val, fmt::format_context& ctx) {
-    { customFormat(val, ctx) } -> std::same_as<fmt::format_context::iterator>;
+    { customPodioFormat(val, ctx) } -> std::same_as<fmt::format_context::iterator>;
   };
 
-  /// Dispatch helper: calls customFormat if available, otherwise throws a format
+  /// Dispatch helper: calls customPodioFormat if available, otherwise throws a format
   /// error.
   template <typename T>
   fmt::format_context::iterator dispatchCustomFormat(const T& val, fmt::format_context& ctx) {
     if constexpr (HasCustomFormat<T>) {
-      return customFormat(val, ctx);
+      return customPodioFormat(val, ctx);
     } else {
-      fmt::throw_format_error("Format specifier 'u' requires a defineCustomPodioFormat for this type");
+      fmt::throw_format_error("Format specifier 'u' requires a customPodioFormat for this type");
       return ctx.out(); // unreachable, silences warnings
     }
   }

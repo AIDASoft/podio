@@ -406,7 +406,7 @@ Generated objects and collections support the following format specifiers:
 | Specifier | Description |
 |-----------|-------------|
 | `d` (default or detailed) | Detailed format showing all data members and relations |
-| `u` (user defined) | User-defined format via the `customFormat` ADL customization point |
+| `u` (user defined) | User-defined format via the `customPodioFormat` ADL customization point |
 
 When no specifier is given, `d` is used.
 
@@ -430,21 +430,21 @@ tabular layout with one row per element.
 Objects that are not available (e.g. created via `makeEmpty()`) format as
 `[not available]`.
 
-### Custom Formatting with `customFormat`
+### Custom Formatting with `customPodioFormat`
 
-The `u` format specifier invokes a user-defined `customFormat` function that is
+The `u` format specifier invokes a user-defined `customPodioFormat` function that is
 found via [Argument-Dependent
 Lookup](https://en.cppreference.com/w/cpp/language/adl) (ADL). This follows the
-same pattern as `std::swap`: you define a free function named `customFormat` in
+same pattern as `std::swap`: you define a free function named `customPodioFormat` in
 the **same namespace as your type**, and the formatter will find it
 automatically.
 
 #### Function signature
 
-The `customFormat` function must have the following signature:
+The `customPodioFormat` function must have the following signature:
 
 ```cpp
-fmt::format_context::iterator customFormat(const YourType& value, fmt::format_context& ctx);
+fmt::format_context::iterator customPodioFormat(const YourType& value, fmt::format_context& ctx);
 ```
 
 It receives the object to format and an `fmt::format_context`, and must return
@@ -459,12 +459,12 @@ For a generated datatype `edm::Cluster` and its collection:
 // so that ADL can find them.
 namespace edm {
 
-fmt::format_context::iterator customFormat(const Cluster& cluster,
+fmt::format_context::iterator customPodioFormat(const Cluster& cluster,
                                            fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "Cluster(e={:.2f})", cluster.energy());
 }
 
-fmt::format_context::iterator customFormat(const ClusterCollection& coll,
+fmt::format_context::iterator customPodioFormat(const ClusterCollection& coll,
                                            fmt::format_context& ctx) {
   return fmt::format_to(ctx.out(), "Clusters(n={})", coll.size());
 }
@@ -484,23 +484,23 @@ fmt::format("{:u}", clusters);  // "Clusters(n=3)"
 The `fmt::formatter` for `MutableT` inherits from the `fmt::formatter` for the
 corresponding immutable type `T`. This means that when formatting a mutable
 object with `:u`, the mutable object is implicitly converted to its immutable
-counterpart, and the `customFormat` overload for the immutable type is called.
+counterpart, and the `customPodioFormat` overload for the immutable type is called.
 You do not need to provide separate overloads for mutable types.
 
 ```cpp
 MutableCluster mut{};
 mut.energy(42.5f);
-fmt::format("{:u}", mut);  // calls customFormat(const Cluster&, ...)
+fmt::format("{:u}", mut);  // calls customPodioFormat(const Cluster&, ...)
 ```
 
 #### Error handling
 
-If you use the `u` specifier on a type that has no `customFormat` overload
+If you use the `u` specifier on a type that has no `customPodioFormat` overload
 defined, you will get a **compile-time error** when using compile-time format
 strings (the default for `fmt::format`):
 
 ```cpp
-fmt::format("{:u}", someHit);  // compile error if no customFormat for Hit exists
+fmt::format("{:u}", someHit);  // compile error if no customPodioFormat for Hit exists
 ```
 
 The check uses `fmt::throw_format_error` inside the `constexpr` `parse()`
