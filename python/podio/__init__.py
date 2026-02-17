@@ -11,7 +11,7 @@ except ImportError:
     raise
 
 from .frame import Frame
-from .link_navigator import LinkNavigator, ReturnFrom, ReturnTo
+from .link_navigator import LinkNavigator, ReturnFrom, ReturnTo, LinkCollection
 from . import root_io, reading, version
 
 try:
@@ -32,6 +32,7 @@ __all__ = [
     "__version__",
     "Frame",
     "LinkNavigator",
+    "LinkCollection",
     "ReturnFrom",
     "ReturnTo",
     "root_io",

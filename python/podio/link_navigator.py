@@ -49,3 +49,4 @@ def LinkNavigator(link_collection):
 # Re-export tag variables for same-type link disambiguation
 ReturnFrom = podio.ReturnFrom
 ReturnTo = podio.ReturnTo
+LinkCollection = podio.LinkCollection
