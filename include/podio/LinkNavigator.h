@@ -1,9 +1,9 @@
 #ifndef PODIO_LINKNAVIGATOR_H
 #define PODIO_LINKNAVIGATOR_H
 
+#include <concepts>
 #include <map>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
