@@ -28,9 +28,9 @@ namespace detail::links {
   };
 
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom insted")]] ReturnFromTag {};
+  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom instead")]] ReturnFromTag {};
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo insted")]] ReturnToTag {};
+  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo instead")]] ReturnToTag {};
 } // namespace detail::links
 
 /// NOTE: This can go at the same time as the deprecated tags below are removed
@@ -42,12 +42,12 @@ namespace detail::links {
 /// Tag variable to select the lookup of *From* objects have links with a *To*
 /// object in podio::LinkNavigator::getLinked
 // INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
-[[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom insted")]] INLCONSTEXPR
+[[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom instead")]] INLCONSTEXPR
     detail::links::ReturnFromTag ReturnFrom;
 /// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
 // INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
-[[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo insted")]] INLCONSTEXPR
+[[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo instead")]] INLCONSTEXPR
     detail::links::ReturnToTag ReturnTo;
 #undef INLCONSTEXPR
 
