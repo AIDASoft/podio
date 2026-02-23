@@ -33,12 +33,20 @@ namespace detail::links {
   struct ReturnToTag {};
 } // namespace detail::links
 
+#if !defined(__CLING__)
+  #define INLCONSTEXPR inline constexpr
+#else
+  #define INLCONSTEXPR
+#endif
 /// Tag variable to select the lookup of *From* objects have links with a *To*
 /// object in podio::LinkNavigator::getLinked
-detail::links::ReturnFromTag ReturnFrom;
+// INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
+INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
 /// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
-detail::links::ReturnToTag ReturnTo;
+// INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
+INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
+#undef INLCONSTEXPR
 
 /// A helper class to more easily handle one-to-many links.
 ///
