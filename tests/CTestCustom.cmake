@@ -4,9 +4,6 @@
 
 # See: https://gitlab.kitware.com/cmake/community/-/wikis/doc/ctest/Testing-With-CTest#customizing-ctest
 
-# "Integration style tests" pretty much all have problems at the moment with any
-# sanitizer
-
 # We define some lists here to avoid having to repeat them below
 set(failing_with_address_sanitizer
   # Technically most of the write tests here succeed, but there is no point in
@@ -19,106 +16,22 @@ set(failing_with_address_sanitizer
   schema_evol:code_gen:datatypes_rename_relation:read_rntuple
 )
 
-set(failing_with_thread_sanitizer
-  # Technically most of the write tests here succeed, but there is no point in
-  # only running them, since they are practically only the setup step for the
-  # actual read tests
-  schema_evol:code_gen:components_new_member:write_old_rntuple
-  schema_evol:code_gen:components_new_member:read_rntuple
-  schema_evol:code_gen:datatypes_new_member:write_old_rntuple
-  schema_evol:code_gen:datatypes_new_member:read_rntuple
-  schema_evol:code_gen:datatypes_new_member:read_garbage
-  schema_evol:code_gen:no_change:write_old_rntuple
-  schema_evol:code_gen:no_change:read_rntuple
-  schema_evol:code_gen:array_component_new_member:write_old_rntuple
-  schema_evol:code_gen:array_component_new_member:read_rntuple
-  schema_evol:code_gen:implicit_floating_point_change:write_old_rntuple
-  schema_evol:code_gen:implicit_floating_point_change:read_rntuple
-
-  # The following two work with clang19, but not gcc15
-  schema_evol:code_gen:datatypes_remove_type:write_old_rntuple
-  schema_evol:code_gen:datatypes_remove_type:read_rntuple
-  # These work with gcc15 but not clang19
-  schema_evol:code_gen:datatypes_rename_relation:write_old_rntuple
-  schema_evol:code_gen:datatypes_rename_relation:read_rntuple
-
-  schema_evol:code_gen:multi_schema_component_new_member:write_old_rntuple
-  schema_evol:code_gen:multi_schema_component_new_member:read_rntuple
-  schema_evol:code_gen:multi_schema_datatypes_new_member:write_old_rntuple
-  schema_evol:code_gen:multi_schema_datatypes_new_member:read_rntuple
-  schema_evol:code_gen:drop_component:write_old_rntuple
-  schema_evol:code_gen:drop_component:read_rntuple
-  schema_evol:code_gen:multi_schema_drop_component:write_oldest_rntuple
-  schema_evol:code_gen:multi_schema_drop_component:write_old_rntuple
-  schema_evol:code_gen:multi_schema_drop_component:read_rntuple
-)
-
 # This will only apply for clang based builds and is currently the superset of
-# the two above
+# the address sanitizer failures
 set(failing_with_undefined_sanitizer
   ${failing_with_address_sanitizer}
-  ${failing_with_thread_sanitizer}
 )
 
 if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQUAL ""))
-  set(CTEST_CUSTOM_TESTS_IGNORE
-    ${CTEST_CUSTOM_TESTS_IGNORE}
-
-    write_python_frame_root
-    read_python_frame_root
-
-    write_python_empty_colls_root
-
-    param_reading_rdataframe
-
-    read_python_multiple
-
-    write_python_frame_sio
-    read_python_frame_sio
-
-    write_python_frame_rntuple
-    read_python_frame_rntuple
-
-    pyunittest
-    test_strace
-
-    podio-dump-legacy_root_v00-16-06
-    podio-dump-legacy_root-detailed_v00-16-06
-
-    podio-dump-legacy_sio_v00-16-06
-    podio-dump-legacy_sio-detailed_v00-16-06
-
-    datamodel_def_store_roundtrip_root
-    datamodel_def_store_roundtrip_root_extension
-
-    read_with_rdatasource_root
-    read_python_with_rdatasource_root
-  )
-
-  foreach(version in @root_legacy_test_versions@)
-      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
-      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
-  endforeach()
-
-  foreach(version in @sio_legacy_test_versions@)
-      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_sio_${version})
-      list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_sio_${version})
-  endforeach()
 
   # ostream_operator is working with Memory sanitizer (at least locally)
   if("@USE_SANITIZER@" MATCHES "Memory(WithOrigin)?")
     list(REMOVE_ITEM CTEST_CUSTOM_TESTS_IGNORE ostream_operator)
   endif()
 
-  # There is still an (indirect) leak somewhere in the collection buffer
-  # machinery before they hit the collections.
-  # See also https://github.com/AIDASoft/podio/issues/506
   if("@USE_SANITIZER@" MATCHES "Address")
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
-
-      read_frame_legacy_sio
-      read_and_write_frame_sio
 
       ${failing_with_address_sanitizer}
   )
@@ -128,21 +41,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
     set(CTEST_CUSTOM_TESTS_IGNORE
       ${CTEST_CUSTOM_TESTS_IGNORE}
 
-      read_interface_root
-
       read_rntuple
-      read_interface_rntuple
-      read_interface_default_rntuple
-      selected_colls_roundtrip_rntuple
-
-      podio-dump-rntuple
-      podio-dump-detailed-rntuple
-
-      datamodel_def_store_roundtrip_rntuple
-      datamodel_def_store_roundtrip_rntuple_extension
-
-      ${failing_with_thread_sanitizer}
-    )
+  )
   endif()
 
   if("@USE_SANITIZER@" MATCHES "Undefined" AND "@CMAKE_CXX_COMPILER_ID@" STREQUAL "Clang" AND @CMAKE_CXX_COMPILER_VERSION@ VERSION_LESS_EQUAL "20.0.0")
@@ -174,6 +74,31 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_interface_default_rntuple
       selected_colls_roundtrip_rntuple
 
+      # Tests failing due to UBSAN DEADLYSIGNAL in
+      # ROOT::Detail::TCollectionProxyInfo::Generate
+      read_with_rdatasource_root
+      read_python_with_rdatasource_root
+      param_reading_rdataframe
+
+      read_python_multiple
+      write_python_empty_colls_root
+      write_python_frame_root
+      read_python_frame_root
+      write_python_frame_rntuple
+      read_python_frame_rntuple
+      write_python_frame_sio
+      read_python_frame_sio
+      pyunittest
+
+      datamodel_def_store_roundtrip_root
+      datamodel_def_store_roundtrip_root_extension
+
+      # podio-dump of legacy files also triggers the podioDict UBSAN crash
+      podio-dump-legacy_root_v00-16-06
+      podio-dump-legacy_root-detailed_v00-16-06
+      podio-dump-legacy_sio_v00-16-06
+      podio-dump-legacy_sio-detailed_v00-16-06
+
       podio-dump-rntuple
       podio-dump-detailed-rntuple
 
@@ -200,6 +125,15 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:datatypes_remove_type:write_old
       schema_evol:code_gen:datatypes_remove_type:read
 
+      schema_evol:code_gen:no_change:write_old_rntuple
+      schema_evol:code_gen:no_change:read_rntuple
+      schema_evol:code_gen:drop_component:write_old_rntuple
+      schema_evol:code_gen:drop_component:read_rntuple
+      schema_evol:code_gen:multi_schema_drop_component:write_old_rntuple
+      schema_evol:code_gen:multi_schema_drop_component:write_oldest_rntuple
+      schema_evol:code_gen:multi_schema_drop_component:read_rntuple
+      schema_evol:code_gen:implicit_floating_point_change:write_old_rntuple
+
       schema_evol:code_gen:multi_schema_component_new_member:write_oldest
       schema_evol:code_gen:multi_schema_component_new_member:write_old
       schema_evol:code_gen:multi_schema_component_new_member:read
@@ -207,12 +141,12 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:multi_schema_datatypes_new_member:write_old
       schema_evol:code_gen:multi_schema_datatypes_new_member:read
 
-  	  schema_evol:code_gen:multi_schema_components_rename_member:write_old
-  	  schema_evol:code_gen:multi_schema_components_rename_member:write_oldest
-  	  schema_evol:code_gen:multi_schema_components_rename_member:read
+      schema_evol:code_gen:multi_schema_components_rename_member:write_old
+      schema_evol:code_gen:multi_schema_components_rename_member:write_oldest
+      schema_evol:code_gen:multi_schema_components_rename_member:read
 
-  	  schema_evol:code_gen:multi_schema_component_new_member:write_oldest_rntuple
-  	  schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest_rntuple
+      schema_evol:code_gen:multi_schema_component_new_member:write_oldest_rntuple
+      schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest_rntuple
 
       schema_evol:code_gen:drop_component:write_old
       schema_evol:code_gen:drop_component:read
@@ -220,8 +154,28 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:multi_schema_drop_component:write_old
       schema_evol:code_gen:multi_schema_drop_component:read
 
+      schema_evol:code_gen:datatypes_new_member:write_old_rntuple
+      schema_evol:code_gen:components_new_member:write_old_rntuple
+      schema_evol:code_gen:array_component_new_member:write_old_rntuple
+      schema_evol:code_gen:datatypes_remove_type:write_old_rntuple
+      schema_evol:code_gen:multi_schema_component_new_member:write_old_rntuple
+      schema_evol:code_gen:multi_schema_datatypes_new_member:write_old_rntuple
+
+      schema_evol:code_gen:implicit_floating_point_change:read_rntuple
+      schema_evol:code_gen:datatypes_new_member:read_rntuple
+      schema_evol:code_gen:components_new_member:read_rntuple
+      schema_evol:code_gen:array_component_new_member:read_rntuple
+      schema_evol:code_gen:datatypes_remove_type:read_rntuple
+      schema_evol:code_gen:multi_schema_component_new_member:read_rntuple
+      schema_evol:code_gen:multi_schema_datatypes_new_member:read_rntuple
+
+
       ${failing_with_undefined_sanitizer}
     )
+    foreach(version in @root_legacy_test_versions@)
+        list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_root_${version})
+        list(APPEND CTEST_CUSTOM_TESTS_IGNORE read_frame_legacy_root_${version})
+    endforeach()
   endif()
 
 endif()

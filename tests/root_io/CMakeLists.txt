@@ -59,11 +59,11 @@ set_tests_properties(
 )
 
 add_test(NAME read_python_multiple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_multiple.py)
-PODIO_SET_TEST_ENV(read_python_multiple)
+PODIO_SET_TEST_ENV(read_python_multiple PYTHON)
 set_tests_properties(read_python_multiple PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
 
 add_test(NAME write_python_empty_colls_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_empty_collections.py empty_colls_frame_with_py.root)
-PODIO_SET_TEST_ENV(write_python_empty_colls_root)
+PODIO_SET_TEST_ENV(write_python_empty_colls_root PYTHON)
 set_tests_properties(write_python_empty_colls_root PROPERTIES FIXTURES_SETUP podio_write_python_empty_colls_root_fixture)
 
 if(ENABLE_RNTUPLE)
@@ -103,24 +103,24 @@ endforeach()
 #--- Write via python and the ROOT backend and see if we can read it back in in
 #--- c++
 add_test(NAME write_python_frame_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.root root_io.Writer)
-PODIO_SET_TEST_ENV(write_python_frame_root)
+PODIO_SET_TEST_ENV(write_python_frame_root PYTHON)
 set_tests_properties(write_python_frame_root PROPERTIES FIXTURES_SETUP podio_write_python_root_fixture)
 set_tests_properties(read_python_frame_root PROPERTIES FIXTURES_REQUIRED podio_write_python_root_fixture)
 
 if (ENABLE_RNTUPLE)
   add_test(NAME write_python_frame_rntuple COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py_rntuple.root root_io.RNTupleWriter)
-  PODIO_SET_TEST_ENV(write_python_frame_rntuple)
+  PODIO_SET_TEST_ENV(write_python_frame_rntuple PYTHON)
   set_tests_properties(write_python_frame_rntuple PROPERTIES FIXTURES_SETUP podio_write_python_rntuple_fixture)
 
   set_tests_properties(read_python_frame_rntuple PROPERTIES FIXTURES_REQUIRED podio_write_python_rntuple_fixture)
 endif()
 
 add_test(NAME param_reading_rdataframe COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/param_reading_rdataframe.py example_frame.root)
-PODIO_SET_TEST_ENV(param_reading_rdataframe)
+PODIO_SET_TEST_ENV(param_reading_rdataframe PYTHON)
 set_tests_properties(param_reading_rdataframe PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
 
 if(ENABLE_DATASOURCE)
   add_test(NAME read_python_with_rdatasource_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_datasource.py)
-  PODIO_SET_TEST_ENV(read_python_with_rdatasource_root)
+  PODIO_SET_TEST_ENV(read_python_with_rdatasource_root PYTHON)
   set_tests_properties(read_python_with_rdatasource_root PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
 endif()

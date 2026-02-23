@@ -1,0 +1,10 @@
+# Affecting tests with RNTuples
+race:ROOT::Internal::RCluster::Adopt
+race:ROOT::Internal::RCluster::~RCluster
+race:ROOT::Internal::RClusterPool::WaitFor
+race:ROOT::Internal::RPageSourceFile::PrepareSingleCluster
+race:ROOT::Internal::RRawFileUnix::ReadAtImpl
+race:libROOTNTuple.so
+
+deadlock:TROOT::InitInterpreter
+deadlock:llvm::orc::BasicIRLayerMaterializationUnit

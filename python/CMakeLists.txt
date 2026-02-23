@@ -38,9 +38,9 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/templates
 
 IF (BUILD_TESTING)
   add_test( NAME pyunittest COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio)
-  PODIO_SET_TEST_ENV(pyunittest)
+  PODIO_SET_TEST_ENV(pyunittest PYTHON)
   add_test( NAME pyunittest_gen COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio_gen)
-  PODIO_SET_TEST_ENV(pyunittest_gen)
+  PODIO_SET_TEST_ENV(pyunittest_gen PYTHON)
   find_program(strace_program
     NAMES strace
     DOC "strace program to trace system calls"

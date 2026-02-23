@@ -10,11 +10,18 @@ ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_member)
 get_property(test_env TEST schema_evol:code_gen:datatypes_new_member:read PROPERTY ENVIRONMENT)
 # Since it may crash, the test has to be wrapped with ${CMAKE_COMMAND} -E env so that it can still pass
 add_test(NAME schema_evol:code_gen:datatypes_new_member:read_garbage COMMAND ${CMAKE_COMMAND} -E env $<TARGET_FILE:read_datatypes_new_member>)
+# Under the thread sanitizer, the message "signal-unsafe call inside of a
+# signal" may appear
+if(USE_SANITIZER MATCHES "Thread")
+  set(_read_garbage_pass_re "Bad data;signal-unsafe call inside of a signal|Bad data;Segmentation fault")
+else()
+  set(_read_garbage_pass_re "Bad data;Segmentation fault")
+endif()
 set_tests_properties(schema_evol:code_gen:datatypes_new_member:read_garbage
       PROPERTIES
       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/datatypes_new_member
       ENVIRONMENT "${test_env};ROOT_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests"
-      PASS_REGULAR_EXPRESSION "Bad data;Segmentation fault"
+      PASS_REGULAR_EXPRESSION "${_read_garbage_pass_re}"
       FIXTURES_REQUIRED datatypes_new_member_w_old
 )
 ADD_SCHEMA_EVOLUTION_TEST(implicit_floating_point_change)
