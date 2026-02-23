@@ -622,6 +622,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#podio.frame_iterator.FrameCategoryIterator"><code class="docutils literal notranslate"><span class="pre">FrameCategoryIterator</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio.link_navigator">podio.link_navigator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio.link_navigator.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio.reading">podio.reading module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.reading.RootFileFormat"><code class="docutils literal notranslate"><span class="pre">RootFileFormat</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio.reading.get_reader"><code class="docutils literal notranslate"><span class="pre">get_reader()</span></code></a></li>
@@ -652,6 +656,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1279,6 +1284,38 @@ all available collections will by default)</p></li>
 </dd></dl>
 
 </section>
+<section id="module-podio.link_navigator">
+<span id="podio-link-navigator-module"></span><h2>podio.link_navigator module<a class="headerlink" href="#module-podio.link_navigator" title="Link to this heading"></a></h2>
+<p>Module for the python bindings of the podio::LinkNavigator</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="podio.link_navigator.LinkNavigator">
+<span class="sig-prename descclassname"><span class="pre">podio.link_navigator.</span></span><span class="sig-name descname"><span class="pre">LinkNavigator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_collection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.link_navigator.LinkNavigator" title="Link to this definition"></a></dt>
+<dd><p>Create a LinkNavigator for the given LinkCollection.</p>
+<p>This factory function automatically determines the collection type and
+instantiates the correct C++ LinkNavigator template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_collection</strong> – A podio LinkCollection instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The instantiated navigator</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>podio::LinkNavigator[LinkCollectionType]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the passed object is not a LinkCollection</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">podio</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinkNavigator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nav</span> <span class="o">=</span> <span class="n">LinkNavigator</span><span class="p">(</span><span class="n">my_link_collection</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linked_objects</span> <span class="o">=</span> <span class="n">nav</span><span class="o">.</span><span class="n">getLinked</span><span class="p">(</span><span class="n">some_object</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
 <section id="module-podio.reading">
 <span id="podio-reading-module"></span><h2>podio.reading module<a class="headerlink" href="#module-podio.reading" title="Link to this heading"></a></h2>
 <p>Module for general reading functionality.</p>
@@ -1739,6 +1776,34 @@ pretty much face-value and there are only limited checks for this.</p></li>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="podio.LinkNavigator">
+<span class="sig-prename descclassname"><span class="pre">podio.</span></span><span class="sig-name descname"><span class="pre">LinkNavigator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">link_collection</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.LinkNavigator" title="Link to this definition"></a></dt>
+<dd><p>Create a LinkNavigator for the given LinkCollection.</p>
+<p>This factory function automatically determines the collection type and
+instantiates the correct C++ LinkNavigator template.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>link_collection</strong> – A podio LinkCollection instance</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The instantiated navigator</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>podio::LinkNavigator[LinkCollectionType]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>TypeError</strong> – If the passed object is not a LinkCollection</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">podio</span><span class="w"> </span><span class="kn">import</span> <span class="n">LinkNavigator</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">nav</span> <span class="o">=</span> <span class="n">LinkNavigator</span><span class="p">(</span><span class="n">my_link_collection</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">linked_objects</span> <span class="o">=</span> <span class="n">nav</span><span class="o">.</span><span class="n">getLinked</span><span class="p">(</span><span class="n">some_object</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>

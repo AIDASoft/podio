@@ -619,6 +619,10 @@
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.frame_iterator.FrameCategoryIterator"><code class="docutils literal notranslate"><span class="pre">FrameCategoryIterator</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.link_navigator">podio.link_navigator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.link_navigator.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.reading">podio.reading module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.reading.RootFileFormat"><code class="docutils literal notranslate"><span class="pre">RootFileFormat</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.reading.get_reader"><code class="docutils literal notranslate"><span class="pre">get_reader()</span></code></a></li>
@@ -649,6 +653,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1116,6 +1121,12 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="py_api/podio.html#podio.LinkNavigator">LinkNavigator() (in module podio)</a>
+
+      <ul>
+        <li><a href="py_api/podio.html#podio.link_navigator.LinkNavigator">(in module podio.link_navigator)</a>
+</li>
+      </ul></li>
       <li><a href="py_api/podio.pythonizations.html#podio.pythonizations.load_pythonizations">load_pythonizations() (in module podio.pythonizations)</a>
 </li>
   </ul></td>
@@ -1155,6 +1166,8 @@
         <li><a href="py_api/podio.html#module-podio.frame">podio.frame</a>
 </li>
         <li><a href="py_api/podio.html#module-podio.frame_iterator">podio.frame_iterator</a>
+</li>
+        <li><a href="py_api/podio.html#module-podio.link_navigator">podio.link_navigator</a>
 </li>
         <li><a href="py_api/podio.pythonizations.html#module-podio.pythonizations">podio.pythonizations</a>
 </li>
@@ -1291,6 +1304,13 @@
 
       <ul>
         <li><a href="py_api/podio.html#module-podio.frame_iterator">module</a>
+</li>
+      </ul></li>
+      <li>
+    podio.link_navigator
+
+      <ul>
+        <li><a href="py_api/podio.html#module-podio.link_navigator">module</a>
 </li>
       </ul></li>
       <li>
@@ -1887,7 +1907,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0EN5podio13LinkNavigatorE">podio::LinkNavigator (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio13LinkNavigatorE">[1]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT">podio::LinkNavigator::getLinked (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT">[1]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE">[2]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT">[5]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE">[6]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE">[7]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERK5FromT">podio::LinkNavigator::getLinked (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERKN5FromT12mutable_typeE">[1]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERK3ToT">[2]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERKN3ToT12mutable_typeE">[3]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE">[4]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE">[5]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN3ToT12mutable_typeEN5podio6detail5links13ReturnFromTagE">[6]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN5FromT12mutable_typeEN5podio6detail5links11ReturnToTagE">[7]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERK5FromT">[8]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERKN5FromT12mutable_typeE">[9]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERK3ToT">[10]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERKN3ToT12mutable_typeE">[11]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE">[12]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE">[13]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN3ToT12mutable_typeEN5podio6detail5links13ReturnFromTagE">[14]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN5FromT12mutable_typeEN5podio6detail5links11ReturnToTagE">[15]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator">podio::LinkNavigator::LinkNavigator (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT">[1]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator">[2]</a>, <a href="cpp_api/class/classpodio_1_1_link_navigator.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorEv">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK13LinkNavigator">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERK9LinkCollT">[5]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorERR13LinkNavigator">[6]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigator13LinkNavigatorEv">[7]</a>
 </li>
@@ -2081,12 +2101,12 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4I0EN5podio13RelationRangeE">podio::RelationRange (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio13RelationRangeE">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4NK5podio13RelationRange2atE6size_t">podio::RelationRange::at (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RelationRange2atE6size_t">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4NK5podio13RelationRange4backEv">podio::RelationRange::back (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RelationRange4backEv">[1]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4NK5podio13RelationRange5beginEv">podio::RelationRange::begin (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RelationRange5beginEv">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4NK5podio13RelationRange6cbeginEv">podio::RelationRange::cbegin (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RelationRange6cbeginEv">[1]</a>
@@ -2108,10 +2128,6 @@
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType">podio::RelationRange::RelationRange (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4N5podio13RelationRange13RelationRangeEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RelationRange13RelationRangeEv">[3]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_relation_range.html#_CPPv4NK5podio13RelationRange4sizeEv">podio::RelationRange::size (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio13RelationRange4sizeEv">[1]</a>
-</li>
-      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10ReturnFromE">podio::ReturnFrom (C++ member)</a>
-</li>
-      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio8ReturnToE">podio::ReturnTo (C++ member)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_r_n_tuple_reader.html#_CPPv4N5podio13RNTupleReaderE">podio::RNTupleReader (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio13RNTupleReaderE">[1]</a>
 </li>

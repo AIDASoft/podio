@@ -622,6 +622,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.frame_iterator.FrameCategoryIterator"><code class="docutils literal notranslate"><span class="pre">FrameCategoryIterator</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#module-podio.link_navigator">podio.link_navigator module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.link_navigator.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#module-podio.reading">podio.reading module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.reading.RootFileFormat"><code class="docutils literal notranslate"><span class="pre">RootFileFormat</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.reading.get_reader"><code class="docutils literal notranslate"><span class="pre">get_reader()</span></code></a></li>
@@ -652,6 +656,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#module-podio">Module contents</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.Frame"><code class="docutils literal notranslate"><span class="pre">Frame</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.LinkNavigator"><code class="docutils literal notranslate"><span class="pre">LinkNavigator()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -836,8 +841,6 @@
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE"><code class="docutils literal notranslate"><span class="pre">operator&lt;&lt;()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">makeWriter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0EN5podio26isSupportedGenericDataTypeE"><code class="docutils literal notranslate"><span class="pre">isSupportedGenericDataType</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ReturnFromE"><code class="docutils literal notranslate"><span class="pre">ReturnFrom</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio8ReturnToE"><code class="docutils literal notranslate"><span class="pre">ReturnTo</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14CollectionBaseE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionBase</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14CollectionBase14CollectionBaseERK14CollectionBase"><code class="docutils literal notranslate"><span class="pre">CollectionBase()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14CollectionBaseaSERK14CollectionBase"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
@@ -1198,9 +1201,13 @@
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigatoraSERR13LinkNavigator"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13LinkNavigatorD0Ev"><code class="docutils literal notranslate"><span class="pre">~LinkNavigator()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK3ToTN5podio6detail5links13ReturnFromTagE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromT3ToUEEENSt6vectorI14WeightedObjectI5FromTEEEEERK3ToT"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN3ToT12mutable_typeEN5podio6detail5links13ReturnFromTagE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERK3ToT"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI5FromTEEERKN3ToT12mutable_typeE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERK5FromTN5podio6detail5links11ReturnToTagE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt11enable_if_tIXntNSt9is_same_vI5FromU3ToTEEENSt6vectorI14WeightedObjectI3ToTEEEEERK5FromT"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio13LinkNavigator9getLinkedERKN5FromT12mutable_typeEN5podio6detail5links11ReturnToTagE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERK5FromT"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0ENK5podio13LinkNavigator9getLinkedENSt6vectorI14WeightedObjectI3ToTEEERKN5FromT12mutable_typeE"><code class="docutils literal notranslate"><span class="pre">getLinked()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio8ObjectIDE"><code class="docutils literal notranslate"><span class="pre">podio::ObjectID</span></code></a><ul>
