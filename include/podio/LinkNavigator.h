@@ -28,11 +28,12 @@ namespace detail::links {
   };
 
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct ReturnFromTag {};
+  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom insted")]] ReturnFromTag {};
   /// Simple struct tag for overload selection in LinkNavigator below
-  struct ReturnToTag {};
+  struct [[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo insted")]] ReturnToTag {};
 } // namespace detail::links
 
+/// NOTE: This can go at the same time as the deprecated tags below are removed
 #if !defined(__CLING__)
   #define INLCONSTEXPR inline constexpr
 #else
@@ -41,11 +42,13 @@ namespace detail::links {
 /// Tag variable to select the lookup of *From* objects have links with a *To*
 /// object in podio::LinkNavigator::getLinked
 // INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
-INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
+[[deprecated("The tagged versions of getLinked are deprecated use getLinkedFrom insted")]] INLCONSTEXPR
+    detail::links::ReturnFromTag ReturnFrom;
 /// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
 // INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
-INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
+[[deprecated("The tagged versions of getLinked are deprecated use getLinkedTo insted")]] INLCONSTEXPR
+    detail::links::ReturnToTag ReturnTo;
 #undef INLCONSTEXPR
 
 /// A helper class to more easily handle one-to-many links.
@@ -92,7 +95,7 @@ public:
   ///
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
-  std::vector<WeightedObject<FromT>> getLinked(const ToT& object, podio::detail::links::ReturnFromTag) const {
+  std::vector<WeightedObject<FromT>> getLinkedFrom(const ToT& object) const {
     const auto& [begin, end] = m_to2from.equal_range(object);
     std::vector<WeightedObject<FromT>> result;
     result.reserve(std::distance(begin, end));
@@ -103,9 +106,15 @@ public:
     return result;
   }
 
+  [[deprecated("Use getLinkedFrom instead")]]
+  std::vector<WeightedObject<FromT>> getLinked(const ToT& object, podio::detail::links::ReturnFromTag) const {
+    return getLinkedFrom(object);
+  }
+
+  [[deprecated("Use getLinkedFrom instead")]]
   std::vector<WeightedObject<FromT>> getLinked(const typename ToT::mutable_type& object,
                                                podio::detail::links::ReturnFromTag) const {
-    return getLinked(ToT(object), podio::ReturnFrom);
+    return getLinkedFrom(ToT(object));
   }
 
   /// Get all the *From* objects and weights that have links with the passed
@@ -122,15 +131,14 @@ public:
   template <typename ToU = ToT>
     requires(!std::same_as<FromT, ToU>)
   std::vector<WeightedObject<FromT>> getLinked(const ToT& object) const {
-
-    return getLinked(object, podio::ReturnFrom);
+    return getLinkedFrom(object);
   }
 
   /// Overload for cppyy that makes things work with mutable handles
   template <typename ToU = ToT>
     requires(!std::same_as<FromT, ToU>)
   std::vector<WeightedObject<FromT>> getLinked(const typename ToT::mutable_type& object) const {
-    return getLinked(ToT(object), podio::ReturnFrom);
+    return getLinkedFrom(ToT(object));
   }
 
   /// Get all the *To* objects and weights that have links with the passed
@@ -148,7 +156,7 @@ public:
   ///
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
-  std::vector<WeightedObject<ToT>> getLinked(const FromT& object, podio::detail::links::ReturnToTag) const {
+  std::vector<WeightedObject<ToT>> getLinkedTo(const FromT& object) const {
     const auto& [begin, end] = m_from2to.equal_range(object);
     std::vector<WeightedObject<ToT>> result;
     result.reserve(std::distance(begin, end));
@@ -159,9 +167,15 @@ public:
     return result;
   }
 
+  [[deprecated("Use getLinkedTo instead")]]
+  std::vector<WeightedObject<ToT>> getLinked(const FromT& object, podio::detail::links::ReturnToTag) const {
+    return getLinkedTo(object);
+  }
+
+  [[deprecated("Use getLinkedTo instead")]]
   std::vector<WeightedObject<ToT>> getLinked(const typename FromT::mutable_type& object,
                                              podio::detail::links::ReturnToTag) const {
-    return getLinked(FromT(object), podio::ReturnTo);
+    return getLinkedTo(FromT(object));
   }
 
   /// Get all the *To* objects and weights that have links with the passed
@@ -178,14 +192,14 @@ public:
   template <typename FromU = FromT>
     requires(!std::same_as<FromU, ToT>)
   std::vector<WeightedObject<ToT>> getLinked(const FromT& object) const {
-    return getLinked(object, podio::ReturnTo);
+    return getLinkedTo(object);
   }
 
   /// Overload for cppyy that makes things work with mutable handles
   template <typename FromU = FromT>
     requires(!std::same_as<FromU, ToT>)
   std::vector<WeightedObject<ToT>> getLinked(const typename FromT::mutable_type& object) const {
-    return getLinked(FromT(object), podio::ReturnTo);
+    return getLinkedTo(FromT(object));
   }
 
 private:
