@@ -11,6 +11,7 @@ except ImportError:
     raise
 
 from .frame import Frame
+from .link_navigator import LinkNavigator, ReturnFrom, ReturnTo, LinkCollection
 from . import root_io, reading, version
 
 try:
@@ -27,4 +28,16 @@ try:
 except ImportError:
     pass
 
-__all__ = ["__version__", "Frame", "root_io", "sio_io", "reading", "data_source", "version"]
+__all__ = [
+    "__version__",
+    "Frame",
+    "LinkNavigator",
+    "LinkCollection",
+    "ReturnFrom",
+    "ReturnTo",
+    "root_io",
+    "sio_io",
+    "reading",
+    "data_source",
+    "version",
+]

@@ -1,9 +1,9 @@
 #ifndef PODIO_LINKNAVIGATOR_H
 #define PODIO_LINKNAVIGATOR_H
 
+#include <concepts>
 #include <map>
 #include <tuple>
-#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -33,12 +33,20 @@ namespace detail::links {
   struct ReturnToTag {};
 } // namespace detail::links
 
+#if !defined(__CLING__)
+  #define INLCONSTEXPR inline constexpr
+#else
+  #define INLCONSTEXPR
+#endif
 /// Tag variable to select the lookup of *From* objects have links with a *To*
 /// object in podio::LinkNavigator::getLinked
-inline constexpr detail::links::ReturnFromTag ReturnFrom;
+// INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
+INLCONSTEXPR detail::links::ReturnFromTag ReturnFrom;
 /// Tag variable to select the lookup of *To* objects that have links with a
 /// *From* object in podio::LinkNavigator::getLinked
-inline constexpr detail::links::ReturnToTag ReturnTo;
+// INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
+INLCONSTEXPR detail::links::ReturnToTag ReturnTo;
+#undef INLCONSTEXPR
 
 /// A helper class to more easily handle one-to-many links.
 ///
@@ -95,6 +103,11 @@ public:
     return result;
   }
 
+  std::vector<WeightedObject<FromT>> getLinked(const typename ToT::mutable_type& object,
+                                               podio::detail::links::ReturnFromTag) const {
+    return getLinked(ToT(object), podio::ReturnFrom);
+  }
+
   /// Get all the *From* objects and weights that have links with the passed
   /// object
   ///
@@ -107,8 +120,17 @@ public:
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
   template <typename ToU = ToT>
-  std::enable_if_t<!std::is_same_v<FromT, ToU>, std::vector<WeightedObject<FromT>>> getLinked(const ToT& object) const {
+    requires(!std::same_as<FromT, ToU>)
+  std::vector<WeightedObject<FromT>> getLinked(const ToT& object) const {
+
     return getLinked(object, podio::ReturnFrom);
+  }
+
+  /// Overload for cppyy that makes things work with mutable handles
+  template <typename ToU = ToT>
+    requires(!std::same_as<FromT, ToU>)
+  std::vector<WeightedObject<FromT>> getLinked(const typename ToT::mutable_type& object) const {
+    return getLinked(ToT(object), podio::ReturnFrom);
   }
 
   /// Get all the *To* objects and weights that have links with the passed
@@ -137,6 +159,11 @@ public:
     return result;
   }
 
+  std::vector<WeightedObject<ToT>> getLinked(const typename FromT::mutable_type& object,
+                                             podio::detail::links::ReturnToTag) const {
+    return getLinked(FromT(object), podio::ReturnTo);
+  }
+
   /// Get all the *To* objects and weights that have links with the passed
   /// object
   ///
@@ -149,8 +176,16 @@ public:
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
   template <typename FromU = FromT>
-  std::enable_if_t<!std::is_same_v<FromU, ToT>, std::vector<WeightedObject<ToT>>> getLinked(const FromT& object) const {
+    requires(!std::same_as<FromU, ToT>)
+  std::vector<WeightedObject<ToT>> getLinked(const FromT& object) const {
     return getLinked(object, podio::ReturnTo);
+  }
+
+  /// Overload for cppyy that makes things work with mutable handles
+  template <typename FromU = FromT>
+    requires(!std::same_as<FromU, ToT>)
+  std::vector<WeightedObject<ToT>> getLinked(const typename FromT::mutable_type& object) const {
+    return getLinked(FromT(object), podio::ReturnTo);
   }
 
 private:
