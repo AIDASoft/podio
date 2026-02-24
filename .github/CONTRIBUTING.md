@@ -14,7 +14,7 @@ provided by an LLM or similar tool must be thoroughly reviewed by yourself.  Als
 please understand that it might take some time to properly review your PR as the
 time of the maintainers is a limited resource.
 
-We are happy if you create pull-requests also if you feature is not ready, yet.
+We are happy if you create `draft` pull-requests also if you feature is not ready, yet.
 Please mark them as such by adding `[WIP]` to the start of the title. The purpose
 of this is, for example, that you want to let other people know you are working
 on a given issue. For these work-in-progress pull-request, we propose to have a
