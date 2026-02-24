@@ -33,8 +33,5 @@ in your pull-request and commit messages with `#[issue-id]`.
 ## Git workflow
 
 For an explanation of the git(hub) workflow please see
-[here](https://github.com/andresailer/tutorial#working-updating-pushing).  We
-basically follow the ["No Switch
-Yard"](https://root.cern.ch/suggested-work-flow-distributed-projects-nosy)
-workflow
-
+[here](https://github.com/andresailer/tutorial#working-updating-pushing).
+Please rebase your feature branches instead of merging from upstream.
