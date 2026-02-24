@@ -8,6 +8,12 @@ changed. Please include a short description in the
 BEGINRELEASENOTES/ENDRELEASENOTES block, which will appear in the
 doc/ReleaseNotes.md, once a new tag is made.
 
+While we welcome all contributions big or small, you must be able to understand
+all changes done in the code yourself.  That means in particular any change
+provided by an LLM or similar tool must be thoroughly reviewed by yourself.  Also
+please understand that it might take some time to properly review your PR as the
+time of the maintainers is a limited resource.
+
 We are happy if you create pull-requests also if you feature is not ready, yet.
 Please mark them as such by adding `[WIP]` to the start of the title. The purpose
 of this is, for example, that you want to let other people know you are working
