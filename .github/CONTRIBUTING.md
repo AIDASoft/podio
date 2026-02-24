@@ -23,7 +23,7 @@ check list of things that still need to be done.
 ## Issue tracking
 
 Use the GitHub issue tracker. Reference the issues that you are working on.
-If you notice an issue, consider first creating an issue and then refering to it
+If you notice an issue, consider first creating an issue and then referring to it
 in your pull-request and commit messages with `#[issue-id]`.
 
 ## Coding Conventions
