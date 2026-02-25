@@ -17,7 +17,8 @@ time of the maintainers is a limited resource.
 We are happy if you create `draft` pull-requests also if your feature is not ready, yet.
 Please mark them as such by adding `[WIP]` to the start of the title. The purpose
 of this is, for example, that you want to let other people know you are working
-on a given issue. For these work-in-progress pull-request, we propose to have a
+on a given issue or if you want to clarify some technical details of the implementation.
+For these work-in-progress pull-request, we propose to have a
 check list of things that still need to be done.
 
 ## Issue tracking
