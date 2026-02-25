@@ -6,7 +6,16 @@ install(TARGETS podio-test-hashes EXPORT podioTargets DESTINATION "${CMAKE_INSTA
 add_executable(podio-dump-tool src/podio-dump-tool.cpp)
 target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO fmt::fmt)
 
-install(TARGETS podio-dump-tool EXPORT podioTargets DESTINATION ${CMAKE_INSTALL_BINDIR})
+add_executable(podio-filter-frames src/podio-filter-frames.cpp)
+target_link_libraries(podio-filter-frames PRIVATE podio::podioIO fmt::fmt)
+
+install(
+  TARGETS
+    podio-dump-tool
+    podio-filter-frames
+  EXPORT podioTargets
+  DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump-legacy DESTINATION ${CMAKE_INSTALL_BINDIR})
