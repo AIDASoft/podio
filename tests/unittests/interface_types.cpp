@@ -195,3 +195,14 @@ TEST_CASE("InterfaceType extension model", "[interface-types][extension]") {
   REQUIRE(wrapper.isA<iextension::AnotherHit>());
   REQUIRE(wrapper.as<iextension::AnotherHit>().energy() == 4.2f);
 }
+
+TEST_CASE("InterfaceType formatting", "[interface-types][basics][formatting]") {
+  auto iface = iextension::EnergyInterface::makeEmpty();
+  auto formatted = fmt::format("{}", iface);
+  REQUIRE(formatted == "[not available]");
+
+  iface = ExampleCluster{};
+  formatted = fmt::format("{}", iface);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not available]");
+}
