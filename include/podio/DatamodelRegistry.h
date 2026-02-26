@@ -1,6 +1,7 @@
 #ifndef PODIO_DATAMODELREGISTRY_H
 #define PODIO_DATAMODELREGISTRY_H
 
+#include "podio/SchemaEvolution.h"
 #include "podio/podioVersion.h"
 
 #include <optional>
@@ -100,7 +101,24 @@ public:
   /// @returns The name of the datamodel
   const std::string& getDatamodelName(size_t index) const;
 
+  /// Get the version of the datamodel with the given name
+  ///
+  /// @note This will return the version of the datamodel library **not the
+  /// schema version of the datamodel**.
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The version of the datamodel if the datamodel is known to the
+  ///          registry or an empty optional otherwise
   std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
+
+  /// Get the schema version of the datamodel with the given name
+  ///
+  /// @param name The name of the datamodel
+  ///
+  /// @returns The schema version of the datamodel if the datamodel is known to the
+  ///          registry or an empty optional otherwise
+  std::optional<podio::SchemaVersionT> getSchemaVersion(const std::string& name) const;
 
   /// Register a datamodel and return its index in the registry.
   ///
@@ -133,6 +151,8 @@ private:
   std::unordered_map<std::string_view, RelationNames> m_relations{};
 
   std::unordered_map<std::string, podio::version::Version> m_datamodelVersions{};
+
+  std::unordered_map<std::string, podio::SchemaVersionT> m_schemaVersions{};
 };
 } // namespace podio
 

@@ -6,10 +6,18 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 namespace podio {
+namespace detail {
+  /// Extract schema version from a JSON datamodel definition
+  ///
+  /// @param definition The JSON definition string
+  /// @returns The schema version found in the definition, or 0 if not found
+  podio::SchemaVersionT extractSchemaVersion(const std::string_view definition);
+} // namespace detail
 
 /// Helper class to collect the datamodel (JSON) definitions that should be
 /// written.
@@ -62,6 +70,13 @@ public:
   std::vector<std::string> getAvailableDatamodels() const;
 
   std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
+
+  /// Get the schema version for the given datamodel name by extracting it from
+  /// the stored datamodel definition.
+  ///
+  /// @param name The name of the datamodel
+  /// @returns The schema version if the datamodel is available, or std::nullopt otherwise
+  std::optional<podio::SchemaVersionT> getSchemaVersion(const std::string& name) const;
 
 protected:
   MapType m_availEDMDefs{};
