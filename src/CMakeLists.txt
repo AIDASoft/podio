@@ -59,6 +59,7 @@ SET(core_sources
   SchemaEvolution.cc
   Glob.cc
   Pythonizations.cc
+  TransportFrameData.cc
   )
 
 SET(core_headers
