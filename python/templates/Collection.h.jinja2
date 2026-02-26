@@ -30,6 +30,8 @@
 #include <memory>
 #include <cstddef>
 
+#include <fmt/core.h>
+
 namespace podio {
   struct RelationNames;
 }
@@ -279,6 +281,19 @@ void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collectio
 #endif
 
 {{ utils.namespace_close(class.namespace) }}
+
+template <>
+struct fmt::formatter<{% if class.namespace %}{{ class.namespace }}::{% endif %}{{ class.bare_type }}Collection> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. {{ class.bare_type }}Collections do not support specifiers");
+    }
+    return it;
+  }
+
+  fmt::format_context::iterator format(const {{ class.full_type }}Collection& coll, fmt::format_context& ctx) const;
+};
 
 {{ workarounds.ld_library_path(class, "Collection", ["valueTypeName", "dataTypeName"]) }}
 

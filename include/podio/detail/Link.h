@@ -12,6 +12,9 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/core.h>
+#include <fmt/ranges.h>
+
 #include <functional>
 #include <ostream>
 #include <type_traits>
@@ -348,18 +351,6 @@ private:
   podio::utils::MaybeSharedPtr<LinkObjT> m_obj{nullptr};
 };
 
-template <typename FromT, typename ToT>
-std::ostream& operator<<(std::ostream& os, const Link<FromT, ToT>& link) {
-  if (!link.isAvailable()) {
-    return os << "[not available]";
-  }
-
-  return os << " id: " << link.id() << '\n'
-            << " weight: " << link.getWeight() << '\n'
-            << " from: " << link.getFrom().id() << '\n'
-            << " to: " << link.getTo().id() << '\n';
-}
-
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 template <typename FromT, typename ToT>
 void to_json(nlohmann::json& j, const podio::LinkT<FromT, ToT, false>& link) {
@@ -381,5 +372,38 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
     return std::hash<typename podio::LinkT<FromT, ToT, Mutable>::LinkObjT*>{}(obj.m_obj.get());
   }
 };
+
+template <typename FromT, typename ToT, bool Mutable>
+struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. Links do not support specifiers");
+    }
+    return it;
+  }
+
+  auto format(const podio::LinkT<FromT, ToT, Mutable>& link, fmt::format_context& ctx) const {
+    if (!link.isAvailable()) {
+      return fmt::format_to(ctx.out(), "[not available]");
+    }
+    return fmt::format_to(ctx.out(), " id: {}\n weight: {}\n from: {}\n to: {}\n", link.id(), link.getWeight(),
+                          link.getFrom().id(), link.getTo().id());
+  }
+};
+
+// Disable fmt's tuple formatter for LinkT to avoid ambiguity with the custom
+// formatter above. This is necessary because opting tuple_size and
+// tuple_element makes LinkT behave like a tuple to the compiler
+template <typename FromT, typename ToT, bool Mutable, typename Char>
+struct fmt::is_tuple_formattable<podio::LinkT<FromT, ToT, Mutable>, Char> : std::false_type {};
+
+namespace podio {
+template <typename FromT, typename ToT, bool Mutable>
+std::ostream& operator<<(std::ostream& os, const LinkT<FromT, ToT, Mutable>& link) {
+  fmt::format_to(std::ostreambuf_iterator(os), "{}", link);
+  return os;
+}
+} // namespace podio
 
 #endif // PODIO_DETAIL_LINK_H

@@ -20,6 +20,7 @@
 // podio specific includes
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
+#include "podio/ObjectID.h"
 #include "podio/ROOTLegacyReader.h"
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
@@ -60,11 +61,31 @@
 #include "datamodel/MutableExampleWithArray.h"
 #include "datamodel/MutableExampleWithComponent.h"
 #include "datamodel/MutableExampleWithExternalExtraCode.h"
+#include "datamodel/NamespaceInNamespaceStruct.h"
 #include "datamodel/StructWithExtraCode.h"
 #include "datamodel/datamodel.h"
 #include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
+
+#include <fmt/format.h>
+
+#include <sstream>
+
+TEST_CASE("ObjectID formatting", "[basics][formatting]") {
+  auto objId = podio::ObjectID{};
+  auto formatted = fmt::format("{}", objId);
+  REQUIRE(formatted == "ffffffff|-1");
+
+  objId.collectionID = 42;
+  objId.index = 123;
+  formatted = fmt::format("{}", objId);
+  REQUIRE(formatted == fmt::format("{:8x}|123", 42));
+
+  std::stringstream sstr;
+  sstr << objId;
+  REQUIRE(sstr.str() == fmt::format("{:8x}|123", 42));
+}
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
@@ -136,6 +157,34 @@ TEST_CASE("makeEmpty", "[basics]") {
   hit = MutableExampleHit{};
   REQUIRE(hit.isAvailable());
   REQUIRE(hit.energy() == 0);
+}
+
+TEST_CASE("Object formatting", "[basics][formatting]") {
+  ExampleCluster cluster;
+  auto formatted = fmt::format("{}", cluster);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not avaialble]");
+
+  cluster = ExampleCluster::makeEmpty();
+  formatted = fmt::format("{}", cluster);
+  REQUIRE(formatted == "[not available]");
+
+  auto mutCluster = MutableExampleCluster{};
+  formatted = fmt::format("{}", mutCluster);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not available]");
+  // Ensure operator<< is still working
+  std::stringstream sstr;
+  sstr << mutCluster;
+  REQUIRE(sstr.str() == formatted);
+
+  auto typeWithComponent = ExampleWithArrayComponent{};
+  formatted = fmt::format("{}", typeWithComponent);
+  REQUIRE_FALSE(formatted.empty());
+
+  auto nspComp = ex2::NamespaceInNamespaceStruct{};
+  formatted = fmt::format("{}", nspComp);
+  REQUIRE_FALSE(formatted.empty());
 }
 
 TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
@@ -413,6 +462,13 @@ TEST_CASE("UserDataCollection print", "[basics]") {
   coll.print(sstr);
 
   REQUIRE(sstr.str() == "[1, 2, 3]");
+
+  auto formatted = fmt::format("{}", coll);
+  REQUIRE(formatted == "[1, 2, 3]");
+
+  std::stringstream sstr2;
+  sstr2 << coll;
+  REQUIRE(sstr2.str() == formatted);
 }
 
 TEST_CASE("UserDataCollection access", "[basics]") {
@@ -635,6 +691,21 @@ TEST_CASE("Equality", "[basics]") {
   REQUIRE(clu == clu2);
   // They never compare equal to a non-empty handle
   REQUIRE(clu != cluster);
+}
+
+TEST_CASE("Collection formatting", "[basics]") {
+  ExampleClusterCollection clusters;
+  auto cluster = clusters.create();
+  cluster.energy(42.5f);
+  auto formatted = fmt::format("{}", clusters);
+  REQUIRE_FALSE(formatted.empty());
+
+  ExampleWithComponentCollection components;
+  auto comp = components.create();
+  formatted = fmt::format("{}", components);
+  REQUIRE_FALSE(formatted.empty());
+
+  formatted = fmt::format("{}", cluster.Hits());
 }
 
 TEST_CASE("UserInitialization", "[basics][code-gen]") {
