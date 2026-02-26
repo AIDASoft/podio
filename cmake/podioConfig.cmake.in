@@ -30,6 +30,7 @@ if(NOT "@REQUIRE_PYTHON_VERSION@" STREQUAL "")
 else()
   find_dependency(Python3 COMPONENTS Interpreter Development)
 endif()
+find_dependency(fmt @fmt_VERSION@)
 
 SET(ENABLE_SIO @ENABLE_SIO@)
 if(ENABLE_SIO)
