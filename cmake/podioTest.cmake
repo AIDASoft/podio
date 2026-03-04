@@ -35,7 +35,7 @@ endif()
 #   Sets the standard test environment for <test>.
 #   Pass PYTHON for tests that invoke python3: the sanitizer runtime will be
 #   preloaded via LD_PRELOAD so that cling can dlopen instrumented shared
-#   libraries.
+#   libraries in case a sanitizer has been enabled for the build.
 function(PODIO_SET_TEST_ENV test)
   cmake_parse_arguments(PARSE_ARGV 1 ARG "PYTHON" "" "")
   # We need to convert this into a list of arguments that can be used as environment variable
