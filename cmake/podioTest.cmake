@@ -1,62 +1,33 @@
 #--- small utility helper function to set a consistent test environment for the passed test
 
-# We need to preload the ASan runtime so that cling can load ASan-instrumented
-# shared libraries via dlopen (Python tests)
+# We need to preload the sanitizer runtime so that cling can load sanitizer-instrumented
+# shared libraries via dlopen (Python tests). Only one sanitizer is assumed to be active.
 if(USE_SANITIZER MATCHES "Address")
-  if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libclang_rt.asan.so
-      OUTPUT_VARIABLE _PODIO_ASAN_SO
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if(IS_ABSOLUTE "${_PODIO_ASAN_SO}" AND EXISTS "${_PODIO_ASAN_SO}")
-      set(PODIO_ASAN_LIBRARY "${_PODIO_ASAN_SO}")
-    endif()
-  else()
-    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libasan.so
-      OUTPUT_VARIABLE _PODIO_ASAN_SO
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if(IS_ABSOLUTE "${_PODIO_ASAN_SO}" AND EXISTS "${_PODIO_ASAN_SO}")
-      set(PODIO_ASAN_LIBRARY "${_PODIO_ASAN_SO}")
-    else()
-      find_library(PODIO_ASAN_LIBRARY NAMES asan)
-    endif()
-  endif()
-  if(PODIO_ASAN_LIBRARY)
-    message(STATUS "Found ASan runtime library for test environment: ${PODIO_ASAN_LIBRARY}")
-  else()
-    message(WARNING "Could not find ASan runtime library; Python tests may fail under Address sanitizer")
-  endif()
+  set(_PODIO_SANITIZER_SHORT_NAME asan)
+elseif(USE_SANITIZER MATCHES "Thread")
+  set(_PODIO_SANITIZER_SHORT_NAME tsan)
 endif()
 
-if(USE_SANITIZER MATCHES "Thread")
+if(_PODIO_SANITIZER_SHORT_NAME)
   if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libclang_rt.tsan.so
-      OUTPUT_VARIABLE _PODIO_TSAN_SO
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if(IS_ABSOLUTE "${_PODIO_TSAN_SO}" AND EXISTS "${_PODIO_TSAN_SO}")
-      set(PODIO_TSAN_LIBRARY "${_PODIO_TSAN_SO}")
-    endif()
+    set(_PODIO_SANITIZER_LIB_NAME "libclang_rt.${_PODIO_SANITIZER_SHORT_NAME}.so")
   else()
-    execute_process(
-      COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=libtsan.so
-      OUTPUT_VARIABLE _PODIO_TSAN_SO
-      OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    if(IS_ABSOLUTE "${_PODIO_TSAN_SO}" AND EXISTS "${_PODIO_TSAN_SO}")
-      set(PODIO_TSAN_LIBRARY "${_PODIO_TSAN_SO}")
-    else()
-      find_library(PODIO_TSAN_LIBRARY NAMES tsan)
-    endif()
+    set(_PODIO_SANITIZER_LIB_NAME "lib${_PODIO_SANITIZER_SHORT_NAME}.so")
   endif()
-  if(PODIO_TSAN_LIBRARY)
-    message(STATUS "Found TSan runtime library for test environment: ${PODIO_TSAN_LIBRARY}")
+  execute_process(
+    COMMAND ${CMAKE_CXX_COMPILER} -print-file-name=${_PODIO_SANITIZER_LIB_NAME}
+    OUTPUT_VARIABLE _PODIO_SANITIZER_SO
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
+  if(IS_ABSOLUTE "${_PODIO_SANITIZER_SO}" AND EXISTS "${_PODIO_SANITIZER_SO}")
+    set(PODIO_SANITIZER_LIBRARY "${_PODIO_SANITIZER_SO}")
+  elseif(NOT CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    find_library(PODIO_SANITIZER_LIBRARY NAMES ${_PODIO_SANITIZER_SHORT_NAME})
+  endif()
+  if(PODIO_SANITIZER_LIBRARY)
+    message(STATUS "Found sanitizer runtime library for test environment: ${PODIO_SANITIZER_LIBRARY}")
   else()
-    message(WARNING "Could not find TSan runtime library; Python tests may fail under Thread sanitizer")
+    message(WARNING "Could not find sanitizer runtime library; Python tests may fail under ${USE_SANITIZER} sanitizer")
   endif()
 endif()
 
@@ -93,10 +64,8 @@ function(PODIO_SET_TEST_ENV test)
     )
   endif()
   # Preload the sanitizer runtime so cling can dlopen instrumented libraries
-  if(ARG_PYTHON AND PODIO_ASAN_LIBRARY)
-    list(APPEND test_environment "LD_PRELOAD=${PODIO_ASAN_LIBRARY}:$ENV{LD_PRELOAD}")
-  elseif(ARG_PYTHON AND PODIO_TSAN_LIBRARY)
-    list(APPEND test_environment "LD_PRELOAD=${PODIO_TSAN_LIBRARY}:$ENV{LD_PRELOAD}")
+  if(ARG_PYTHON AND PODIO_SANITIZER_LIBRARY)
+    list(APPEND test_environment "LD_PRELOAD=${PODIO_SANITIZER_LIBRARY}:$ENV{LD_PRELOAD}")
   endif()
   set_property(TEST ${test}
     PROPERTY ENVIRONMENT "${test_environment}"
