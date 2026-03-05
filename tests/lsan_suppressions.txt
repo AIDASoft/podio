@@ -1,0 +1,12 @@
+leak:Cling
+leak:libCPyCppyy
+leak:libcppyy
+leak:libpython
+leak:libCore
+leak:libROOTPythonizations
+
+# When libasan is LD_PRELOADed into a non-instrumented python3 (non-debug
+# builds) process the stack unwinder captures only 2 frames (libasan +
+# libstdc++).  The actual allocating caller is a ROOT or Cling library, but it is
+# not visible because frame walking stops at uninstrumented code.
+leak:std::__cxx11::basic_string
