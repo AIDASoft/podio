@@ -103,7 +103,6 @@ add_subdirectory(schema_evolution)
 
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
-CREATE_PODIO_TEST(test_json_output.cpp "Catch2::Catch2WithMain")
 
 if (ENABLE_JULIA)
   message(STATUS "Julia Datamodel generation is enabled.")
