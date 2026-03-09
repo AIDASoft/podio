@@ -24,12 +24,6 @@ if (nlohmann_json_FOUND)
   message(STATUS "Found compatible version of JSON library, will add JSON support to test datamodel")
   target_compile_definitions(TestDataModel PUBLIC PODIO_JSON_OUTPUT)
   target_link_libraries(TestDataModel PUBLIC nlohmann_json::nlohmann_json)
-  target_include_directories(TestDataModel PUBLIC $<TARGET_PROPERTY:nlohmann_json::nlohmann_json,INTERFACE_INCLUDE_DIRECTORIES>)
-  if(APPLE AND EXISTS "/usr/local/include/nlohmann/json_fwd.hpp")
-    # Force explicit include path because some toolchains treat /usr/local/include
-    # as implicit and strip it from imported target include dirs.
-    target_compile_options(TestDataModel PUBLIC -I/usr/local/include)
-  endif()
 endif()
 
 PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
