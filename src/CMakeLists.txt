@@ -78,6 +78,7 @@ SET(core_headers
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
 target_compile_options(podio PRIVATE -pthread)
 target_link_libraries(podio PRIVATE Python3::Python)
+target_link_libraries(podio PUBLIC fmt::fmt)
 # For Frame.h
 if (ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)

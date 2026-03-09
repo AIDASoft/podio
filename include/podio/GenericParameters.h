@@ -275,4 +275,20 @@ void GenericParameters::loadFrom(VecLike<std::string> keys, VecLike<std::vector<
 }
 
 } // namespace podio
+
+#include <fmt/core.h>
+
+template <>
+struct fmt::formatter<podio::GenericParameters> {
+  constexpr auto parse(fmt::format_parse_context& ctx) {
+    auto it = ctx.begin();
+    if (it != ctx.end() && *it != '}') {
+      fmt::throw_format_error("Invalid format. GenericParameters does not support specifiers");
+    }
+    return it;
+  }
+
+  fmt::format_context::iterator format(const podio::GenericParameters& params, fmt::format_context& ctx) const;
+};
+
 #endif
