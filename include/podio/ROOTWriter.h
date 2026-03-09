@@ -40,10 +40,10 @@ public:
   /// This also takes care of writing all the necessary metadata to read files back again.
   ~ROOTWriter();
 
-  /// The ROOTWriter is not copy-able
   ROOTWriter(const ROOTWriter&) = delete;
-  /// The ROOTWriter is not copy-able
   ROOTWriter& operator=(const ROOTWriter&) = delete;
+  ROOTWriter(ROOTWriter&&) = delete;
+  ROOTWriter& operator=(ROOTWriter&&) = delete;
 
   /// Store the given frame with the given category.
   ///
