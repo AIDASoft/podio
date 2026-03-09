@@ -52,10 +52,10 @@ public:
   /// able to read files back again.
   ~RNTupleWriter();
 
-  /// The RNTupleWriter is not copy-able
   RNTupleWriter(const RNTupleWriter&) = delete;
-  /// The RNTupleWriter is not copy-able
   RNTupleWriter& operator=(const RNTupleWriter&) = delete;
+  RNTupleWriter(RNTupleWriter&&) = default;
+  RNTupleWriter& operator=(RNTupleWriter&&) = default;
 
   /// Store the given frame with the given category.
   ///

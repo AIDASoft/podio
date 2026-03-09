@@ -49,15 +49,13 @@ struct CollectionReadBuffers;
 class ROOTReader {
 
 public:
-  /// Create a ROOTReader
   ROOTReader() = default;
-  /// Destructor
   ~ROOTReader() = default;
 
-  /// The ROOTReader is not copy-able
   ROOTReader(const ROOTReader&) = delete;
-  /// The ROOTReader is not copy-able
   ROOTReader& operator=(const ROOTReader&) = delete;
+  ROOTReader(ROOTReader&&) = default;
+  ROOTReader& operator=(ROOTReader&&) = default;
 
   /// Open a single file for reading.
   ///
