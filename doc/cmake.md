@@ -61,7 +61,7 @@ PODIO_GENERATE_DATAMODEL(newdm newdm.yaml headers sources
     UPSTREAM_EDM "EDM4hep:edm4hep"
     DEPENDS "extra_header.h;more_extras.h"
     VERSION "1.0"
-    OUTPUT_FOLDER ${CMAKE_BINARY_DIR}/generated_sources
+    OUTPUT_FOLDER ${PROJECT_BINARY_DIR}/generated_sources
     IO_BACKEND_HANDLERS "ROOT;SIO"
 )
 ```
