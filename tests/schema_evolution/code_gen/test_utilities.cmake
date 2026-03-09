@@ -177,6 +177,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
       PROPERTY ENVIRONMENT
         ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${old_version}_model
         LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+        $<$<BOOL:${USE_SANITIZER}>:TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt>
+        $<$<BOOL:${USE_SANITIZER}>:LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt>
     )
     set_tests_properties(schema_evol:code_gen:${test_case}:write_${old_version}${suffix}
       PROPERTIES
@@ -204,6 +206,8 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     PROPERTY ENVIRONMENT
       ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
       LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      $<$<BOOL:${USE_SANITIZER}>:TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt>
+      $<$<BOOL:${USE_SANITIZER}>:LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt>
   )
   set_tests_properties(schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTIES

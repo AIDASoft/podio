@@ -1,2 +1,0 @@
-# Ignore leaks from Cling
-leak:Cling

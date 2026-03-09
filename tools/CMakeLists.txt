@@ -78,7 +78,7 @@ if(BUILD_TESTING)
       NAME ${_name}
       COMMAND ./podio-dump-legacy ${ARGN} DATA{${PROJECT_SOURCE_DIR}/tests/input_files/${input_file}}
     )
-    PODIO_SET_TEST_ENV(${_name})
+    PODIO_SET_TEST_ENV(${_name} PYTHON)
 
     set_tests_properties(${_name} PROPERTIES
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
