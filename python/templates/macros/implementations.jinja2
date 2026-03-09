@@ -191,42 +191,35 @@ bool {{ full_type }}::operator==(const {{ inverse_type }}& other) const {
 }
 {%- endmacro %}
 
-
-{% macro ostream_operator(type, members, single_relations, multi_relations, get_syntax) %}
-std::ostream& operator<<(std::ostream& o, const {{ type }}& value) {
+{% macro formatter(class, members, single_relations, multi_relations, get_syntax, prefix='') %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+fmt::format_context::iterator fmt::formatter<{{ namespace }}{{ prefix }}{{ class.bare_type }}>::format(const {{ namespace }}{{ prefix }}{{ class.bare_type }}& value, fmt::format_context& ctx) const {
   if (!value.isAvailable()) {
-    return o << "[not available]";
+    return fmt::format_to(ctx.out(), "[not available]");
   }
-  o << " id: " << value.id() << '\n';
+  auto out = ctx.out();
+  out = fmt::format_to(out, " id: {} \n", value.id());
 {% for member in members %}
 {% if member.is_array %}
-  o << " {{ member.name }} : ";
-  for (size_t i = 0; i < {{ member.array_size }}; ++i) {
-    o << value.{{ member.getter_name(get_syntax) }}()[i] << "|";
-  }
-  o << '\n';
+  out = fmt::format_to(out, " {{ member.name }} : {}\n", fmt::join(value.{{ member.getter_name(get_syntax) }}(), "|"));
 {% else %}
-  o << " {{ member.name }} : " << value.{{ member.getter_name(get_syntax) }}() << '\n';
+  out = fmt::format_to(out, " {{member.name }} : {}\n", value.{{ member.getter_name(get_syntax) }}());
 {% endif %}
 {% endfor %}
 
 {% for relation in single_relations %}
-  o << " {{ relation.name }} : " << value.{{ relation.getter_name(get_syntax) }}().id() << '\n';
+  out = fmt::format_to(out, " {{ relation.name }} : {}\n", value.{{ relation.getter_name(get_syntax) }}().id());
 {% endfor %}
 
 {% for relation in multi_relations %}
-  o << " {{ relation.name }} : ";
-  for (unsigned i = 0; i < value.{{ relation.name }}_size(); ++i) {
-{% if type == relation.bare_type %}
-    o << value.{{ relation.getter_name(get_syntax) }}(i).id() << " ";
+{% if class.bare_type == relation.bare_type %}
+  out = fmt::format_to(out, " {{ relation.name }} : {}\n", fmt::join(value.{{ relation.getter_name(get_syntax) }}() | std::views::transform(&{{ relation.full_type }}::id), " "));
 {% else %}
-    o << value.{{ relation.getter_name(get_syntax) }}(i) << " ";
+  out = fmt::format_to(out, " {{ relation.name }} : {}\n", fmt::join(value.{{ relation.getter_name(get_syntax) }}(), " "));
 {% endif %}
-  }
-  o << '\n';
 {% endfor %}
 
-  return o;
+  return out;
 }
 {%- endmacro %}
 
