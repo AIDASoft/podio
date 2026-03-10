@@ -37,6 +37,7 @@
   // populate the data and vector members
   if (!isSubsetColl) {
     m_data.reset(buffers.dataAsVector<{{ class.full_type }}Data>());
+    buffers.data = nullptr;
 
   // The following is ugly code for the case when reading garbage data from ROOT
   // after calling dataAsVector, which can trigger infinite loops that consume
@@ -60,7 +61,9 @@
 
   // Cleanup these to avoid leaking them
   delete buffers.references;
+  buffers.references = nullptr;
   delete buffers.vectorMembers;
+  buffers.vectorMembers = nullptr;
 }
 
 void {{ class_type }}::clear(bool isSubsetColl) {

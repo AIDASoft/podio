@@ -420,9 +420,12 @@ namespace detail {
         // to clean up all type erased buffers by casting them back to
         // something that we can delete
         delete static_cast<LinkDataContainer*>(buffers.data);
+        buffers.data = nullptr;
       }
       delete buffers.references;
+      buffers.references = nullptr;
       delete buffers.vectorMembers;
+      buffers.vectorMembers = nullptr;
     };
 
     return readBuffers;

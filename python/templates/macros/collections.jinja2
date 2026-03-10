@@ -201,10 +201,13 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
 {% for member in VectorMembers %}
       delete static_cast<std::vector<{{ member.full_type }}>*>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
 {% endfor %}
+      buffers.data = nullptr;
 
     }
     delete buffers.references;
+    buffers.references = nullptr;
     delete buffers.vectorMembers;
+    buffers.vectorMembers = nullptr;
   };
 
   return readBuffers;
