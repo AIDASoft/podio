@@ -27,7 +27,7 @@
 {% endfor %}
 }
 
-{{ class_type }}::{{ class_type }}(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
+{{ class_type }}::{{ class_type }}(podio::CollectionReadBuffers&& buffers, bool isSubsetColl) :
 {% for relation in OneToManyRelations + OneToOneRelations %}
   m_rel_{{ relation.name }}(new std::vector<{{ relation.namespace }}::{{ relation.bare_type }}>()),
 {% endfor %}

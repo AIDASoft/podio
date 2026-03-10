@@ -14,7 +14,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     auto maybeBuffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -26,18 +26,13 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->empty());
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    delete buffers.vectorMembers;
   }
 
   SECTION("Type with relations") {
     auto maybeBuffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -49,11 +44,6 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->size() == 2);
     REQUIRE(buffers.vectorMembers->empty());
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    delete buffers.vectorMembers;
   }
 
   SECTION("Type with vector members") {
@@ -61,7 +51,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
         factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -73,13 +63,6 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->size() == 1);
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    auto vecBuffer = static_cast<std::vector<int>*>((*buffers.vectorMembers)[0].second);
-    delete vecBuffer;
-    delete buffers.vectorMembers;
   }
 }
 
@@ -87,7 +70,8 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
   const auto& factory = podio::CollectionBufferFactory::instance();
 
   SECTION("Simple type") {
-    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false).value();
+    auto buffers =
+        std::move(factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false)).value();
     auto collData = ExampleHitCollectionData(std::move(buffers), false);
 
     // These tests either get flagged by sanitizers or they work
@@ -95,7 +79,8 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
   }
 
   SECTION("Type with relation") {
-    auto buffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false).value();
+    auto buffers =
+        std::move(factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false)).value();
     auto collData = ExampleClusterCollectionData(std::move(buffers), false);
 
     // These tests either get flagged by sanitizers or they work
@@ -104,7 +89,8 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
 
   SECTION("Type with vector members") {
     auto buffers =
-        factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false).value();
+        std::move(factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false))
+            .value();
 
     auto collData = ExampleWithVectorMemberCollectionData(std::move(buffers), false);
 
@@ -117,7 +103,8 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
   const auto& factory = podio::CollectionBufferFactory::instance();
 
   SECTION("Simple type") {
-    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false).value();
+    auto buffers =
+        std::move(factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false)).value();
 
     // Cast this to something useful again to add one data element
     auto dataBuffers = static_cast<ExampleHitDataContainer*>(buffers.data);
@@ -127,7 +114,8 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
   }
 
   SECTION("Type with relations") {
-    auto buffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false).value();
+    auto buffers =
+        std::move(factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false)).value();
 
     // Cast this to something useful again to add one data element
     auto dataBuffers = static_cast<ExampleClusterDataContainer*>(buffers.data);
@@ -141,7 +129,8 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
 
   SECTION("Type with vector members") {
     auto buffers =
-        factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false).value();
+        std::move(factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false))
+            .value();
 
     auto vecBuffer = static_cast<std::vector<int>*>((*buffers.vectorMembers)[0].second);
     vecBuffer->emplace_back(42);

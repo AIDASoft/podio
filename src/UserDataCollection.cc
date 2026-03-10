@@ -20,18 +20,21 @@ namespace {
     // Register with schema version 1 to allow for potential changes
     CollectionBufferFactory::mutInstance().registerCreationFunc(
         userDataCollTypeName<T>(), UserDataCollection<T>::schemaVersion, [](bool) {
-          return podio::CollectionReadBuffers{
-              new std::vector<T>(),
-              nullptr,
-              nullptr,
-              podio::UserDataCollection<T>::schemaVersion,
-              podio::userDataCollTypeName<T>(),
-              [](podio::CollectionReadBuffers buffers, bool) {
-                auto vec = std::move(*buffers.dataAsVector<T>());
-                delete static_cast<std::vector<T>*>(buffers.data);
-                return std::make_unique<UserDataCollection<T>>(std::move(vec));
-              },
-              [](const podio::CollectionReadBuffers& buffers) { delete static_cast<std::vector<T>*>(buffers.data); }};
+          return podio::CollectionReadBuffers{new std::vector<T>(),
+                                              nullptr,
+                                              nullptr,
+                                              podio::UserDataCollection<T>::schemaVersion,
+                                              podio::userDataCollTypeName<T>(),
+                                              [](podio::CollectionReadBuffers&& buffers, bool) {
+                                                auto vec = std::move(*buffers.dataAsVector<T>());
+                                                delete static_cast<std::vector<T>*>(buffers.data);
+                                                buffers.data = nullptr;
+                                                return std::make_unique<UserDataCollection<T>>(std::move(vec));
+                                              },
+                                              [](podio::CollectionReadBuffers& buffers) {
+                                                delete static_cast<std::vector<T>*>(buffers.data);
+                                                buffers.data = nullptr;
+                                              }};
         });
 
     // For now passing the same schema version for from and current versions

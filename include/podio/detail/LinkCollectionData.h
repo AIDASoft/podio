@@ -26,7 +26,7 @@ public:
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
   }
 
-  LinkCollectionData(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
+  LinkCollectionData(podio::CollectionReadBuffers&& buffers, bool isSubsetColl) :
       m_rel_from(new std::vector<FromT>()),
       m_rel_to(new std::vector<ToT>()),
       m_refCollections(std::move(*buffers.references)) {

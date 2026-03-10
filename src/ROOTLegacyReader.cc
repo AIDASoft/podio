@@ -56,7 +56,7 @@ ROOTLegacyReader::getCollectionBuffers(const std::pair<std::string, detail::Coll
   auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
 
   // TODO: Error handling of empty optional
-  auto collBuffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
+  auto collBuffers = std::move(maybeBuffers).value_or(podio::CollectionReadBuffers{});
 
   const auto localEntry = m_chain->LoadTree(m_eventNumber);
   // After switching trees in the chain, branch pointers get invalidated so

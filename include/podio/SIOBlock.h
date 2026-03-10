@@ -71,8 +71,8 @@ public:
   SIOBlock(const SIOBlock&) = delete;
   SIOBlock& operator=(const SIOBlock&) = delete;
 
-  const podio::CollectionReadBuffers& getBuffers() const {
-    return m_buffers;
+  podio::CollectionReadBuffers getBuffers() {
+    return std::move(m_buffers);
   }
 
   std::string name() {

@@ -45,7 +45,7 @@ std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(c
 
     // Mark this block as consumed
     m_availableBlocks[index] = 0;
-    return {dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers()};
+    return dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers();
   }
 
   return std::nullopt;
