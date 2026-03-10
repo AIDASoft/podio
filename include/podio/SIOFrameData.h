@@ -20,7 +20,7 @@ class SIOFrameData {
 
 public:
   SIOFrameData() = delete;
-  ~SIOFrameData();
+  ~SIOFrameData() = default;
 
   SIOFrameData(const SIOFrameData&) = delete;
   SIOFrameData& operator=(const SIOFrameData&) = delete;
