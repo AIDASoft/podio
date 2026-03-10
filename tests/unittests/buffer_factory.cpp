@@ -70,8 +70,7 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
   const auto& factory = podio::CollectionBufferFactory::instance();
 
   SECTION("Simple type") {
-    auto buffers =
-        std::move(factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false)).value();
+    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false).value();
     auto collData = ExampleHitCollectionData(std::move(buffers), false);
 
     // These tests either get flagged by sanitizers or they work
@@ -79,8 +78,7 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
   }
 
   SECTION("Type with relation") {
-    auto buffers =
-        std::move(factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false)).value();
+    auto buffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false).value();
     auto collData = ExampleClusterCollectionData(std::move(buffers), false);
 
     // These tests either get flagged by sanitizers or they work
@@ -89,8 +87,7 @@ TEST_CASE("construct CollectionData empty buffers", "[internals][memory-manageme
 
   SECTION("Type with vector members") {
     auto buffers =
-        std::move(factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false))
-            .value();
+        factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false).value();
 
     auto collData = ExampleWithVectorMemberCollectionData(std::move(buffers), false);
 
@@ -103,8 +100,7 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
   const auto& factory = podio::CollectionBufferFactory::instance();
 
   SECTION("Simple type") {
-    auto buffers =
-        std::move(factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false)).value();
+    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false).value();
 
     // Cast this to something useful again to add one data element
     auto dataBuffers = static_cast<ExampleHitDataContainer*>(buffers.data);
@@ -114,8 +110,7 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
   }
 
   SECTION("Type with relations") {
-    auto buffers =
-        std::move(factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false)).value();
+    auto buffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false).value();
 
     // Cast this to something useful again to add one data element
     auto dataBuffers = static_cast<ExampleClusterDataContainer*>(buffers.data);
@@ -129,8 +124,7 @@ TEST_CASE("construct CollectionData non-empty buffers", "[internals][memory-mana
 
   SECTION("Type with vector members") {
     auto buffers =
-        std::move(factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false))
-            .value();
+        factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false).value();
 
     auto vecBuffer = static_cast<std::vector<int>*>((*buffers.vectorMembers)[0].second);
     vecBuffer->emplace_back(42);
