@@ -409,12 +409,12 @@ namespace detail {
       ref = std::make_unique<std::vector<podio::ObjectID>>();
     }
 
-    readBuffers.createCollection = [](const podio::CollectionReadBuffers& buffers, bool isSubsetColl) {
-      LinkCollectionData<FromT, ToT> data(buffers, isSubsetColl);
+    readBuffers.createCollection = [](podio::CollectionReadBuffers&& buffers, bool isSubsetColl) {
+      LinkCollectionData<FromT, ToT> data(std::move(buffers), isSubsetColl);
       return std::make_unique<LinkCollection<FromT, ToT>>(std::move(data), isSubsetColl);
     };
 
-    readBuffers.deleteBuffers = [](const podio::CollectionReadBuffers& buffers) {
+    readBuffers.deleteBuffers = [](podio::CollectionReadBuffers& buffers) {
       if (buffers.data) {
         // If we have data then we are not a subset collection and we have
         // to clean up all type erased buffers by casting them back to
