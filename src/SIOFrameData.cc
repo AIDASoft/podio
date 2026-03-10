@@ -96,7 +96,6 @@ void SIOFrameData::unpackBuffers() {
     const auto name = m_idTable.names()[i - 1];
     if (std::ranges::find(m_limitColls, name) == m_limitColls.end()) {
       auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
-      buffers.deleteBuffers(buffers);
       m_availableBlocks[i] = 0;
     }
   }
@@ -137,7 +136,6 @@ SIOFrameData::~SIOFrameData() {
   for (size_t i = 1; i < m_blocks.size(); ++i) {
     if (m_availableBlocks[i]) {
       auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
-      buffers.deleteBuffers(buffers);
     }
   }
 }
