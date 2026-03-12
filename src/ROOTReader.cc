@@ -173,7 +173,7 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   }
   root_utils::readBranchesData(branches, localEntry);
 
-  return std::move(collBuffers);
+  return {std::move(collBuffers)};
 }
 
 ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& category) {
