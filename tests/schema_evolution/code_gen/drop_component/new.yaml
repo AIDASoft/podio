@@ -4,7 +4,7 @@ options:
 schema_version: 3
 
 components:
-  edm4hep::Vector3d:
+  edm4hepLike::Vector3d:
     Members:
       - double x
       - double y
@@ -17,4 +17,4 @@ datatypes:
     Members:
       - int PDG // pdg
       - double energy // energy
-      - edm4hep::Vector3d momentum // momentum
+      - edm4hepLike::Vector3d momentum // momentum
