@@ -12,7 +12,7 @@ std::optional<podio::CollectionReadBuffers> ROOTFrameData::getCollectionBuffers(
     return std::nullopt;
   }
 
-  return std::move(bufferHandle.mapped());
+  return {std::move(bufferHandle.mapped())};
 }
 
 podio::CollectionIDTable ROOTFrameData::getIDTable() const {
