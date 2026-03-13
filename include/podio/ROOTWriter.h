@@ -6,9 +6,10 @@
 
 #include "TFile.h"
 
+#include "podio/utilities/MiscHelpers.h"
+
 #include <string>
 #include <tuple>
-#include <unordered_map>
 #include <vector>
 
 // forward declarations
@@ -54,7 +55,7 @@ public:
   ///
   /// @param frame    The Frame to store
   /// @param category The category name under which this Frame should be stored
-  void writeFrame(const podio::Frame& frame, const std::string& category);
+  void writeFrame(const podio::Frame& frame, std::string_view category);
 
   /// Store the given Frame with the given category.
   ///
@@ -67,7 +68,7 @@ public:
   /// @param category     The category name under which this Frame should be
   ///                     stored
   /// @param collsToWrite The collection names that should be written
-  void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
+  void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collsToWrite);
 
   /// Write the current file, including all the necessary metadata to read it
   /// again.
@@ -95,7 +96,7 @@ public:
   /// collsToWrite only. If both vectors are empty the category and the passed
   /// collsToWrite are consistent.
   std::tuple<std::vector<std::string>, std::vector<std::string>>
-  checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
+  checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const;
 
 private:
   /// Helper struct to group together all necessary state to write / process a
@@ -119,15 +120,15 @@ private:
                     const podio::GenericParameters& parameters);
 
   /// Get the (potentially uninitialized category information for this category)
-  CategoryInfo& getCategoryInfo(const std::string& category);
+  CategoryInfo& getCategoryInfo(std::string_view category);
 
   static void resetBranches(CategoryInfo& categoryInfo, const std::vector<root_utils::StoreCollection>& collections);
 
   /// Fill the parameter keys and values into the CategoryInfo storage
   static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
 
-  TFile m_file;                                                 ///< The storage file
-  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
+  TFile m_file; ///< The storage file
+  podio::StringKeyMap<CategoryInfo> m_categories{}; ///< All categories
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 };

@@ -80,7 +80,7 @@ public:
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if there
   ///          are still entries left to read. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string&, const std::vector<std::string>& = {});
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(std::string_view, const std::vector<std::string>& = {});
 
   /// Read the desired data entry from which a Frame can be constructed.
   ///
@@ -90,7 +90,7 @@ public:
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          desired entry exists. Otherwise a nullptr
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string&, const unsigned entry,
+  std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view, const unsigned entry,
                                                   const std::vector<std::string>& = {});
 
   /// Get the number of entries for the given name
@@ -98,7 +98,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  unsigned getEntries(const std::string& name) const;
+  unsigned getEntries(std::string_view name) const;
 
   /// Get the build version of podio that has been used to write the current
   /// file

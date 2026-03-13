@@ -23,7 +23,7 @@ void SIOLegacyReader::openFile(const std::string& filename) {
   readCollectionIDTable();
 }
 
-std::unique_ptr<SIOFrameData> SIOLegacyReader::readNextEntry(const std::string& name, const std::vector<std::string>&) {
+std::unique_ptr<SIOFrameData> SIOLegacyReader::readNextEntry(std::string_view name, const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
   }
@@ -47,7 +47,7 @@ std::unique_ptr<SIOFrameData> SIOLegacyReader::readNextEntry(const std::string& 
                                         m_tableUncLength);
 }
 
-std::unique_ptr<podio::SIOFrameData> SIOLegacyReader::readEntry(const std::string& name, const unsigned entry,
+std::unique_ptr<podio::SIOFrameData> SIOLegacyReader::readEntry(std::string_view name, const unsigned entry,
                                                                 const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
@@ -66,7 +66,7 @@ std::unique_ptr<podio::SIOFrameData> SIOLegacyReader::readEntry(const std::strin
   return readNextEntry(name);
 }
 
-unsigned SIOLegacyReader::getEntries(const std::string& name) const {
+unsigned SIOLegacyReader::getEntries(std::string_view name) const {
   if (name != "events") {
     return 0;
   }

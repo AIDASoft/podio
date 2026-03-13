@@ -139,18 +139,18 @@ inline std::string edmVersionBranchName(const std::string& edmname) {
  * Name of the branch for storing the idTable for a given category in the meta
  * data tree
  */
-inline std::string idTableName(const std::string& category) {
+inline std::string idTableName(std::string_view category) {
   constexpr static auto suffix = "___idTable";
-  return category + suffix;
+  return std::string(category) + suffix;
 }
 
 /**
  * Name of the branch for storing the collection info for a given category in
  * the meta data tree
  */
-inline std::string collInfoName(const std::string& category) {
+inline std::string collInfoName(std::string_view category) {
   constexpr static auto suffix = "___CollectionTypeInfo";
-  return category + suffix;
+  return std::string(category) + suffix;
 }
 
 // Workaround slow branch retrieval for 6.22/06 performance degradation

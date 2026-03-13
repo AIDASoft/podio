@@ -17,7 +17,7 @@
 
 namespace podio {
 
-std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(const std::string& name,
+std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(std::string_view name,
                                                                const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
@@ -25,7 +25,7 @@ std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(const std::string
   return readEntry();
 }
 
-std::unique_ptr<podio::ROOTFrameData> ROOTLegacyReader::readEntry(const std::string& name, unsigned entry,
+std::unique_ptr<podio::ROOTFrameData> ROOTLegacyReader::readEntry(std::string_view name, unsigned entry,
                                                                   const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
@@ -166,7 +166,7 @@ void ROOTLegacyReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-unsigned ROOTLegacyReader::getEntries(const std::string& name) const {
+unsigned ROOTLegacyReader::getEntries(std::string_view name) const {
   if (name != m_categoryName) {
     return 0;
   }
