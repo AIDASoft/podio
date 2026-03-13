@@ -34,7 +34,7 @@ std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(std::string_view name,
   // NOTE: exploiting the fact that the operator[] of a map will create a
   // default initialized entry for us if not present yet
   const std::string nameStr(name);
-  const auto recordPos = m_tocRecord.getPosition(nameStr, m_nameCtr[nameStr]);
+  const auto recordPos = m_tocRecord.getPosition(name, m_nameCtr[nameStr]);
   if (recordPos == 0) {
     return nullptr;
   }
