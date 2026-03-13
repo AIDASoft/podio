@@ -178,7 +178,7 @@ void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos)
   }
 }
 
-size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
+size_t SIOFileTOCRecord::getNRecords(std::string_view name) const {
   const auto it = std::ranges::find(m_recordMap, name, &decltype(m_recordMap)::value_type::first);
   if (it != m_recordMap.cend()) {
     return it->second.size();
@@ -186,7 +186,7 @@ size_t SIOFileTOCRecord::getNRecords(const std::string& name) const {
   return 0;
 }
 
-SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(const std::string& name, unsigned iEntry) const {
+SIOFileTOCRecord::PositionType SIOFileTOCRecord::getPosition(std::string_view name, unsigned iEntry) const {
   const auto it = std::ranges::find(m_recordMap, name, &decltype(m_recordMap)::value_type::first);
   if (it != m_recordMap.end()) {
     if (iEntry < it->second.size()) {

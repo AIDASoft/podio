@@ -297,13 +297,13 @@ public:
   using PositionType = sio_helpers::position_type;
   void addRecord(const std::string& name, PositionType startPos);
 
-  size_t getNRecords(const std::string& name) const;
+  size_t getNRecords(std::string_view name) const;
 
   /// Get the position of the iEntry-th record with the given name. If no entry
   /// with the given name is recorded, return 0. Note there is no internal check
   /// on whether the given name actually has iEntry records. Use getNRecords to
   /// check for that if necessary.
-  PositionType getPosition(const std::string& name, unsigned iEntry = 0) const;
+  PositionType getPosition(std::string_view name, unsigned iEntry = 0) const;
 
   /// Get all the record names that are stored in this TOC record
   std::vector<std::string_view> getRecordNames() const;
