@@ -6,11 +6,10 @@
 
 #include "TFile.h"
 
-#include "podio/utilities/TypeHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 
 #include <string>
 #include <tuple>
-#include <unordered_map>
 #include <vector>
 
 // forward declarations
@@ -129,9 +128,7 @@ private:
   static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
 
   TFile m_file; ///< The storage file
-  std::unordered_map<std::string, CategoryInfo, podio::detail::TransparentStringHash,
-                     std::equal_to<>>
-      m_categories{}; ///< All categories
+  podio::StringKeyMap<CategoryInfo> m_categories{}; ///< All categories
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 };

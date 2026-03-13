@@ -11,10 +11,9 @@
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
 
-#include "podio/utilities/TypeHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace podio {
@@ -141,8 +140,7 @@ private:
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  std::unordered_map<std::string, CategoryInfo, podio::detail::TransparentStringHash, std::equal_to<>>
-      m_categories{};
+  podio::StringKeyMap<CategoryInfo> m_categories{};
 };
 
 } // namespace podio
