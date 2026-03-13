@@ -68,7 +68,7 @@ std::vector<std::string_view> SIOReader::getAvailableCategories() const {
 }
 
 unsigned SIOReader::getEntries(std::string_view name) const {
-  return m_tocRecord.getNRecords(std::string(name));
+  return m_tocRecord.getNRecords(name);
 }
 
 bool SIOReader::readFileTOCRecord() {
