@@ -26,14 +26,15 @@ void SIOReader::openFile(const std::string& filename) {
   readEDMDefinitions(); // Potentially could do this lazily
 }
 
-std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name,
+std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(std::string_view name,
                                                        const std::vector<std::string>& collsToRead) {
   // Skip to where the next record of this name starts in the file, based on
   // how many times we have already read this name
   //
   // NOTE: exploiting the fact that the operator[] of a map will create a
   // default initialized entry for us if not present yet
-  const auto recordPos = m_tocRecord.getPosition(name, m_nameCtr[name]);
+  const std::string nameStr(name);
+  const auto recordPos = m_tocRecord.getPosition(nameStr, m_nameCtr[nameStr]);
   if (recordPos == 0) {
     return nullptr;
   }
@@ -42,17 +43,17 @@ std::unique_ptr<SIOFrameData> SIOReader::readNextEntry(const std::string& name,
   auto [tableBuffer, tableInfo] = sio_utils::readRecord(m_stream, false);
   auto [dataBuffer, dataInfo] = sio_utils::readRecord(m_stream, false);
 
-  m_nameCtr[name]++;
+  m_nameCtr[nameStr]++;
 
   return std::make_unique<SIOFrameData>(std::move(dataBuffer), dataInfo._uncompressed_length, std::move(tableBuffer),
                                         tableInfo._uncompressed_length, collsToRead);
 }
 
-std::unique_ptr<SIOFrameData> SIOReader::readEntry(const std::string& name, const unsigned entry,
+std::unique_ptr<SIOFrameData> SIOReader::readEntry(std::string_view name, const unsigned entry,
                                                    const std::vector<std::string>& collsToRead) {
   // NOTE: Will create or overwrite the entry counter
   //       All checks are done in the following function
-  m_nameCtr[name] = entry;
+  m_nameCtr[std::string(name)] = entry;
   return readNextEntry(name, collsToRead);
 }
 
@@ -66,8 +67,8 @@ std::vector<std::string_view> SIOReader::getAvailableCategories() const {
   return recordNames;
 }
 
-unsigned SIOReader::getEntries(const std::string& name) const {
-  return m_tocRecord.getNRecords(name);
+unsigned SIOReader::getEntries(std::string_view name) const {
+  return m_tocRecord.getNRecords(std::string(name));
 }
 
 bool SIOReader::readFileTOCRecord() {

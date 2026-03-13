@@ -23,7 +23,7 @@ private:
   struct WriterConcept {
     virtual ~WriterConcept() = default;
 
-    virtual void writeFrame(const podio::Frame& frame, const std::string& category,
+    virtual void writeFrame(const podio::Frame& frame, std::string_view category,
                             const std::vector<std::string>& collections) = 0;
     virtual void finish() = 0;
   };
@@ -40,7 +40,7 @@ private:
 
     ~WriterModel() override = default;
 
-    void writeFrame(const podio::Frame& frame, const std::string& category,
+    void writeFrame(const podio::Frame& frame, std::string_view category,
                     const std::vector<std::string>& collections) override {
       return m_writer->writeFrame(frame, category, collections);
     }
@@ -78,7 +78,7 @@ public:
   ///
   /// @param frame    The frame to write
   /// @param category The category name under which this frame should be stored
-  void writeFrame(const podio::Frame& frame, const std::string& category) {
+  void writeFrame(const podio::Frame& frame, std::string_view category) {
     return m_self->writeFrame(frame, category, frame.getAvailableCollections());
   }
 
@@ -90,7 +90,7 @@ public:
   /// @param category     The category name under which this Frame should be
   ///                     stored
   /// @param collections  The collection names that should be written
-  void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collections) {
+  void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collections) {
     return m_self->writeFrame(frame, category, collections);
   }
 

@@ -29,8 +29,9 @@ namespace podio {
 template <typename T>
 void RNTupleReader::readParams(const std::string& name, const unsigned localEntry, const unsigned readerIndex,
                                GenericParameters& params) {
-  auto keyView = m_readers[name][readerIndex]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto valueView = m_readers[name][readerIndex]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
+  auto keyView = m_readers.at(name)[readerIndex]->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
+  auto valueView =
+      m_readers.at(name)[readerIndex]->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
   params.loadFrom(keyView(localEntry), valueView(localEntry));
 }
@@ -47,18 +48,19 @@ GenericParameters RNTupleReader::readEventMetaData(const std::string& name, cons
   return params;
 }
 
-bool RNTupleReader::initCategory(const std::string& category) {
+bool RNTupleReader::initCategory(std::string_view category) {
   if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {
     return false;
   }
   // Assume that the metadata is the same in all files
   const auto& filename = m_filenames[0];
+  const std::string cat(category);
 
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
-      {root_utils::collInfoName(category)});
+      {root_utils::collInfoName(cat)});
 
-  m_collectionInfo[category] = collInfo(0);
-  m_idTables[category] = root_utils::makeCollIdTable(collInfo(0));
+  m_collectionInfo[cat] = collInfo(0);
+  m_idTables[cat] = root_utils::makeCollIdTable(collInfo(0));
 
   return true;
 }
@@ -123,7 +125,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-unsigned RNTupleReader::getEntries(const std::string& name) const {
+unsigned RNTupleReader::getEntries(std::string_view name) const {
   if (const auto it = m_totalEntries.find(name); it != m_totalEntries.end()) {
     return it->second;
   }
@@ -139,27 +141,29 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
   return cats;
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(const std::string& name,
+std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view name,
                                                             const std::vector<std::string>& collsToRead) {
-  return readEntry(name, m_entries[name], collsToRead);
+  const std::string nameStr(name);
+  return readEntry(nameStr, m_entries[nameStr], collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& category, const unsigned entNum,
+std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
-  if (m_totalEntries.find(category) == m_totalEntries.end()) {
-    getEntries(category);
+  const std::string cat(category);
+  if (m_totalEntries.find(cat) == m_totalEntries.end()) {
+    getEntries(cat);
   }
-  if (entNum >= m_totalEntries[category]) {
+  if (entNum >= m_totalEntries[cat]) {
     return nullptr;
   }
 
-  if (m_collectionInfo.find(category) == m_collectionInfo.end()) {
-    if (!initCategory(category)) {
+  if (m_collectionInfo.find(cat) == m_collectionInfo.end()) {
+    if (!initCategory(cat)) {
       return nullptr;
     }
   }
 
-  const auto& collInfo = m_collectionInfo[category];
+  const auto& collInfo = m_collectionInfo[cat];
   // Make sure to not silently ignore non-existant but requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
@@ -169,21 +173,21 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
   }
 
-  m_entries[category] = entNum + 1;
+  m_entries[cat] = entNum + 1;
 
   // m_readerEntries contains the accumulated entries for all the readers
   // therefore, the first number that is lower or equal to the entry number
   // is at the index of the reader that contains the entry
-  const auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
+  const auto upper = std::ranges::upper_bound(m_readerEntries[cat], entNum);
   const auto localEntry = entNum - *(upper - 1);
-  const auto readerIndex = upper - 1 - m_readerEntries[category].begin();
+  const auto readerIndex = upper - 1 - m_readerEntries[cat].begin();
 
   ROOTFrameData::BufferMap buffers;
   // We need to create a non-bare entry here, because the entries for the
   // parameters are not explicitly (re)set and we need them default initialized.
   // In principle we would only need a bare entry for the collection data, since
   // we set all the fields there in any case.
-  const auto dentry = m_readers[category][readerIndex]->GetModel().CreateEntry();
+  const auto dentry = m_readers[cat][readerIndex]->GetModel().CreateEntry();
 
   for (const auto& coll : collInfo) {
     if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
@@ -231,11 +235,11 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     buffers.emplace(coll.name, std::move(collBuffers));
   }
 
-  m_readers[category][readerIndex]->LoadEntry(localEntry, *dentry);
+  m_readers[cat][readerIndex]->LoadEntry(localEntry, *dentry);
 
-  auto parameters = readEventMetaData(category, localEntry, readerIndex);
+  auto parameters = readEventMetaData(cat, localEntry, readerIndex);
 
-  return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
+  return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[cat], std::move(parameters));
 }
 
 } // namespace podio

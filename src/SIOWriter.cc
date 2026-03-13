@@ -28,11 +28,11 @@ SIOWriter::~SIOWriter() {
   finish();
 }
 
-void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void SIOWriter::writeFrame(const podio::Frame& frame, std::string_view category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+void SIOWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                            const std::vector<std::string>& collsToWrite) {
   std::vector<sio_utils::StoreCollection> collections;
   collections.reserve(collsToWrite.size());
@@ -44,12 +44,13 @@ void SIOWriter::writeFrame(const podio::Frame& frame, const std::string& categor
   // Write necessary metadata and the actual data into two different records.
   // Otherwise we cannot easily unpack the data record, because necessary
   // information is contained within the record.
+  const std::string catStr(category);
   sio::block_list tableBlocks;
   tableBlocks.emplace_back(sio_utils::createCollIDBlock(collections, frame.getCollectionIDTableForWrite()));
-  m_tocRecord.addRecord(category, sio_utils::writeRecord(tableBlocks, category + "_HEADER", m_stream));
+  m_tocRecord.addRecord(catStr, sio_utils::writeRecord(tableBlocks, catStr + "_HEADER", m_stream));
 
   const auto blocks = sio_utils::createBlocks(collections, frame.getParameters());
-  sio_utils::writeRecord(blocks, category, m_stream);
+  sio_utils::writeRecord(blocks, catStr, m_stream);
 }
 
 void SIOWriter::finish() {

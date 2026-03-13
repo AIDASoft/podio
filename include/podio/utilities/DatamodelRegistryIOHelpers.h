@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -56,12 +57,12 @@ public:
   /// name.
   ///
   /// @param name The name of the datamodel
-  const std::string_view getDatamodelDefinition(const std::string& name) const;
+  const std::string_view getDatamodelDefinition(std::string_view name) const;
 
   /// Get all names of the datamodels that have been read from file
   std::vector<std::string> getAvailableDatamodels() const;
 
-  std::optional<podio::version::Version> getDatamodelVersion(const std::string& name) const;
+  std::optional<podio::version::Version> getDatamodelVersion(std::string_view name) const;
 
 protected:
   MapType m_availEDMDefs{};

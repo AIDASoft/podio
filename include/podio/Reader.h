@@ -23,14 +23,14 @@ private:
   struct ReaderConcept {
     virtual ~ReaderConcept() = default;
 
-    virtual podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead) = 0;
-    virtual podio::Frame readFrame(const std::string& name, size_t index,
+    virtual podio::Frame readNextFrame(std::string_view name, const std::vector<std::string>& collsToRead) = 0;
+    virtual podio::Frame readFrame(std::string_view name, size_t index,
                                    const std::vector<std::string>& collsToRead) = 0;
-    virtual size_t getEntries(const std::string& name) const = 0;
+    virtual size_t getEntries(std::string_view name) const = 0;
     virtual podio::version::Version currentFileVersion() const = 0;
-    virtual std::optional<podio::version::Version> currentFileVersion(const std::string& name) const = 0;
+    virtual std::optional<podio::version::Version> currentFileVersion(std::string_view name) const = 0;
     virtual std::vector<std::string_view> getAvailableCategories() const = 0;
-    virtual const std::string_view getDatamodelDefinition(const std::string& name) const = 0;
+    virtual const std::string_view getDatamodelDefinition(std::string_view name) const = 0;
     virtual std::vector<std::string> getAvailableDatamodels() const = 0;
   };
 
@@ -46,31 +46,31 @@ private:
 
     ~ReaderModel() override = default;
 
-    podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead) override {
+    podio::Frame readNextFrame(std::string_view name, const std::vector<std::string>& collsToRead) override {
       auto maybeFrame = m_reader->readNextEntry(name, collsToRead);
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Failed reading category " + name + " (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + std::string(name) + " (reading beyond bounds?)");
     }
 
-    podio::Frame readFrame(const std::string& name, size_t index,
+    podio::Frame readFrame(std::string_view name, size_t index,
                            const std::vector<std::string>& collsToRead) override {
       auto maybeFrame = m_reader->readEntry(name, index, collsToRead);
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) +
-                               " (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + std::string(name) + " at frame " +
+                               std::to_string(index) + " (reading beyond bounds?)");
     }
-    size_t getEntries(const std::string& name) const override {
+    size_t getEntries(std::string_view name) const override {
       return m_reader->getEntries(name);
     }
     podio::version::Version currentFileVersion() const override {
       return m_reader->currentFileVersion();
     }
 
-    std::optional<podio::version::Version> currentFileVersion(const std::string& name) const override {
+    std::optional<podio::version::Version> currentFileVersion(std::string_view name) const override {
       return m_reader->currentFileVersion(name);
     }
 
@@ -78,7 +78,7 @@ private:
       return m_reader->getAvailableCategories();
     }
 
-    const std::string_view getDatamodelDefinition(const std::string& name) const override {
+    const std::string_view getDatamodelDefinition(std::string_view name) const override {
       return m_reader->getDatamodelDefinition(name);
     }
 
@@ -115,7 +115,7 @@ public:
   ///
   /// @throws std::invalid_argument in case the category is not available or in
   ///         case no more entries are available
-  podio::Frame readNextFrame(const std::string& name, const std::vector<std::string>& collsToRead = {}) {
+  podio::Frame readNextFrame(std::string_view name, const std::vector<std::string>& collsToRead = {}) {
     return m_self->readNextFrame(name, collsToRead);
   }
 
@@ -142,7 +142,7 @@ public:
   ///
   /// @throws std::invalid_argument in case the category is not available or in
   ///         case the specified entry is not available
-  podio::Frame readFrame(const std::string& name, size_t index, const std::vector<std::string>& collsToRead = {}) {
+  podio::Frame readFrame(std::string_view name, size_t index, const std::vector<std::string>& collsToRead = {}) {
     return m_self->readFrame(name, index, collsToRead);
   }
 
@@ -164,7 +164,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  size_t getEntries(const std::string& name) const {
+  size_t getEntries(std::string_view name) const {
     return m_self->getEntries(name);
   }
 
@@ -190,7 +190,7 @@ public:
   ///
   /// @returns The (build) version of the datamodel if available or an empty
   ///          optional
-  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
     return m_self->currentFileVersion(name);
   }
 
@@ -206,7 +206,7 @@ public:
   /// @param name The name of the datamodel
   ///
   /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(const std::string& name) const {
+  const std::string_view getDatamodelDefinition(std::string_view name) const {
     return m_self->getDatamodelDefinition(name);
   }
 

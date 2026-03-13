@@ -27,7 +27,7 @@ std::vector<std::tuple<std::string, std::string>> DatamodelDefinitionCollector::
   return edmDefinitions;
 }
 
-const std::string_view DatamodelDefinitionHolder::getDatamodelDefinition(const std::string& name) const {
+const std::string_view DatamodelDefinitionHolder::getDatamodelDefinition(std::string_view name) const {
   const auto it =
       std::ranges::find_if(m_availEDMDefs, [&name](const auto& entry) { return std::get<0>(entry) == name; });
 
@@ -47,7 +47,7 @@ std::vector<std::string> DatamodelDefinitionHolder::getAvailableDatamodels() con
   return defs;
 }
 
-std::optional<podio::version::Version> DatamodelDefinitionHolder::getDatamodelVersion(const std::string& name) const {
+std::optional<podio::version::Version> DatamodelDefinitionHolder::getDatamodelVersion(std::string_view name) const {
   const auto it = std::find_if(m_edmVersions.begin(), m_edmVersions.end(),
                                [&name](const auto& entry) { return std::get<0>(entry) == name; });
   if (it != m_edmVersions.end()) {

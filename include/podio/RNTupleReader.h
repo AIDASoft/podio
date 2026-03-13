@@ -6,6 +6,8 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
+#include "podio/utilities/TypeHelpers.h"
+
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -73,7 +75,7 @@ public:
   ///
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(std::string_view name,
                                                       const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
@@ -88,7 +90,7 @@ public:
   ///
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+  std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
   /// Get the names of all the available Frame categories in the current file(s).
@@ -101,7 +103,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  unsigned getEntries(const std::string& name) const;
+  unsigned getEntries(std::string_view name) const;
 
   /// Get the build version of podio that has been used to write the current
   /// file
@@ -118,7 +120,7 @@ public:
   ///
   /// @returns The (build) version of the datamodel if available or an empty
   ///          optional
-  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
     return m_datamodelHolder.getDatamodelVersion(name);
   }
 
@@ -127,7 +129,7 @@ public:
   /// @param name The name of the datamodel
   ///
   /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(const std::string& name) const {
+  const std::string_view getDatamodelDefinition(std::string_view name) const {
     return m_datamodelHolder.getDatamodelDefinition(name);
   }
 
@@ -143,7 +145,7 @@ private:
    * Initialize the given category by filling the maps with metadata information
    * that will be used later
    */
-  bool initCategory(const std::string& category);
+  bool initCategory(std::string_view category);
 
   /**
    * Read and reconstruct the generic parameters of the Frame
@@ -159,24 +161,31 @@ private:
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  std::unordered_map<std::string, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
+  std::unordered_map<std::string, std::vector<std::unique_ptr<root_compat::RNTupleReader>>,
+                     podio::detail::TransparentStringHash, std::equal_to<>>
+      m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
-  std::unordered_map<std::string, unsigned> m_entries{};
+  std::unordered_map<std::string, unsigned, podio::detail::TransparentStringHash, std::equal_to<>> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts
   // For example, if we have 3 readers and the first one has 10 entries, the second one 20 and the third one 30
   // then the vector will be {0, 10, 30}
   // 60 is not needed because anything after 30 will be in the last reader
-  std::unordered_map<std::string, std::vector<unsigned>> m_readerEntries{};
-  std::unordered_map<std::string, unsigned> m_totalEntries{};
+  std::unordered_map<std::string, std::vector<unsigned>, podio::detail::TransparentStringHash, std::equal_to<>>
+      m_readerEntries{};
+  std::unordered_map<std::string, unsigned, podio::detail::TransparentStringHash, std::equal_to<>> m_totalEntries{};
 
   /// Map each category to the collections that have been written and are available
-  std::unordered_map<std::string, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
+  std::unordered_map<std::string, std::vector<podio::root_utils::CollectionWriteInfo>,
+                     podio::detail::TransparentStringHash, std::equal_to<>>
+      m_collectionInfo{};
 
   std::vector<std::string> m_availableCategories{};
 
-  std::unordered_map<std::string, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
+  std::unordered_map<std::string, std::shared_ptr<podio::CollectionIDTable>, podio::detail::TransparentStringHash,
+                     std::equal_to<>>
+      m_idTables{};
 };
 
 } // namespace podio

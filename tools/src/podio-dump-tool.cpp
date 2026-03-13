@@ -250,7 +250,7 @@ void printGeneralInfo(const podio::Reader& reader, const std::string& filename) 
 
   std::vector<std::tuple<std::string, size_t>> rows{};
   for (const auto& cat : reader.getAvailableCategories()) {
-    rows.emplace_back(cat, reader.getEntries(std::string(cat)));
+    rows.emplace_back(cat, reader.getEntries(cat));
   }
   fmt::println("\nFrame categories in this file:");
   printTable(rows, {"Name", "Entries"});
