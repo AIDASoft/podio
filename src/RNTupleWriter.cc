@@ -90,8 +90,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   if (new_category) {
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    const auto catStr = std::string(category);
-    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), catStr, *m_file.get(), {});
+    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
 
     catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
