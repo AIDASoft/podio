@@ -3,9 +3,12 @@
 
 #include <algorithm>
 #include <concepts>
+#include <functional>
 #include <iterator>
 #include <map>
 #include <ranges>
+#include <string>
+#include <string_view>
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
@@ -48,6 +51,20 @@ namespace detail {
   // and other compile-time checks that should always fail.
   template <typename T>
   inline constexpr bool always_false = false;
+
+  /// Transparent hash for std::string keyed unordered_maps that enables
+  /// heterogeneous lookup with std::string_view (and const char*) without
+  /// allocating a temporary std::string.
+  /// Use together with std::equal_to<> as the key equality comparator.
+  struct TransparentStringHash {
+    using is_transparent = void;
+    std::size_t operator()(std::string_view sv) const noexcept {
+      return std::hash<std::string_view>{}(sv);
+    }
+    std::size_t operator()(const std::string& s) const noexcept {
+      return std::hash<std::string_view>{}(s);
+    }
+  };
 
   /// Helper struct to determine whether a given type T is in a tuple of types
   /// that act as a type list in this case

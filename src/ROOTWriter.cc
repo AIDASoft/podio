@@ -20,18 +20,19 @@ ROOTWriter::~ROOTWriter() {
   finish();
 }
 
-void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                             const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
   // Use the TTree as proxy here to decide whether this category has already
   // been initialized
   if (catInfo.tree == nullptr) {
     catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
-    catInfo.tree = new TTree(category.c_str(), (category + " data tree").c_str());
+    const auto catStr = std::string(category);
+    catInfo.tree = new TTree(catStr.c_str(), (catStr + " data tree").c_str());
     catInfo.tree->SetDirectory(&m_file);
   }
 
@@ -42,7 +43,8 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
     if (!coll) {
       // Make sure all collections that we want to write are actually available
       // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
-      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+      throw std::runtime_error("Collection '" + name + "' in category '" + std::string(category) +
+                               "' is not available in Frame");
     }
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
   }
@@ -55,7 +57,8 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
     // Make sure that the category contents are consistent with the initial
     // frame in the category
     if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
-      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
+      throw std::runtime_error("Trying to write category '" + std::string(category) +
+                               "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
     }
     fillParams(catInfo, frame.getParameters());
@@ -65,12 +68,12 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, const std::string& catego
   catInfo.tree->Fill();
 }
 
-ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(const std::string& category) {
+ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(std::string_view category) {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
 
-  const auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
+  const auto [it, _] = m_categories.try_emplace(std::string(category), CategoryInfo{});
   return it->second;
 }
 
@@ -204,7 +207,7 @@ void ROOTWriter::finish() {
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
-ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return root_utils::getInconsistentColls(it->second.collsToWrite, collsToWrite);
   }
