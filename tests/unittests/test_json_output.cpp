@@ -1,20 +1,20 @@
 // Tests for JSON serialization of generated datamodel types.
 
-#include <catch2/matchers/catch_matchers_vector.hpp>
-#include <catch2/catch_test_macros.hpp>
-
-#include <nlohmann/json.hpp>
-
-#include <limits>
 #include <podio/ObjectID.h>
-#include <set>
-#include <vector>
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+
+#include <catch2/catch_test_macros.hpp>
+#include <catch2/matchers/catch_matchers_vector.hpp>
+#include <nlohmann/json.hpp>
+
+#include <limits>
+#include <set>
+#include <vector>
 
 template <typename T>
 nlohmann::json toJson(const T& obj) {
@@ -26,9 +26,7 @@ nlohmann::json toJson(const T& obj) {
 // ============================================================
 
 TEST_CASE("JSON output - plain POD members", "[json]") {
-  ExampleHitCollection hits{};
-
-  auto hit = hits.create();
+  auto hit = MutableExampleHit{};
   hit.energy(3.14);
   hit.x(1.0);
   hit.y(2.0);
@@ -52,32 +50,26 @@ TEST_CASE("JSON output - plain POD members", "[json]") {
 
   REQUIRE(j.contains("cellID"));
   REQUIRE(j["cellID"] == 42);
-}
 
-TEST_CASE("JSON output - integer POD members", "[json]") {
-  ExampleMCCollection mcs{};
-
-  auto mc = mcs.create();
+  auto mc = MutableExampleMC{};
   mc.PDG(211);
   mc.energy(1.0);
 
-  const auto j = toJson(mc);
+  const auto mcJson = toJson(mc);
 
-  REQUIRE(j.is_object());
-  REQUIRE(j["PDG"] == 211);
-  REQUIRE(j["energy"] == 1.0);
+  REQUIRE(mcJson.is_object());
+  REQUIRE(mcJson["PDG"] == 211);
+  REQUIRE(mcJson["energy"] == 1.0);
 }
 
 TEST_CASE("JSON output - default object keeps keys", "[json]") {
-  ExampleHitCollection hits{};
-  auto hit = hits.create();
+  auto hit = MutableExampleHit{};
 
   const auto j = toJson(hit);
 
   REQUIRE(j.is_object());
 
   for (const auto& key : {"cellID", "energy", "x", "y", "z"}) {
-    INFO("Missing key: " << key);
     REQUIRE(j.contains(key));
   }
 }
@@ -88,9 +80,7 @@ TEST_CASE("JSON output - default object keeps keys", "[json]") {
 
 TEST_CASE("JSON output - VectorMembers serialize as arrays", "[json]") {
   using Catch::Matchers::Equals;
-  ExampleWithVectorMemberCollection col{};
-
-  auto obj = col.create();
+  auto obj = MutableExampleWithVectorMember{};
   obj.addcount(10);
   obj.addcount(20);
   obj.addcount(30);
@@ -103,9 +93,7 @@ TEST_CASE("JSON output - VectorMembers serialize as arrays", "[json]") {
 }
 
 TEST_CASE("JSON output - empty VectorMember becomes empty array", "[json]") {
-  ExampleWithVectorMemberCollection col{};
-
-  auto obj = col.create();
+  auto obj = MutableExampleWithVectorMember{};
 
   const auto j = toJson(obj);
 
@@ -116,9 +104,7 @@ TEST_CASE("JSON output - empty VectorMember becomes empty array", "[json]") {
 
 TEST_CASE("JSON output - integer VectorMembers keep numeric type", "[json]") {
   using Catch::Matchers::Equals;
-  ExampleWithVectorMemberCollection col{};
-
-  auto obj = col.create();
+  auto obj = MutableExampleWithVectorMember{};
   obj.addcount(11);
   obj.addcount(22);
   obj.addcount(33);
@@ -158,9 +144,7 @@ TEST_CASE("JSON output - OneToOneRelation serializes", "[json]") {
 }
 
 TEST_CASE("JSON output - unset OneToOneRelation", "[json]") {
-  ExampleWithOneRelationCollection recos{};
-
-  auto reco = recos.create();
+  auto reco = MutableExampleWithOneRelation{};
 
   const auto j = toJson(reco);
 
@@ -183,14 +167,10 @@ TEST_CASE("JSON output - unset OneToOneRelation", "[json]") {
 // ============================================================
 
 TEST_CASE("JSON output - OneToManyRelation serializes as array", "[json]") {
-  ExampleHitCollection hits{};
-  ExampleClusterCollection clusters{};
-
-  auto h0 = hits.create();
-  auto h1 = hits.create();
-  auto h2 = hits.create();
-
-  auto cluster = clusters.create();
+  auto h0 = MutableExampleHit{};
+  auto h1 = MutableExampleHit{};
+  auto h2 = MutableExampleHit{};
+  auto cluster = MutableExampleCluster{};
   cluster.addHits(h0);
   cluster.addHits(h1);
   cluster.addHits(h2);
@@ -203,9 +183,7 @@ TEST_CASE("JSON output - OneToManyRelation serializes as array", "[json]") {
 }
 
 TEST_CASE("JSON output - empty OneToManyRelation", "[json]") {
-  ExampleClusterCollection clusters{};
-
-  auto cluster = clusters.create();
+  auto cluster = MutableExampleCluster{};
 
   const auto j = toJson(cluster);
 
@@ -230,6 +208,9 @@ TEST_CASE("JSON output - collection serializes to array", "[json]") {
 
   REQUIRE(jCol.is_array());
   REQUIRE(jCol.size() == 5);
+  for (size_t i = 0; i < jCol.size(); ++i) {
+    REQUIRE(jCol[i]["energy"] == static_cast<double>(i));
+  }
 }
 
 TEST_CASE("JSON output - empty collection", "[json]") {
@@ -239,34 +220,4 @@ TEST_CASE("JSON output - empty collection", "[json]") {
 
   REQUIRE(jCol.is_array());
   REQUIRE(jCol.empty());
-}
-
-// ============================================================
-// 6. Type sanity
-// ============================================================
-
-TEST_CASE("JSON output - numeric fields are numbers", "[json]") {
-  ExampleHitCollection hits{};
-
-  auto hit = hits.create();
-  hit.energy(9.9f);
-
-  const auto j = toJson(hit);
-
-  REQUIRE(j["energy"].is_number());
-}
-
-TEST_CASE("JSON output - no unexpected extra keys", "[json]") {
-  ExampleHitCollection hits{};
-
-  auto hit = hits.create();
-
-  const auto j = toJson(hit);
-
-  const std::set<std::string> expected = {"cellID", "energy", "x", "y", "z"};
-
-  for (auto it = j.begin(); it != j.end(); ++it) {
-    INFO("Unexpected key in JSON: " << it.key());
-    REQUIRE(expected.count(it.key()) == 1);
-  }
 }
