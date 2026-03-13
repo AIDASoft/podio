@@ -54,13 +54,12 @@ bool RNTupleReader::initCategory(std::string_view category) {
   }
   // Assume that the metadata is the same in all files
   const auto& filename = m_filenames[0];
-  const std::string cat(category);
 
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
-      {root_utils::collInfoName(cat)});
+      {root_utils::collInfoName(category)});
 
-  m_collectionInfo[cat] = collInfo(0);
-  m_idTables[cat] = root_utils::makeCollIdTable(collInfo(0));
+  m_collectionInfo.emplace(category, collInfo(0));
+  m_idTables.emplace(category, root_utils::makeCollIdTable(collInfo(0)));
 
   return true;
 }
