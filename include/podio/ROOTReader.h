@@ -6,7 +6,7 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
-#include "podio/utilities/TypeHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 
 #include "TChain.h"
 
@@ -200,9 +200,7 @@ private:
                                                                    bool reloadBranches, unsigned int localEntry);
 
   std::unique_ptr<TChain> m_metaChain{nullptr}; ///< The metadata tree
-  std::unordered_map<std::string, CategoryInfo, podio::detail::TransparentStringHash,
-                     std::equal_to<>>
-      m_categories{}; ///< All categories
+  podio::StringKeyMap<CategoryInfo> m_categories{}; ///< All categories
   std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
 
   podio::version::Version m_fileVersion{0, 0, 0};

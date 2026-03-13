@@ -6,7 +6,7 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
-#include "podio/utilities/TypeHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 
 #include <string>
 #include <string_view>
@@ -161,31 +161,24 @@ private:
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  std::unordered_map<std::string, std::vector<std::unique_ptr<root_compat::RNTupleReader>>,
-                     podio::detail::TransparentStringHash, std::equal_to<>>
-      m_readers{};
+  podio::StringKeyMap<std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
-  std::unordered_map<std::string, unsigned, podio::detail::TransparentStringHash, std::equal_to<>> m_entries{};
+  podio::StringKeyMap<unsigned> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts
   // For example, if we have 3 readers and the first one has 10 entries, the second one 20 and the third one 30
   // then the vector will be {0, 10, 30}
   // 60 is not needed because anything after 30 will be in the last reader
-  std::unordered_map<std::string, std::vector<unsigned>, podio::detail::TransparentStringHash, std::equal_to<>>
-      m_readerEntries{};
-  std::unordered_map<std::string, unsigned, podio::detail::TransparentStringHash, std::equal_to<>> m_totalEntries{};
+  podio::StringKeyMap<std::vector<unsigned>> m_readerEntries{};
+  podio::StringKeyMap<unsigned> m_totalEntries{};
 
   /// Map each category to the collections that have been written and are available
-  std::unordered_map<std::string, std::vector<podio::root_utils::CollectionWriteInfo>,
-                     podio::detail::TransparentStringHash, std::equal_to<>>
-      m_collectionInfo{};
+  podio::StringKeyMap<std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
 
   std::vector<std::string> m_availableCategories{};
 
-  std::unordered_map<std::string, std::shared_ptr<podio::CollectionIDTable>, podio::detail::TransparentStringHash,
-                     std::equal_to<>>
-      m_idTables{};
+  podio::StringKeyMap<std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
 };
 
 } // namespace podio
