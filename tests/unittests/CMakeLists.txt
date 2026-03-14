@@ -74,6 +74,7 @@ else()
       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
       TEST_PREFIX "UT_" # make it possible to filter easily with -R ^UT
       TEST_SPEC ${filter_tests} # discover only tests that are known to not fail
+      DL_PATHS ${PROJECT_BINARY_DIR}/src # make sure the built libpodio is found when discovering tests
         PROPERTIES
         ENVIRONMENT
         PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
