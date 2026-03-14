@@ -14,7 +14,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     auto maybeBuffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -26,18 +26,13 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->empty());
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    delete buffers.vectorMembers;
   }
 
   SECTION("Type with relations") {
     auto maybeBuffers = factory.createBuffers("ExampleClusterCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -49,11 +44,6 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->size() == 2);
     REQUIRE(buffers.vectorMembers->empty());
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    delete buffers.vectorMembers;
   }
 
   SECTION("Type with vector members") {
@@ -61,7 +51,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
         factory.createBuffers("ExampleWithVectorMemberCollection", datamodel::meta::schemaVersion, false);
 
     REQUIRE(maybeBuffers.has_value());
-    auto buffers = maybeBuffers.value();
+    auto& buffers = maybeBuffers.value();
 
     // All pointers should be initialized
     REQUIRE(buffers.data);
@@ -73,13 +63,6 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->size() == 1);
-
-    // Do the necessary cleanup
-    delete dataBuffers;
-    delete buffers.references;
-    auto vecBuffer = static_cast<std::vector<int>*>((*buffers.vectorMembers)[0].second);
-    delete vecBuffer;
-    delete buffers.vectorMembers;
   }
 }
 

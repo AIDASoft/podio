@@ -468,11 +468,13 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
       std::unique_ptr<podio::CollectionBase> coll{nullptr};
       // Subset collections do not need schema evolution (by definition)
       if (buffers->data == nullptr) {
-        coll = buffers->createCollection(buffers.value(), true);
+        coll = buffers->createCollection(std::move(buffers.value()), true);
       } else {
-        auto evolvedBuffers = podio::SchemaEvolution::instance().evolveBuffers(buffers.value(), buffers->schemaVersion,
-                                                                               std::string(buffers->type));
-        coll = evolvedBuffers.createCollection(evolvedBuffers, false);
+        const auto version = buffers->schemaVersion;
+        const std::string collType{buffers->type};
+        auto evolvedBuffers =
+            podio::SchemaEvolution::instance().evolveBuffers(std::move(buffers.value()), version, collType);
+        coll = evolvedBuffers.createCollection(std::move(evolvedBuffers), false);
       }
 
       coll->prepareAfterRead();

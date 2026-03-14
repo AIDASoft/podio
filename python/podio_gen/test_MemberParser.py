@@ -180,9 +180,9 @@ class MemberParserTest(unittest.TestCase):
         self.assertEqual(parsed.bare_type, "SomeValue")
 
         parsed = parser.parse(
-            r"edm4hep::Vector3d v{1, 2, 3, 4} // for aggregates we do not validate init values"
+            r"edm4hepLike::Vector3d v{1, 2, 3, 4} // for aggregates we do not validate init values"
         )
-        self.assertEqual(parsed.full_type, "edm4hep::Vector3d")
+        self.assertEqual(parsed.full_type, "edm4hepLike::Vector3d")
         self.assertEqual(parsed.default_val, "1, 2, 3, 4")
 
         # There are cases where we could technically validate this via a syntax

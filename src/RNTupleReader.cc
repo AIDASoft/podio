@@ -191,14 +191,14 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
     }
     const auto& collType = coll.dataType;
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    const auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
+    auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
 
     if (!maybeBuffers) {
       std::cerr << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
                 << " and schema version " << coll.schemaVersion << std::endl;
       continue;
     }
-    const auto& collBuffers = maybeBuffers.value();
+    auto& collBuffers = maybeBuffers.value();
 
     try {
       if (coll.isSubset) {
@@ -225,6 +225,11 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(const std::string& categ
         }
       }
     } catch (const RException&) {
+      // We disable the automatic cleanup by clearing the delete function,
+      // because it seems ROOT still calls the destructor of the collection
+      // buffers when LoadEntry fails, which leads to a double deletion in case
+      // of a partial binding in BindRawPtr.
+      collBuffers.deleteBuffers = {};
       continue;
     }
 

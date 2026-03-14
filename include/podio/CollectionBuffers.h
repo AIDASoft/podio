@@ -48,7 +48,7 @@ struct CollectionReadBuffers {
   SchemaVersionT schemaVersion{0};
   std::string_view type{};
 
-  using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers, bool)>;
+  using CreateFuncT = std::function<std::unique_ptr<podio::CollectionBase>(podio::CollectionReadBuffers&&, bool)>;
 
   using DeleteFuncT = std::function<void(CollectionReadBuffers&)>;
 
@@ -64,8 +64,54 @@ struct CollectionReadBuffers {
   }
 
   CollectionReadBuffers() = default;
-  CollectionReadBuffers(const CollectionReadBuffers&) = default;
-  CollectionReadBuffers& operator=(const CollectionReadBuffers&) = default;
+
+  // Copying is not allowed since we own the buffers
+  CollectionReadBuffers(const CollectionReadBuffers&) = delete;
+  CollectionReadBuffers& operator=(const CollectionReadBuffers&) = delete;
+
+  CollectionReadBuffers(CollectionReadBuffers&& other) :
+      data(other.data),
+      references(other.references),
+      vectorMembers(other.vectorMembers),
+      schemaVersion(other.schemaVersion),
+      type(other.type),
+      createCollection(std::move(other.createCollection)),
+      deleteBuffers(std::move(other.deleteBuffers)) {
+    other.data = nullptr;
+    other.references = nullptr;
+    other.vectorMembers = nullptr;
+    other.schemaVersion = 0;
+    other.type = {};
+  }
+
+  CollectionReadBuffers& operator=(CollectionReadBuffers&& other) {
+    if (this != &other) {
+      // Clean up our own buffers first
+      if (deleteBuffers) {
+        deleteBuffers(*this);
+      }
+      data = other.data;
+      references = other.references;
+      vectorMembers = other.vectorMembers;
+      schemaVersion = other.schemaVersion;
+      type = other.type;
+      createCollection = std::move(other.createCollection);
+      deleteBuffers = std::move(other.deleteBuffers);
+
+      other.data = nullptr;
+      other.references = nullptr;
+      other.vectorMembers = nullptr;
+      other.schemaVersion = 0;
+      other.type = {};
+    }
+    return *this;
+  }
+
+  ~CollectionReadBuffers() {
+    if (deleteBuffers) {
+      deleteBuffers(*this);
+    }
+  }
 
   CollectionReadBuffers(CollectionWriteBuffers buffers) :
       data(buffers.data), references(buffers.references), vectorMembers(buffers.vectorMembers) {
@@ -84,9 +130,8 @@ struct CollectionReadBuffers {
 
   CreateFuncT createCollection{};
 
-  // Workaround for https://github.com/AIDASoft/podio/issues/500
-  // We need a function that explicitly deletes the buffers, but for this we
-  // need type information, so we attach a delete function at generation time
+  // Type-erased deleter for the owned buffers. Set at generation time since
+  // only the generated code knows the concrete types behind the void pointers
   DeleteFuncT deleteBuffers{};
 };
 

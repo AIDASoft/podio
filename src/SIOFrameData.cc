@@ -45,7 +45,7 @@ std::optional<podio::CollectionReadBuffers> SIOFrameData::getCollectionBuffers(c
 
     // Mark this block as consumed
     m_availableBlocks[index] = 0;
-    return {dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers()};
+    return dynamic_cast<podio::SIOBlock*>(m_blocks[index].get())->getBuffers();
   }
 
   return std::nullopt;
@@ -95,8 +95,6 @@ void SIOFrameData::unpackBuffers() {
   for (size_t i = 1; i < m_blocks.size(); ++i) {
     const auto name = m_idTable.names()[i - 1];
     if (std::ranges::find(m_limitColls, name) == m_limitColls.end()) {
-      auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
-      buffers.deleteBuffers(buffers);
       m_availableBlocks[i] = 0;
     }
   }
@@ -131,15 +129,6 @@ void SIOFrameData::readIdTable() {
   m_idTable = idTableBlock->getTable();
   m_typeNames = idTableBlock->getTypeNames();
   m_subsetCollectionBits = idTableBlock->getSubsetCollectionBits();
-}
-
-SIOFrameData::~SIOFrameData() {
-  for (size_t i = 1; i < m_blocks.size(); ++i) {
-    if (m_availableBlocks[i]) {
-      auto buffers = dynamic_cast<SIOBlock*>(m_blocks[i].get())->getBuffers();
-      buffers.deleteBuffers(buffers);
-    }
-  }
 }
 
 } // namespace podio

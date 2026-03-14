@@ -2,5 +2,9 @@
   <selection>
     <class name="podio::DataSource"/>
     <function name="podio::CreateDataFrame"/>
+
+    <class name="ROOT::VecOps::RVec<std::vector<int>>"/>
+    <class name="ROOT::VecOps::RVec<std::vector<float>>"/>
+    <class name="ROOT::VecOps::RVec<std::vector<double>>"/>
   </selection>
 </lcgdict>
