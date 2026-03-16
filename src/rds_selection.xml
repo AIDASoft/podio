@@ -3,6 +3,14 @@
     <class name="podio::DataSource"/>
     <function name="podio::CreateDataFrame"/>
 
+    <!--
+        FCCAnalyses provides these which will trigger ROOT to load it, which
+        will in turn trigger EDM4hep to be loaded. In case we make any visible
+        symbol change in podio we will fail CI in any environment where there is
+        an EDM4hep version compiled against a version of podio before these
+        changes. Hence, we provide them here to avoid pulling in unnecessary
+        libraries for CI / testing purposes.
+    -->
     <class name="ROOT::VecOps::RVec<std::vector<int>>"/>
     <class name="ROOT::VecOps::RVec<std::vector<float>>"/>
     <class name="ROOT::VecOps::RVec<std::vector<double>>"/>
