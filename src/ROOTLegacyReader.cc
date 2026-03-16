@@ -17,8 +17,7 @@
 
 namespace podio {
 
-std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(std::string_view name,
-                                                               const std::vector<std::string>&) {
+std::unique_ptr<ROOTFrameData> ROOTLegacyReader::readNextEntry(std::string_view name, const std::vector<std::string>&) {
   if (name != m_categoryName) {
     return nullptr;
   }

@@ -54,14 +54,13 @@ private:
       throw std::runtime_error("Failed reading category " + std::string(name) + " (reading beyond bounds?)");
     }
 
-    podio::Frame readFrame(std::string_view name, size_t index,
-                           const std::vector<std::string>& collsToRead) override {
+    podio::Frame readFrame(std::string_view name, size_t index, const std::vector<std::string>& collsToRead) override {
       auto maybeFrame = m_reader->readEntry(name, index, collsToRead);
       if (maybeFrame) {
         return maybeFrame;
       }
-      throw std::runtime_error("Failed reading category " + std::string(name) + " at frame " +
-                               std::to_string(index) + " (reading beyond bounds?)");
+      throw std::runtime_error("Failed reading category " + std::string(name) + " at frame " + std::to_string(index) +
+                               " (reading beyond bounds?)");
     }
     size_t getEntries(std::string_view name) const override {
       return m_reader->getEntries(name);
