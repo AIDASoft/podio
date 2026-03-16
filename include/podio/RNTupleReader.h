@@ -150,11 +150,7 @@ private:
   /**
    * Read and reconstruct the generic parameters of the Frame
    */
-  GenericParameters readEventMetaData(const std::string& name, const unsigned localEntry, const unsigned readerIndex);
-
-  template <typename T>
-  void readParams(const std::string& name, const unsigned entNum, const unsigned readerIndex,
-                  GenericParameters& params);
+  GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
 
