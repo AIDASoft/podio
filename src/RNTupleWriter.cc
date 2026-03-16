@@ -105,7 +105,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
     }
   }
 
-  const auto entry = m_categories.at(std::string(category)).writer->GetModel().CreateBareEntry();
+  const auto entry = catInfo.writer->GetModel().CreateBareEntry();
 
   RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -156,7 +156,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   fillParams<double>(params, catInfo, entry.get());
   fillParams<std::string>(params, catInfo, entry.get());
 
-  m_categories.at(std::string(category)).writer->Fill(*entry);
+  catInfo.writer->Fill(*entry);
 }
 
 std::unique_ptr<root_compat::RNTupleModel>
@@ -231,7 +231,7 @@ RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(std::string_view cat
     return it->second;
   }
 
-  const auto [it, _] = m_categories.try_emplace(std::string(category), CategoryInfo{});
+  const auto [it, _] = m_categories.emplace(category, CategoryInfo{});
   return it->second;
 }
 
