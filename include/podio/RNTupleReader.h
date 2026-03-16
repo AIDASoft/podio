@@ -6,8 +6,6 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
-#include "podio/utilities/MiscHelpers.h"
-
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -157,24 +155,24 @@ private:
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
 
-  podio::StringKeyMap<std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
+  std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
-  podio::StringKeyMap<unsigned> m_entries{};
+  std::unordered_map<std::string_view, unsigned> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts
   // For example, if we have 3 readers and the first one has 10 entries, the second one 20 and the third one 30
   // then the vector will be {0, 10, 30}
   // 60 is not needed because anything after 30 will be in the last reader
-  podio::StringKeyMap<std::vector<unsigned>> m_readerEntries{};
-  podio::StringKeyMap<unsigned> m_totalEntries{};
+  std::unordered_map<std::string_view, std::vector<unsigned>> m_readerEntries{};
+  std::unordered_map<std::string_view, unsigned> m_totalEntries{};
 
   /// Map each category to the collections that have been written and are available
-  podio::StringKeyMap<std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
+  std::unordered_map<std::string_view, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
 
   std::vector<std::string> m_availableCategories{};
 
-  podio::StringKeyMap<std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
+  std::unordered_map<std::string_view, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
 };
 
 } // namespace podio
