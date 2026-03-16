@@ -31,8 +31,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category
   // been initialized
   if (catInfo.tree == nullptr) {
     catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
-    const auto catStr = std::string(category);
-    catInfo.tree = new TTree(catStr.c_str(), (catStr + " data tree").c_str());
+    catInfo.tree = new TTree(category.data(), (std::string(category) + " data tree").c_str());
     catInfo.tree->SetDirectory(&m_file);
   }
 
@@ -73,7 +72,7 @@ ROOTWriter::CategoryInfo& ROOTWriter::getCategoryInfo(std::string_view category)
     return it->second;
   }
 
-  const auto [it, _] = m_categories.try_emplace(std::string(category), CategoryInfo{});
+  const auto [it, _] = m_categories.emplace(category, CategoryInfo{});
   return it->second;
 }
 
