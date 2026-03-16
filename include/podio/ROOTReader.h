@@ -4,7 +4,6 @@
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
-#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
 

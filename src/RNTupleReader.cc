@@ -28,8 +28,6 @@ namespace podio {
 
 template <typename T>
 void readParams(root_compat::RNTupleReader* reader, const unsigned localEntry, GenericParameters& params) {
-  // This lookup cannot fail at this point. We don't use operator[] as it will
-  // only support transparent lookup in c++26
   auto keyView = reader->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
   auto valueView = reader->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
 
