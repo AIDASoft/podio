@@ -55,8 +55,8 @@ bool RNTupleReader::initCategory(std::string_view category) {
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
       {root_utils::collInfoName(category)});
 
-  m_collectionInfo.emplace(category, collInfo(0));
-  m_idTables.emplace(category, root_utils::makeCollIdTable(collInfo(0)));
+  m_collectionInfo[category] = collInfo(0);
+  m_idTables[category] = root_utils::makeCollIdTable(collInfo(0));
 
   return true;
 }
