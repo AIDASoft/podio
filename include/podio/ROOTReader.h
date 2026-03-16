@@ -4,9 +4,9 @@
 #include "podio/ROOTFrameData.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
-#include "podio/utilities/MiscHelpers.h"
 
 #include "TChain.h"
 
@@ -199,9 +199,9 @@ private:
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,
                                                                    bool reloadBranches, unsigned int localEntry);
 
-  std::unique_ptr<TChain> m_metaChain{nullptr}; ///< The metadata tree
-  podio::StringKeyMap<CategoryInfo> m_categories{}; ///< All categories
-  std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
+  std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
+  std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
+  std::vector<std::string> m_availCategories{};                      ///< All available categories from this file
 
   podio::version::Version m_fileVersion{0, 0, 0};
   DatamodelDefinitionHolder m_datamodelHolder{};
