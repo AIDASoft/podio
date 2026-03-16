@@ -34,7 +34,7 @@ public:
     // - Error handling of empty optional
     auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::LinkCollection<FromT, ToT>::typeName),
                                                     sio::version::major_version(version), m_subsetColl);
-    m_buffers = std::move(maybeBuffers).value();
+    m_buffers = std::move(maybeBuffers.value());
 
     if (!m_subsetColl) {
       unsigned size{0};
