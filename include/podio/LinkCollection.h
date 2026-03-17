@@ -11,14 +11,14 @@
 /// Main macro for declaring links. Takes care of registering the necessary
 /// buffer creation functionality with the CollectionBufferFactory.
 #define PODIO_DECLARE_LINK(FromT, ToT)                                                                                 \
-  const static auto PODIO_PP_CONCAT(REGISTERED_LINK_, __COUNTER__) =                                                   \
+  const static auto PODIO_PP_CONCAT(REGISTERED_LINK_, __LINE__) =                                                      \
       podio::detail::registerLinkCollection<FromT, ToT>(podio::LinkCollection<FromT, ToT>::typeName);
 
 #if PODIO_ENABLE_SIO && __has_include("podio/detail/LinkSIOBlock.h")
   #include <podio/detail/LinkSIOBlock.h>
   /// Macro for registering the necessary SIOBlock for a Link with the SIOBlock factory
   #define PODIO_DECLARE_LINK_SIO(FromT, ToT)                                                                           \
-    const static auto PODIO_PP_CONCAT(LINK_SIO_BLOCK_, __COUNTER__) = podio::LinkSIOBlock<FromT, ToT>{};
+    const static auto PODIO_PP_CONCAT(LINK_SIO_BLOCK_, __LINE__) = podio::LinkSIOBlock<FromT, ToT>{};
 #endif
 
 #endif // PODIO_LINKCOLLECTION_H
