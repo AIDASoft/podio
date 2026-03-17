@@ -14,26 +14,26 @@ SchemaEvolution const& SchemaEvolution::instance() {
   return mutInstance();
 }
 
-podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(const podio::CollectionReadBuffers& oldBuffers,
+podio::CollectionReadBuffers SchemaEvolution::evolveBuffers(podio::CollectionReadBuffers&& oldBuffers,
                                                             SchemaVersionT fromVersion,
                                                             const std::string& collType) const {
   if (const auto typeIt = m_versionMapIndices.find(collType); typeIt != m_versionMapIndices.end()) {
     const auto [currentVersion, mapIndex] = typeIt->second;
     if (fromVersion == currentVersion) {
-      return oldBuffers; // Nothing to do here
+      return std::move(oldBuffers); // Nothing to do here
     }
 
     const auto& typeEvolFuncs = m_evolutionFuncs[mapIndex];
     if (fromVersion < typeEvolFuncs.size()) {
       // Do we need this check? In principle we could ensure at registration
       // time that this is always guaranteed
-      return typeEvolFuncs[fromVersion - 1](oldBuffers, fromVersion);
+      return typeEvolFuncs[fromVersion - 1](std::move(oldBuffers), fromVersion);
     }
   }
 
   std::cerr << "PODIO WARNING: evolveBuffers has no knowledge of how to evolve buffers for " << collType
             << " from version " << fromVersion << std::endl; // TODO: exception
-  return oldBuffers;
+  return std::move(oldBuffers);
 }
 
 void SchemaEvolution::registerEvolutionFunc(const std::string& collType, SchemaVersionT fromVersion,

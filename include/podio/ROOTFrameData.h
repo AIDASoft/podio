@@ -19,7 +19,7 @@ public:
   using BufferMap = std::unordered_map<std::string, podio::CollectionReadBuffers>;
 
   ROOTFrameData() = delete;
-  ~ROOTFrameData();
+  ~ROOTFrameData() = default;
   ROOTFrameData(ROOTFrameData&&) = default;
   ROOTFrameData& operator=(ROOTFrameData&&) = default;
   ROOTFrameData(const ROOTFrameData&) = delete;

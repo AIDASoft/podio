@@ -26,15 +26,19 @@ public:
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
   }
 
-  LinkCollectionData(podio::CollectionReadBuffers buffers, bool isSubsetColl) :
+  LinkCollectionData(podio::CollectionReadBuffers&& buffers, bool isSubsetColl) :
       m_rel_from(new std::vector<FromT>()),
       m_rel_to(new std::vector<ToT>()),
       m_refCollections(std::move(*buffers.references)) {
     if (!isSubsetColl) {
       m_data.reset(buffers.dataAsVector<LinkData>());
+      buffers.data = nullptr;
     }
 
     delete buffers.references;
+    buffers.references = nullptr;
+    delete buffers.vectorMembers;
+    buffers.vectorMembers = nullptr;
   }
 
   LinkCollectionData(const LinkCollectionData&) = delete;

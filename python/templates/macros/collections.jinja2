@@ -187,12 +187,12 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
 {% endfor %}
   }
 
-  readBuffers.createCollection = [](const podio::CollectionReadBuffers& buffers, bool isSubsetColl) {
-    {{ collection_type }}Data data(buffers, isSubsetColl);
+  readBuffers.createCollection = [](podio::CollectionReadBuffers&& buffers, bool isSubsetColl) {
+    {{ collection_type }}Data data(std::move(buffers), isSubsetColl);
     return std::make_unique<{{ collection_type }}>(std::move(data), isSubsetColl);
   };
 
-  readBuffers.deleteBuffers = [](const podio::CollectionReadBuffers& buffers) {
+  readBuffers.deleteBuffers = [](podio::CollectionReadBuffers& buffers) {
     if (buffers.data) {
       // If we have data then we are not a subset collection and we have to
       // clean up all type erased buffers by casting them back to something that
@@ -201,10 +201,13 @@ podio::CollectionReadBuffers createBuffersV{{ schemaVersion }}(bool isSubset) {
 {% for member in VectorMembers %}
       delete static_cast<std::vector<{{ member.full_type }}>*>((*buffers.vectorMembers)[{{ loop.index0 }}].second);
 {% endfor %}
+      buffers.data = nullptr;
 
     }
     delete buffers.references;
+    buffers.references = nullptr;
     delete buffers.vectorMembers;
+    buffers.vectorMembers = nullptr;
   };
 
   return readBuffers;

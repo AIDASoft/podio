@@ -20,7 +20,7 @@ void {{ block_class }}::read(sio::read_device& device, sio::version_type version
   // TODO:
   // - Error handling of empty optional
   auto maybeBuffers = bufferFactory.createBuffers("{{ class.full_type }}Collection", sio::version::major_version(version), m_subsetColl);
-  m_buffers = maybeBuffers.value_or(podio::CollectionReadBuffers{});
+  m_buffers = std::move(maybeBuffers).value_or(podio::CollectionReadBuffers{});
 
   if (not m_subsetColl) {
     unsigned size(0);

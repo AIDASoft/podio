@@ -29,7 +29,7 @@ struct CollectionReadBuffers;
 class SchemaEvolution {
   /// The interface of any evolution function takes buffers and a version and
   /// returns buffers.
-  using EvolutionFuncT = std::function<podio::CollectionReadBuffers(podio::CollectionReadBuffers, SchemaVersionT)>;
+  using EvolutionFuncT = std::function<podio::CollectionReadBuffers(podio::CollectionReadBuffers&&, SchemaVersionT)>;
   /// Each datatype gets its own version "map" where the index defines the
   /// version from which the schema evolution has to start to end up in the
   /// current version
@@ -84,7 +84,7 @@ public:
   ///
   /// @returns CollectionReadBuffers that have been evolved to the current
   /// version. @note that these could also be the unchanged input buffers.
-  podio::CollectionReadBuffers evolveBuffers(const podio::CollectionReadBuffers& oldBuffers, SchemaVersionT fromVersion,
+  podio::CollectionReadBuffers evolveBuffers(podio::CollectionReadBuffers&& oldBuffers, SchemaVersionT fromVersion,
                                              const std::string& collType) const;
 
   /// Register an evolution function for a given collection type and given

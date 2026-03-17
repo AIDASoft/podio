@@ -161,7 +161,7 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
     return std::nullopt;
   }
 
-  auto collBuffers = maybeBuffers.value();
+  auto& collBuffers = maybeBuffers.value();
 
   if (reloadBranches) {
     root_utils::resetBranches(catInfo.chain.get(), branches, name);
@@ -173,7 +173,7 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   }
   root_utils::readBranchesData(branches, localEntry);
 
-  return collBuffers;
+  return {std::move(collBuffers)};
 }
 
 ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& category) {
