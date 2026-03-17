@@ -41,12 +41,7 @@ jobs:
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
             -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
             -DPODIO_ENABLE_CXX_MODULES=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "ON" || echo "OFF") \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations " \
-            -DUSE_EXTERNAL_CATCH2=AUTO \
-            -DPODIO_USE_CLANG_FORMAT=AUTO \
-            -DPODIO_ENABLE_SCHEMA_EVOLUTION_TESTS=ON \
-            -G Ninja ..
+            -DUSE_EXTERNAL_CATCH2=AUTO
           echo "::endgroup::"
           echo "::group::Build"
           cmake --build --preset ci-build
