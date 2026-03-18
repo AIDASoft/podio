@@ -41,7 +41,7 @@ else()
 endif()
 
 find_package(Threads REQUIRED)
-add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp)
+add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 # Catch2 TEST_CASE/SECTION macros expand __COUNTER__ at the call site in user
 # code, so marking Catch2 headers as system includes is not sufficient to
