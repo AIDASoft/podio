@@ -155,8 +155,7 @@ TEST_CASE("JSON output - unset OneToOneRelation", "[json]") {
   }
 
   const bool isNull = clusterRef.is_null();
-  const bool isSentinel =
-      clusterRef.contains("collectionID") &&
+  const bool isSentinel = clusterRef.contains("collectionID") &&
       clusterRef["collectionID"] == static_cast<uint32_t>(podio::ObjectID::untracked);
 
   REQUIRE((isNull || isSentinel));
