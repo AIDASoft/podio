@@ -6,7 +6,7 @@
 
 #include "TFile.h"
 
-#include "podio/utilities/MiscHelpers.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include <string>
 #include <tuple>

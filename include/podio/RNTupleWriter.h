@@ -4,14 +4,13 @@
 #include "podio/Frame.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
-
-#include "podio/utilities/MiscHelpers.h"
 
 #include <string>
 #include <vector>
