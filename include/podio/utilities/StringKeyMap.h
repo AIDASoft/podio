@@ -17,11 +17,9 @@ namespace detail {
   /// key-comparison transparency applies.
   struct TransparentStringHash {
     using is_transparent = void;
+    // We only need the string_View overload because a string converts to that
     std::size_t operator()(std::string_view sv) const noexcept {
       return std::hash<std::string_view>{}(sv);
-    }
-    std::size_t operator()(const std::string& s) const noexcept {
-      return std::hash<std::string_view>{}(s);
     }
   };
 
