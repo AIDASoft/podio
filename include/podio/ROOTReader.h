@@ -87,7 +87,7 @@ public:
   ///
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readNextEntry(const std::string& name,
+  std::unique_ptr<podio::ROOTFrameData> readNextEntry(std::string_view name,
                                                       const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
@@ -102,7 +102,7 @@ public:
   ///
   /// @throws std::invalid_argument in case collsToRead contains collection
   /// names that are not available
-  std::unique_ptr<podio::ROOTFrameData> readEntry(const std::string& name, const unsigned entry,
+  std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
   /// Get the number of entries for the given name
@@ -110,7 +110,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  unsigned getEntries(const std::string& name) const;
+  unsigned getEntries(std::string_view name) const;
 
   /// Get the build version of podio that has been used to write the current
   /// file
@@ -127,7 +127,7 @@ public:
   ///
   /// @returns The (build) version of the datamodel if available or an empty
   ///          optional
-  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
     return m_datamodelHolder.getDatamodelVersion(name);
   }
 
@@ -141,7 +141,7 @@ public:
   /// @param name The name of the datamodel
   ///
   /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(const std::string& name) const {
+  const std::string_view getDatamodelDefinition(std::string_view name) const {
     return m_datamodelHolder.getDatamodelDefinition(name);
   }
 
@@ -174,12 +174,12 @@ private:
   /// Initialize the passed CategoryInfo by setting up the necessary branches,
   /// collection infos and all necessary meta data to be able to read entries
   /// with this name
-  void initCategory(CategoryInfo& catInfo, const std::string& name);
+  void initCategory(CategoryInfo& catInfo, std::string_view name);
 
   /// Get the category information for the given name. In case there is no TTree
   /// with contents for the given name this will return a CategoryInfo with an
   /// uninitialized chain (nullptr) member
-  CategoryInfo& getCategoryInfo(const std::string& name);
+  CategoryInfo& getCategoryInfo(std::string_view name);
 
   /// Read the parameters for the entry specified in the passed CategoryInfo
   GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
@@ -198,9 +198,9 @@ private:
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,
                                                                    bool reloadBranches, unsigned int localEntry);
 
-  std::unique_ptr<TChain> m_metaChain{nullptr};                 ///< The metadata tree
-  std::unordered_map<std::string, CategoryInfo> m_categories{}; ///< All categories
-  std::vector<std::string> m_availCategories{};                 ///< All available categories from this file
+  std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
+  std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
+  std::vector<std::string> m_availCategories{};                      ///< All available categories from this file
 
   podio::version::Version m_fileVersion{0, 0, 0};
   DatamodelDefinitionHolder m_datamodelHolder{};

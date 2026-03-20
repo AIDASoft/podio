@@ -85,13 +85,13 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
   return params;
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(const std::string& name,
+std::unique_ptr<ROOTFrameData> ROOTReader::readNextEntry(std::string_view name,
                                                          const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
   return readEntry(catInfo, collsToRead);
 }
 
-std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(const std::string& name, const unsigned entNum,
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(std::string_view name, const unsigned entNum,
                                                      const std::vector<std::string>& collsToRead) {
   auto& catInfo = getCategoryInfo(name);
   catInfo.entry = entNum;
@@ -176,7 +176,7 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   return {std::move(collBuffers)};
 }
 
-ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& category) {
+ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(std::string_view category) {
   if (auto it = m_categories.find(category); it != m_categories.end()) {
     // Use the id table as proxy to check whether this category has been
     // initialized already
@@ -193,7 +193,7 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(const std::string& categor
   return invalidCategory;
 }
 
-void ROOTReader::initCategory(CategoryInfo& catInfo, const std::string& category) {
+void ROOTReader::initCategory(CategoryInfo& catInfo, std::string_view category) {
 
   auto* collInfoBranch = root_utils::getBranch(m_metaChain.get(), root_utils::collInfoName(category));
 
@@ -340,7 +340,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   }
 }
 
-unsigned ROOTReader::getEntries(const std::string& name) const {
+unsigned ROOTReader::getEntries(std::string_view name) const {
   if (const auto it = m_categories.find(name); it != m_categories.end()) {
     return it->second.chain->GetEntries();
   }
@@ -457,8 +457,8 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 
 std::optional<std::map<std::string, SizeStats>> ROOTReader::getSizeStats(std::string_view category) {
   std::map<std::string, SizeStats> stats;
-  getCategoryInfo(std::string(category)); // Ensure category is initialized
-  const auto catIt = m_categories.find(std::string(category));
+  getCategoryInfo(category); // Ensure category is initialized
+  const auto catIt = m_categories.find(category);
   if (catIt == m_categories.end()) {
     return std::nullopt;
   }
