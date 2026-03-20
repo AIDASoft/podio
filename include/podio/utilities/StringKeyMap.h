@@ -30,7 +30,7 @@ namespace detail {
 /// A convenience alias for @c std::unordered_map<std::string, Value> that
 /// supports heterogeneous lookup.
 ///
-/// Keys can be looked up (via @c find, @c count, @c contains, …) using any
+/// Keys can be looked up (via @c find, @c count, @c contains, ...) using any
 /// type that is implicitly convertible to @c std::string_view — most notably
 /// @c std::string_view and plain string literals — without constructing a
 /// temporary @c std::string. This is achieved by pairing @c
