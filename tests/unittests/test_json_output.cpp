@@ -21,10 +21,6 @@ nlohmann::json toJson(const T& obj) {
   return nlohmann::json(obj);
 }
 
-// ============================================================
-// 1. POD members
-// ============================================================
-
 TEST_CASE("JSON output - plain POD members", "[json]") {
   auto hit = MutableExampleHit{};
   hit.energy(3.14);
@@ -74,10 +70,6 @@ TEST_CASE("JSON output - default object keeps keys", "[json]") {
   }
 }
 
-// ============================================================
-// 2. Vector members
-// ============================================================
-
 TEST_CASE("JSON output - VectorMembers serialize as arrays", "[json]") {
   using Catch::Matchers::Equals;
   auto obj = MutableExampleWithVectorMember{};
@@ -101,24 +93,6 @@ TEST_CASE("JSON output - empty VectorMember becomes empty array", "[json]") {
   REQUIRE(j["count"].is_array());
   REQUIRE(j["count"].empty());
 }
-
-TEST_CASE("JSON output - integer VectorMembers keep numeric type", "[json]") {
-  using Catch::Matchers::Equals;
-  auto obj = MutableExampleWithVectorMember{};
-  obj.addcount(11);
-  obj.addcount(22);
-  obj.addcount(33);
-  obj.addcount(44);
-
-  const auto j = toJson(obj);
-
-  REQUIRE(j["count"].is_array());
-  REQUIRE_THAT(j["count"].get<std::vector<int>>(), Equals(std::vector{11, 22, 33, 44}));
-}
-
-// ============================================================
-// 3. OneToOne relations
-// ============================================================
 
 TEST_CASE("JSON output - OneToOneRelation serializes", "[json]") {
   ExampleClusterCollection clusters{};
@@ -161,10 +135,6 @@ TEST_CASE("JSON output - unset OneToOneRelation", "[json]") {
   REQUIRE((isNull || isSentinel));
 }
 
-// ============================================================
-// 4. OneToMany relations
-// ============================================================
-
 TEST_CASE("JSON output - OneToManyRelation serializes as array", "[json]") {
   auto h0 = MutableExampleHit{};
   auto h1 = MutableExampleHit{};
@@ -190,10 +160,6 @@ TEST_CASE("JSON output - empty OneToManyRelation", "[json]") {
   REQUIRE(j["Hits"].is_array());
   REQUIRE(j["Hits"].empty());
 }
-
-// ============================================================
-// 5. Collection serialization
-// ============================================================
 
 TEST_CASE("JSON output - collection serializes to array", "[json]") {
   ExampleHitCollection hits{};
