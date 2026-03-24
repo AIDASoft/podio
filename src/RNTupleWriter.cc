@@ -55,11 +55,11 @@ void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& ca
   entry->BindRawPtr(root_utils::getGPValueName<T>(), &paramStorage.values);
 }
 
-void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category) {
+void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view category) {
   writeFrame(frame, category, frame.getAvailableCollections());
 }
 
-void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& category,
+void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                                const std::vector<std::string>& collsToWrite) {
   auto& catInfo = getCategoryInfo(category);
 
@@ -80,7 +80,8 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     if (!coll) {
       // Make sure all collections that we want to write are actually available
       // NOLINTNEXTLINE(performance-inefficient-string-concatenation)
-      throw std::runtime_error("Collection '" + name + "' in category '" + category + "' is not available in Frame");
+      throw std::runtime_error("Collection '" + name + "' in category '" + std::string(category) +
+                               "' is not available in Frame");
     }
 
     collections.emplace_back(name, const_cast<podio::CollectionBase*>(coll));
@@ -98,12 +99,13 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
     }
   } else {
     if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
-      throw std::runtime_error("Trying to write category '" + category + "' with inconsistent collection content. " +
+      throw std::runtime_error("Trying to write category '" + std::string(category) +
+                               "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.names, collsToWrite));
     }
   }
 
-  const auto entry = m_categories[category].writer->GetModel().CreateBareEntry();
+  const auto entry = catInfo.writer->GetModel().CreateBareEntry();
 
   RNTupleWriteOptions options;
   options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
@@ -154,7 +156,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, const std::string& cat
   fillParams<double>(params, catInfo, entry.get());
   fillParams<std::string>(params, catInfo, entry.get());
 
-  m_categories[category].writer->Fill(*entry);
+  catInfo.writer->Fill(*entry);
 }
 
 std::unique_ptr<root_compat::RNTupleModel>
@@ -224,12 +226,12 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
   return model;
 }
 
-RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(const std::string& category) {
+RNTupleWriter::CategoryInfo& RNTupleWriter::getCategoryInfo(std::string_view category) {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return it->second;
   }
 
-  const auto [it, _] = m_categories.try_emplace(category, CategoryInfo{});
+  const auto [it, _] = m_categories.emplace(category, CategoryInfo{});
   return it->second;
 }
 
@@ -289,7 +291,7 @@ void RNTupleWriter::finish() {
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
-RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const {
+RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const {
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
     return root_utils::getInconsistentColls(it->second.names, collsToWrite);
   }

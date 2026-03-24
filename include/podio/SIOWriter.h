@@ -49,7 +49,7 @@ public:
   ///
   /// @param frame    The Frame to store
   /// @param category The category name under which this Frame should be stored
-  void writeFrame(const podio::Frame& frame, const std::string& category);
+  void writeFrame(const podio::Frame& frame, std::string_view category);
 
   /// Store the given Frame with the given category.
   ///
@@ -61,7 +61,7 @@ public:
   /// @param category     The category name under which this Frame should be
   ///                     stored
   /// @param collsToWrite The collection names that should be written
-  void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
+  void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collsToWrite);
 
   /// Write the current file, including all the necessary metadata to read it
   /// again.

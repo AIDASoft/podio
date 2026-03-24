@@ -50,7 +50,7 @@ public:
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category exists and if there are still entries left to read.
   ///          Otherwise a nullptr
-  std::unique_ptr<podio::SIOFrameData> readNextEntry(const std::string& name,
+  std::unique_ptr<podio::SIOFrameData> readNextEntry(std::string_view name,
                                                      const std::vector<std::string>& collsToRead = {});
 
   /// Read the desired data entry for a given category.
@@ -68,7 +68,7 @@ public:
   ///
   /// @returns FrameData from which a podio::Frame can be constructed if the
   ///          category and the desired entry exist. Otherwise a nullptr
-  std::unique_ptr<podio::SIOFrameData> readEntry(const std::string& name, const unsigned entry,
+  std::unique_ptr<podio::SIOFrameData> readEntry(std::string_view name, const unsigned entry,
                                                  const std::vector<std::string>& collsToRead = {});
 
   /// Get the number of entries for the given name
@@ -76,7 +76,7 @@ public:
   /// @param name The name of the category
   ///
   /// @returns The number of entries that are available for the category
-  unsigned getEntries(const std::string& name) const;
+  unsigned getEntries(std::string_view name) const;
 
   /// Open the passed file for reading.
   ///
@@ -98,7 +98,7 @@ public:
   ///
   /// @returns The (build) version of the datamodel if available or an empty
   ///          optional
-  std::optional<podio::version::Version> currentFileVersion(const std::string& name) const {
+  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
     return m_datamodelHolder.getDatamodelVersion(name);
   }
 
@@ -112,7 +112,7 @@ public:
   /// @param name The name of the datamodel
   ///
   /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(const std::string& name) const {
+  const std::string_view getDatamodelDefinition(std::string_view name) const {
     return m_datamodelHolder.getDatamodelDefinition(name);
   }
 

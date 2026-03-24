@@ -4,6 +4,7 @@
 #include "podio/Frame.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
@@ -12,7 +13,6 @@
 #include <ROOT/RVersion.hxx>
 
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 namespace podio {
@@ -66,7 +66,7 @@ public:
   ///
   /// @param frame    The Frame to store
   /// @param category The category name under which this Frame should be stored
-  void writeFrame(const podio::Frame& frame, const std::string& category);
+  void writeFrame(const podio::Frame& frame, std::string_view category);
 
   /// Store the given Frame with the given category.
   ///
@@ -79,7 +79,7 @@ public:
   /// @param category     The category name under which this Frame should be
   ///                     stored
   /// @param collsToWrite The collection names that should be written
-  void writeFrame(const podio::Frame& frame, const std::string& category, const std::vector<std::string>& collsToWrite);
+  void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collsToWrite);
 
   /// Write the current file, including all the necessary metadata to read it
   /// again.
@@ -107,7 +107,7 @@ public:
   /// collsToWrite only. If both vectors are empty the category and the passed
   /// collsToWrite are consistent.
   std::tuple<std::vector<std::string>, std::vector<std::string>>
-  checkConsistency(const std::vector<std::string>& collsToWrite, const std::string& category) const;
+  checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const;
 
 private:
   std::unique_ptr<root_compat::RNTupleModel> createModels(const std::vector<root_utils::StoreCollection>& collections);
@@ -127,7 +127,7 @@ private:
     root_utils::ParamStorage<double> doubleParams{};
     root_utils::ParamStorage<std::string> stringParams{};
   };
-  CategoryInfo& getCategoryInfo(const std::string& category);
+  CategoryInfo& getCategoryInfo(std::string_view category);
 
   template <typename T>
   void fillParams(const GenericParameters& params, CategoryInfo& catInfo, root_compat::REntry* entry);
@@ -139,7 +139,7 @@ private:
 
   DatamodelDefinitionCollector m_datamodelCollector{};
 
-  std::unordered_map<std::string, CategoryInfo> m_categories{};
+  podio::StringKeyMap<CategoryInfo> m_categories{};
 };
 
 } // namespace podio
