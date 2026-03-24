@@ -96,6 +96,7 @@ TEST_CASE("JSON output - empty VectorMember becomes empty array", "[json]") {
 
 TEST_CASE("JSON output - OneToOneRelation serializes", "[json]") {
   ExampleClusterCollection clusters{};
+  clusters.setID(42);
   ExampleWithOneRelationCollection recos{};
 
   auto cluster = clusters.create();
@@ -113,6 +114,7 @@ TEST_CASE("JSON output - OneToOneRelation serializes", "[json]") {
   }
   REQUIRE(clusterRef.is_object());
   REQUIRE(clusterRef.contains("collectionID"));
+  REQUIRE(clusterRef["collectionID"] == 42);
   REQUIRE(clusterRef.contains("index"));
   REQUIRE(clusterRef["index"] == 0);
 }
@@ -128,17 +130,18 @@ TEST_CASE("JSON output - unset OneToOneRelation", "[json]") {
     clusterRef = clusterRef[0];
   }
 
-  const bool isNull = clusterRef.is_null();
-  const bool isSentinel = clusterRef.contains("collectionID") &&
-      clusterRef["collectionID"] == static_cast<uint32_t>(podio::ObjectID::untracked);
-
-  REQUIRE((isNull || isSentinel));
+  REQUIRE_FALSE(clusterRef.is_null());
+  REQUIRE(clusterRef.contains("collectionID"));
+  REQUIRE(clusterRef["collectionID"] == static_cast<uint32_t>(podio::ObjectID::untracked));
 }
 
 TEST_CASE("JSON output - OneToManyRelation serializes as array", "[json]") {
-  auto h0 = MutableExampleHit{};
-  auto h1 = MutableExampleHit{};
-  auto h2 = MutableExampleHit{};
+  auto coll = ExampleHitCollection{};
+  coll.setID(42);
+  auto h0 = coll.create();
+  auto h1 = coll.create();
+  auto h2 = coll.create();
+
   auto cluster = MutableExampleCluster{};
   cluster.addHits(h0);
   cluster.addHits(h1);
@@ -149,6 +152,11 @@ TEST_CASE("JSON output - OneToManyRelation serializes as array", "[json]") {
   REQUIRE(j.contains("Hits"));
   REQUIRE(j["Hits"].is_array());
   REQUIRE(j["Hits"].size() == 3);
+
+  for (int i = 0; i < 3; ++i) {
+    REQUIRE(j["Hits"][i]["collectionID"] == 42);
+    REQUIRE(j["Hits"][i]["index"] == i);
+  }
 }
 
 TEST_CASE("JSON output - empty OneToManyRelation", "[json]") {
