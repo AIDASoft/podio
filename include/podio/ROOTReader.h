@@ -91,6 +91,15 @@ public:
   std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
+  /// Like readEntry, but collections not in collsToRead are loaded lazily on
+  /// first access rather than eagerly. Also skips reading GenericParameters.
+  ///
+  /// The reader must not advance to the next entry while the returned FrameData
+  /// (and any Frame built from it) is still being accessed. This is guaranteed
+  /// in the DataSource context where each slot has its own reader.
+  std::unique_ptr<podio::ROOTFrameData> readEntryLazy(const std::string& name, unsigned entry,
+                                                      const std::vector<std::string>& collsToRead);
+
   /// Get the number of entries for the given name
   ///
   /// @param name The name of the category

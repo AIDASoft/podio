@@ -81,6 +81,69 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
+std::unique_ptr<ROOTFrameData> ROOTReader::readEntryLazy(const std::string& name, unsigned entNum,
+                                                         const std::vector<std::string>& collsToRead) {
+  auto& catInfo = getCategoryInfo(name);
+  catInfo.entry = entNum;
+
+  if (!catInfo.chain) {
+    return nullptr;
+  }
+  if (catInfo.entry >= static_cast<unsigned>(catInfo.chain->GetEntries())) {
+    return nullptr;
+  }
+
+  // Make sure to not silently ignore non-existant but requested collections
+  if (!collsToRead.empty()) {
+    for (const auto& collName : collsToRead) {
+      if (std::ranges::find(catInfo.storedClasses, collName, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
+        throw std::invalid_argument(collName + " is not available from Frame");
+      }
+    }
+  }
+
+  // After switching trees in the chain, branch pointers get invalidated so
+  // they need to be reassigned.
+  // NOTE: root 6.22/06 requires that we get completely new branches here,
+  // with 6.20/04 we could just re-set them
+  const auto preTreeNo = catInfo.chain->GetTreeNumber();
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
+  const auto treeChange = catInfo.chain->GetTreeNumber() != preTreeNo;
+  // Also need to make sure to handle the first event
+  const auto reloadBranches = treeChange || localEntry == 0;
+
+  // Eagerly read only the requested collections
+  ROOTFrameData::BufferMap buffers;
+  for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].name) == collsToRead.end()) {
+      continue;
+    }
+    auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);
+    if (collBuffers) {
+      buffers.emplace(catInfo.storedClasses[i].name, std::move(collBuffers.value()));
+    }
+  }
+
+  catInfo.entry++;
+
+  // Create a lazy-read callback for collections not loaded eagerly.
+  // Only safe if this reader won't advance to the next entry until all
+  // the reads for this event are complete
+  auto lazyRead = [this, &catInfo, localEntry,
+                   reloadBranches](const std::string& collName) -> std::optional<podio::CollectionReadBuffers> {
+    auto it = std::ranges::find(catInfo.storedClasses, collName, &detail::NamedCollInfo::name);
+    if (it == catInfo.storedClasses.end()) {
+      return std::nullopt;
+    }
+    const auto idx = static_cast<size_t>(std::distance(catInfo.storedClasses.begin(), it));
+    return getCollectionBuffers(catInfo, idx, reloadBranches, localEntry);
+  };
+
+  // Skip GenericParameters. DataSource users never need event metadata
+  return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, podio::GenericParameters{},
+                                         std::move(lazyRead));
+}
+
 std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo,
                                                                              size_t iColl, bool reloadBranches,
                                                                              unsigned int localEntry) {
