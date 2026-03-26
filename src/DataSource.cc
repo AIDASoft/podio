@@ -21,6 +21,8 @@ class PodioColumnReader : public ROOT::Detail::RDF::RColumnReaderBase {
 public:
   explicit PodioColumnReader(const podio::CollectionBase** ptr) : fPtr(ptr) {
   }
+  PodioColumnReader(const PodioColumnReader&) = delete;
+  PodioColumnReader& operator=(const PodioColumnReader&) = delete;
   void* GetImpl(Long64_t) override {
     // Return the actual collection pointer (T*), not the address of the storage (T**)
     // RColumnReaderBase::Get<T> does *static_cast<T*>(GetImpl()), so we return the T* itself
