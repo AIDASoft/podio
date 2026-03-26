@@ -7,6 +7,7 @@
 #include <podio/Reader.h>
 
 // ROOT
+#include <ROOT/RDF/RColumnReaderBase.hxx>
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RDataSource.hxx>
 
@@ -14,6 +15,7 @@
 #include <memory>
 #include <string>
 #include <typeinfo>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -100,34 +102,40 @@ public:
 
   std::string GetLabel() override {
     return "PODIO Datasource";
-  };
+  }
+
+  // Legacy API
+  std::vector<void*> GetColumnReadersImpl(std::string_view, const std::type_info&) override {
+    return {};
+  }
+
+  std::size_t GetNFiles() const override {
+    return m_filePathList.size();
+  }
+
+  ///
+  /// @brief Returns a column reader for the given slot and column.
+  ///
+  std::unique_ptr<ROOT::Detail::RDF::RColumnReaderBase> GetColumnReaders(unsigned int slot, std::string_view name,
+                                                                         const std::type_info& tid) override;
 
 protected:
-  ///
-  /// @brief Type-erased vector of pointers to pointers to column
-  ///        values --- one per slot.
-  ///
-  std::vector<void*> GetColumnReadersImpl(std::string_view name, const std::type_info& typeInfo) override;
-
   std::string AsString() override {
     return "Podio data source";
   }
 
 private:
-  /// Number of slots/threads
-  unsigned int m_nSlots = 1;
-
   /// Input filename
   std::vector<std::string> m_filePathList = {};
 
   /// Total number of events
   ULong64_t m_nEvents = 0;
 
-  /// Ranges of events available to be processed
-  std::vector<std::pair<ULong64_t, ULong64_t>> m_rangesAvailable = {};
-
-  /// Ranges of events available ever created
+  /// All entry ranges, fixed after SetNSlots
   std::vector<std::pair<ULong64_t, ULong64_t>> m_rangesAll = {};
+
+  /// Cursor into m_rangesAll for GetEntryRanges, reset each Initialize()
+  size_t m_rangesCursor = 0;
 
   /// Column names
   std::vector<std::string> m_columnNames{};
@@ -135,11 +143,17 @@ private:
   /// Column types
   std::vector<std::string> m_columnTypes = {};
 
+  /// Fast column name -> index lookup
+  std::unordered_map<std::string, size_t> m_columnIndex{};
+
   /// Collections, m_Collections[columnIndex][slotIndex]
   std::vector<std::vector<const podio::CollectionBase*>> m_Collections = {};
 
   /// Active collections
   std::vector<unsigned int> m_activeCollections = {};
+
+  /// Names of active collections, kept in sync with m_activeCollections
+  std::vector<std::string> m_activeCollectionNames{};
 
   /// Root podio readers
   std::vector<std::unique_ptr<podio::Reader>> m_podioReaders = {};
