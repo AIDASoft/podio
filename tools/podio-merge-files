@@ -22,8 +22,9 @@ args = parser.parse_args()
 
 # Import podio later for quick help messages
 import podio  # pylint: disable=wrong-import-position # noqa: E402
-import podio.root_io  # pylint: disable=wrong-import-position # noqa: E402
 from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
+from podio.root_io import Reader, RNTupleReader  # pylint: disable=wrong-import-position # noqa: E402
+from podio.root_merge import merge_files, merge_files_rntuple  # pylint: disable=wrong-import-position # noqa: E402
 
 all_files = set()
 for f in args.files:
@@ -32,37 +33,40 @@ for f in args.files:
     all_files.add(f)
 
 reader = reading.get_reader(args.files)
-if isinstance(reader, podio.root_io.Reader):
-    writer = podio.root_io.Writer(args.output_file)
-elif isinstance(reader, podio.root_io.RNTupleReader):
-    writer = podio.root_io.RNTupleWriter(args.output_file)
+
+if isinstance(reader, Reader):
+    merge_files(args.output_file, args.files, metadata=args.metadata)
+elif isinstance(reader, RNTupleReader):
+    merge_files_rntuple(args.output_file, args.files, metadata=args.metadata)
 else:
-    raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
+    # Slow path: frame-by-frame copy
+    from podio import sio_io  # pylint: disable=wrong-import-position # noqa: E402
+    writer = sio_io.Writer(args.output_file)
 
-categories = list(reader.categories)
-is_metadata_available = True  # pylint: disable=invalid-name
-try:
-    # All frames will be copied as they are except the metadata ones
-    categories.remove("metadata")
-except ValueError:
-    is_metadata_available = False  # pylint: disable=invalid-name
+    categories = list(reader.categories)
+    is_metadata_available = True  # pylint: disable=invalid-name
+    try:
+        # All frames will be copied as they are except the metadata ones
+        categories.remove("metadata")
+    except ValueError:
+        is_metadata_available = False  # pylint: disable=invalid-name
 
-for category in tqdm(categories):
-    all_frames = reader.get(category)
-    for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
-        writer.write_frame(frame, category)
+    for category in tqdm(categories):
+        all_frames = reader.get(category)
+        for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
+            writer.write_frame(frame, category)
 
-if args.metadata == "none":
-    sys.exit(0)
+    if args.metadata == "none":
+        sys.exit(0)
 
-if not is_metadata_available:
-    print("Warning: metadata category 'metadata' not found in the input files, it will be created")
-    all_frames = [podio.Frame()]
-else:
-    if args.metadata == "first":
-        all_frames = [reader.get("metadata")[0]]
+    if not is_metadata_available:
+        print("Warning: metadata category 'metadata' not found in the input files, it will be created")
+        all_frames = [podio.Frame()]
     else:
-        all_frames = reader.get("metadata")
-for frame in all_frames:
-    frame.put_parameter("MergedInputFiles", args.files)
-    writer.write_frame(frame, "metadata")
+        if args.metadata == "first":
+            all_frames = [reader.get("metadata")[0]]
+        else:
+            all_frames = reader.get("metadata")
+    for frame in all_frames:
+        frame.put_parameter("MergedInputFiles", args.files)
+        writer.write_frame(frame, "metadata")
