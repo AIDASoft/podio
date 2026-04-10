@@ -43,18 +43,13 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    const auto branchOffset = -1;
-    root_utils::readParams<int>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
-                                branchOffset);
+    root_utils::readParams<int>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry);
 
-    root_utils::readParams<float>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
-                                  branchOffset);
+    root_utils::readParams<float>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry);
 
-    root_utils::readParams<double>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
-                                   branchOffset);
+    root_utils::readParams<double>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry);
 
-    root_utils::readParams<std::string>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
-                                        branchOffset);
+    root_utils::readParams<std::string>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry);
   }
 
   return params;

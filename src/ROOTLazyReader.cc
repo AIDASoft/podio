@@ -34,10 +34,10 @@ GenericParameters ROOTLazyReader::readEntryParameters(CategoryState& catState, u
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    root_utils::readParams<int>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
-    root_utils::readParams<float>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
-    root_utils::readParams<double>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
-    root_utils::readParams<std::string>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
+    root_utils::readParams<int>(catState.paramBranches, catState.chain.get(), params, true, localEntry);
+    root_utils::readParams<float>(catState.paramBranches, catState.chain.get(), params, true, localEntry);
+    root_utils::readParams<double>(catState.paramBranches, catState.chain.get(), params, true, localEntry);
+    root_utils::readParams<std::string>(catState.paramBranches, catState.chain.get(), params, true, localEntry);
   }
 
   return params;

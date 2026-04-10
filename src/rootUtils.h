@@ -525,10 +525,10 @@ inline std::vector<std::string> getAvailableCategories(TChain* metaChain) {
 
 template <typename T>
 void readParams(std::vector<CollectionBranches>& branches, TChain* chain, podio::GenericParameters& params,
-                bool reloadBranches, unsigned int localEntry, unsigned branchOffset) {
+                bool reloadBranches, unsigned int localEntry) {
   constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
-  const auto keyIdx = branchOffset + brOffset.keys;
-  const auto valIdx = branchOffset + brOffset.values;
+  const auto keyIdx = brOffset.keys - 1;
+  const auto valIdx = brOffset.values - 1;
 
   if (reloadBranches) {
     branches[keyIdx].data = getBranch(chain, getGPKeyName<T>());
