@@ -30,7 +30,7 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
 
   if (m_fileVersion < podio::version::Version{0, 99, 99}) {
     // Parameter branch is always the last one
-    auto& paramBranches = catInfo.branches.back();
+    auto& paramBranches = catInfo.paramBranches[0];
 
     // Make sure to have a valid branch pointer after switching trees in the chain
     // as well as on the first event
@@ -43,17 +43,17 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    const auto branchOffset = catInfo.branches.size() - root_utils::nParamBranches - 1;
-    root_utils::readParams<int>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+    const auto branchOffset = -1;
+    root_utils::readParams<int>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
                                 branchOffset);
 
-    root_utils::readParams<float>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+    root_utils::readParams<float>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
                                   branchOffset);
 
-    root_utils::readParams<double>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+    root_utils::readParams<double>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
                                    branchOffset);
 
-    root_utils::readParams<std::string>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+    root_utils::readParams<std::string>(catInfo.paramBranches, catInfo.chain.get(), params, reloadBranches, localEntry,
                                         branchOffset);
   }
 
@@ -225,20 +225,19 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, std::string_view category) 
 
   // Finally set up the branches for the parameters
   if (m_fileVersion < podio::version::Version{0, 99, 99}) {
-    root_utils::CollectionBranches paramBranches{};
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName));
   } else {
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intKeyName));
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intValueName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intKeyName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::intValueName));
 
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatKeyName));
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatValueName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatKeyName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::floatValueName));
 
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleKeyName));
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleValueName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleKeyName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::doubleValueName));
 
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringKeyName));
-    catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringValueName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringKeyName));
+    catInfo.paramBranches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringValueName));
   }
 }
 

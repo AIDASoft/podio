@@ -163,12 +163,13 @@ private:
     /// constructor from chain for more convenient map insertion
     CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
     }
-    std::unique_ptr<TChain> chain{nullptr};                 ///< The TChain with the data
-    unsigned entry{0};                                      ///< The next entry to read
-    std::vector<detail::NamedCollInfo> storedClasses{};     ///< The stored collections in this
-                                                            ///< category
-    std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
-    std::shared_ptr<CollectionIDTable> table{nullptr};      ///< The collection ID table for this category
+    std::unique_ptr<TChain> chain{nullptr};                      ///< The TChain with the data
+    unsigned entry{0};                                           ///< The next entry to read
+    std::vector<detail::NamedCollInfo> storedClasses{};          ///< The stored collections in this
+                                                                 ///< category
+    std::vector<root_utils::CollectionBranches> branches{};      ///< The (data) branches for this category
+    std::vector<root_utils::CollectionBranches> paramBranches{}; ///< The parameter branches for this category
+    std::shared_ptr<CollectionIDTable> table{nullptr};           ///< The collection ID table for this category
   };
 
   /// Initialize the passed CategoryInfo by setting up the necessary branches,
