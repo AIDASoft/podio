@@ -22,20 +22,9 @@
 namespace podio {
 
 // These free functions are defined in ROOTReader.cc and can be reused
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
-createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
-                         const std::vector<root_utils::CollectionWriteInfo>& collInfo);
-
-std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
-createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
-                                   const std::vector<root_utils::CollectionWriteInfo>& collInfo);
-
-// Also defined in ROOTReader.cc
-std::vector<std::string> getAvailableCategories(TChain* metaChain);
 
 template <typename T>
-void ROOTLazyReader::readParams(CategoryState& catState, podio::GenericParameters& params,
-                                unsigned int localEntry) {
+void ROOTLazyReader::readParams(CategoryState& catState, podio::GenericParameters& params, unsigned int localEntry) {
   constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
   // paramBranches indices: brOffset.keys - 1 and brOffset.values - 1
   // (the offsets are 1-based in the original ROOTReader convention)
@@ -81,7 +70,7 @@ GenericParameters ROOTLazyReader::readEntryParameters(CategoryState& catState, u
 }
 
 std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readNextEntry(std::string_view name,
-                                                                  const std::vector<std::string>& collsToRead) {
+                                                                 const std::vector<std::string>& collsToRead) {
   auto& catState = getCategoryState(name);
   if (!catState) {
     return nullptr;
@@ -94,7 +83,7 @@ std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readNextEntry(std::string_vie
 }
 
 std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::string_view name, const unsigned entry,
-                                                              const std::vector<std::string>& collsToRead) {
+                                                             const std::vector<std::string>& collsToRead) {
   auto& catState = getCategoryState(name);
   auto result = readEntry(catState, entry, collsToRead);
   if (result) {
@@ -104,7 +93,7 @@ std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::string_view na
 }
 
 std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::shared_ptr<CategoryState>& catState, unsigned entry,
-                                                              const std::vector<std::string>& collsToRead) {
+                                                             const std::vector<std::string>& collsToRead) {
   if (!catState || !catState->chain) {
     return nullptr;
   }
@@ -135,8 +124,7 @@ std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::shared_ptr<Cat
   // Build available collections map (no lock needed, just reading metadata)
   std::unordered_map<std::string, size_t> availableCollections;
   for (size_t i = 0; i < catState->storedClasses.size(); ++i) {
-    if (!collsToRead.empty() &&
-        std::ranges::find(collsToRead, catState->storedClasses[i].name) == collsToRead.end()) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, catState->storedClasses[i].name) == collsToRead.end()) {
       continue;
     }
     availableCollections.emplace(catState->storedClasses[i].name, i);
@@ -190,10 +178,10 @@ void ROOTLazyReader::initCategory(CategoryState& catState, std::string_view cate
   // Set up collection branches
   if (m_fileVersion < podio::version::Version{0, 16, 99}) {
     std::tie(catState.branches, catState.storedClasses) =
-        createCollectionBranchesIndexBased(catState.chain.get(), *catState.table, collInfo);
+        root_utils::createCollectionBranchesIndexBased(catState.chain.get(), *catState.table, collInfo);
   } else {
     std::tie(catState.branches, catState.storedClasses) =
-        createCollectionBranches(catState.chain.get(), *catState.table, collInfo);
+        root_utils::createCollectionBranches(catState.chain.get(), *catState.table, collInfo);
   }
 
   // Set up parameter branches separately from collection branches
@@ -268,7 +256,7 @@ void ROOTLazyReader::openFiles(const std::vector<std::string>& filenames) {
   }
 
   // Set up categories and their chains
-  m_availCategories = ::podio::getAvailableCategories(m_metaChain.get());
+  m_availCategories = podio::root_utils::getAvailableCategories(m_metaChain.get());
   for (const auto& cat : m_availCategories) {
     auto state = std::make_shared<CategoryState>();
     state->chain = std::make_unique<TChain>(cat.c_str());
