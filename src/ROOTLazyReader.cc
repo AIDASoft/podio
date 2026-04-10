@@ -21,32 +21,6 @@
 
 namespace podio {
 
-// These free functions are defined in ROOTReader.cc and can be reused
-
-template <typename T>
-void ROOTLazyReader::readParams(CategoryState& catState, podio::GenericParameters& params, unsigned int localEntry) {
-  constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
-  // paramBranches indices: brOffset.keys - 1 and brOffset.values - 1
-  // (the offsets are 1-based in the original ROOTReader convention)
-  const auto keyIdx = brOffset.keys - 1;
-  const auto valIdx = brOffset.values - 1;
-
-  // Always reload branches since tree may have changed
-  catState.paramBranches[keyIdx].data = root_utils::getBranch(catState.chain.get(), root_utils::getGPKeyName<T>());
-  catState.paramBranches[valIdx].data = root_utils::getBranch(catState.chain.get(), root_utils::getGPValueName<T>());
-
-  auto keyBranch = catState.paramBranches[keyIdx].data;
-  auto valueBranch = catState.paramBranches[valIdx].data;
-
-  root_utils::ParamStorage<T> storage;
-  keyBranch->SetAddress(storage.keysPtr());
-  keyBranch->GetEntry(localEntry);
-  valueBranch->SetAddress(storage.valuesPtr());
-  valueBranch->GetEntry(localEntry);
-
-  params.loadFrom(std::move(storage.keys), std::move(storage.values));
-}
-
 GenericParameters ROOTLazyReader::readEntryParameters(CategoryState& catState, unsigned int localEntry) {
   GenericParameters params;
 
@@ -60,10 +34,10 @@ GenericParameters ROOTLazyReader::readEntryParameters(CategoryState& catState, u
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    readParams<int>(catState, params, localEntry);
-    readParams<float>(catState, params, localEntry);
-    readParams<double>(catState, params, localEntry);
-    readParams<std::string>(catState, params, localEntry);
+    root_utils::readParams<int>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
+    root_utils::readParams<float>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
+    root_utils::readParams<double>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
+    root_utils::readParams<std::string>(catState.paramBranches, catState.chain.get(), params, true, localEntry, -1);
   }
 
   return params;

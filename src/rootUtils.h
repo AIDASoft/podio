@@ -523,6 +523,30 @@ inline std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   return brNames;
 }
 
+template <typename T>
+void readParams(std::vector<CollectionBranches>& branches, TChain* chain, podio::GenericParameters& params,
+                bool reloadBranches, unsigned int localEntry, unsigned branchOffset) {
+  constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
+  const auto keyIdx = branchOffset + brOffset.keys;
+  const auto valIdx = branchOffset + brOffset.values;
+
+  if (reloadBranches) {
+    branches[keyIdx].data = getBranch(chain, getGPKeyName<T>());
+    branches[valIdx].data = getBranch(chain, getGPValueName<T>());
+  }
+
+  auto keyBranch = branches[keyIdx].data;
+  auto valueBranch = branches[valIdx].data;
+
+  root_utils::ParamStorage<T> storage;
+  keyBranch->SetAddress(storage.keysPtr());
+  keyBranch->GetEntry(localEntry);
+  valueBranch->SetAddress(storage.valuesPtr());
+  valueBranch->GetEntry(localEntry);
+
+  params.loadFrom(std::move(storage.keys), std::move(storage.values));
+}
+
 } // namespace podio::root_utils
 
 #endif

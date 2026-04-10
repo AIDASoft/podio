@@ -24,31 +24,6 @@
 
 namespace podio {
 
-template <typename T>
-void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
-                            unsigned int localEntry) {
-  const auto collBranchIdx = catInfo.branches.size() - root_utils::nParamBranches - 1;
-  constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
-
-  if (reloadBranches) {
-    auto& keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
-    keyBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPKeyName<T>());
-    auto& valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
-    valueBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPValueName<T>());
-  }
-
-  auto keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
-  auto valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
-
-  root_utils::ParamStorage<T> storage;
-  keyBranch->SetAddress(storage.keysPtr());
-  keyBranch->GetEntry(localEntry);
-  valueBranch->SetAddress(storage.valuesPtr());
-  valueBranch->GetEntry(localEntry);
-
-  params.loadFrom(std::move(storage.keys), std::move(storage.values));
-}
-
 GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, bool reloadBranches,
                                                   unsigned int localEntry) {
   GenericParameters params;
@@ -68,10 +43,18 @@ GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catI
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    readParams<int>(catInfo, params, reloadBranches, localEntry);
-    readParams<float>(catInfo, params, reloadBranches, localEntry);
-    readParams<double>(catInfo, params, reloadBranches, localEntry);
-    readParams<std::string>(catInfo, params, reloadBranches, localEntry);
+    const auto branchOffset = catInfo.branches.size() - root_utils::nParamBranches - 1;
+    root_utils::readParams<int>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+                                branchOffset);
+
+    root_utils::readParams<float>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+                                  branchOffset);
+
+    root_utils::readParams<double>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+                                   branchOffset);
+
+    root_utils::readParams<std::string>(catInfo.branches, catInfo.chain.get(), params, reloadBranches, localEntry,
+                                        branchOffset);
   }
 
   return params;

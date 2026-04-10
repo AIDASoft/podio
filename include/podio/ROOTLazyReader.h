@@ -144,9 +144,6 @@ private:
   /// Read the parameters for a given entry
   GenericParameters readEntryParameters(CategoryState& catState, unsigned int localEntry);
 
-  template <typename T>
-  void readParams(CategoryState& catState, podio::GenericParameters& params, unsigned int localEntry);
-
   /// Read the data entry specified by the current entry counter in the given
   /// category state. Returns nullptr if out of bounds.
   std::unique_ptr<podio::ROOTLazyFrameData> readEntry(std::shared_ptr<CategoryState>& catState, unsigned entry,
