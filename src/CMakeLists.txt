@@ -89,8 +89,10 @@ SET(root_sources
   rootUtils.h
   ROOTWriter.cc
   ROOTReader.cc
+  ROOTLazyReader.cc
   ROOTLegacyReader.cc
   ROOTFrameData.cc
+  ROOTLazyFrameData.cc
   RootHelpers.cc
 )
 if(ENABLE_RNTUPLE)
@@ -102,9 +104,11 @@ endif()
 
 SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLazyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLazyFrameData.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
   )
 if(ENABLE_RNTUPLE)

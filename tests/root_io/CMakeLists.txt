@@ -9,6 +9,7 @@ set(root_dependent_tests
   write_interface_root.cpp
   read_interface_root.cpp
   read_glob.cpp
+  read_frame_root_lazy.cpp
   selected_colls_roundtrip_root.cpp
   write_empty_collections_root.cpp
   )
@@ -52,6 +53,7 @@ set_tests_properties(
   read_frame_root_multiple
   read_and_write_frame_root
   read_glob
+  read_frame_root_lazy
   selected_colls_roundtrip_root
 
   PROPERTIES
