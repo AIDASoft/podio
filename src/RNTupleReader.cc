@@ -6,10 +6,7 @@
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
-#include <ROOT/RCreateFieldOptions.hxx>
 #include <ROOT/RError.hxx>
-#include <ROOT/RNTupleDescriptor.hxx>
-#include <ROOT/RNTupleModel.hxx>
 
 #include <algorithm>
 #include <cstdint>
@@ -112,7 +109,6 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 #else
         m_readers[category].emplace_back(root_compat::RNTupleReader::Open(category, filename));
 #endif
-        m_categoryFilenames[category].emplace_back(filename);
         m_readerEntries[category].push_back(m_readerEntries[category].back() +
                                             m_readers[category].back()->GetNEntries());
       } catch (const RException&) {
@@ -139,72 +135,6 @@ std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
     cats.emplace_back(cat);
   }
   return cats;
-}
-
-root_compat::RNTupleReader& RNTupleReader::getOrCreatePartialReader(const std::string& category, size_t readerIndex,
-                                                                    const std::vector<std::string>& collsToRead) {
-  // Build a stable cache key: category + "|" + sorted collection names
-  std::vector<std::string> sortedColls = collsToRead;
-  std::ranges::sort(sortedColls);
-  std::string collKey;
-  for (const auto& c : sortedColls) {
-    collKey += c;
-    collKey += ',';
-  }
-
-  const auto cacheKey = std::make_tuple(category, collKey, readerIndex);
-  auto it = m_partialReaders.find(cacheKey);
-  if (it != m_partialReaders.end()) {
-    return *it->second;
-  }
-
-  const auto& collInfo = m_collectionInfo[category];
-  std::vector<std::string> neededFieldNames;
-  for (const auto& coll : collInfo) {
-    if (std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
-      continue;
-    }
-    if (coll.isSubset) {
-      neededFieldNames.emplace_back(root_utils::subsetBranch(coll.name));
-    } else {
-      neededFieldNames.emplace_back(coll.name);
-      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll.dataType);
-      for (const auto& relName : relVecNames.relations) {
-        neededFieldNames.emplace_back(root_utils::refBranch(coll.name, relName));
-      }
-      for (const auto& vecName : relVecNames.vectorMembers) {
-        neededFieldNames.emplace_back(root_utils::vecBranch(coll.name, vecName));
-      }
-    }
-  }
-
-  // Build a minimal RNTupleModel from the full reader's descriptor
-  auto& fullReader = *m_readers[category][readerIndex];
-  const auto& desc = fullReader.GetDescriptor();
-
-  ROOT::RCreateFieldOptions fieldOpts;
-  fieldOpts.SetEmulateUnknownTypes(true);
-  fieldOpts.SetReturnInvalidOnError(true);
-
-  auto smallModel = ROOT::RNTupleModel::CreateBare();
-  const auto& topFieldDesc = desc.GetFieldDescriptor(desc.GetFieldZeroId());
-  for (const auto& fieldDesc : desc.GetFieldIterable(topFieldDesc)) {
-    const auto& fn = fieldDesc.GetFieldName();
-    if (std::ranges::find(neededFieldNames, fn) != neededFieldNames.end()) {
-      auto field = fieldDesc.CreateField(desc, fieldOpts);
-      if (field) {
-        smallModel->AddField(std::move(field));
-      }
-    }
-  }
-  smallModel->Freeze();
-
-  // Open a new partial reader with this model, using the same file as the full reader
-  const auto& filename = m_categoryFilenames[category][readerIndex];
-  auto partialReader = root_compat::RNTupleReader::Open(std::move(smallModel), category, filename);
-
-  auto [insertIt, _] = m_partialReaders.emplace(cacheKey, std::move(partialReader));
-  return *insertIt->second;
 }
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view category,
@@ -308,141 +238,6 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
   auto parameters = readEventMetaData(reader.get(), localEntry);
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
-}
-
-std::unique_ptr<ROOTFrameData> RNTupleReader::readEntryLazy(const std::string& category, const unsigned entNum,
-                                                            const std::vector<std::string>& collsToRead) {
-  if (m_totalEntries.find(category) == m_totalEntries.end()) {
-    getEntries(category);
-  }
-  if (entNum >= m_totalEntries[category]) {
-    return nullptr;
-  }
-
-  if (m_collectionInfo.find(category) == m_collectionInfo.end()) {
-    if (!initCategory(category)) {
-      return nullptr;
-    }
-  }
-
-  const auto& collInfo = m_collectionInfo[category];
-
-  m_entries[category] = entNum + 1;
-
-  const auto upper = std::ranges::upper_bound(m_readerEntries[category], entNum);
-  const auto localEntry = entNum - *(upper - 1);
-  const auto readerIndex = static_cast<size_t>(upper - 1 - m_readerEntries[category].begin());
-
-  // Create one REntry for this readEntryLazy call.
-  auto& activeReader = collsToRead.empty() ? *m_readers[category][readerIndex]
-                                           : getOrCreatePartialReader(category, readerIndex, collsToRead);
-  const auto dentry = activeReader.CreateEntry();
-
-  ROOTFrameData::BufferMap buffers;
-  for (const auto& coll : collInfo) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
-      continue;
-    }
-    const auto& collType = coll.dataType;
-    const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
-    if (!maybeBuffers) {
-      std::cerr << "WARNING: Buffers couldn't be created for collection " << coll.name << " of type " << coll.dataType
-                << " and schema version " << coll.schemaVersion << std::endl;
-      continue;
-    }
-    auto& collBuffers = maybeBuffers.value();
-
-    try {
-      if (coll.isSubset) {
-        const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      } else {
-        dentry->BindRawPtr(coll.name, collBuffers.data);
-
-        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-          const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
-          const auto brName = root_utils::refBranch(coll.name, relName);
-          dentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-        }
-
-        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-          const auto vecName = relVecNames.vectorMembers[j];
-          const auto brName = root_utils::vecBranch(coll.name, vecName);
-          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
-        }
-      }
-    } catch (const RException&) {
-      collBuffers.deleteBuffers = {};
-      continue;
-    }
-
-    buffers.emplace(coll.name, std::move(collBuffers));
-  }
-
-  activeReader.LoadEntry(localEntry, *dentry);
-
-  // Lazy callback: called only for collections not in collsToRead
-  auto lazyRead = [this, category, localEntry,
-                   readerIndex](const std::string& name) -> std::optional<podio::CollectionReadBuffers> {
-    const auto& lazyCollInfo = m_collectionInfo[category];
-    auto it = std::ranges::find(lazyCollInfo, name, &root_utils::CollectionWriteInfo::name);
-    if (it == lazyCollInfo.end()) {
-      return std::nullopt;
-    }
-    const root_utils::CollectionWriteInfo& coll = *it;
-    const auto& collType = coll.dataType;
-    const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
-    if (!maybeBuffers) {
-      return std::nullopt;
-    }
-    auto& collBuffers = maybeBuffers.value();
-
-    // Use a per-collection partial reader (cached) for cheap CreateEntry().
-    auto& lazyPartialReader = getOrCreatePartialReader(category, readerIndex, {name});
-    const auto lazyDentry = lazyPartialReader.CreateEntry();
-    try {
-      if (coll.isSubset) {
-        const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        lazyDentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      } else {
-        lazyDentry->BindRawPtr(coll.name, collBuffers.data);
-
-        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-          const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
-          const auto brName = root_utils::refBranch(coll.name, relName);
-          lazyDentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-        }
-
-        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-          const auto vecName = relVecNames.vectorMembers[j];
-          const auto brName = root_utils::vecBranch(coll.name, vecName);
-          lazyDentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
-        }
-      }
-    } catch (const RException&) {
-      collBuffers.deleteBuffers = {};
-      return std::nullopt;
-    }
-
-    lazyPartialReader.LoadEntry(localEntry, *lazyDentry);
-    return {std::move(collBuffers)};
-  };
-
-  // Skip GenericParameters. DataSource users never need event metadata
-  return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], podio::GenericParameters{},
-                                         std::move(lazyRead));
 }
 
 } // namespace podio

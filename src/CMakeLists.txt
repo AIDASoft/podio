@@ -99,6 +99,8 @@ if(ENABLE_RNTUPLE)
   list(APPEND root_sources
       RNTupleReader.cc
       RNTupleWriter.cc
+      RNTupleLazyReader.cc
+      RNTupleLazyFrameData.cc
      )
 endif()
 
@@ -115,6 +117,8 @@ if(ENABLE_RNTUPLE)
   list(APPEND root_headers
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleReader.h
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleWriter.h
+      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyReader.h
+      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyFrameData.h
      )
 endif()
 

@@ -18,6 +18,7 @@ if(ENABLE_RNTUPLE)
       ${root_dependent_tests}
       write_rntuple.cpp
       read_rntuple.cpp
+      read_rntuple_lazy.cpp
       read_python_frame_rntuple.cpp
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
@@ -71,6 +72,7 @@ set_tests_properties(write_python_empty_colls_root PROPERTIES FIXTURES_SETUP pod
 if(ENABLE_RNTUPLE)
   set_tests_properties(
     read_rntuple
+    read_rntuple_lazy
     selected_colls_roundtrip_rntuple
 
     PROPERTIES

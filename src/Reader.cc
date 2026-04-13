@@ -96,28 +96,6 @@ Reader makeReader(const std::vector<std::string>& filenames, bool lazy) {
   throw std::runtime_error("Unknown file extension: " + suffix);
 }
 
-podio::Frame Reader::readFrameLazy(const std::string& name, size_t index, const std::vector<std::string>& collsToRead) {
-  if (auto* rootReader = dynamic_cast<ReaderModel<ROOTReader>*>(m_self.get())) {
-    auto maybeFrame = rootReader->m_reader->readEntryLazy(name, index, collsToRead);
-    if (maybeFrame) {
-      return podio::Frame(std::move(maybeFrame));
-    }
-    throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) +
-                             " (reading beyond bounds?)");
-  }
-#if PODIO_ENABLE_RNTUPLE
-  if (auto* rntReader = dynamic_cast<ReaderModel<RNTupleReader>*>(m_self.get())) {
-    auto maybeFrame = rntReader->m_reader->readEntryLazy(name, index, collsToRead);
-    if (maybeFrame) {
-      return podio::Frame(std::move(maybeFrame));
-    }
-    throw std::runtime_error("Failed reading category " + name + " at frame " + std::to_string(index) +
-                             " (reading beyond bounds?)");
-  }
-#endif
-  return readFrame(name, index, collsToRead);
-}
-
 std::optional<std::map<std::string, SizeStats>> Reader::getSizeStats(std::string_view category) {
   if (const auto* rootReader = dynamic_cast<ReaderModel<ROOTReader>*>(m_self.get())) {
     return rootReader->m_reader->getSizeStats(category);
