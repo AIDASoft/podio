@@ -1,5 +1,6 @@
 #include "podio/Reader.h"
 
+#include "podio/ROOTLazyReader.h"
 #include "podio/ROOTReader.h"
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleReader.h"
@@ -21,11 +22,11 @@ template <typename T>
 Reader::Reader(std::unique_ptr<T> reader) : m_self(std::make_unique<ReaderModel<T>>(std::move(reader))) {
 }
 
-Reader makeReader(const std::string& filename) {
-  return makeReader(utils::expand_glob(filename));
+Reader makeReader(const std::string& filename, bool lazy) {
+  return makeReader(utils::expand_glob(filename), lazy);
 }
 
-Reader makeReader(const std::vector<std::string>& filenames) {
+Reader makeReader(const std::vector<std::string>& filenames, bool lazy) {
 
   if (filenames.empty()) {
     throw std::runtime_error("No files given to create a Podio Reader");
@@ -67,6 +68,12 @@ Reader makeReader(const std::vector<std::string>& filenames) {
       throw std::runtime_error("ROOT RNTuple reader not available. Please recompile with ROOT RNTuple support.");
 #endif
     } else {
+      if (lazy) {
+        auto actualReader = std::make_unique<ROOTLazyReader>();
+        actualReader->openFiles(filenames);
+        return actualReader;
+      } else {
+      }
       auto actualReader = std::make_unique<ROOTReader>();
       actualReader->openFiles(filenames);
       Reader reader{std::move(actualReader)};

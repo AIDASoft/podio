@@ -51,7 +51,7 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   // Create probing frame
   podio::Frame frame;
   unsigned int nEventsInFiles = 0;
-  auto podioReader = podio::makeReader(m_filePathList);
+  auto podioReader = podio::makeReader(m_filePathList, true);
   nEventsInFiles = podioReader.getEntries(podio::Category::Event);
   frame = podioReader.readFrame(podio::Category::Event, 0, collsToRead);
 
@@ -100,7 +100,7 @@ void DataSource::SetNSlots(unsigned int nSlots) {
 
   // Initialize podio readers
   for (size_t i = 0; i < fNSlots; ++i) {
-    m_podioReaders.emplace_back(std::make_unique<podio::Reader>(podio::makeReader(m_filePathList)));
+    m_podioReaders.emplace_back(std::make_unique<podio::Reader>(podio::makeReader(m_filePathList, true)));
   }
 
   for (size_t i = 0; i < fNSlots; ++i) {
@@ -128,7 +128,7 @@ void DataSource::InitSlot(unsigned int, ULong64_t) {
 
 bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
   m_frames[slot] = std::make_unique<podio::Frame>(
-      m_podioReaders[slot]->readFrameLazy(podio::Category::Event, entry, m_activeCollectionNames));
+      m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_activeCollectionNames));
 
   for (auto collectionIndex : m_activeCollections) {
     m_Collections[collectionIndex][slot] = m_frames[slot]->get(m_columnNames[collectionIndex]);
