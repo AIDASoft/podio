@@ -78,8 +78,7 @@ std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::shared_ptr<Cat
   // Validate requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
-      if (std::ranges::find(catState->storedClasses, name, &detail::NamedCollInfo::name) ==
-          catState->storedClasses.end()) {
+      if (std::ranges::find(catState->storedClasses, name, &NamedCollInfo::name) == catState->storedClasses.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
@@ -152,10 +151,10 @@ void ROOTLazyReader::initCategory(CategoryState& catState, std::string_view cate
   // Set up collection branches
   if (m_fileVersion < podio::version::Version{0, 16, 99}) {
     std::tie(catState.branches, catState.storedClasses) =
-        root_utils::createCollectionBranchesIndexBased(catState.chain.get(), *catState.table, collInfo);
+        createCollectionBranchesIndexBased(catState.chain.get(), *catState.table, collInfo);
   } else {
     std::tie(catState.branches, catState.storedClasses) =
-        root_utils::createCollectionBranches(catState.chain.get(), *catState.table, collInfo);
+        createCollectionBranches(catState.chain.get(), *catState.table, collInfo);
   }
 
   // Set up parameter branches separately from collection branches

@@ -26,7 +26,7 @@ struct CategoryState {
 
   std::unique_ptr<TChain> chain{nullptr};
   unsigned entry{0};
-  std::vector<detail::NamedCollInfo> storedClasses{};
+  std::vector<root_utils::TTreeReaderCommon::NamedCollInfo> storedClasses{};
   std::vector<root_utils::CollectionBranches> branches{};
   std::shared_ptr<const podio::CollectionIDTable> table{nullptr};
   std::vector<root_utils::CollectionBranches> paramBranches{};

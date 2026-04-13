@@ -2,8 +2,7 @@
 #define PODIO_ROOTREADER_H
 
 #include "podio/ROOTFrameData.h"
-#include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/ReaderCommon.h"
 #include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
 
@@ -13,7 +12,6 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -23,18 +21,6 @@ class TFile;
 class TTree;
 
 namespace podio {
-
-namespace detail {
-  // Information about the collection class type, whether it is a subset, the
-  // schema version on file and the index in the collection branches cache
-  // vector
-  using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
-
-  struct NamedCollInfo {
-    std::string name{};
-    CollectionInfo info{};
-  };
-} // namespace detail
 
 class CollectionBase;
 class CollectionIDTable;
@@ -46,7 +32,7 @@ struct CollectionReadBuffers;
 ///
 /// The ROOTReader provides the data as ROOTFrameData from which a podio::Frame
 /// can be constructed. It can be used to read files written by the ROOTWriter.
-class ROOTReader {
+class ROOTReader : public ReaderCommon, root_utils::TTreeReaderCommon {
 
 public:
   ROOTReader() = default;
@@ -112,45 +98,11 @@ public:
   /// @returns The number of entries that are available for the category
   unsigned getEntries(std::string_view name) const;
 
-  /// Get the build version of podio that has been used to write the current
-  /// file
-  ///
-  /// @returns The podio build version
-  podio::version::Version currentFileVersion() const {
-    return m_fileVersion;
-  }
-
-  /// Get the (build) version of a datamodel that has been used to write the
-  /// current file
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The (build) version of the datamodel if available or an empty
-  ///          optional
-  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelVersion(name);
-  }
-
   /// Get the names of all the available Frame categories in the current file(s).
   ///
   /// @returns The names of the available categories from the file
   std::vector<std::string_view> getAvailableCategories() const;
 
-  /// Get the datamodel definition for the given name
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelDefinition(name);
-  }
-
-  /// Get all names of the datamodels that are available from this reader
-  ///
-  /// @returns The names of the datamodels
-  std::vector<std::string> getAvailableDatamodels() const {
-    return m_datamodelHolder.getAvailableDatamodels();
-  }
   std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category);
 
 private:
@@ -165,7 +117,7 @@ private:
     }
     std::unique_ptr<TChain> chain{nullptr};                      ///< The TChain with the data
     unsigned entry{0};                                           ///< The next entry to read
-    std::vector<detail::NamedCollInfo> storedClasses{};          ///< The stored collections in this
+    std::vector<NamedCollInfo> storedClasses{};                  ///< The stored collections in this
                                                                  ///< category
     std::vector<root_utils::CollectionBranches> branches{};      ///< The (data) branches for this category
     std::vector<root_utils::CollectionBranches> paramBranches{}; ///< The parameter branches for this category
@@ -198,9 +150,6 @@ private:
   std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
   std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
   std::vector<std::string> m_availCategories{};                      ///< All available categories from this file
-
-  podio::version::Version m_fileVersion{0, 0, 0};
-  DatamodelDefinitionHolder m_datamodelHolder{};
 };
 
 } // namespace podio

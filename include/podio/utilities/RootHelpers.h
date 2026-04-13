@@ -2,6 +2,7 @@
 #define PODIO_UTILITIES_ROOTHELPERS_H
 
 #include "podio/GenericParameters.h"
+#include "podio/SchemaEvolution.h"
 
 #include "ROOT/RVec.hxx"
 #include "TBranch.h"
@@ -10,8 +11,11 @@
 #include <tuple>
 #include <vector>
 
+class TChain;
+
 namespace podio {
 class CollectionBase;
+class CollectionIDTable;
 
 namespace root_utils {
 
@@ -96,6 +100,27 @@ namespace root_utils {
                  ROOT::VecOps::RVec<std::string> floatKeys, ROOT::VecOps::RVec<std::vector<float>> floatValues,
                  ROOT::VecOps::RVec<std::string> doubleKeys, ROOT::VecOps::RVec<std::vector<double>> doubleValues,
                  ROOT::VecOps::RVec<std::string> stringKeys, ROOT::VecOps::RVec<std::vector<std::string>> stringValues);
+
+  struct TTreeReaderCommon {
+    // Information about the collection class type, whether it is a subset, the
+    // schema version on file and the index in the collection branches cache
+    // vector
+    using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
+
+    struct NamedCollInfo {
+      std::string name{};
+      CollectionInfo info{};
+    };
+
+  protected:
+    static std::tuple<std::vector<podio::root_utils::CollectionBranches>, std::vector<NamedCollInfo>>
+    createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
+                             const std::vector<podio::root_utils::CollectionWriteInfo>& collInfo);
+
+    static std::tuple<std::vector<podio::root_utils::CollectionBranches>, std::vector<NamedCollInfo>>
+    createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
+                                       const std::vector<podio::root_utils::CollectionWriteInfo>& collInfo);
+  };
 
 } // namespace root_utils
 } // namespace podio

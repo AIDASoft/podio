@@ -80,7 +80,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   // Make sure to not silently ignore non-existant but requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
-      if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
+      if (std::ranges::find(catInfo.storedClasses, name, &NamedCollInfo::name) == catInfo.storedClasses.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
