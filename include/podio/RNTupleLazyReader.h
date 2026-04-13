@@ -3,7 +3,7 @@
 
 #include "podio/RNTupleLazyFrameData.h"
 #include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/ReaderCommon.h"
 
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleReader.hxx>
@@ -37,7 +37,7 @@ struct RNTupleCategoryState;
 /// reader defers the actual RNTuple I/O to the point of collection access,
 /// using partial RNTuple readers with minimal field models so that LoadEntry()
 /// only reads the requested collection's data.
-class RNTupleLazyReader {
+class RNTupleLazyReader : public ReaderCommon {
 
 public:
   RNTupleLazyReader() = default;
@@ -97,27 +97,6 @@ public:
   /// Get the names of all the available Frame categories in the current file(s).
   std::vector<std::string_view> getAvailableCategories() const;
 
-  /// Get the build version of podio that has been used to write the current file.
-  podio::version::Version currentFileVersion() const {
-    return m_fileVersion;
-  }
-
-  /// Get the (build) version of a datamodel that has been used to write the
-  /// current file.
-  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelVersion(name);
-  }
-
-  /// Get the datamodel definition for the given name.
-  const std::string_view getDatamodelDefinition(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelDefinition(name);
-  }
-
-  /// Get all names of the datamodels that are available from this reader.
-  std::vector<std::string> getAvailableDatamodels() const {
-    return m_datamodelHolder.getAvailableDatamodels();
-  }
-
 private:
   /// Initialize the given category: read collection info and ID table from the
   /// metadata RNTuple into the category state.
@@ -128,9 +107,6 @@ private:
   GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, unsigned localEntry);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
-
-  podio::version::Version m_fileVersion{};
-  DatamodelDefinitionHolder m_datamodelHolder{};
 
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
