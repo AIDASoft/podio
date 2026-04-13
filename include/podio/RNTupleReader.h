@@ -2,8 +2,7 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/ROOTFrameData.h"
-#include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/ReaderCommon.h"
 #include "podio/utilities/RootHelpers.h"
 
 #include <string>
@@ -32,7 +31,7 @@ namespace root_compat {
 ///
 /// The RNTupleReader provides the data as ROOTFrameData from which a podio::Frame
 /// can be constructed. It can be used to read files written by the RNTupleWriter.
-class RNTupleReader {
+class RNTupleReader : public ReaderCommon {
 
 public:
   RNTupleReader() = default;
@@ -103,41 +102,6 @@ public:
   /// @returns The number of entries that are available for the category
   unsigned getEntries(std::string_view name) const;
 
-  /// Get the build version of podio that has been used to write the current
-  /// file
-  ///
-  /// @returns The podio build version
-  podio::version::Version currentFileVersion() const {
-    return m_fileVersion;
-  }
-
-  /// Get the (build) version of a datamodel that has been used to write the
-  /// current file
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The (build) version of the datamodel if available or an empty
-  ///          optional
-  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelVersion(name);
-  }
-
-  /// Get the datamodel definition for the given name
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelDefinition(name);
-  }
-
-  /// Get all names of the datamodels that are available from this reader
-  ///
-  /// @returns The names of the datamodels
-  std::vector<std::string> getAvailableDatamodels() const {
-    return m_datamodelHolder.getAvailableDatamodels();
-  }
-
 private:
   /**
    * Initialize the given category by filling the maps with metadata information
@@ -151,9 +115,6 @@ private:
   GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
-
-  podio::version::Version m_fileVersion{};
-  DatamodelDefinitionHolder m_datamodelHolder{};
 
   std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
