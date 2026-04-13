@@ -108,17 +108,12 @@ private:
   /// Get the category state for the given name. Initializes on first access.
   std::shared_ptr<CategoryState>& getCategoryState(std::string_view name);
 
-  /// Read the parameters for a given entry
-  GenericParameters readEntryParameters(CategoryState& catState, unsigned int localEntry);
-
   /// Read the data entry specified by the current entry counter in the given
   /// category state. Returns nullptr if out of bounds.
   std::unique_ptr<podio::ROOTLazyFrameData> readEntry(std::shared_ptr<CategoryState>& catState, unsigned entry,
                                                       const std::vector<std::string>& collsToRead);
 
-  std::unique_ptr<TChain> m_metaChain{nullptr};
   std::unordered_map<std::string_view, std::shared_ptr<CategoryState>> m_categoryStates{};
-  std::vector<std::string> m_availCategories{};
 };
 
 } // namespace podio

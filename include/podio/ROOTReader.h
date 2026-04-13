@@ -134,9 +134,6 @@ private:
   /// uninitialized chain (nullptr) member
   CategoryInfo& getCategoryInfo(std::string_view name);
 
-  /// Read the parameters for the entry specified in the passed CategoryInfo
-  GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
-
   /// Read the data entry specified in the passed CategoryInfo, and increase the
   /// counter afterwards. In case the requested entry is larger than the
   /// available number of entries, return a nullptr.
@@ -147,9 +144,7 @@ private:
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,
                                                                    bool reloadBranches, unsigned int localEntry);
 
-  std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
   std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
-  std::vector<std::string> m_availCategories{};                      ///< All available categories from this file
 };
 
 } // namespace podio
