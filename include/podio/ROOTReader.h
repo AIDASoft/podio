@@ -124,11 +124,6 @@ private:
     std::shared_ptr<CollectionIDTable> table{nullptr};           ///< The collection ID table for this category
   };
 
-  /// Initialize the passed CategoryInfo by setting up the necessary branches,
-  /// collection infos and all necessary meta data to be able to read entries
-  /// with this name
-  void initCategory(CategoryInfo& catInfo, std::string_view name);
-
   /// Get the category information for the given name. In case there is no TTree
   /// with contents for the given name this will return a CategoryInfo with an
   /// uninitialized chain (nullptr) member

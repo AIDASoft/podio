@@ -115,15 +115,6 @@ namespace root_utils {
       CollectionInfo info{};
     };
 
-    /// Return type for initCategoryCommon, holding all data needed to populate
-    /// a CategoryInfo or CategoryState after initialization
-    struct CategoryInitResult {
-      std::shared_ptr<podio::CollectionIDTable> table{};
-      std::vector<podio::root_utils::CollectionBranches> branches{};
-      std::vector<NamedCollInfo> storedClasses{};
-      std::vector<podio::root_utils::CollectionBranches> paramBranches{};
-    };
-
   protected:
     /// Open the metadata chain, read the file version and EDM definitions into
     /// the provided references, and populate m_availCategories.
@@ -132,27 +123,13 @@ namespace root_utils {
     void openMetaChain(const std::vector<std::string>& filenames, podio::version::Version& fileVersion,
                        podio::DatamodelDefinitionHolder& datamodelHolder);
 
-    /// Read collection info from the metadata chain for the given category,
-    /// build the ID table, collection branches, and parameter branches.
-    /// Uses m_metaChain internally; categoryChain is the per-category TChain.
-    CategoryInitResult initCategoryCommon(TChain* categoryChain, std::string_view category,
-                                          const podio::version::Version& fileVersion);
-
     /// Unified parameter reading. reloadBranches=true always for the lazy reader.
     static podio::GenericParameters
     readEntryParameters(std::vector<podio::root_utils::CollectionBranches>& paramBranches, TChain* chain,
                         const podio::version::Version& fileVersion, bool reloadBranches, unsigned int localEntry);
 
-    static std::tuple<std::vector<podio::root_utils::CollectionBranches>, std::vector<NamedCollInfo>>
-    createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
-                             const std::vector<podio::root_utils::CollectionWriteInfo>& collInfo);
-
-    static std::tuple<std::vector<podio::root_utils::CollectionBranches>, std::vector<NamedCollInfo>>
-    createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
-                                       const std::vector<podio::root_utils::CollectionWriteInfo>& collInfo);
-
     std::unique_ptr<TChain> m_metaChain{nullptr}; ///< The metadata tree
-    std::vector<std::string> m_availCategories{};  ///< All available categories from this file
+    std::vector<std::string> m_availCategories{}; ///< All available categories from this file
   };
 
 } // namespace root_utils

@@ -1,11 +1,6 @@
 #include "podio/ROOTReader.h"
-#include "podio/CollectionBase.h"
 #include "podio/CollectionBufferFactory.h"
 #include "podio/CollectionBuffers.h"
-#include "podio/CollectionIDTable.h"
-#include "podio/DatamodelRegistry.h"
-#include "podio/GenericParameters.h"
-#include "podio/podioVersion.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -120,7 +115,7 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(std::string_view category)
     // Use the id table as proxy to check whether this category has been
     // initialized already
     if (it->second.branches.empty()) {
-      initCategory(it->second, category);
+      root_utils::initCategory(it->second, m_metaChain.get(), category, m_fileVersion);
     }
     return it->second;
   }
@@ -130,14 +125,6 @@ ROOTReader::CategoryInfo& ROOTReader::getCategoryInfo(std::string_view category)
   static auto invalidCategory = CategoryInfo{nullptr};
 
   return invalidCategory;
-}
-
-void ROOTReader::initCategory(CategoryInfo& catInfo, std::string_view category) {
-  auto result = initCategoryCommon(catInfo.chain.get(), category, m_fileVersion);
-  catInfo.table = std::move(result.table);
-  catInfo.branches = std::move(result.branches);
-  catInfo.storedClasses = std::move(result.storedClasses);
-  catInfo.paramBranches = std::move(result.paramBranches);
 }
 
 void ROOTReader::openFile(const std::string& filename) {

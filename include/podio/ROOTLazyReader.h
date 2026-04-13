@@ -101,10 +101,6 @@ public:
   std::vector<std::string_view> getAvailableCategories() const;
 
 private:
-  /// Initialize the passed CategoryState by setting up the necessary branches,
-  /// collection infos and all necessary meta data
-  void initCategory(CategoryState& catState, std::string_view name);
-
   /// Get the category state for the given name. Initializes on first access.
   std::shared_ptr<CategoryState>& getCategoryState(std::string_view name);
 

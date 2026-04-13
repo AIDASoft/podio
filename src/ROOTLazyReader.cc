@@ -3,6 +3,7 @@
 #include "podio/utilities/RootHelpers.h"
 
 #include "ROOTLazyCategoryState.h"
+#include "rootUtils.h"
 
 // ROOT specific includes
 #include "TChain.h"
@@ -82,19 +83,11 @@ std::unique_ptr<ROOTLazyFrameData> ROOTLazyReader::readEntry(std::shared_ptr<Cat
                                              std::move(parameters));
 }
 
-void ROOTLazyReader::initCategory(CategoryState& catState, std::string_view category) {
-  auto result = initCategoryCommon(catState.chain.get(), category, m_fileVersion);
-  catState.table = std::move(result.table);
-  catState.branches = std::move(result.branches);
-  catState.storedClasses = std::move(result.storedClasses);
-  catState.paramBranches = std::move(result.paramBranches);
-}
-
 std::shared_ptr<CategoryState>& ROOTLazyReader::getCategoryState(std::string_view category) {
   if (auto it = m_categoryStates.find(category); it != m_categoryStates.end()) {
     // Use branches as proxy to check whether this category has been initialized
     if (it->second->branches.empty()) {
-      initCategory(*it->second, category);
+      root_utils::initCategory(*it->second, m_metaChain.get(), category, m_fileVersion);
     }
     return it->second;
   }

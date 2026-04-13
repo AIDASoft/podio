@@ -453,4 +453,178 @@ void readParams(std::vector<CollectionBranches>& branches, TChain* chain, podio:
 
 } // namespace podio::root_utils
 
+// Free function template for initializing a category container from the metadata chain.
+// Lives here because it requires the helper functions defined above.
+namespace podio::root_utils {
+
+// Forward declarations for helpers defined in RootHelpers.cc
+std::tuple<
+    std::vector<CollectionBranches>,
+    std::vector<TTreeReaderCommon::NamedCollInfo>> inline createCollectionBranches(TChain* chain,
+                                                                                   const podio::CollectionIDTable&
+                                                                                       idTable,
+                                                                                   const std::vector<
+                                                                                       CollectionWriteInfo>& collInfo) {
+  size_t collectionIndex{0};
+  std::vector<root_utils::CollectionBranches> collBranches;
+  collBranches.reserve(collInfo.size() + 1);
+  std::vector<TTreeReaderCommon::NamedCollInfo> storedClasses;
+  storedClasses.reserve(collInfo.size());
+
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _, __] : collInfo) {
+    // We only write collections that are in the collectionIDTable, so no need
+    // to check here
+    const auto name = idTable.name(collID).value();
+
+    root_utils::CollectionBranches branches{};
+    if (isSubsetColl) {
+      // Only one branch will exist and we can trivially get its name
+      const auto brName = root_utils::subsetBranch(name);
+      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.refNames.emplace_back(std::move(brName));
+    } else {
+      // This branch is guaranteed to exist since only collections that are
+      // also written to file are in the info metadata that we work with here
+      branches.data = root_utils::getBranch(chain, name.c_str());
+
+      const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
+      for (const auto& relName : relVecNames.relations) {
+        const auto brName = root_utils::refBranch(name, relName);
+        branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.refNames.emplace_back(std::move(brName));
+      }
+      for (const auto& vecName : relVecNames.vectorMembers) {
+        const auto brName = root_utils::refBranch(name, vecName);
+        branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.vecNames.emplace_back(std::move(brName));
+      }
+    }
+
+    storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
+    collBranches.emplace_back(std::move(branches));
+  }
+
+  return {std::move(collBranches), storedClasses};
+}
+
+std::tuple<
+    std::vector<CollectionBranches>,
+    std::vector<TTreeReaderCommon::
+                    NamedCollInfo>> inline createCollectionBranchesIndexBased(TChain* chain,
+                                                                              const podio::CollectionIDTable& idTable,
+                                                                              const std::vector<CollectionWriteInfo>&
+                                                                                  collInfo) {
+  size_t collectionIndex{0};
+  std::vector<root_utils::CollectionBranches> collBranches;
+  collBranches.reserve(collInfo.size() + 1);
+  std::vector<TTreeReaderCommon::NamedCollInfo> storedClasses;
+  storedClasses.reserve(collInfo.size());
+
+  for (const auto& [collID, collType, isSubsetColl, collSchemaVersion, _, __] : collInfo) {
+    // We only write collections that are in the collectionIDTable, so no need
+    // to check here
+    const auto name = idTable.name(collID).value();
+
+    const auto collectionClass = TClass::GetClass(collType.c_str());
+    // Need the collection here to setup all the branches. Have to manage the
+    // temporary collection ourselves
+    const auto collection =
+        std::unique_ptr<podio::CollectionBase>(static_cast<podio::CollectionBase*>(collectionClass->New()));
+    root_utils::CollectionBranches branches{};
+    if (isSubsetColl) {
+      // Only one branch will exist and we can trivially get its name
+      const auto brName = root_utils::refBranch(name, 0);
+      branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+      branches.refNames.emplace_back(std::move(brName));
+    } else {
+      // This branch is guaranteed to exist since only collections that are
+      // also written to file are in the info metadata that we work with here
+      branches.data = root_utils::getBranch(chain, name.c_str());
+
+      const auto buffers = collection->getBuffers();
+      for (size_t i = 0; i < buffers.references->size(); ++i) {
+        const auto brName = root_utils::refBranch(name, i);
+        branches.refs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.refNames.emplace_back(std::move(brName));
+      }
+
+      for (size_t i = 0; i < buffers.vectorMembers->size(); ++i) {
+        const auto brName = root_utils::vecBranch(name, i);
+        branches.vecs.push_back(root_utils::getBranch(chain, brName.c_str()));
+        branches.vecNames.emplace_back(std::move(brName));
+      }
+    }
+
+    storedClasses.emplace_back(name, std::make_tuple(collType, isSubsetColl, collSchemaVersion, collectionIndex++));
+    collBranches.emplace_back(std::move(branches));
+  }
+
+  return {std::move(collBranches), storedClasses};
+}
+
+template <typename CategoryContainerT>
+void initCategory(CategoryContainerT& container, TChain* metaChain, std::string_view category,
+                  const podio::version::Version& fileVersion) {
+  auto* collInfoBranch = getBranch(metaChain, collInfoName(category));
+
+  auto collInfo = std::vector<CollectionWriteInfo>();
+  auto* collInfoPtr = &collInfo;
+  if (fileVersion >= podio::version::Version{1, 2, 999}) {
+    collInfoBranch->SetAddress(&collInfoPtr);
+    collInfoBranch->GetEntry(0);
+  } else {
+    auto collInfoOld = std::vector<CollectionWriteInfoT>();
+    if (fileVersion < podio::version::Version{0, 16, 4}) {
+      auto collInfoReallyOld = std::vector<CollectionInfoWithoutSchemaT>();
+      auto* tmpPtr = &collInfoReallyOld;
+      collInfoBranch->SetAddress(&tmpPtr);
+      collInfoBranch->GetEntry(0);
+      for (const auto& [collID, collType, isSubsetColl] : collInfoReallyOld) {
+        collInfo.emplace_back(collID, std::move(collType), isSubsetColl, 1u);
+      }
+    } else {
+      auto* tmpPtr = &collInfoOld;
+      collInfoBranch->SetAddress(&tmpPtr);
+      collInfoBranch->GetEntry(0);
+    }
+    collInfo.reserve(collInfoOld.size());
+    for (const auto& [id, typeName, isSubsetColl, schemaVersion] : collInfoOld) {
+      collInfo.emplace_back(id, std::move(typeName), isSubsetColl, schemaVersion);
+    }
+  }
+
+  if (fileVersion >= podio::version::Version{1, 2, 999}) {
+    container.table = makeCollIdTable(collInfo);
+  } else {
+    container.table = std::make_shared<podio::CollectionIDTable>();
+    const auto* table = container.table.get();
+    auto* tableBranch = getBranch(metaChain, idTableName(category));
+    tableBranch->SetAddress(&table);
+    tableBranch->GetEntry(0);
+  }
+
+  if (fileVersion < podio::version::Version{0, 16, 99}) {
+    std::tie(container.branches, container.storedClasses) =
+        createCollectionBranchesIndexBased(container.chain.get(), *container.table, collInfo);
+  } else {
+    std::tie(container.branches, container.storedClasses) =
+        createCollectionBranches(container.chain.get(), *container.table, collInfo);
+  }
+
+  if (fileVersion < podio::version::Version{0, 99, 99}) {
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), paramBranchName));
+  } else {
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), intKeyName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), intValueName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), floatKeyName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), floatValueName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), doubleKeyName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), doubleValueName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), stringKeyName));
+    container.paramBranches.emplace_back(getBranch(container.chain.get(), stringValueName));
+  }
+}
+
+} // namespace podio::root_utils
+
 #endif
