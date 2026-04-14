@@ -4,26 +4,15 @@
 
 #include "RNTupleLazyCategoryState.h"
 #include "rntuple_utils.h"
-#include "rootUtils.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace podio {
-
-bool RNTupleLazyReader::initCategory(std::string_view category) {
-  auto& state = m_categoryStates[category];
-  if (!state) {
-    return false;
-  }
-  return initCategoryCommon(category, state->collectionInfo, state->idTable);
-}
 
 void RNTupleLazyReader::openFile(const std::string& filename) {
   openFiles({filename});
@@ -88,7 +77,7 @@ std::unique_ptr<RNTupleLazyFrameData> RNTupleLazyReader::readEntry(std::string_v
   auto& state = stateIt->second;
 
   if (state->collectionInfo.empty()) {
-    if (!initCategory(category)) {
+    if (!initCategory(category, state->collectionInfo, state->idTable)) {
       return nullptr;
     }
   }
@@ -131,7 +120,7 @@ std::unique_ptr<RNTupleLazyFrameData> RNTupleLazyReader::readEntry(std::string_v
   state->entry = entNum + 1;
 
   return std::make_unique<RNTupleLazyFrameData>(state, entNum, std::move(availableCollections), state->idTable,
-                                               std::move(parameters));
+                                                std::move(parameters));
 }
 
 } // namespace podio

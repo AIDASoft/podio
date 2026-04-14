@@ -1,25 +1,15 @@
 #include "podio/RNTupleReader.h"
 #include "podio/CollectionBufferFactory.h"
-#include "podio/CollectionBuffers.h"
-#include "podio/DatamodelRegistry.h"
-#include "podio/GenericParameters.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rntuple_utils.h"
-#include "rootUtils.h"
 
 #include <algorithm>
-#include <cstdint>
 #include <iostream>
 #include <memory>
 #include <string>
-#include <tuple>
 #include <vector>
 
 namespace podio {
-
-bool RNTupleReader::initCategory(std::string_view category) {
-  return initCategoryCommon(category, m_collectionInfo[category], m_idTables[category]);
-}
 
 void RNTupleReader::openFile(const std::string& filename) {
   openFiles({filename});
@@ -69,7 +59,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view cat
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
   if (m_collectionInfo.find(category) == m_collectionInfo.end()) {
-    if (!initCategory(category)) {
+    if (!initCategory(category, m_collectionInfo[category], m_idTables[category])) {
       return nullptr;
     }
   }

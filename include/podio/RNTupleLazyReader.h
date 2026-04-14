@@ -83,10 +83,6 @@ public:
   unsigned getEntries(std::string_view name) const;
 
 private:
-  /// Initialize the given category: read collection info and ID table from the
-  /// metadata RNTuple into the category state.
-  bool initCategory(std::string_view category);
-
   /// Per-category shared state (readers, entry offsets, collection info, etc.)
   std::unordered_map<std::string_view, std::shared_ptr<RNTupleCategoryState>> m_categoryStates{};
 };

@@ -61,7 +61,7 @@ GenericParameters RNTupleReaderCommon::readEventMetaData(root_compat::RNTupleRea
   return params;
 }
 
-bool RNTupleReaderCommon::initCategoryCommon(std::string_view category,
+bool RNTupleReaderCommon::initCategory(std::string_view category,
                                              std::vector<podio::root_utils::CollectionWriteInfo>& collInfo,
                                              std::shared_ptr<const podio::CollectionIDTable>& idTable) {
   if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {

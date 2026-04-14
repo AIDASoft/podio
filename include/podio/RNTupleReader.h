@@ -84,12 +84,6 @@ public:
   unsigned getEntries(std::string_view name) const;
 
 private:
-  /**
-   * Initialize the given category by filling the maps with metadata information
-   * that will be used later
-   */
-  bool initCategory(std::string_view category);
-
   std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
   std::unordered_map<std::string_view, unsigned> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts

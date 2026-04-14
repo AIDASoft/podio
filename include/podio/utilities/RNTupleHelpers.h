@@ -52,8 +52,8 @@ protected:
   /// metadata reader and build the CollectionIDTable. Both output parameters are
   /// written only on success (return value true). Returns false if the category
   /// is not in m_availableCategories.
-  bool initCategoryCommon(std::string_view category, std::vector<podio::root_utils::CollectionWriteInfo>& collInfo,
-                          std::shared_ptr<const podio::CollectionIDTable>& idTable);
+  bool initCategory(std::string_view category, std::vector<podio::root_utils::CollectionWriteInfo>& collInfo,
+                    std::shared_ptr<const podio::CollectionIDTable>& idTable);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
