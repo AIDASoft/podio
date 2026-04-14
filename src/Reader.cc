@@ -73,11 +73,11 @@ Reader makeReader(const std::vector<std::string>& filenames, bool lazy) {
         actualReader->openFiles(filenames);
         return actualReader;
       } else {
+        auto actualReader = std::make_unique<ROOTReader>();
+        actualReader->openFiles(filenames);
+        Reader reader{std::move(actualReader)};
+        return reader;
       }
-      auto actualReader = std::make_unique<ROOTReader>();
-      actualReader->openFiles(filenames);
-      Reader reader{std::move(actualReader)};
-      return reader;
     }
   } else if (suffix == "sio") {
 #if PODIO_ENABLE_SIO
