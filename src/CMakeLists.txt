@@ -97,6 +97,7 @@ SET(root_sources
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
+      RNTupleReaderCommon.cc
       RNTupleReader.cc
       RNTupleWriter.cc
       RNTupleLazyReader.cc
@@ -119,6 +120,7 @@ if(ENABLE_RNTUPLE)
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleWriter.h
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyReader.h
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyFrameData.h
+      ${PROJECT_SOURCE_DIR}/include/podio/utilities/RNTupleHelpers.h
      )
 endif()
 

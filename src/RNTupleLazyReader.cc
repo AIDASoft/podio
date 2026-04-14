@@ -3,10 +3,8 @@
 #include "podio/utilities/RootHelpers.h"
 
 #include "RNTupleLazyCategoryState.h"
+#include "rntuple_utils.h"
 #include "rootUtils.h"
-
-#include <ROOT/RError.hxx>
-#include <RVersion.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -17,52 +15,14 @@
 #include <tuple>
 #include <vector>
 
-// Adjust for the move of this out of ROOT v7 in
-// https://github.com/root-project/root/pull/17281
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
-using ROOT::RException;
-#else
-using ROOT::Experimental::RException;
-#endif
-
 namespace podio {
 
-template <typename T>
-void readLazyParams(root_compat::RNTupleReader* reader, const unsigned localEntry, GenericParameters& params) {
-  auto keyView = reader->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto valueView = reader->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
-  params.loadFrom(keyView(localEntry), valueView(localEntry));
-}
-
-GenericParameters RNTupleLazyReader::readEventMetaData(root_compat::RNTupleReader* reader,
-                                                       const unsigned localEntry) {
-  GenericParameters params;
-  readLazyParams<int>(reader, localEntry, params);
-  readLazyParams<float>(reader, localEntry, params);
-  readLazyParams<double>(reader, localEntry, params);
-  readLazyParams<std::string>(reader, localEntry, params);
-  return params;
-}
-
 bool RNTupleLazyReader::initCategory(std::string_view category) {
-  if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {
-    return false;
-  }
-
   auto& state = m_categoryStates[category];
   if (!state) {
     return false;
   }
-
-  // Read collection info from the first file's metadata reader
-  const auto& filename = m_filenames[0];
-  auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
-      {root_utils::collInfoName(category)});
-
-  state->collectionInfo = collInfo(0);
-  state->idTable = root_utils::makeCollIdTable(state->collectionInfo);
-
-  return true;
+  return initCategoryCommon(category, state->collectionInfo, state->idTable);
 }
 
 void RNTupleLazyReader::openFile(const std::string& filename) {
@@ -70,33 +30,7 @@ void RNTupleLazyReader::openFile(const std::string& filename) {
 }
 
 void RNTupleLazyReader::openFiles(const std::vector<std::string>& filenames) {
-  m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
-
-  for (const auto& filename : filenames) {
-    m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
-  }
-
-  m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
-
-  auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
-  const auto version = versionView(0);
-  m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
-
-  auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  auto edm = edmView(0);
-  DatamodelDefinitionHolder::VersionList edmVersions{};
-  for (const auto& [name, _] : edm) {
-    try {
-      auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
-      const auto edmVersion = edmVersionView(0);
-      edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
-    } catch (const RException&) {
-    }
-  }
-  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
-
-  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
-  m_availableCategories = availableCategoriesField(0);
+  openMetaData(filenames, m_fileVersion, m_datamodelHolder);
 
   // For each category, create a shared state and open one full reader per file
   for (const auto& category : m_availableCategories) {
@@ -134,15 +68,6 @@ unsigned RNTupleLazyReader::getEntries(std::string_view name) const {
     return it->second->totalEntries;
   }
   return 0;
-}
-
-std::vector<std::string_view> RNTupleLazyReader::getAvailableCategories() const {
-  std::vector<std::string_view> cats;
-  cats.reserve(m_availableCategories.size());
-  for (const auto& cat : m_availableCategories) {
-    cats.emplace_back(cat);
-  }
-  return cats;
 }
 
 std::unique_ptr<RNTupleLazyFrameData> RNTupleLazyReader::readNextEntry(std::string_view name,
@@ -197,8 +122,7 @@ std::unique_ptr<RNTupleLazyFrameData> RNTupleLazyReader::readEntry(std::string_v
   // Build available collections map: name -> index in collectionInfo
   std::unordered_map<std::string, size_t> availableCollections;
   for (size_t i = 0; i < collInfo.size(); ++i) {
-    if (!collsToRead.empty() &&
-        std::ranges::find(collsToRead, collInfo[i].name) == collsToRead.end()) {
+    if (!collsToRead.empty() && std::ranges::find(collsToRead, collInfo[i].name) == collsToRead.end()) {
       continue;
     }
     availableCollections.emplace(collInfo[i].name, i);

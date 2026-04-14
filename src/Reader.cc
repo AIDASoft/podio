@@ -1,5 +1,6 @@
 #include "podio/Reader.h"
 
+#include "podio/RNTupleLazyReader.h"
 #include "podio/ROOTLazyReader.h"
 #include "podio/ROOTReader.h"
 #if PODIO_ENABLE_RNTUPLE
@@ -60,10 +61,16 @@ Reader makeReader(const std::vector<std::string>& filenames, bool lazy) {
     }
     if (hasRNTuple) {
 #if PODIO_ENABLE_RNTUPLE
-      auto actualReader = std::make_unique<RNTupleReader>();
-      actualReader->openFiles(filenames);
-      Reader reader{std::move(actualReader)};
-      return reader;
+      if (lazy) {
+        auto actualReader = std::make_unique<RNTupleLazyReader>();
+        actualReader->openFiles(filenames);
+        return actualReader;
+      } else {
+        auto actualReader = std::make_unique<RNTupleReader>();
+        actualReader->openFiles(filenames);
+        Reader reader{std::move(actualReader)};
+        return reader;
+      }
 #else
       throw std::runtime_error("ROOT RNTuple reader not available. Please recompile with ROOT RNTuple support.");
 #endif

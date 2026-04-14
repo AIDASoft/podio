@@ -6,13 +6,12 @@
 #include "podio/GenericParameters.h"
 
 #include "RNTupleLazyCategoryState.h"
+#include "rntuple_utils.h"
 #include "rootUtils.h"
 
 #include <ROOT/RCreateFieldOptions.hxx>
-#include <ROOT/RError.hxx>
 #include <ROOT/RNTupleDescriptor.hxx>
 #include <ROOT/RNTupleModel.hxx>
-#include <RVersion.h>
 
 #include <algorithm>
 #include <iostream>
@@ -21,14 +20,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-
-// Adjust for the move of this out of ROOT v7 in
-// https://github.com/root-project/root/pull/17281
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
-using ROOT::RException;
-#else
-using ROOT::Experimental::RException;
-#endif
 
 namespace podio {
 
@@ -123,34 +114,7 @@ std::optional<podio::CollectionReadBuffers> RNTupleLazyFrameData::getCollectionB
     auto& partialReader = *partialIt->second;
     const auto dentry = partialReader.GetModel().CreateEntry();
 
-    try {
-      if (coll.isSubset) {
-        const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      } else {
-        dentry->BindRawPtr(coll.name, collBuffers.data);
-
-        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-          const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
-          const auto brName = root_utils::refBranch(coll.name, relName);
-          dentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-        }
-
-        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-          const auto vecName = relVecNames.vectorMembers[j];
-          const auto brName = root_utils::vecBranch(coll.name, vecName);
-          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
-        }
-      }
-    } catch (const RException&) {
-      // Disable automatic cleanup to avoid double-free if ROOT partially
-      // cleaned up during a failed BindRawPtr
-      collBuffers.deleteBuffers = {};
+    if (!rntuple_utils::bindCollectionToEntry(dentry.get(), collBuffers, coll)) {
       return std::nullopt;
     }
 

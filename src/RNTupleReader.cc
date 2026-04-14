@@ -4,9 +4,8 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
 #include "podio/utilities/RootHelpers.h"
+#include "rntuple_utils.h"
 #include "rootUtils.h"
-
-#include <ROOT/RError.hxx>
 
 #include <algorithm>
 #include <cstdint>
@@ -16,49 +15,10 @@
 #include <tuple>
 #include <vector>
 
-// Adjust for the move of this out of ROOT v7 in
-// https://github.com/root-project/root/pull/17281
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
-using ROOT::RException;
-#else
-using ROOT::Experimental::RException;
-#endif
-
 namespace podio {
 
-template <typename T>
-void readParams(root_compat::RNTupleReader* reader, const unsigned localEntry, GenericParameters& params) {
-  auto keyView = reader->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto valueView = reader->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
-
-  params.loadFrom(keyView(localEntry), valueView(localEntry));
-}
-
-GenericParameters RNTupleReader::readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry) {
-  GenericParameters params;
-
-  readParams<int>(reader, localEntry, params);
-  readParams<float>(reader, localEntry, params);
-  readParams<double>(reader, localEntry, params);
-  readParams<std::string>(reader, localEntry, params);
-
-  return params;
-}
-
 bool RNTupleReader::initCategory(std::string_view category) {
-  if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {
-    return false;
-  }
-  // Assume that the metadata is the same in all files
-  const auto& filename = m_filenames[0];
-
-  auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
-      {root_utils::collInfoName(category)});
-
-  m_collectionInfo[category] = collInfo(0);
-  m_idTables[category] = root_utils::makeCollIdTable(collInfo(0));
-
-  return true;
+  return initCategoryCommon(category, m_collectionInfo[category], m_idTables[category]);
 }
 
 void RNTupleReader::openFile(const std::string& filename) {
@@ -66,34 +26,7 @@ void RNTupleReader::openFile(const std::string& filename) {
 }
 
 void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
-
-  m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
-  for (const auto& filename : filenames) {
-    m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
-  }
-
-  m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
-
-  auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
-  const auto version = versionView(0);
-
-  m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
-
-  auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
-  auto edm = edmView(0);
-  DatamodelDefinitionHolder::VersionList edmVersions{};
-  for (const auto& [name, _] : edm) {
-    try {
-      auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
-      const auto edmVersion = edmVersionView(0);
-      edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
-    } catch (const RException&) {
-    }
-  }
-  m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
-
-  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
-  m_availableCategories = availableCategoriesField(0);
+  openMetaData(filenames, m_fileVersion, m_datamodelHolder);
 
   // Pre-fill the entries map
   for (const auto& category : m_availableCategories) {
@@ -126,15 +59,6 @@ unsigned RNTupleReader::getEntries(std::string_view name) const {
     return it->second;
   }
   return 0;
-}
-
-std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
-  std::vector<std::string_view> cats;
-  cats.reserve(m_availableCategories.size());
-  for (const auto& cat : m_availableCategories) {
-    cats.emplace_back(cat);
-  }
-  return cats;
 }
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view category,
@@ -197,36 +121,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
     }
     auto& collBuffers = maybeBuffers.value();
 
-    try {
-      if (coll.isSubset) {
-        const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      } else {
-        dentry->BindRawPtr(coll.name, collBuffers.data);
-
-        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-          const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
-          const auto brName = root_utils::refBranch(coll.name, relName);
-          dentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-        }
-
-        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-          const auto vecName = relVecNames.vectorMembers[j];
-          const auto brName = root_utils::vecBranch(coll.name, vecName);
-          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
-        }
-      }
-    } catch (const RException&) {
-      // We disable the automatic cleanup by clearing the delete function,
-      // because it seems ROOT still calls the destructor of the collection
-      // buffers when LoadEntry fails, which leads to a double deletion in case
-      // of a partial binding in BindRawPtr.
-      collBuffers.deleteBuffers = {};
+    if (!rntuple_utils::bindCollectionToEntry(dentry.get(), collBuffers, coll)) {
       continue;
     }
 
@@ -237,7 +132,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
 
   auto parameters = readEventMetaData(reader.get(), localEntry);
 
-  return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
+  auto idTable = m_idTables[category];
+  return std::make_unique<ROOTFrameData>(std::move(buffers), std::move(idTable), std::move(parameters));
 }
 
 } // namespace podio

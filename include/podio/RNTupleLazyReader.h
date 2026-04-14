@@ -2,12 +2,8 @@
 #define PODIO_RNTUPLELAZY_READER_H
 
 #include "podio/RNTupleLazyFrameData.h"
-#include "podio/podioVersion.h"
 #include "podio/utilities/ReaderCommon.h"
-
-#include <ROOT/RNTuple.hxx>
-#include <ROOT/RNTupleReader.hxx>
-#include <RVersion.h>
+#include "podio/utilities/RNTupleHelpers.h"
 
 #include <memory>
 #include <optional>
@@ -17,14 +13,6 @@
 #include <vector>
 
 namespace podio {
-
-namespace root_compat {
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-  using RNTupleReader = ROOT::Experimental::RNTupleReader;
-#else
-  using RNTupleReader = ROOT::RNTupleReader;
-#endif
-} // namespace root_compat
 
 struct RNTupleCategoryState;
 
@@ -37,7 +25,7 @@ struct RNTupleCategoryState;
 /// reader defers the actual RNTuple I/O to the point of collection access,
 /// using partial RNTuple readers with minimal field models so that LoadEntry()
 /// only reads the requested collection's data.
-class RNTupleLazyReader : public ReaderCommon {
+class RNTupleLazyReader : public ReaderCommon, public RNTupleReaderCommon {
 
 public:
   RNTupleLazyReader() = default;
@@ -94,23 +82,10 @@ public:
   /// Get the number of entries for the given category.
   unsigned getEntries(std::string_view name) const;
 
-  /// Get the names of all the available Frame categories in the current file(s).
-  std::vector<std::string_view> getAvailableCategories() const;
-
 private:
   /// Initialize the given category: read collection info and ID table from the
   /// metadata RNTuple into the category state.
   bool initCategory(std::string_view category);
-
-  /// Read and reconstruct the generic parameters of the Frame from the given
-  /// reader at the given local entry index.
-  GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, unsigned localEntry);
-
-  std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
-
-  std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
-  std::vector<std::string> m_filenames{};
-  std::vector<std::string> m_availableCategories{};
 
   /// Per-category shared state (readers, entry offsets, collection info, etc.)
   std::unordered_map<std::string_view, std::shared_ptr<RNTupleCategoryState>> m_categoryStates{};

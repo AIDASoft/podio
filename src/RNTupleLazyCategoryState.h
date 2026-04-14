@@ -2,11 +2,7 @@
 #define PODIO_RNTUPLELAZYCATEGORYSTATE_H
 
 #include "podio/CollectionIDTable.h"
-#include "podio/utilities/RootHelpers.h"
-
-#include <ROOT/RNTuple.hxx>
-#include <ROOT/RNTupleReader.hxx>
-#include <RVersion.h>
+#include "podio/utilities/RNTupleHelpers.h"
 
 #include <map>
 #include <memory>
@@ -16,14 +12,6 @@
 #include <vector>
 
 namespace podio {
-
-namespace root_compat {
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-  using RNTupleReader = ROOT::Experimental::RNTupleReader;
-#else
-  using RNTupleReader = ROOT::RNTupleReader;
-#endif
-} // namespace root_compat
 
 /// Shared state between RNTupleLazyReader and RNTupleLazyFrameData instances
 /// for the same category. Holds the full RNTuple readers, entry offset
