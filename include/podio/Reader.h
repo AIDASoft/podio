@@ -145,11 +145,6 @@ public:
     return m_self->readFrame(name, index, collsToRead);
   }
 
-  /// Like readFrame but loads collections not in collsToRead lazily on first access.
-  /// Falls back to readFrame for non-ROOT backends.
-  /// See ROOTReader::readEntryLazy
-  podio::Frame readFrameLazy(const std::string& name, size_t index, const std::vector<std::string>& collsToRead);
-
   /// Read a specific frame of the "events" category
   ///
   /// @param index The event number to read
