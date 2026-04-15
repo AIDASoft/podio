@@ -11,6 +11,8 @@ set(root_dependent_tests
   read_glob.cpp
   selected_colls_roundtrip_root.cpp
   write_empty_collections_root.cpp
+  write_frame_root_multithreaded.cpp
+  read_frame_root_multithreaded.cpp
   )
 if(ENABLE_RNTUPLE)
   set(root_dependent_tests
@@ -21,6 +23,8 @@ if(ENABLE_RNTUPLE)
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
       selected_colls_roundtrip_rntuple.cpp
+      write_rntuple_multithreaded.cpp
+      read_rntuple_multithreaded.cpp
      )
 endif()
 if(ENABLE_DATASOURCE)
@@ -38,12 +42,15 @@ foreach( sourcefile ${root_dependent_tests} )
 endforeach()
 
 set_tests_properties(write_frame_root PROPERTIES FIXTURES_SETUP podio_write_root_fixture)
+set_tests_properties(write_frame_root_multithreaded PROPERTIES FIXTURES_SETUP podio_write_root_mt_fixture)
 set_tests_properties(write_interface_root PROPERTIES FIXTURES_SETUP podio_write_interface_root_fixture)
 set_tests_properties(read_interface_root PROPERTIES FIXTURES_REQUIRED podio_write_interface_root_fixture)
+set_tests_properties(read_frame_root_multithreaded PROPERTIES FIXTURES_REQUIRED podio_write_root_mt_fixture)
 
 
 if(ENABLE_RNTUPLE)
   set_tests_properties(write_rntuple PROPERTIES FIXTURES_SETUP podio_write_rntuple_fixture)
+  set_tests_properties(write_rntuple_multithreaded PROPERTIES FIXTURES_SETUP podio_write_rntuple_mt_fixture)
   set_tests_properties(write_interface_rntuple PROPERTIES FIXTURES_SETUP podio_write_interface_rntuple_fixture)
 endif()
 
@@ -74,6 +81,7 @@ if(ENABLE_RNTUPLE)
     PROPERTIES
       FIXTURES_REQUIRED podio_write_rntuple_fixture
   )
+  set_tests_properties(read_rntuple_multithreaded PROPERTIES FIXTURES_REQUIRED podio_write_rntuple_mt_fixture)
   set_tests_properties(read_interface_rntuple PROPERTIES FIXTURES_REQUIRED podio_write_interface_rntuple_fixture)
 
   add_test(NAME write_interface_default_rntuple COMMAND write_interface_root example_frame_interface_default_rntuple.root)
