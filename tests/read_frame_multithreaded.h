@@ -130,11 +130,14 @@ int read_frames_multithreaded(const std::string& filename, int nThreads, unsigne
             break;
           }
 
-          podio::Frame frame;
+          using FrameDataPtrT = decltype(std::declval<ReaderT>().readEntry("", 0));
+          FrameDataPtrT frameData{nullptr};
           {
             std::lock_guard<std::mutex> lock(readerMutex);
-            frame = podio::Frame(reader.readEntry("events", entry));
+            frameData = reader.readEntry("events", entry);
           }
+
+          podio::Frame frame{std::move(frameData)};
           // Verify frame content in parallel (no lock needed)
           const auto& info = frame.get<EventInfoCollection>("info");
           const int frameId = info[0].Number();
