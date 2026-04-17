@@ -14,6 +14,8 @@
 #include "podio/utilities/TypeHelpers.h"
 #include "podio/detail/OrderKey.h"
 
+#include <fmt/ostream.h>
+
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -195,5 +197,8 @@ struct std::hash<{{ class.full_type }}> {
     return obj.m_self->objHash();
   }
 };
+
+template <>
+struct fmt::formatter<{{ class.full_type }}> : fmt::ostream_formatter {};
 
 #endif
