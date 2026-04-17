@@ -7,6 +7,8 @@
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/RootHelpers.h"
+
+#include "ioUtils.h"
 #include "rootUtils.h"
 
 // ROOT specific includes
@@ -158,6 +160,8 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
   auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
 
   if (!maybeBuffers) {
+    std::cerr << "WARNING: Buffers couldn't be created for collection " << name << " of type " << collType
+              << " and schema version " << schemaVersion << std::endl;
     return std::nullopt;
   }
 
@@ -326,6 +330,10 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
     }
 
     m_datamodelHolder = DatamodelDefinitionHolder(std::move(datamodelDefs), std::move(edmVersions));
+
+    for (const auto& warning : io_utils::checkEDMVersionsReadable(m_datamodelHolder)) {
+      std::cerr << "WARNING: " << warning << std::endl;
+    }
   }
 
   // Do some work up front for setting up categories and setup all the chains
