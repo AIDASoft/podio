@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: cvmfs-contrib/github-action-cvmfs@v4
+    - uses: cvmfs-contrib/github-action-cvmfs@v5
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v5
       with:

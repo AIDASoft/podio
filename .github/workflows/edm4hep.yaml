@@ -33,7 +33,7 @@ jobs:
           repository: catchorg/Catch2
           path: catch2
           ref: v3.4.0
-      - uses: cvmfs-contrib/github-action-cvmfs@v4
+      - uses: cvmfs-contrib/github-action-cvmfs@v5
       - uses: aidasoft/run-lcg-view@v5
         with:
           release-platform: ${{ matrix.LCG }}
