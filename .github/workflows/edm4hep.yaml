@@ -21,14 +21,14 @@ jobs:
               "dev4/x86_64-el9-gcc15-opt",
               "dev3/x86_64-el9-clang19-opt"]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           path: podio
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           repository: key4hep/EDM4hep
           path: edm4hep
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           repository: catchorg/Catch2
           path: catch2

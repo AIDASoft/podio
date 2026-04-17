@@ -20,14 +20,14 @@ jobs:
         image: ["el9", "ubuntu2404"]
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         path: podio
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         repository: key4hep/EDM4hep
         path: edm4hep
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
         repository: eic/EDM4eic
         path: edm4eic
