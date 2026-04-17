@@ -34,7 +34,7 @@ jobs:
           path: catch2
           ref: v3.4.0
       - uses: cvmfs-contrib/github-action-cvmfs@v4
-      - uses: aidasoft/run-lcg-view@v5
+      - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6
         with:
           release-platform: ${{ matrix.LCG }}
           ccache-key: ccache-edm4hep-${{ matrix.LCG }}
