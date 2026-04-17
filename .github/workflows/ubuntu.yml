@@ -21,7 +21,7 @@ jobs:
         LCG: ["dev3/x86_64-ubuntu2404-gcc13-opt",
               "dev4/x86_64-ubuntu2404-gcc13-opt"]
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v5

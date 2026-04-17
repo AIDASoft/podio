@@ -24,7 +24,7 @@ jobs:
               "LCG_107/x86_64-el9-gcc13-opt",  # root 6.34.02 !minimal root version for RNTuple
               "LCG_104/x86_64-el9-gcc13-opt"]  # root 6.28.04 !minimal root version check
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
     - uses: cvmfs-contrib/github-action-cvmfs@v4
     - uses: key4hep/key4hep-actions/cache-external-data@main
     - uses: aidasoft/run-lcg-view@v5
