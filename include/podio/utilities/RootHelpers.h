@@ -2,16 +2,23 @@
 #define PODIO_UTILITIES_ROOTHELPERS_H
 
 #include "podio/GenericParameters.h"
+#include "podio/SchemaEvolution.h"
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include "ROOT/RVec.hxx"
 #include "TBranch.h"
+#include "TChain.h"
 
+#include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
 namespace podio {
 class CollectionBase;
+class CollectionIDTable;
 
 namespace root_utils {
 
@@ -96,6 +103,34 @@ namespace root_utils {
                  ROOT::VecOps::RVec<std::string> floatKeys, ROOT::VecOps::RVec<std::vector<float>> floatValues,
                  ROOT::VecOps::RVec<std::string> doubleKeys, ROOT::VecOps::RVec<std::vector<double>> doubleValues,
                  ROOT::VecOps::RVec<std::string> stringKeys, ROOT::VecOps::RVec<std::vector<std::string>> stringValues);
+
+  struct TTreeReaderCommon {
+    // Information about the collection class type, whether it is a subset, the
+    // schema version on file and the index in the collection branches cache
+    // vector
+    using CollectionInfo = std::tuple<std::string, bool, SchemaVersionT, size_t>;
+
+    struct NamedCollInfo {
+      std::string name{};
+      CollectionInfo info{};
+    };
+
+  protected:
+    /// Open the metadata chain, read the file version and EDM definitions into
+    /// the provided references, and populate m_availCategories.
+    /// fileVersion and datamodelHolder are passed by ref because they live in
+    /// ReaderCommon (a separate base class).
+    void openMetaChain(const std::vector<std::string>& filenames, podio::version::Version& fileVersion,
+                       podio::DatamodelDefinitionHolder& datamodelHolder);
+
+    /// Unified parameter reading. reloadBranches=true always for the lazy reader.
+    static podio::GenericParameters
+    readEntryParameters(std::vector<podio::root_utils::CollectionBranches>& paramBranches, TChain* chain,
+                        const podio::version::Version& fileVersion, bool reloadBranches, unsigned int localEntry);
+
+    std::unique_ptr<TChain> m_metaChain{nullptr}; ///< The metadata tree
+    std::vector<std::string> m_availCategories{}; ///< All available categories from this file
+  };
 
 } // namespace root_utils
 } // namespace podio

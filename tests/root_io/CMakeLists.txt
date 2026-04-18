@@ -9,6 +9,7 @@ set(root_dependent_tests
   write_interface_root.cpp
   read_interface_root.cpp
   read_glob.cpp
+  read_frame_root_lazy.cpp
   selected_colls_roundtrip_root.cpp
   write_empty_collections_root.cpp
   )
@@ -17,6 +18,7 @@ if(ENABLE_RNTUPLE)
       ${root_dependent_tests}
       write_rntuple.cpp
       read_rntuple.cpp
+      read_rntuple_lazy.cpp
       read_python_frame_rntuple.cpp
       write_interface_rntuple.cpp
       read_interface_rntuple.cpp
@@ -52,6 +54,7 @@ set_tests_properties(
   read_frame_root_multiple
   read_and_write_frame_root
   read_glob
+  read_frame_root_lazy
   selected_colls_roundtrip_root
 
   PROPERTIES
@@ -69,6 +72,7 @@ set_tests_properties(write_python_empty_colls_root PROPERTIES FIXTURES_SETUP pod
 if(ENABLE_RNTUPLE)
   set_tests_properties(
     read_rntuple
+    read_rntuple_lazy
     selected_colls_roundtrip_rntuple
 
     PROPERTIES
@@ -88,6 +92,42 @@ endif()
 
 if(ENABLE_DATASOURCE)
   set_tests_properties(read_with_rdatasource_root PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
+endif()
+
+if(ENABLE_DATASOURCE)
+  add_test(NAME use_python_with_rdatasource_root
+           COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/use_datasource.py)
+  PODIO_SET_TEST_ENV(use_python_with_rdatasource_root PYTHON)
+  set_tests_properties(use_python_with_rdatasource_root PROPERTIES
+    FIXTURES_REQUIRED podio_write_root_fixture
+    FIXTURES_SETUP    podio_datasource_snapshot_fixture
+  )
+
+  add_executable(check_datasource_output check_datasource_output.cpp)
+  target_link_libraries(check_datasource_output PRIVATE ROOT::Core ROOT::RIO ROOT::Tree)
+  add_test(NAME check_datasource_output COMMAND check_datasource_output)
+  PODIO_SET_TEST_ENV(check_datasource_output)
+  set_tests_properties(check_datasource_output PROPERTIES
+    FIXTURES_REQUIRED podio_datasource_snapshot_fixture
+  )
+endif()
+
+if(ENABLE_DATASOURCE AND ENABLE_RNTUPLE)
+  add_test(NAME use_python_with_rdatasource_rntuple
+           COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/use_datasource.py
+                   example_rntuple.root datasource_snapshot_rntuple.root)
+  PODIO_SET_TEST_ENV(use_python_with_rdatasource_rntuple PYTHON)
+  set_tests_properties(use_python_with_rdatasource_rntuple PROPERTIES
+    FIXTURES_REQUIRED podio_write_rntuple_fixture
+    FIXTURES_SETUP    podio_datasource_rntuple_snapshot_fixture
+  )
+
+  add_test(NAME check_datasource_output_rntuple
+           COMMAND check_datasource_output datasource_snapshot_rntuple.root)
+  PODIO_SET_TEST_ENV(check_datasource_output_rntuple)
+  set_tests_properties(check_datasource_output_rntuple PROPERTIES
+    FIXTURES_REQUIRED podio_datasource_rntuple_snapshot_fixture
+  )
 endif()
 
 add_executable(read_frame_legacy_root read_frame_legacy_root.cpp)
@@ -119,8 +159,4 @@ add_test(NAME param_reading_rdataframe COMMAND python3 ${CMAKE_CURRENT_SOURCE_DI
 PODIO_SET_TEST_ENV(param_reading_rdataframe PYTHON)
 set_tests_properties(param_reading_rdataframe PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
 
-if(ENABLE_DATASOURCE)
-  add_test(NAME read_python_with_rdatasource_root COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/root_io/read_datasource.py)
-  PODIO_SET_TEST_ENV(read_python_with_rdatasource_root PYTHON)
-  set_tests_properties(read_python_with_rdatasource_root PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)
-endif()
+

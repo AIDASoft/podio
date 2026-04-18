@@ -2,37 +2,22 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/ROOTFrameData.h"
-#include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
-#include "podio/utilities/RootHelpers.h"
+#include "podio/utilities/ReaderCommon.h"
+#include "podio/utilities/RNTupleHelpers.h"
 
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
-#include <ROOT/RNTuple.hxx>
-#include <ROOT/RNTupleReader.hxx>
-#include <RVersion.h>
-
 namespace podio {
-
-/// Introduce a new namespace instead of potentially opening and polluting the
-/// ROOT namespace
-namespace root_compat {
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-  using RNTupleReader = ROOT::Experimental::RNTupleReader;
-#else
-  using RNTupleReader = ROOT::RNTupleReader;
-#endif
-} // namespace root_compat
 
 /// The RNTupleReader can be used to read files that have been written with the
 /// RNTuple backend.
 ///
 /// The RNTupleReader provides the data as ROOTFrameData from which a podio::Frame
 /// can be constructed. It can be used to read files written by the RNTupleWriter.
-class RNTupleReader {
+class RNTupleReader : public ReaderCommon, public RNTupleReaderCommon {
 
 public:
   RNTupleReader() = default;
@@ -91,11 +76,6 @@ public:
   std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
-  /// Get the names of all the available Frame categories in the current file(s).
-  ///
-  /// @returns The names of the available categores from the file
-  std::vector<std::string_view> getAvailableCategories() const;
-
   /// Get the number of entries for the given name
   ///
   /// @param name The name of the category
@@ -103,62 +83,8 @@ public:
   /// @returns The number of entries that are available for the category
   unsigned getEntries(std::string_view name) const;
 
-  /// Get the build version of podio that has been used to write the current
-  /// file
-  ///
-  /// @returns The podio build version
-  podio::version::Version currentFileVersion() const {
-    return m_fileVersion;
-  }
-
-  /// Get the (build) version of a datamodel that has been used to write the
-  /// current file
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The (build) version of the datamodel if available or an empty
-  ///          optional
-  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelVersion(name);
-  }
-
-  /// Get the datamodel definition for the given name
-  ///
-  /// @param name The name of the datamodel
-  ///
-  /// @returns The high level definition of the datamodel in JSON format
-  const std::string_view getDatamodelDefinition(std::string_view name) const {
-    return m_datamodelHolder.getDatamodelDefinition(name);
-  }
-
-  /// Get all names of the datamodels that are available from this reader
-  ///
-  /// @returns The names of the datamodels
-  std::vector<std::string> getAvailableDatamodels() const {
-    return m_datamodelHolder.getAvailableDatamodels();
-  }
-
 private:
-  /**
-   * Initialize the given category by filling the maps with metadata information
-   * that will be used later
-   */
-  bool initCategory(std::string_view category);
-
-  /**
-   * Read and reconstruct the generic parameters of the Frame
-   */
-  GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry);
-
-  std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
-
-  podio::version::Version m_fileVersion{};
-  DatamodelDefinitionHolder m_datamodelHolder{};
-
   std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
-  std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
-  std::vector<std::string> m_filenames{};
-
   std::unordered_map<std::string_view, unsigned> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts
   // For example, if we have 3 readers and the first one has 10 entries, the second one 20 and the third one 30
@@ -170,9 +96,7 @@ private:
   /// Map each category to the collections that have been written and are available
   std::unordered_map<std::string_view, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
 
-  std::vector<std::string> m_availableCategories{};
-
-  std::unordered_map<std::string_view, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
+  std::unordered_map<std::string_view, std::shared_ptr<const podio::CollectionIDTable>> m_idTables{};
 };
 
 } // namespace podio
