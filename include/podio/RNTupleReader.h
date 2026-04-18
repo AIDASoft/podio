@@ -6,8 +6,10 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 
+#include <map>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <unordered_map>
 #include <vector>
 
@@ -91,6 +93,15 @@ public:
   std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
+  /// Like readEntry, but collections not in collsToRead are loaded lazily on
+  /// first access rather than eagerly. Also skips reading GenericParameters.
+  ///
+  /// The reader must not advance to the next entry while the returned FrameData
+  /// (and any Frame built from it) is still being accessed. This is guaranteed
+  /// in the DataSource context where each slot has its own reader.
+  std::unique_ptr<podio::ROOTFrameData> readEntryLazy(const std::string& name, unsigned entry,
+                                                      const std::vector<std::string>& collsToRead);
+
   /// Get the names of all the available Frame categories in the current file(s).
   ///
   /// @returns The names of the available categores from the file
@@ -158,6 +169,9 @@ private:
   std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
+  /// Per-category list of filenames (parallel to m_readers[category]); may differ from m_filenames
+  /// if some files don't contain a given category.
+  std::unordered_map<std::string, std::vector<std::string>> m_categoryFilenames{};
 
   std::unordered_map<std::string_view, unsigned> m_entries{};
   // Map category to a vector that contains at how many entries each reader starts
@@ -173,6 +187,17 @@ private:
   std::vector<std::string> m_availableCategories{};
 
   std::unordered_map<std::string_view, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
+
+  /// Cache of partial readers, keyed by (category + "|" + sorted-collsToRead-key) + readerIndex.
+  /// Each partial reader is opened with a minimal RNTupleModel containing only the fields
+  /// needed for the requested collections
+  std::map<std::tuple<std::string, std::string, size_t>, std::unique_ptr<root_compat::RNTupleReader>>
+      m_partialReaders{};
+
+  /// Return or lazily create a partial ROOT::RNTupleReader for the given category,
+  /// readerIndex, and set of collections.
+  root_compat::RNTupleReader& getOrCreatePartialReader(const std::string& category, size_t readerIndex,
+                                                       const std::vector<std::string>& collsToRead);
 };
 
 } // namespace podio
