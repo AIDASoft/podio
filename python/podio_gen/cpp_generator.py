@@ -15,7 +15,7 @@ from podio_schema_evolution import (
 )
 from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_base import ClassGeneratorBaseMixin, write_file_if_changed
-from podio_gen.generator_utils import DataType, DataModelJSONEncoder
+from podio_gen.generator_utils import DataType, DataModelJSONEncoder, DefinitionError
 
 REPORT_TEXT = """
   PODIO Data Model
@@ -23,6 +23,34 @@ REPORT_TEXT = """
   Used {yamlfile} to create {nclasses} classes in {installdir}/
   Read instructions in the README.md to run your first example!
 """
+
+ARROW_PRIMITIVE_TYPES = {
+    "bool": "arrow::boolean()",
+    "char": "arrow::int8()",
+    "short": "arrow::int16()",
+    "int": "arrow::int32()",
+    "long": "arrow::int64()",
+    "long long": "arrow::int64()",
+    "unsigned": "arrow::uint32()",
+    "unsigned int": "arrow::uint32()",
+    "unsigned long": "arrow::uint64()",
+    "unsigned long long": "arrow::uint64()",
+    "float": "arrow::float32()",
+    "double": "arrow::float64()",
+    "int16_t": "arrow::int16()",
+    "int32_t": "arrow::int32()",
+    "int64_t": "arrow::int64()",
+    "uint16_t": "arrow::uint16()",
+    "uint32_t": "arrow::uint32()",
+    "uint64_t": "arrow::uint64()",
+    "std::int16_t": "arrow::int16()",
+    "std::int32_t": "arrow::int32()",
+    "std::int64_t": "arrow::int64()",
+    "std::uint16_t": "arrow::uint16()",
+    "std::uint32_t": "arrow::uint32()",
+    "std::uint64_t": "arrow::uint64()",
+    "std::string": "arrow::utf8()",
+}
 
 
 class IncludeFrom(IntEnum):
@@ -85,6 +113,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         if "ROOT" in self.io_handlers:
             self._create_selection_xml()
 
+        if "ARROW" in self.io_handlers:
+            self._write_arrow_mapper_header(datamodel)
+
         if the_links := datamodel["links"]:
             self._write_links_registration_file(the_links)
         self._write_all_collections_header()
@@ -121,6 +152,79 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             self._fill_templates("SIOBlock", datatype)
 
         return datatype
+
+    def _write_arrow_mapper_header(self, datamodel):
+        """A generated helper that exposes the datamodel as an Arrow schema"""
+        datatypes = []
+        for datatype in datamodel["datatypes"]:
+            datatype["arrow_fields"] = self._arrow_fields(datatype)
+            datatypes.append(datatype)
+
+        data = {
+            "package_name": self.package_name,
+            "schema_version": self.datamodel.schema_version,
+            "datatypes": datatypes,
+        }
+        self._write_file(
+            "ArrowMapper.h",
+            self._eval_template("ArrowMapper.h.jinja2", data),
+        )
+
+    def _arrow_fields(self, datatype):
+        """Create Arrow field expressions for the members and relations of a datatype"""
+        fields = []
+        fields.extend(
+            self._arrow_field(member.name, self._arrow_type(member))
+            for member in datatype["Members"]
+        )
+        fields.extend(
+            self._arrow_field(member.name, f"arrow::list({self._arrow_type(member)})")
+            for member in datatype["VectorMembers"]
+        )
+        fields.extend(
+            self._arrow_field(relation.name, "objectRefType()", nullable=True)
+            for relation in datatype["OneToOneRelations"]
+        )
+        fields.extend(
+            self._arrow_field(
+                relation.name,
+                'arrow::list(arrow::field("item", objectRefType(), true))',
+            )
+            for relation in datatype["OneToManyRelations"]
+        )
+        return fields
+
+    def _arrow_field(self, name, type_expr, nullable=False):
+        """Create a C++ arrow::field expression"""
+        nullable_arg = ", true" if nullable else ""
+        return f'arrow::field("{name}", {type_expr}{nullable_arg})'
+
+    def _arrow_type(self, member):
+        """Map a parsed podio member to an Arrow C++ DataType expression"""
+        if member.is_array:
+            value_type = self._arrow_type_from_name(member.array_type)
+            return f"arrow::fixed_size_list({value_type}, {member.array_size})"
+
+        return self._arrow_type_from_name(member.full_type)
+
+    def _arrow_type_from_name(self, type_name):
+        """Map a C++ type name from the datamodel to an Arrow C++ DataType expression"""
+        type_name = type_name.removeprefix("::")
+        if type_name in ARROW_PRIMITIVE_TYPES:
+            return ARROW_PRIMITIVE_TYPES[type_name]
+
+        if type_name in self.datamodel.components:
+            return self._arrow_struct_type(self.datamodel.components[type_name]["Members"])
+
+        if self.upstream_edm and type_name in self.upstream_edm.components:
+            return self._arrow_struct_type(self.upstream_edm.components[type_name]["Members"])
+
+        raise DefinitionError(f"Cannot map '{type_name}' to an Arrow type")
+
+    def _arrow_struct_type(self, members):
+        """Create an Arrow struct expression for a component definition"""
+        fields = [self._arrow_field(member.name, self._arrow_type(member)) for member in members]
+        return "arrow::struct_({" + ", ".join(fields) + "})"
 
     def do_process_interface(self, _, interface):
         """Process an interface definition and generate the necessary code"""

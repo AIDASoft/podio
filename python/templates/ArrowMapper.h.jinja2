@@ -1,0 +1,33 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#ifndef {{ package_name.upper() }}_ARROWMAPPER_H
+#define {{ package_name.upper() }}_ARROWMAPPER_H
+
+#include <arrow/type.h>
+
+#include <memory>
+
+namespace {{ package_name }}::arrow_io {
+
+inline std::shared_ptr<arrow::DataType> objectRefType() {
+  return arrow::struct_({
+      arrow::field("collectionID", arrow::uint32(), false),
+      arrow::field("index", arrow::int32(), false),
+  });
+}
+
+inline std::shared_ptr<arrow::Schema> schema() {
+  return arrow::schema({
+{% for datatype in datatypes %}
+      arrow::field("{{ datatype.class.bare_type }}", arrow::list(arrow::struct_({
+{% for field in datatype.arrow_fields %}
+          {{ field }},
+{% endfor %}
+      }))),
+{% endfor %}
+  });
+}
+
+} // namespace {{ package_name }}::arrow_io
+
+#endif
