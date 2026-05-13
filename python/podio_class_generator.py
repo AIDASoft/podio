@@ -105,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument("packagename", help="Name of the package.")
     parser.add_argument(
         "iohandlers",
-        choices=["ROOT", "SIO"],
+        choices=["ROOT", "SIO", "ARROW"],
         nargs="*",
         help="The IO backend specific code that should be generated",
         default="ROOT",
