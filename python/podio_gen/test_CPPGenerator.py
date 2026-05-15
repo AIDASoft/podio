@@ -43,13 +43,10 @@ class TestCPPClassGenerator(unittest.TestCase):
         self.assertIn('arrow::field("cellID", arrow::uint64())', contents)
         self.assertIn('arrow::field("x", arrow::float64())', contents)
         self.assertIn('arrow::field("count", arrow::list(arrow::int32()))', contents)
-        # one-to-one relation: nullable field directly
-        self.assertIn('arrow::field("cluster", objectRefType(), true)', contents)
-        # one-to-many relation: list with nullable items
-        self.assertIn(
-            'arrow::field("parents", arrow::list(arrow::field("item", objectRefType(), true)))',
-            contents,
-        )
+        # one-to-one relation: non-nullable (PODIO uses sentinel values, not Arrow null)
+        self.assertIn('arrow::field("cluster", objectRefType())', contents)
+        # one-to-many relation: list of non-nullable items
+        self.assertIn('arrow::field("parents", arrow::list(objectRefType()))', contents)
         self.assertIn('arrow::field("myArray", arrow::fixed_size_list(arrow::int32(), 4))', contents)
         self.assertIn('arrow::field("structArray", arrow::fixed_size_list(arrow::struct_({', contents)
 

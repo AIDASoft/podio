@@ -182,14 +182,11 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             for member in datatype["VectorMembers"]
         )
         fields.extend(
-            self._arrow_field(relation.name, "objectRefType()", nullable=True)
+            self._arrow_field(relation.name, "objectRefType()")
             for relation in datatype["OneToOneRelations"]
         )
         fields.extend(
-            self._arrow_field(
-                relation.name,
-                'arrow::list(arrow::field("item", objectRefType(), true))',
-            )
+            self._arrow_field(relation.name, "arrow::list(objectRefType())")
             for relation in datatype["OneToManyRelations"]
         )
         return fields
