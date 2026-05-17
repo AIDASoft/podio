@@ -4,6 +4,7 @@
 #define {{ package_name.upper() }}_ARROWMAPPER_H
 
 #include <arrow/type.h>
+#include <arrow/util/key_value_metadata.h>
 
 #include <memory>
 
@@ -16,6 +17,15 @@ inline std::shared_ptr<arrow::DataType> objectRefType() {
   });
 }
 
+inline std::shared_ptr<arrow::DataType> frameParametersType() {
+  return arrow::struct_({
+      arrow::field("int_params", arrow::map(arrow::utf8(), arrow::list(arrow::int32()))),
+      arrow::field("float_params", arrow::map(arrow::utf8(), arrow::list(arrow::float32()))),
+      arrow::field("double_params", arrow::map(arrow::utf8(), arrow::list(arrow::float64()))),
+      arrow::field("string_params", arrow::map(arrow::utf8(), arrow::list(arrow::utf8()))),
+  });
+}
+
 inline std::shared_ptr<arrow::Schema> schema() {
   return arrow::schema({
 {% for datatype in datatypes %}
@@ -25,7 +35,13 @@ inline std::shared_ptr<arrow::Schema> schema() {
 {% endfor %}
       }))),
 {% endfor %}
+      arrow::field("frame_parameters", frameParametersType()),
   });
+}
+
+inline std::shared_ptr<arrow::Schema>
+schemaWithMetadata(std::shared_ptr<const arrow::KeyValueMetadata> metadata) {
+  return schema()->WithMetadata(std::move(metadata));
 }
 
 } // namespace {{ package_name }}::arrow_io

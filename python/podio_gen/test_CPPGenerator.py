@@ -49,6 +49,25 @@ class TestCPPClassGenerator(unittest.TestCase):
         self.assertIn('arrow::field("parents", arrow::list(objectRefType()))', contents)
         self.assertIn('arrow::field("myArray", arrow::fixed_size_list(arrow::int32(), 4))', contents)
         self.assertIn('arrow::field("structArray", arrow::fixed_size_list(arrow::struct_({', contents)
+        self.assertIn('arrow::field("frame_parameters", frameParametersType())', contents)
+        self.assertIn(
+            'arrow::field("int_params", arrow::map(arrow::utf8(), arrow::list(arrow::int32())))',
+            contents,
+        )
+        self.assertIn(
+            'arrow::field("float_params", arrow::map(arrow::utf8(), arrow::list(arrow::float32())))',
+            contents,
+        )
+        self.assertIn(
+            'arrow::field("double_params", arrow::map(arrow::utf8(), arrow::list(arrow::float64())))',
+            contents,
+        )
+        self.assertIn(
+            'arrow::field("string_params", arrow::map(arrow::utf8(), arrow::list(arrow::utf8())))',
+            contents,
+        )
+        self.assertIn("schemaWithMetadata", contents)
+        self.assertIn("arrow::KeyValueMetadata", contents)
 
 
 if __name__ == "__main__":
