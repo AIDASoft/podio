@@ -6,13 +6,23 @@ ROOTFrameData::ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::Ge
     m_buffers(std::move(buffers)), m_idTable(std::move(idTable)), m_parameters(std::move(params)) {
 }
 
+ROOTFrameData::ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params,
+                             LazyReadFn&& lazyRead) :
+    m_buffers(std::move(buffers)),
+    m_idTable(std::move(idTable)),
+    m_parameters(std::move(params)),
+    m_lazyRead(std::move(lazyRead)) {
+}
+
 std::optional<podio::CollectionReadBuffers> ROOTFrameData::getCollectionBuffers(const std::string& name) {
   auto bufferHandle = m_buffers.extract(name);
-  if (bufferHandle.empty()) {
-    return std::nullopt;
+  if (!bufferHandle.empty()) {
+    return {std::move(bufferHandle.mapped())};
   }
-
-  return {std::move(bufferHandle.mapped())};
+  if (m_lazyRead) {
+    return m_lazyRead(name);
+  }
+  return std::nullopt;
 }
 
 podio::CollectionIDTable ROOTFrameData::getIDTable() const {

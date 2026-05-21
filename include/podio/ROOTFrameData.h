@@ -5,6 +5,7 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -17,6 +18,8 @@ class ROOTFrameData {
 
 public:
   using BufferMap = std::unordered_map<std::string, podio::CollectionReadBuffers>;
+  /// Callback type for lazily reading collection buffers on demand
+  using LazyReadFn = std::function<std::optional<podio::CollectionReadBuffers>(const std::string&)>;
 
   ROOTFrameData() = delete;
   ~ROOTFrameData() = default;
@@ -26,6 +29,9 @@ public:
   ROOTFrameData& operator=(const ROOTFrameData&) = delete;
 
   ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params);
+
+  /// Constructor with an optional lazy callback for loading collections on-demand
+  ROOTFrameData(BufferMap&& buffers, CollIDPtr&& idTable, podio::GenericParameters&& params, LazyReadFn&& lazyRead);
 
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
 
@@ -42,6 +48,7 @@ private:
   // This is co-owned by each FrameData and the original reader. (for now at least)
   CollIDPtr m_idTable{nullptr};
   podio::GenericParameters m_parameters{};
+  LazyReadFn m_lazyRead{nullptr};
 };
 
 } // namespace podio
