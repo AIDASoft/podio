@@ -197,6 +197,7 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
 
   # Filter out anything I/O backend related to build the core library
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
+  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
   LIST(FILTER SOURCES EXCLUDE REGEX .*SIOBlock.cc)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
@@ -250,6 +251,7 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
   # Filter out anything I/O backend related from the generated headers as ROOT only needs
   # the core headers
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
+  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
 
   add_library(${dict_name} SHARED)
   target_link_libraries(${dict_name} PUBLIC
