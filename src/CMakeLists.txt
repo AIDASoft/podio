@@ -76,11 +76,23 @@ SET(core_headers
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
-target_compile_options(podio PRIVATE -pthread)
+
+# podio uses std::mutex and other threading primitives, so we need threading support
+# Use PUBLIC to ensure consumers (including module importers) get the same threading configuration
+# This is critical for C++ modules which require matching compiler configurations
+find_package(Threads REQUIRED)
+target_link_libraries(podio PUBLIC Threads::Threads)
+
 target_link_libraries(podio PRIVATE Python3::Python)
 # For Frame.h
 if (ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
+endif()
+
+# Add C++20 module support (if enabled)
+if(PODIO_ENABLE_CXX_MODULES)
+  message(STATUS "Adding podio.core module interface to podio library")
+  PODIO_ADD_MODULE_INTERFACE(podio podio.core ${CMAKE_CURRENT_SOURCE_DIR}/podio_core_module.ixx)
 endif()
 
 
@@ -200,10 +212,12 @@ endif()
 if (NOT ENABLE_DATASOURCE)
   install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
     EXPORT podioTargets
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 else()
   install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
     EXPORT podioTargets
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
 

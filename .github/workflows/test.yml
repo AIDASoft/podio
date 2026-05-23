@@ -39,6 +39,8 @@ jobs:
             -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
+            -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
+            -DPODIO_ENABLE_CXX_MODULES=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "ON" || echo "OFF") \
             -DUSE_EXTERNAL_CATCH2=AUTO
           echo "::endgroup::"
           echo "::group::Build"
