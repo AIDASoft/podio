@@ -8,6 +8,11 @@
 #include "podio/detail/Pythonizations.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include <fmt/ostream.h>
+#include <fmt/ranges.h>
+
+#include <iterator>
+
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \
   consteval const char* userDataTypeName<type>() {                                                                     \
@@ -219,14 +224,7 @@ public:
 
   /// Print this collection to the passed stream
   void print(std::ostream& os = std::cout, bool flush = true) const override {
-    os << "[";
-    if (!_vec.empty()) {
-      os << _vec[0];
-      for (size_t i = 1; i < _vec.size(); ++i) {
-        os << ", " << _vec[i];
-      }
-    }
-    os << "]";
+    os << fmt::format("{}", _vec);
 
     if (flush) {
       os.flush(); // Necessary for python
@@ -321,7 +319,7 @@ using UserDataCollectionTypes = decltype(std::apply(
 
 template <SupportedUserDataType BasicType>
 std::ostream& operator<<(std::ostream& o, const podio::UserDataCollection<BasicType>& coll) {
-  coll.print(o);
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", coll);
   return o;
 }
 

@@ -21,6 +21,8 @@
 #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/ranges.h>
+
 // standard includes
 #include <iomanip>
 #include <mutex>
@@ -251,6 +253,18 @@ void to_json(nlohmann::json& j, const {{ collection_type }}& collection) {
 
 {{ iterator_definitions(class, prefix='Mutable' ) }}
 
-{{ macros.ostream_operator(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
+std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}Collection& coll) {
+  fmt::format_to(std::ostreambuf_iterator(o), "{}", coll);
+  return o;
+}
+
+void {{ class.bare_type }}Collection::print(std::ostream& os, bool flush) const {
+  os << fmt::format("{}", *this);
+  if (flush) {
+    os.flush();
+  }
+}
 
 {{ utils.namespace_close(class.namespace) }}
+
+{{ macros.formatter(class, Members, OneToOneRelations, OneToManyRelations, VectorMembers, use_get_syntax, ostream_collection_settings) }}
