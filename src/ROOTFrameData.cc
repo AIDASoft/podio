@@ -11,7 +11,6 @@ std::optional<podio::CollectionReadBuffers> ROOTFrameData::getCollectionBuffers(
   if (bufferHandle.empty()) {
     return std::nullopt;
   }
-
   return {std::move(bufferHandle.mapped())};
 }
 

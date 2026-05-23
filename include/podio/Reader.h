@@ -226,10 +226,12 @@ public:
 ///
 /// @param filename The (path to the) file to read from.
 ///                 The file path can include glob patterns to match multiple files.
+/// @param lazy     Whether or not a lazy reader should be used internally (if
+///                 available)
 ///
 /// @returns A Reader that has been initialized and that can be used for reading
 ///          data from the passed file
-Reader makeReader(const std::string& filename);
+Reader makeReader(const std::string& filename, bool lazy = false);
 
 /// Create a Reader that is able to read the files
 ///
@@ -241,6 +243,8 @@ Reader makeReader(const std::string& filename);
 /// @note For SIO files this will only work with exactly one file!
 ///
 /// @param filenames The (paths to the) files to read from
+/// @param lazy      Whether or not a lazy reader should be used internally (if
+///                  available)
 ///
 /// @returns A Reader that has been initialized and that can be used for reading
 ///          data from the passed files
@@ -248,7 +252,7 @@ Reader makeReader(const std::string& filename);
 /// @throws std::runtime_error in case the file extensions differ or in case
 ///         support for the necessary I/O backend has not been built or in case
 ///         multiple files for the SIO backend are passed
-Reader makeReader(const std::vector<std::string>& filenames);
+Reader makeReader(const std::vector<std::string>& filenames, bool lazy = false);
 
 } // namespace podio
 
