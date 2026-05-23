@@ -6,6 +6,8 @@ set(sio_dependent_tests
   write_interface_sio.cpp
   read_interface_sio.cpp
   selected_colls_roundtrip_sio.cpp
+  write_frame_sio_multithreaded.cpp
+  read_frame_sio_multithreaded.cpp
 )
 set(sio_libs podio::podioSioIO podio::podioIO)
 foreach( sourcefile ${sio_dependent_tests} )
@@ -13,6 +15,7 @@ foreach( sourcefile ${sio_dependent_tests} )
 endforeach()
 
 set_tests_properties(write_frame_sio PROPERTIES FIXTURES_SETUP podio_write_sio_fixture)
+set_tests_properties(write_frame_sio_multithreaded PROPERTIES FIXTURES_SETUP podio_write_sio_mt_fixture)
 set_tests_properties(write_interface_sio PROPERTIES FIXTURES_SETUP podio_write_interface_sio_fixture)
 
 set_tests_properties(
@@ -25,6 +28,7 @@ set_tests_properties(
 )
 
 set_tests_properties(read_interface_sio PROPERTIES FIXTURES_REQUIRED podio_write_interface_sio_fixture)
+set_tests_properties(read_frame_sio_multithreaded PROPERTIES FIXTURES_REQUIRED podio_write_sio_mt_fixture)
 
 #--- Write via python and the SIO backend and see if we can read it back in in
 #--- c++

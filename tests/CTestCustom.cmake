@@ -80,6 +80,11 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       read_python_with_rdatasource_root
       param_reading_rdataframe
 
+      write_frame_root_multithreaded
+      read_frame_root_multithreaded
+      write_frame_rntuple_multithreaded
+      read_frame_rntuple_multithreaded
+
       read_python_multiple
       write_python_empty_colls_root
       write_python_frame_root
