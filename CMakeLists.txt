@@ -67,6 +67,7 @@ ADD_CLANG_TIDY()
 #--- Declare options -----------------------------------------------------------
 option(CREATE_DOC        "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_SIO        "Build SIO I/O support" OFF)
+option(ENABLE_ARROW      "Build Arrow I/O support" OFF)
 option(PODIO_RELAX_PYVER "Do not require exact python version match with ROOT" OFF)
 option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF)
 option(ENABLE_DATASOURCE "Build podio's ROOT DataSource" OFF)
@@ -143,6 +144,15 @@ if(ENABLE_SIO)
   if (SIO_FOUND)
     MESSAGE( STATUS "Found SIO library - will build SIO I/O support" )
     list(APPEND PODIO_IO_HANDLERS SIO)
+  endif()
+endif()
+
+# optionally build with Arrow -----------------------------------------------
+if(ENABLE_ARROW)
+  find_package(Arrow REQUIRED)
+  if(Arrow_FOUND)
+    message(STATUS "Found Arrow library - will build Arrow I/O support")
+    list(APPEND PODIO_IO_HANDLERS ARROW)
   endif()
 endif()
 

@@ -1778,3 +1778,105 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
                    "podio::UserDataCollection<uint8_t>", "podio::UserDataCollection<uint16_t>",
                    "podio::UserDataCollection<uint32_t>", "podio::UserDataCollection<uint64_t>"}));
 }
+
+#if PODIO_ENABLE_ARROW
+#include "datamodel/ArrowMapper.h"
+#include <arrow/type.h>
+
+TEST_CASE("Arrow schema mapping", "[arrow]") {
+  auto schema = datamodel::arrow_io::schema();
+  REQUIRE(schema != nullptr);
+  auto field_names = schema->field_names();
+
+  // 1. Verify top-level fields
+  REQUIRE(std::find(field_names.begin(), field_names.end(), "EventInfo") != field_names.end());
+  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleHit") != field_names.end());
+  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleMC") != field_names.end());
+  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleWithArray") != field_names.end());
+  REQUIRE(std::find(field_names.begin(), field_names.end(), "frame_parameters") != field_names.end());
+
+  // 2. Verify EventInfo (Simple type)
+  auto eventInfoField = schema->GetFieldByName("EventInfo");
+  REQUIRE(eventInfoField != nullptr);
+  REQUIRE(eventInfoField->type()->id() == arrow::Type::LIST);
+  auto eventInfoList = std::static_pointer_cast<arrow::ListType>(eventInfoField->type());
+  auto eventInfoStruct = std::static_pointer_cast<arrow::StructType>(eventInfoList->value_type());
+  REQUIRE(eventInfoStruct != nullptr);
+  auto numberField = eventInfoStruct->GetFieldByName("Number");
+  REQUIRE(numberField != nullptr);
+  REQUIRE(numberField->type()->id() == arrow::Type::INT32);
+
+  // 3. Verify ExampleHit (Primitive and struct mapping)
+  auto exampleHitField = schema->GetFieldByName("ExampleHit");
+  REQUIRE(exampleHitField != nullptr);
+  REQUIRE(exampleHitField->type()->id() == arrow::Type::LIST);
+  auto exampleHitList = std::static_pointer_cast<arrow::ListType>(exampleHitField->type());
+  auto exampleHitStruct = std::static_pointer_cast<arrow::StructType>(exampleHitList->value_type());
+  REQUIRE(exampleHitStruct != nullptr);
+  
+  auto cellIDField = exampleHitStruct->GetFieldByName("cellID");
+  REQUIRE(cellIDField != nullptr);
+  REQUIRE(cellIDField->type()->id() == arrow::Type::UINT64);
+
+  auto energyField = exampleHitStruct->GetFieldByName("energy");
+  REQUIRE(energyField != nullptr);
+  REQUIRE(energyField->type()->id() == arrow::Type::DOUBLE);
+
+  auto xField = exampleHitStruct->GetFieldByName("x");
+  REQUIRE(xField != nullptr);
+  REQUIRE(xField->type()->id() == arrow::Type::DOUBLE);
+
+  // 4. Verify ExampleWithArray (Fixed size lists)
+  auto exampleWithArrayField = schema->GetFieldByName("ExampleWithArray");
+  REQUIRE(exampleWithArrayField != nullptr);
+  auto exampleWithArrayList = std::static_pointer_cast<arrow::ListType>(exampleWithArrayField->type());
+  auto exampleWithArrayStruct = std::static_pointer_cast<arrow::StructType>(exampleWithArrayList->value_type());
+  REQUIRE(exampleWithArrayStruct != nullptr);
+
+  auto myArrayField = exampleWithArrayStruct->GetFieldByName("myArray");
+  REQUIRE(myArrayField != nullptr);
+  REQUIRE(myArrayField->type()->id() == arrow::Type::FIXED_SIZE_LIST);
+  auto myArrayType = std::static_pointer_cast<arrow::FixedSizeListType>(myArrayField->type());
+  REQUIRE(myArrayType->list_size() == 4);
+  REQUIRE(myArrayType->value_type()->id() == arrow::Type::INT32);
+
+  // 5. Verify ExampleMC (Relations mapped to object references)
+  auto exampleMCField = schema->GetFieldByName("ExampleMC");
+  REQUIRE(exampleMCField != nullptr);
+  auto exampleMCList = std::static_pointer_cast<arrow::ListType>(exampleMCField->type());
+  auto exampleMCStruct = std::static_pointer_cast<arrow::StructType>(exampleMCList->value_type());
+  REQUIRE(exampleMCStruct != nullptr);
+
+  auto parentsField = exampleMCStruct->GetFieldByName("parents");
+  REQUIRE(parentsField != nullptr);
+  REQUIRE(parentsField->type()->id() == arrow::Type::LIST);
+  auto parentsList = std::static_pointer_cast<arrow::ListType>(parentsField->type());
+  auto parentsStruct = std::static_pointer_cast<arrow::StructType>(parentsList->value_type());
+  REQUIRE(parentsStruct != nullptr);
+  
+  auto parentCollId = parentsStruct->GetFieldByName("collectionID");
+  REQUIRE(parentCollId != nullptr);
+  REQUIRE(parentCollId->type()->id() == arrow::Type::UINT32);
+
+  auto parentIndex = parentsStruct->GetFieldByName("index");
+  REQUIRE(parentIndex != nullptr);
+  REQUIRE(parentIndex->type()->id() == arrow::Type::INT32);
+
+  // 6. Verify frame_parameters (Map mapping)
+  auto frameParamsField = schema->GetFieldByName("frame_parameters");
+  REQUIRE(frameParamsField != nullptr);
+  REQUIRE(frameParamsField->type()->id() == arrow::Type::STRUCT);
+  auto frameParamsType = std::static_pointer_cast<arrow::StructType>(frameParamsField->type());
+  
+  auto intParamsField = frameParamsType->GetFieldByName("int_params");
+  REQUIRE(intParamsField != nullptr);
+  REQUIRE(intParamsField->type()->id() == arrow::Type::MAP);
+  auto intParamsType = std::static_pointer_cast<arrow::MapType>(intParamsField->type());
+  REQUIRE(intParamsType->key_type()->id() == arrow::Type::STRING);
+  REQUIRE(intParamsType->item_type()->id() == arrow::Type::LIST);
+  auto intParamsList = std::static_pointer_cast<arrow::ListType>(intParamsType->item_type());
+  REQUIRE(intParamsList->value_type()->id() == arrow::Type::INT32);
+}
+#endif
+
+

@@ -44,6 +44,7 @@ jobs:
             cmake -B build -S . \
               --preset ci-build \
               -DCMAKE_BUILD_TYPE=Debug \
+              -DENABLE_ARROW=ON \
               -DUSE_SANITIZER=${{ matrix.sanitizer }} \
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.compiler }} == gcc15 ]] && echo "23" || echo "20")
             echo "::endgroup::"

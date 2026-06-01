@@ -197,7 +197,9 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
 
   # Filter out anything I/O backend related to build the core library
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
-  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
+  IF(NOT ENABLE_ARROW)
+    LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
+  ENDIF()
   LIST(FILTER SOURCES EXCLUDE REGEX .*SIOBlock.cc)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
