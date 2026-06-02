@@ -1813,7 +1813,7 @@ TEST_CASE("Arrow schema mapping", "[arrow]") {
   auto exampleHitList = std::static_pointer_cast<arrow::ListType>(exampleHitField->type());
   auto exampleHitStruct = std::static_pointer_cast<arrow::StructType>(exampleHitList->value_type());
   REQUIRE(exampleHitStruct != nullptr);
-  
+
   auto cellIDField = exampleHitStruct->GetFieldByName("cellID");
   REQUIRE(cellIDField != nullptr);
   REQUIRE(cellIDField->type()->id() == arrow::Type::UINT64);
@@ -1853,7 +1853,7 @@ TEST_CASE("Arrow schema mapping", "[arrow]") {
   auto parentsList = std::static_pointer_cast<arrow::ListType>(parentsField->type());
   auto parentsStruct = std::static_pointer_cast<arrow::StructType>(parentsList->value_type());
   REQUIRE(parentsStruct != nullptr);
-  
+
   auto parentCollId = parentsStruct->GetFieldByName("collectionID");
   REQUIRE(parentCollId != nullptr);
   REQUIRE(parentCollId->type()->id() == arrow::Type::UINT32);
@@ -1867,7 +1867,7 @@ TEST_CASE("Arrow schema mapping", "[arrow]") {
   REQUIRE(frameParamsField != nullptr);
   REQUIRE(frameParamsField->type()->id() == arrow::Type::STRUCT);
   auto frameParamsType = std::static_pointer_cast<arrow::StructType>(frameParamsField->type());
-  
+
   auto intParamsField = frameParamsType->GetFieldByName("int_params");
   REQUIRE(intParamsField != nullptr);
   REQUIRE(intParamsField->type()->id() == arrow::Type::MAP);

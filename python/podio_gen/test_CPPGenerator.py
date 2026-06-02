@@ -56,22 +56,22 @@ class TestCPPClassGenerator(unittest.TestCase):
         self.assertIn('arrow::field("frame_parameters", frameParametersType())', contents)
         self.assertIn(
             'arrow::field("int_params", '
-            'arrow::map(arrow::utf8(), arrow::list(arrow::int32())))',
+            "arrow::map(arrow::utf8(), arrow::list(arrow::int32())))",
             contents,
         )
         self.assertIn(
             'arrow::field("float_params", '
-            'arrow::map(arrow::utf8(), arrow::list(arrow::float32())))',
+            "arrow::map(arrow::utf8(), arrow::list(arrow::float32())))",
             contents,
         )
         self.assertIn(
             'arrow::field("double_params", '
-            'arrow::map(arrow::utf8(), arrow::list(arrow::float64())))',
+            "arrow::map(arrow::utf8(), arrow::list(arrow::float64())))",
             contents,
         )
         self.assertIn(
             'arrow::field("string_params", '
-            'arrow::map(arrow::utf8(), arrow::list(arrow::utf8())))',
+            "arrow::map(arrow::utf8(), arrow::list(arrow::utf8())))",
             contents,
         )
         self.assertIn("schemaWithMetadata", contents)
