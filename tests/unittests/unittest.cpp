@@ -1780,8 +1780,8 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 }
 
 #if PODIO_ENABLE_ARROW
-#include "datamodel/ArrowMapper.h"
-#include <arrow/type.h>
+  #include "datamodel/ArrowMapper.h"
+  #include <arrow/type.h>
 
 TEST_CASE("Arrow schema mapping", "[arrow]") {
   auto schema = datamodel::arrow_io::schema();
@@ -1878,5 +1878,3 @@ TEST_CASE("Arrow schema mapping", "[arrow]") {
   REQUIRE(intParamsList->value_type()->id() == arrow::Type::INT32);
 }
 #endif
-
-
