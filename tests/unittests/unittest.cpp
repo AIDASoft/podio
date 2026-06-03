@@ -1786,9 +1786,9 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 TEST_CASE("Arrow schema mapping", "[arrow]") {
   auto schema = datamodel::arrow_io::schema();
   REQUIRE(schema != nullptr);
-  auto field_names = schema->field_names();
 
   // 1. Verify top-level fields
+  auto field_names = schema->field_names();
   REQUIRE(std::find(field_names.begin(), field_names.end(), "EventInfo") != field_names.end());
   REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleHit") != field_names.end());
   REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleMC") != field_names.end());
