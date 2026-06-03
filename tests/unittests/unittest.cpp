@@ -1866,8 +1866,8 @@ TEST_CASE("Arrow schema mapping", "[arrow]") {
   auto frameParamsField = schema->GetFieldByName("frame_parameters");
   REQUIRE(frameParamsField != nullptr);
   REQUIRE(frameParamsField->type()->id() == arrow::Type::STRUCT);
-  auto frameParamsType = std::static_pointer_cast<arrow::StructType>(frameParamsField->type());
 
+  auto frameParamsType = std::static_pointer_cast<arrow::StructType>(frameParamsField->type());
   auto intParamsField = frameParamsType->GetFieldByName("int_params");
   REQUIRE(intParamsField != nullptr);
   REQUIRE(intParamsField->type()->id() == arrow::Type::MAP);
