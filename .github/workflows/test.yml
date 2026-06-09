@@ -36,6 +36,7 @@ jobs:
           # export JULIA_DEPOT_PATH="$(mktemp -d -p /tmp -t julia_depot_XXXXX):"
           cmake --preset ci-build \
             -DENABLE_JULIA=ON \
+            -DENABLE_ARROW=ON \
             -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install \

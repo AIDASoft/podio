@@ -50,6 +50,10 @@ target_compile_options(unittest_podio PRIVATE -Wno-c2y-extensions)
 if (ENABLE_SIO)
   target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
 endif()
+if (ENABLE_ARROW)
+  target_link_libraries(unittest_podio PRIVATE Arrow::arrow_shared)
+  target_compile_definitions(unittest_podio PRIVATE PODIO_ENABLE_ARROW=1)
+endif()
 
 # The unittests can easily be filtered and they are labelled so we can put together a
 # list of labels that we want to ignore
