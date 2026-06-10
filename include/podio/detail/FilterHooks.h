@@ -80,28 +80,6 @@ namespace detail {
                         podio::CollectionBase& output, const FilterRemap& remap) const = 0;
   };
 
-  /// The process-wide registry of filter hooks, keyed by datatype name (as
-  /// returned by CollectionBase::getTypeName()). Header-only so that generated
-  /// datamodel code can register into it without a link-time dependency.
-  inline std::unordered_map<std::string, std::unique_ptr<FilterHooks>>& filterHookRegistry() {
-    static std::unordered_map<std::string, std::unique_ptr<FilterHooks>> registry;
-    return registry;
-  }
-
-  /// Register the hooks for a datatype. Returns true so it can be used to
-  /// initialize a namespace-scope bool in generated code.
-  inline bool registerFilterHooks(std::string typeName, std::unique_ptr<FilterHooks> hooks) {
-    filterHookRegistry()[std::move(typeName)] = std::move(hooks);
-    return true;
-  }
-
-  /// @returns the hooks registered for @p typeName, or nullptr if none.
-  inline const FilterHooks* getFilterHooks(std::string_view typeName) {
-    auto& registry = filterHookRegistry();
-    const auto it = registry.find(std::string(typeName));
-    return it == registry.end() ? nullptr : it->second.get();
-  }
-
 } // namespace detail
 } // namespace podio
 

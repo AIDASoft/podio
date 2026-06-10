@@ -4,6 +4,7 @@
 #include "podio/CollectionBase.h"
 #include "podio/Frame.h"
 #include "podio/ObjectID.h"
+#include "podio/detail/FilterHookRegistry.h"
 #include "podio/detail/FilterHooks.h"
 
 #include <functional>
@@ -97,7 +98,7 @@ public:
     for (const auto& name : m_frame.getAvailableCollections()) {
       const auto* coll = m_frame.get(name);
       const auto type = std::string(coll->getValueTypeName());
-      const auto* hooks = detail::getFilterHooks(type);
+      const auto* hooks = detail::FilterHookRegistry::instance().getHooks(type);
       if (!hooks) {
         throw std::runtime_error("podio::FrameFilter: no filter hooks registered for type '" + type +
                                  "' (collection '" + name + "')");
