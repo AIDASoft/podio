@@ -9,6 +9,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
+#include "datamodel/TestLinkCollection.h"
 
 #include "podio/ObjectID.h"
 
@@ -358,16 +359,19 @@ struct EventPolicies {
   OnDangling clusterHits;     ///< cluster -> hit (OneToMany, cross-collection)
   OnDangling clusterClusters; ///< cluster -> sub-cluster (OneToMany, self)
   OnDangling refCluster;      ///< ref -> cluster (OneToOne, cross-collection)
+  OnDangling linkFrom;        ///< link -> hit  (Link "From" endpoint)
+  OnDangling linkTo;          ///< link -> cluster (Link "To" endpoint)
 };
 
 struct FilteredEvent {
   ExampleHitCollection hits;
   ExampleClusterCollection clusters;
   ExampleWithOneRelationCollection refs;
+  TestLinkCollection links;
 };
 
 FilteredEvent filterEvent(const ExampleHitCollection& inHits, const ExampleClusterCollection& inClusters,
-                          const ExampleWithOneRelationCollection& inRefs,
+                          const ExampleWithOneRelationCollection& inRefs, const TestLinkCollection& inLinks,
                           const std::function<bool(const ExampleHit&)>& keepHit, EventPolicies policy) {
   using IdSet = std::unordered_set<podio::ObjectID>;
 
@@ -480,6 +484,34 @@ FilteredEvent filterEvent(const ExampleHitCollection& inHits, const ExampleClust
     }
   }
 
+  // Links live in their own collection and reference objects in two others. A
+  // link is dropped when an endpoint was removed under a Cascade policy;
+  // otherwise it is kept, its weight preserved, and each surviving endpoint
+  // rewired through that endpoint's remap (a removed endpoint is left unset).
+  // Links are terminal - nothing references them - so they need no remap.
+  for (auto link : inLinks) {
+    const auto from = link.getFrom();
+    const auto to = link.getTo();
+    const bool fromRemoved = from.isAvailable() && hitsRemoved.count(from.getObjectID());
+    const bool toRemoved = to.isAvailable() && clustersRemoved.count(to.getObjectID());
+    if ((fromRemoved && policy.linkFrom == OnDangling::Cascade) ||
+        (toRemoved && policy.linkTo == OnDangling::Cascade)) {
+      continue;
+    }
+    auto newLink = link.clone(/*cloneRelations=*/false); // copies the weight only
+    if (from.isAvailable()) {
+      if (const auto target = hitRemap.find(from.getObjectID()); target != hitRemap.end()) {
+        newLink.setFrom(target->second);
+      }
+    }
+    if (to.isAvailable()) {
+      if (const auto target = clusterRemap.find(to.getObjectID()); target != clusterRemap.end()) {
+        newLink.setTo(target->second);
+      }
+    }
+    out.links.push_back(newLink);
+  }
+
   return out;
 }
 
@@ -487,6 +519,7 @@ FilteredEvent filterEvent(const ExampleHitCollection& inHits, const ExampleClust
 ///   hits:     h0 (E=1)  h1 (E=2)  h2 (E=0.5)
 ///   clusters: c0 -> {h0, h1}        c1 -> {h2},  c0 also has sub-cluster c1
 ///   refs:     r0 -> c0              r1 -> c1
+///   links:    l0: h0 -> c0          l1: h2 -> c1
 FilteredEvent makeEvent() {
   FilteredEvent ev;
   auto h0 = ev.hits.create();
@@ -508,6 +541,15 @@ FilteredEvent makeEvent() {
   auto r1 = ev.refs.create();
   r1.cluster(c1);
 
+  auto l0 = ev.links.create();
+  l0.setFrom(h0);
+  l0.setTo(c0);
+  l0.setWeight(1.0f);
+  auto l1 = ev.links.create();
+  l1.setFrom(h2);
+  l1.setTo(c1);
+  l1.setWeight(2.0f);
+
   return ev;
 }
 
@@ -519,8 +561,9 @@ TEST_CASE("full filter leaves all dangling relations unconnected", "[filtering]"
   // Drop h2 (E=0.5). With every policy LeaveUnconnected, nothing else is removed;
   // only the edges to h2 disappear.
   const auto out = filterEvent(
-      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
-      {OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
+      in.hits, in.clusters, in.refs, in.links, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected,
+       OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
 
   REQUIRE(out.hits.size() == 2);
   REQUIRE(out.clusters.size() == 2);
@@ -533,6 +576,15 @@ TEST_CASE("full filter leaves all dangling relations unconnected", "[filtering]"
   REQUIRE(out.clusters[1].Hits().empty());
   // OneToOne edges still point at the surviving clusters.
   REQUIRE(out.refs[1].cluster() == out.clusters[1]);
+
+  // Both links survive; l1's "From" hit was removed, so that endpoint is unset
+  // while its "To" cluster and the preserved weight remain intact.
+  REQUIRE(out.links.size() == 2);
+  REQUIRE(out.links[0].getFrom() == out.hits[0]);
+  REQUIRE(out.links[0].getTo() == out.clusters[0]);
+  REQUIRE_FALSE(out.links[1].getFrom().isAvailable());
+  REQUIRE(out.links[1].getTo() == out.clusters[1]);
+  REQUIRE(out.links[1].getWeight() == 2.0f);
 }
 
 TEST_CASE("full filter cascades across all three collections", "[filtering]") {
@@ -542,12 +594,16 @@ TEST_CASE("full filter cascades across all three collections", "[filtering]") {
   // h2), removing c1 removes both c0 (its sub-cluster is gone) and r1 (its
   // cluster is gone), and removing c0 removes r0.
   const auto out = filterEvent(
-      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
-      {OnDangling::Cascade, OnDangling::Cascade, OnDangling::Cascade});
+      in.hits, in.clusters, in.refs, in.links, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::Cascade, OnDangling::Cascade, OnDangling::Cascade, OnDangling::Cascade,
+       OnDangling::Cascade});
 
   REQUIRE(out.hits.size() == 2);
   REQUIRE(out.clusters.empty());
   REQUIRE(out.refs.empty());
+  // l0's "To" cluster (c0) and l1's "From" hit (h2) were both removed under a
+  // cascading endpoint policy, so both links are dropped.
+  REQUIRE(out.links.empty());
 }
 
 TEST_CASE("full filter cascades to cluster but leaves its ref unconnected", "[filtering]") {
@@ -556,8 +612,9 @@ TEST_CASE("full filter cascades to cluster but leaves its ref unconnected", "[fi
   // Cascade hit -> cluster, but leave ref -> cluster unconnected: c1 is removed,
   // and r1 survives with its OneToOne relation left unset.
   const auto out = filterEvent(
-      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
-      {OnDangling::Cascade, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
+      in.hits, in.clusters, in.refs, in.links, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::Cascade, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected,
+       OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
 
   // c1 (used h2) is gone; c0's sub-cluster edge to it is dropped but c0 survives.
   REQUIRE(out.clusters.size() == 1);
@@ -568,4 +625,12 @@ TEST_CASE("full filter cascades to cluster but leaves its ref unconnected", "[fi
   REQUIRE(out.refs.size() == 2);
   REQUIRE(out.refs[0].cluster() == out.clusters[0]);
   REQUIRE_FALSE(out.refs[1].cluster().isAvailable());
+
+  // Both links survive under the leave-unconnected endpoint policies. l1 lost
+  // both endpoints (h2 removed, c1 cascaded away), so it is fully unset.
+  REQUIRE(out.links.size() == 2);
+  REQUIRE(out.links[0].getFrom() == out.hits[0]);
+  REQUIRE(out.links[0].getTo() == out.clusters[0]);
+  REQUIRE_FALSE(out.links[1].getFrom().isAvailable());
+  REQUIRE_FALSE(out.links[1].getTo().isAvailable());
 }
