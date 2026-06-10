@@ -12,9 +12,11 @@
 
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
+#include "podio/detail/FilterHooks.h"
 #include "podio/detail/OrderKey.h"
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <stdexcept>
 
@@ -139,6 +141,13 @@ public:
 
   podio::ObjectID id() const { return getObjectID(); }
   podio::ObjectID getObjectID() const { return m_self->getObjectID(); }
+
+  /// Resolve a relation target of this interface type to its concrete handle in
+  /// a filtered output collection, used by podio::FrameFilter. Returns
+  /// std::nullopt if the target was removed by the filter. Defined in the
+  /// generated {{ class.bare_type }}FilterResolver.cc.
+  static std::optional<{{ class.bare_type }}> resolveFilteredTarget(const podio::detail::FilterRemap& remap,
+                                                                    podio::ObjectID id);
 
   /// Check if the object currently holds a value of the requested type
   template<typename T>

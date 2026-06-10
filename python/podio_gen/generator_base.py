@@ -258,6 +258,7 @@ class ClassGeneratorBaseMixin:
                 "MutableStruct": "Struct",
                 "LinkCollection": "Collection",
                 "FilterHooks": "FilterHooks",
+                "InterfaceFilterResolver": "FilterResolver",
             }
 
             return f"{prefix.get(tmpl, '')}{{name}}{postfix.get(tmpl, '')}.{{end}}"
@@ -271,6 +272,7 @@ class ClassGeneratorBaseMixin:
             "LinkCollection": ("h",),
             "DatamodelLinks": ("cc",),
             "FilterHooks": ("cc",),
+            "InterfaceFilterResolver": ("cc",),
         }.get(template_base, ("h", "cc"))
 
         fn_templates = []

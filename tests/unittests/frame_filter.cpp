@@ -8,7 +8,12 @@
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TestLinkCollection.h"
+#include "datamodel/TypeWithEnergy.h"
+
+#include "interface_extension_model/EnergyInterface.h"
+#include "interface_extension_model/ExampleWithInterfaceRelationCollection.h"
 
 #include "podio/Frame.h"
 #include "podio/FrameFilter.h"
@@ -199,4 +204,75 @@ TEST_CASE("FrameFilter: vector-member data survives filtering", "[framefilter]")
   REQUIRE(res[0].count(0) == 1);
   REQUIRE(res[0].count(1) == 2);
   REQUIRE(res[0].count(2) == 3);
+}
+
+TEST_CASE("FrameFilter: interface relations are rewired polymorphically", "[framefilter]") {
+  // ExampleWithInterfaceRelation references ExampleHits through the polymorphic
+  // EnergyInterface; filtering the hits must rewire those interface relations.
+  ExampleHitCollection hits;
+  auto h0 = hits.create();
+  h0.energy(5.0);
+  auto h1 = hits.create();
+  h1.energy(0.5);
+
+  iextension::ExampleWithInterfaceRelationCollection withIface;
+  auto w0 = withIface.create();
+  w0.singleEnergy(iextension::EnergyInterface(h0));
+  w0.addmanyEnergies(iextension::EnergyInterface(h0));
+  w0.addmanyEnergies(iextension::EnergyInterface(h1));
+
+  podio::Frame in;
+  in.put(std::move(hits), "hits");
+  in.put(std::move(withIface), "withIface");
+
+  const auto out = podio::FrameFilter{in}
+                       .keep("hits", [](const ExampleHit& h) { return h.energy() >= 1.0; })
+                       .run();
+
+  const auto& res = out.get<iextension::ExampleWithInterfaceRelationCollection>("withIface");
+  REQUIRE(res.size() == 1);
+  // singleEnergy still resolves to the surviving hit (energy 5).
+  REQUIRE(res[0].singleEnergy().isAvailable());
+  REQUIRE(res[0].singleEnergy().energy() == 5.0);
+  // the removed hit (energy 0.5) is dropped from the many-relation.
+  REQUIRE(res[0].manyEnergies().size() == 1);
+  REQUIRE(res[0].manyEnergies()[0].energy() == 5.0);
+}
+
+TEST_CASE("FrameFilter: interface link endpoints are rewired and dropped", "[framefilter]") {
+  // TestInterfaceLink: From ExampleCluster (concrete), To TypeWithEnergy (interface).
+  ExampleHitCollection hits;
+  auto h0 = hits.create();
+  h0.energy(5.0);
+  ExampleClusterCollection clusters;
+  auto c0 = clusters.create();
+  c0.energy(1.0);
+  TestInterfaceLinkCollection ilinks;
+  auto l0 = ilinks.create();
+  l0.setFrom(c0);
+  l0.setTo(TypeWithEnergy(h0));
+
+  podio::Frame in;
+  in.put(std::move(hits), "hits");
+  in.put(std::move(clusters), "clusters");
+  in.put(std::move(ilinks), "ilinks");
+
+  SECTION("keep everything: both endpoints resolve") {
+    const auto out = podio::FrameFilter{in}.run();
+    const auto& links = out.get<TestInterfaceLinkCollection>("ilinks");
+    REQUIRE(links.size() == 1);
+    REQUIRE(links[0].getFrom() == out.get<ExampleClusterCollection>("clusters")[0]);
+    REQUIRE(links[0].getTo().isAvailable());
+    REQUIRE(links[0].getTo().energy() == 5.0); // interface "To" resolved to the hit
+  }
+
+  SECTION("drop the interface target: 'To' is left unset") {
+    const auto out = podio::FrameFilter{in}
+                         .keep("hits", [](const ExampleHit&) { return false; })
+                         .run();
+    const auto& links = out.get<TestInterfaceLinkCollection>("ilinks");
+    REQUIRE(links.size() == 1);
+    REQUIRE(links[0].getFrom().isAvailable());
+    REQUIRE_FALSE(links[0].getTo().isAvailable());
+  }
 }

@@ -26,23 +26,19 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
              [[maybe_unused]] const podio::detail::EdgeSink& sink) const override {
     [[maybe_unused]] const auto obj = static_cast<const {{ coll_type }}&>(coll)[index];
 {% if From is defined %}
-{% if filter_from %}
     if (obj.getFrom().isAvailable()) {
       sink("from", obj.getFrom().getObjectID());
     }
-{% endif %}
-{% if filter_to %}
     if (obj.getTo().isAvailable()) {
       sink("to", obj.getTo().getObjectID());
     }
-{% endif %}
 {% else %}
-{% for relation in filter_single_rel %}
+{% for relation in OneToOneRelations %}
     if (obj.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
       sink("{{ relation.name }}", obj.{{ relation.getter_name(use_get_syntax) }}().getObjectID());
     }
 {% endfor %}
-{% for relation in filter_multi_rel %}
+{% for relation in OneToManyRelations %}
     for (const auto& rel : obj.{{ relation.getter_name(use_get_syntax) }}()) {
       sink("{{ relation.name }}", rel.getObjectID());
     }
@@ -82,31 +78,27 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
       [[maybe_unused]] auto obj = out[j];
       [[maybe_unused]] const auto src = in[survivors[j]];
 {% if From is defined %}
-{% if filter_from %}
       if (src.getFrom().isAvailable()) {
-        if (auto t = podio::detail::resolveTarget<{{ From.full_type }}::collection_type>(remap, src.getFrom().getObjectID())) {
+        if (auto t = {{ from_resolver }}(remap, src.getFrom().getObjectID())) {
           obj.setFrom(*t);
         }
       }
-{% endif %}
-{% if filter_to %}
       if (src.getTo().isAvailable()) {
-        if (auto t = podio::detail::resolveTarget<{{ To.full_type }}::collection_type>(remap, src.getTo().getObjectID())) {
+        if (auto t = {{ to_resolver }}(remap, src.getTo().getObjectID())) {
           obj.setTo(*t);
         }
       }
-{% endif %}
 {% else %}
-{% for relation in filter_single_rel %}
+{% for relation in OneToOneRelations %}
       if (src.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
-        if (auto t = podio::detail::resolveTarget<{{ relation.full_type }}::collection_type>(remap, src.{{ relation.getter_name(use_get_syntax) }}().getObjectID())) {
+        if (auto t = {{ relation.filter_resolver }}(remap, src.{{ relation.getter_name(use_get_syntax) }}().getObjectID())) {
           obj.{{ relation.setter_name(use_get_syntax) }}(*t);
         }
       }
 {% endfor %}
-{% for relation in filter_multi_rel %}
+{% for relation in OneToManyRelations %}
       for (const auto& rel : src.{{ relation.getter_name(use_get_syntax) }}()) {
-        if (auto t = podio::detail::resolveTarget<{{ relation.full_type }}::collection_type>(remap, rel.getObjectID())) {
+        if (auto t = {{ relation.filter_resolver }}(remap, rel.getObjectID())) {
           obj.{{ relation.setter_name(use_get_syntax, is_relation=True) }}(*t);
         }
       }
