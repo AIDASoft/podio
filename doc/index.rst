@@ -17,6 +17,7 @@ Welcome to PODIO's documentation!
    frame.md
    userdata.md
    links.md
+   filtering.md
    storage_details.md
    tools.md
    cmake.md
