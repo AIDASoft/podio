@@ -239,6 +239,55 @@ TEST_CASE("FrameFilter: interface relations are rewired polymorphically", "[fram
   REQUIRE(res[0].manyEnergies()[0].energy() == 5.0);
 }
 
+TEST_CASE("FrameFilter: subset collections re-reference surviving objects", "[framefilter]") {
+  ExampleHitCollection hits;
+  auto h0 = hits.create();
+  h0.energy(5.0);
+  auto h1 = hits.create();
+  h1.energy(0.5);
+  auto h2 = hits.create();
+  h2.energy(3.0);
+
+  ExampleHitCollection selected; // subset referencing all three
+  selected.setSubsetCollection();
+  selected.push_back(h0);
+  selected.push_back(h1);
+  selected.push_back(h2);
+
+  podio::Frame in;
+  in.put(std::move(hits), "hits");
+  in.put(std::move(selected), "selected");
+
+  const auto out = podio::FrameFilter{in}
+                       .keep("hits", [](const ExampleHit& h) { return h.energy() >= 1.0; })
+                       .run();
+
+  const auto& outHits = out.get<ExampleHitCollection>("hits");
+  const auto& outSel = out.get<ExampleHitCollection>("selected");
+  REQUIRE(outHits.size() == 2); // h0, h2
+  // the subset stays a subset and drops the reference to the removed h1, with the
+  // survivors now pointing at the objects in the filtered owner collection.
+  REQUIRE(outSel.isSubsetCollection());
+  REQUIRE(outSel.size() == 2);
+  REQUIRE(outSel[0] == outHits[0]);
+  REQUIRE(outSel[1] == outHits[1]);
+}
+
+TEST_CASE("FrameFilter: frame parameters are copied to the output", "[framefilter]") {
+  auto in = makeMCFrame();
+  in.putParameter("run", 42);
+  in.putParameter("tag", std::string("nominal"));
+  in.putParameter("weights", std::vector<double>{1.0, 2.5, 3.0});
+
+  const auto out = podio::FrameFilter{in}
+                       .keep("mcparticles", [](const ExampleMC& p) { return p.energy() >= 1.0; })
+                       .run();
+
+  REQUIRE(out.getParameter<int>("run") == 42);
+  REQUIRE(out.getParameter<std::string>("tag") == "nominal");
+  REQUIRE(out.getParameter<std::vector<double>>("weights").value().size() == 3);
+}
+
 TEST_CASE("FrameFilter: interface link endpoints are rewired and dropped", "[framefilter]") {
   // TestInterfaceLink: From ExampleCluster (concrete), To TypeWithEnergy (interface).
   ExampleHitCollection hits;

@@ -89,6 +89,7 @@ public:
       uint32_t id;
       std::size_t size;
       Mode mode;
+      bool isSubset;
       std::vector<char> killed;
       std::vector<char> marked;
     };
@@ -111,7 +112,7 @@ public:
       }
       const auto size = coll->size();
       byId[coll->getID()] = colls.size();
-      colls.push_back({name, coll, hooks, type, coll->getID(), size, mode,
+      colls.push_back({name, coll, hooks, type, coll->getID(), size, mode, coll->isSubsetCollection(),
                        std::vector<char>(size, 0), std::vector<char>(size, 0)});
     }
 
@@ -196,6 +197,26 @@ public:
       }
     }
 
+    // Phase 3b: a subset collection only references objects owned elsewhere, so
+    // drop any entry whose referenced object was removed (a reference cannot
+    // dangle).
+    for (auto& ci : colls) {
+      if (!ci.isSubset) {
+        continue;
+      }
+      for (std::size_t i = 0; i < ci.size; ++i) {
+        if (ci.killed[i]) {
+          continue;
+        }
+        ci.hooks->edges(*ci.coll, i, [&](std::string_view, podio::ObjectID target) {
+          const auto [k, idx] = locate(target);
+          if (k < 0 || colls[k].killed[idx]) {
+            ci.killed[i] = 1;
+          }
+        });
+      }
+    }
+
     // Phase 4: clone survivors, build the global remap, then rewire.
     std::vector<std::vector<std::size_t>> survivors(colls.size());
     std::vector<std::unique_ptr<podio::CollectionBase>> outColls(colls.size());
@@ -208,22 +229,40 @@ public:
         }
       }
       outColls[k] = ci.hooks->cloneSurvivors(*ci.coll, survivors[k]);
-      for (std::size_t j = 0; j < survivors[k].size(); ++j) {
-        podio::ObjectID original;
-        original.index = static_cast<int>(survivors[k][j]);
-        original.collectionID = ci.id;
-        remap.add(original, outColls[k].get(), j);
+      // Subset entries are references to objects owned elsewhere; they have no
+      // identity of their own, so they are not added to the remap.
+      if (!ci.isSubset) {
+        for (std::size_t j = 0; j < survivors[k].size(); ++j) {
+          podio::ObjectID original;
+          original.index = static_cast<int>(survivors[k][j]);
+          original.collectionID = ci.id;
+          remap.add(original, outColls[k].get(), j);
+        }
       }
     }
     for (std::size_t k = 0; k < colls.size(); ++k) {
       colls[k].hooks->rewire(*colls[k].coll, survivors[k], *outColls[k], remap);
     }
 
-    // Phase 5: assemble the output Frame.
+    // Phase 5: assemble the output Frame and copy the parameters verbatim.
     podio::Frame out;
     for (std::size_t k = 0; k < colls.size(); ++k) {
       out.put(std::move(outColls[k]), colls[k].name);
     }
+
+    const auto& params = m_frame.getParameters();
+    auto copyParams = [&](auto typeTag) {
+      using T = decltype(typeTag);
+      auto [keys, values] = params.getKeysAndValues<T>();
+      for (std::size_t i = 0; i < keys.size(); ++i) {
+        out.putParameter<std::vector<T>>(keys[i], std::move(values[i]));
+      }
+    };
+    copyParams(int{});
+    copyParams(float{});
+    copyParams(double{});
+    copyParams(std::string{});
+
     return out;
   }
 

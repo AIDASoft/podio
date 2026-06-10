@@ -33,6 +33,13 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
       sink("to", obj.getTo().getObjectID());
     }
 {% else %}
+    if (coll.isSubsetCollection()) {
+      // a subset entry's only edge is to the object it references
+      if (obj.isAvailable()) {
+        sink("", obj.getObjectID());
+      }
+      return;
+    }
 {% for relation in OneToOneRelations %}
     if (obj.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
       sink("{{ relation.name }}", obj.{{ relation.getter_name(use_get_syntax) }}().getObjectID());
@@ -48,8 +55,15 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
 
   std::unique_ptr<podio::CollectionBase>
   cloneSurvivors(const podio::CollectionBase& coll, const std::vector<std::size_t>& survivors) const override {
-    const auto& in = static_cast<const {{ coll_type }}&>(coll);
     auto out = std::make_unique<{{ coll_type }}>();
+{% if From is not defined %}
+    if (coll.isSubsetCollection()) {
+      // a subset owns no data; its surviving references are filled in during rewire
+      out->setSubsetCollection();
+      return out;
+    }
+{% endif %}
+    const auto& in = static_cast<const {{ coll_type }}&>(coll);
     for (auto idx : survivors) {
 {% if VectorMembers %}
       // clone(false) drops vector-member data along with the relations, so the
@@ -74,6 +88,17 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
               [[maybe_unused]] const podio::detail::FilterRemap& remap) const override {
     [[maybe_unused]] const auto& in = static_cast<const {{ coll_type }}&>(input);
     [[maybe_unused]] auto& out = static_cast<{{ coll_type }}&>(output);
+{% if From is not defined %}
+    if (output.isSubsetCollection()) {
+      // re-reference the surviving targets in the filtered output
+      for (auto idx : survivors) {
+        if (auto t = podio::detail::resolveTarget<{{ coll_type }}>(remap, in[idx].getObjectID())) {
+          out.push_back(*t);
+        }
+      }
+      return;
+    }
+{% endif %}
     for (std::size_t j = 0; j < survivors.size(); ++j) {
       [[maybe_unused]] auto obj = out[j];
       [[maybe_unused]] const auto src = in[survivors[j]];
