@@ -72,9 +72,11 @@ public:
     return *this;
   }
 
-  /// Drop every object of the named collection. The (now empty) collection is
-  /// still present in the output. Unlike `keep`, this needs only the name, not
-  /// the collection's type, and composes with `cascade` like any other removal.
+  /// Drop the named collection entirely: it is omitted from the output Frame.
+  /// Unlike `keep`, this needs only the name, not the collection's type, and
+  /// composes with `cascade` like any other removal (objects elsewhere that
+  /// cascade on a dropped target are removed too). To instead keep an empty
+  /// collection in the output, use an always-false `keep` predicate.
   FrameFilter& drop(const std::string& name) {
     m_drop.insert(name);
     return *this;
@@ -236,6 +238,9 @@ public:
     detail::FilterRemap remap;
     for (std::size_t k = 0; k < colls.size(); ++k) {
       auto& ci = colls[k];
+      if (ci.mode == DropAll) {
+        continue; // omitted from the output entirely; outColls[k] stays null
+      }
       for (std::size_t i = 0; i < ci.size; ++i) {
         if (!ci.killed[i]) {
           survivors[k].push_back(i);
@@ -254,12 +259,18 @@ public:
       }
     }
     for (std::size_t k = 0; k < colls.size(); ++k) {
+      if (colls[k].mode == DropAll) {
+        continue;
+      }
       colls[k].hooks->rewire(*colls[k].coll, survivors[k], *outColls[k], remap);
     }
 
     // Phase 5: assemble the output Frame and copy the parameters verbatim.
     podio::Frame out;
     for (std::size_t k = 0; k < colls.size(); ++k) {
+      if (colls[k].mode == DropAll) {
+        continue; // dropped collections are not put into the output Frame
+      }
       out.put(std::move(outColls[k]), colls[k].name);
     }
 

@@ -28,9 +28,10 @@ podio::Frame out = podio::FrameFilter{inFrame}
   predicate's argument type.
 - `keepReferenced(name)` — keep an object of the named collection only if some
   surviving object still references it (an *orphan sweep*).
-- `drop(name)` — remove every object of the named collection. The (now empty)
-  collection is still present in the output. Unlike `keep`, this needs only the
-  name, not the collection's type.
+- `drop(name)` — remove the named collection entirely; it is omitted from the
+  output Frame. Unlike `keep`, this needs only the name, not the collection's
+  type. (To keep an empty collection instead, use an always-false `keep`
+  predicate.)
 - `cascade("Type.relation")` — mark a relation as mandatory (see below).
 - `run()` — execute and return the new `Frame`.
 
@@ -48,8 +49,9 @@ How an object earns its place in the output:
 
 - **keep-all** (default) — every object survives.
 - **predicate** (`keep`) — an object survives iff the predicate holds.
-- **drop-all** (`drop`) — no object survives. Equivalent to an always-false
-  predicate, but type-free since it never inspects an object.
+- **drop-all** (`drop`) — no object survives *and* the collection is omitted from
+  the output Frame. Type-free, since it never inspects an object. (An always-false
+  `keep` predicate is the variant that leaves an empty collection in place.)
 - **keep-if-referenced** (`keepReferenced`) — an object survives iff a surviving
   object references it. This is an orphan sweep, computed as a mark-and-sweep
   reachability from the surviving *roots* (the predicate/keep-all survivors).
@@ -93,7 +95,8 @@ The orchestration is type-agnostic and proceeds in phases:
 7. **Rewire** — walk every relation of every survivor and re-point it through
    the remap; targets that were removed are dropped (or already cascaded away).
 8. **Assemble** — put the rebuilt collections into a new `Frame` and copy the
-   parameters.
+   parameters. Collections marked `drop` are skipped here, so they do not appear
+   in the output `Frame` at all.
 
 ## Design: a generic core plus generated hooks
 

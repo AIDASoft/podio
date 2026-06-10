@@ -20,6 +20,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
+#include <algorithm>
 #include <string>
 
 namespace {
@@ -182,18 +183,20 @@ TEST_CASE("FrameFilter: orphan sweep keeps shared, drops truly-orphaned", "[fram
   REQUIRE(out.get<ExampleClusterCollection>("clustersA")[0].Hits().size() == 2);
 }
 
-TEST_CASE("FrameFilter: drop empties a collection without naming its type", "[framefilter]") {
+TEST_CASE("FrameFilter: drop removes a collection without naming its type", "[framefilter]") {
   const auto in = makeEventFrame();
   // drop() needs only the name, not the collection's C++ type, and composes
-  // with the other axes. Here it removes every cluster and an orphan sweep then
-  // prunes hits that nothing else references.
+  // with the other axes. Here it removes the clusters collection entirely and an
+  // orphan sweep then prunes hits that nothing else references.
   const auto out = podio::FrameFilter{in}
                        .drop("clusters")
                        .keepReferenced("hits")
                        .run();
 
-  // The dropped collection is still present, but empty.
-  REQUIRE(out.get<ExampleClusterCollection>("clusters").empty());
+  // The dropped collection is omitted from the output Frame entirely.
+  const auto avail = out.getAvailableCollections();
+  REQUIRE(std::find(avail.begin(), avail.end(), "clusters") == avail.end());
+  REQUIRE(out.get("clusters") == nullptr);
 
   // refs pointed only at clusters; the dangling cluster relation is left unset.
   const auto& refs = out.get<ExampleWithOneRelationCollection>("refs");
