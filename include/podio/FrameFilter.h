@@ -7,6 +7,7 @@
 #include "podio/detail/FilterHookRegistry.h"
 #include "podio/detail/FilterHooks.h"
 
+#include <algorithm>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -71,6 +72,14 @@ public:
     return *this;
   }
 
+  /// Drop every object of the named collection. The (now empty) collection is
+  /// still present in the output. Unlike `keep`, this needs only the name, not
+  /// the collection's type, and composes with `cascade` like any other removal.
+  FrameFilter& drop(const std::string& name) {
+    m_drop.insert(name);
+    return *this;
+  }
+
   /// Treat the named relation ("Type.relation") as mandatory: if its target is
   /// removed, remove the object holding it (integrity cascade).
   FrameFilter& cascade(const std::string& qualifiedRelation) {
@@ -80,7 +89,7 @@ public:
 
   /// Run the filter and return a new, fully-rewired Frame.
   podio::Frame run() const {
-    enum Mode { KeepAll, Predicate, Referenced };
+    enum Mode { KeepAll, Predicate, Referenced, DropAll };
     struct CollInfo {
       std::string name;
       const podio::CollectionBase* coll;
@@ -105,7 +114,9 @@ public:
                                  "' (collection '" + name + "')");
       }
       Mode mode = KeepAll;
-      if (m_predicates.count(name)) {
+      if (m_drop.count(name)) {
+        mode = DropAll;
+      } else if (m_predicates.count(name)) {
         mode = Predicate;
       } else if (m_keepReferenced.count(name)) {
         mode = Referenced;
@@ -127,9 +138,11 @@ public:
                                                              static_cast<std::size_t>(target.index)};
     };
 
-    // Phase 0: seed removals from predicates.
+    // Phase 0: seed removals from predicates and whole-collection drops.
     for (auto& ci : colls) {
-      if (ci.mode == Predicate) {
+      if (ci.mode == DropAll) {
+        std::fill(ci.killed.begin(), ci.killed.end(), 1);
+      } else if (ci.mode == Predicate) {
         const auto& pred = m_predicates.at(ci.name);
         for (std::size_t i = 0; i < ci.size; ++i) {
           ci.killed[i] = pred(*ci.coll, i) ? 0 : 1;
@@ -270,6 +283,7 @@ private:
   const podio::Frame& m_frame;
   std::unordered_map<std::string, std::function<bool(const podio::CollectionBase&, std::size_t)>> m_predicates{};
   std::unordered_set<std::string> m_keepReferenced{};
+  std::unordered_set<std::string> m_drop{};
   std::unordered_set<std::string> m_cascade{};
 };
 

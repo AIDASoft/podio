@@ -182,6 +182,38 @@ TEST_CASE("FrameFilter: orphan sweep keeps shared, drops truly-orphaned", "[fram
   REQUIRE(out.get<ExampleClusterCollection>("clustersA")[0].Hits().size() == 2);
 }
 
+TEST_CASE("FrameFilter: drop empties a collection without naming its type", "[framefilter]") {
+  const auto in = makeEventFrame();
+  // drop() needs only the name, not the collection's C++ type, and composes
+  // with the other axes. Here it removes every cluster and an orphan sweep then
+  // prunes hits that nothing else references.
+  const auto out = podio::FrameFilter{in}
+                       .drop("clusters")
+                       .keepReferenced("hits")
+                       .run();
+
+  // The dropped collection is still present, but empty.
+  REQUIRE(out.get<ExampleClusterCollection>("clusters").empty());
+
+  // refs pointed only at clusters; the dangling cluster relation is left unset.
+  const auto& refs = out.get<ExampleWithOneRelationCollection>("refs");
+  REQUIRE(refs.size() == 2);
+  REQUIRE_FALSE(refs[0].cluster().isAvailable());
+
+  // h0 and h2 are still referenced by the surviving links' "From"; h1 was
+  // referenced only by the dropped clusters, so the sweep removes it.
+  const auto& hits = out.get<ExampleHitCollection>("hits");
+  REQUIRE(hits.size() == 2);
+  REQUIRE(hits[0].energy() == 1.0); // h0
+  REQUIRE(hits[1].energy() == 0.5); // h2
+
+  // links keep their hit "From" but lose the dropped cluster "To".
+  const auto& links = out.get<TestLinkCollection>("links");
+  REQUIRE(links.size() == 2);
+  REQUIRE(links[0].getFrom() == hits[0]);
+  REQUIRE_FALSE(links[0].getTo().isAvailable());
+}
+
 TEST_CASE("FrameFilter: vector-member data survives filtering", "[framefilter]") {
   ExampleWithVectorMemberCollection vecs;
   auto v0 = vecs.create();

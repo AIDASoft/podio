@@ -28,6 +28,9 @@ podio::Frame out = podio::FrameFilter{inFrame}
   predicate's argument type.
 - `keepReferenced(name)` — keep an object of the named collection only if some
   surviving object still references it (an *orphan sweep*).
+- `drop(name)` — remove every object of the named collection. The (now empty)
+  collection is still present in the output. Unlike `keep`, this needs only the
+  name, not the collection's type.
 - `cascade("Type.relation")` — mark a relation as mandatory (see below).
 - `run()` — execute and return the new `Frame`.
 
@@ -45,6 +48,8 @@ How an object earns its place in the output:
 
 - **keep-all** (default) — every object survives.
 - **predicate** (`keep`) — an object survives iff the predicate holds.
+- **drop-all** (`drop`) — no object survives. Equivalent to an always-false
+  predicate, but type-free since it never inspects an object.
 - **keep-if-referenced** (`keepReferenced`) — an object survives iff a surviving
   object references it. This is an orphan sweep, computed as a mark-and-sweep
   reachability from the surviving *roots* (the predicate/keep-all survivors).
