@@ -6,10 +6,10 @@
 #include <functional>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <vector>
 
 namespace podio {
 class CollectionBase;
@@ -70,13 +70,13 @@ namespace detail {
     /// Clone the objects at @p survivors (in order) into a freshly allocated
     /// collection of the same type, copying data members but no relations.
     virtual std::unique_ptr<podio::CollectionBase>
-    cloneSurvivors(const podio::CollectionBase& collection, const std::vector<std::size_t>& survivors) const = 0;
+    cloneSurvivors(const podio::CollectionBase& collection, std::span<const std::size_t> survivors) const = 0;
 
     /// Rewire the relations of the cloned survivors in @p output, resolving each
     /// relation target through @p remap. @p input is the original collection and
     /// @p survivors the same index list passed to cloneSurvivors (so output[j]
     /// corresponds to input[survivors[j]]).
-    virtual void rewire(const podio::CollectionBase& input, const std::vector<std::size_t>& survivors,
+    virtual void rewire(const podio::CollectionBase& input, std::span<const std::size_t> survivors,
                         podio::CollectionBase& output, const FilterRemap& remap) const = 0;
   };
 

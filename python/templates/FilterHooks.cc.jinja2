@@ -16,6 +16,7 @@
 
 #include <cstddef>
 #include <memory>
+#include <span>
 #include <vector>
 
 {% set coll_type = class.full_type + 'Collection' %}
@@ -54,7 +55,7 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
   }
 
   std::unique_ptr<podio::CollectionBase>
-  cloneSurvivors(const podio::CollectionBase& coll, const std::vector<std::size_t>& survivors) const override {
+  cloneSurvivors(const podio::CollectionBase& coll, std::span<const std::size_t> survivors) const override {
     auto out = std::make_unique<{{ coll_type }}>();
 {% if From is not defined %}
     if (coll.isSubsetCollection()) {
@@ -83,7 +84,7 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
   }
 
   void rewire([[maybe_unused]] const podio::CollectionBase& input,
-              [[maybe_unused]] const std::vector<std::size_t>& survivors,
+              [[maybe_unused]] std::span<const std::size_t> survivors,
               [[maybe_unused]] podio::CollectionBase& output,
               [[maybe_unused]] const podio::detail::FilterRemap& remap) const override {
     [[maybe_unused]] const auto& in = static_cast<const {{ coll_type }}&>(input);
