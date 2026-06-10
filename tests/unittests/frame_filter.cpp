@@ -7,6 +7,7 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
+#include "datamodel/ExampleWithVectorMemberCollection.h"
 #include "datamodel/TestLinkCollection.h"
 
 #include "podio/Frame.h"
@@ -174,4 +175,28 @@ TEST_CASE("FrameFilter: orphan sweep keeps shared, drops truly-orphaned", "[fram
   REQUIRE(hitsOut.size() == 2);
   REQUIRE(out.get<ExampleClusterCollection>("clustersB").empty());
   REQUIRE(out.get<ExampleClusterCollection>("clustersA")[0].Hits().size() == 2);
+}
+
+TEST_CASE("FrameFilter: vector-member data survives filtering", "[framefilter]") {
+  ExampleWithVectorMemberCollection vecs;
+  auto v0 = vecs.create();
+  v0.addcount(1);
+  v0.addcount(2);
+  v0.addcount(3);
+  auto v1 = vecs.create();
+  v1.addcount(7);
+
+  podio::Frame in;
+  in.put(std::move(vecs), "vecs");
+
+  const auto out = podio::FrameFilter{in}
+                       .keep("vecs", [](const ExampleWithVectorMember& v) { return v.count_size() >= 2; })
+                       .run();
+
+  const auto& res = out.get<ExampleWithVectorMemberCollection>("vecs");
+  REQUIRE(res.size() == 1);
+  REQUIRE(res[0].count_size() == 3);
+  REQUIRE(res[0].count(0) == 1);
+  REQUIRE(res[0].count(1) == 2);
+  REQUIRE(res[0].count(2) == 3);
 }

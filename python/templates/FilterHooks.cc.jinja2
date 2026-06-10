@@ -54,7 +54,19 @@ struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
     const auto& in = static_cast<const {{ coll_type }}&>(coll);
     auto out = std::make_unique<{{ coll_type }}>();
     for (auto idx : survivors) {
+{% if VectorMembers %}
+      // clone(false) drops vector-member data along with the relations, so the
+      // vector members are copied back explicitly here.
+      auto cloned = in[idx].clone(false);
+{% for member in VectorMembers %}
+      for (const auto& value : in[idx].{{ member.getter_name(use_get_syntax) }}()) {
+        cloned.{{ member.setter_name(use_get_syntax, is_relation=True) }}(value);
+      }
+{% endfor %}
+      out->push_back(cloned);
+{% else %}
       out->push_back(in[idx].clone(false));
+{% endif %}
     }
     return out;
   }
