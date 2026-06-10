@@ -257,6 +257,7 @@ class ClassGeneratorBaseMixin:
                 "CollectionData": "CollectionData",
                 "MutableStruct": "Struct",
                 "LinkCollection": "Collection",
+                "FilterHooks": "FilterHooks",
             }
 
             return f"{prefix.get(tmpl, '')}{{name}}{postfix.get(tmpl, '')}.{{end}}"
@@ -269,6 +270,7 @@ class ClassGeneratorBaseMixin:
             "ParentModule": ("jl",),
             "LinkCollection": ("h",),
             "DatamodelLinks": ("cc",),
+            "FilterHooks": ("cc",),
         }.get(template_base, ("h", "cc"))
 
         fn_templates = []

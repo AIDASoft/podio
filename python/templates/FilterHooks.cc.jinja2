@@ -1,0 +1,109 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
+{% if From is defined %}
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+{% else %}
+{% for include in includes_coll_cc %}
+{{ include }}
+{% endfor %}
+{% endif %}
+
+#include <podio/detail/FilterHooks.h>
+
+#include <cstddef>
+#include <memory>
+#include <vector>
+
+{% set coll_type = class.full_type + 'Collection' %}
+namespace {
+
+struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
+  void edges([[maybe_unused]] const podio::CollectionBase& coll, [[maybe_unused]] std::size_t index,
+             [[maybe_unused]] const podio::detail::EdgeSink& sink) const override {
+    [[maybe_unused]] const auto obj = static_cast<const {{ coll_type }}&>(coll)[index];
+{% if From is defined %}
+{% if filter_from %}
+    if (obj.getFrom().isAvailable()) {
+      sink("from", obj.getFrom().getObjectID());
+    }
+{% endif %}
+{% if filter_to %}
+    if (obj.getTo().isAvailable()) {
+      sink("to", obj.getTo().getObjectID());
+    }
+{% endif %}
+{% else %}
+{% for relation in filter_single_rel %}
+    if (obj.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
+      sink("{{ relation.name }}", obj.{{ relation.getter_name(use_get_syntax) }}().getObjectID());
+    }
+{% endfor %}
+{% for relation in filter_multi_rel %}
+    for (const auto& rel : obj.{{ relation.getter_name(use_get_syntax) }}()) {
+      sink("{{ relation.name }}", rel.getObjectID());
+    }
+{% endfor %}
+{% endif %}
+  }
+
+  std::unique_ptr<podio::CollectionBase>
+  cloneSurvivors(const podio::CollectionBase& coll, const std::vector<std::size_t>& survivors) const override {
+    const auto& in = static_cast<const {{ coll_type }}&>(coll);
+    auto out = std::make_unique<{{ coll_type }}>();
+    for (auto idx : survivors) {
+      out->push_back(in[idx].clone(false));
+    }
+    return out;
+  }
+
+  void rewire([[maybe_unused]] const podio::CollectionBase& input,
+              [[maybe_unused]] const std::vector<std::size_t>& survivors,
+              [[maybe_unused]] podio::CollectionBase& output,
+              [[maybe_unused]] const podio::detail::FilterRemap& remap) const override {
+    [[maybe_unused]] const auto& in = static_cast<const {{ coll_type }}&>(input);
+    [[maybe_unused]] auto& out = static_cast<{{ coll_type }}&>(output);
+    for (std::size_t j = 0; j < survivors.size(); ++j) {
+      [[maybe_unused]] auto obj = out[j];
+      [[maybe_unused]] const auto src = in[survivors[j]];
+{% if From is defined %}
+{% if filter_from %}
+      if (src.getFrom().isAvailable()) {
+        if (auto t = podio::detail::resolveTarget<{{ From.full_type }}::collection_type>(remap, src.getFrom().getObjectID())) {
+          obj.setFrom(*t);
+        }
+      }
+{% endif %}
+{% if filter_to %}
+      if (src.getTo().isAvailable()) {
+        if (auto t = podio::detail::resolveTarget<{{ To.full_type }}::collection_type>(remap, src.getTo().getObjectID())) {
+          obj.setTo(*t);
+        }
+      }
+{% endif %}
+{% else %}
+{% for relation in filter_single_rel %}
+      if (src.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
+        if (auto t = podio::detail::resolveTarget<{{ relation.full_type }}::collection_type>(remap, src.{{ relation.getter_name(use_get_syntax) }}().getObjectID())) {
+          obj.{{ relation.setter_name(use_get_syntax) }}(*t);
+        }
+      }
+{% endfor %}
+{% for relation in filter_multi_rel %}
+      for (const auto& rel : src.{{ relation.getter_name(use_get_syntax) }}()) {
+        if (auto t = podio::detail::resolveTarget<{{ relation.full_type }}::collection_type>(remap, rel.getObjectID())) {
+          obj.{{ relation.setter_name(use_get_syntax, is_relation=True) }}(*t);
+        }
+      }
+{% endfor %}
+{% endif %}
+    }
+  }
+};
+
+const bool {{ class.bare_type }}_filter_registered = podio::detail::registerFilterHooks(
+    std::string({{ coll_type }}::valueTypeName), std::make_unique<{{ class.bare_type }}FilterHooks>());
+
+} // namespace

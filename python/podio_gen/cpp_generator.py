@@ -148,6 +148,16 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self._fill_templates("Collection", datatype)
         self._fill_templates("CollectionData", datatype)
 
+        # Relations to interface types are polymorphic and have no single
+        # collection_type, so the filter hooks skip them for now.
+        datatype["filter_single_rel"] = [
+            r for r in datatype["OneToOneRelations"] if not self._is_in(r.full_type, "interfaces")
+        ]
+        datatype["filter_multi_rel"] = [
+            r for r in datatype["OneToManyRelations"] if not self._is_in(r.full_type, "interfaces")
+        ]
+        self._fill_templates("FilterHooks", datatype)
+
         if "SIO" in self.io_handlers:
             self._fill_templates("SIOBlock", datatype)
 
@@ -250,6 +260,11 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 )
             )
         self._fill_templates("LinkCollection", link)
+        # Interface endpoints are polymorphic and have no single collection_type,
+        # so the filter hooks skip them for now.
+        link["filter_from"] = not self._is_in(link["From"].full_type, "interfaces")
+        link["filter_to"] = not self._is_in(link["To"].full_type, "interfaces")
+        self._fill_templates("FilterHooks", link)
         return link
 
     def print_report(self):
