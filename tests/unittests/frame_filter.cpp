@@ -1,7 +1,8 @@
 // Exercises podio::FrameFilter (driven by the registered per-type FilterHooks)
-// over Frames built from the test datamodel. Mirrors the hand-written prototype
-// scenarios in filtering.cpp, plus the keep-referenced / orphan-sweep capability
-// that only the Frame-level filter provides.
+// over Frames built from the test datamodel: leave-unconnected and integrity
+// cascade edge policies, the keep-referenced orphan sweep, whole-collection
+// drops, vector members, interface relations/links, subset collections and
+// frame parameters.
 
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
