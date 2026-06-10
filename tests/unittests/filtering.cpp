@@ -5,6 +5,8 @@
 // and podio::ObjectID. See ExampleMC (parents/daughters) as a stand-in for a
 // sim-particle collection.
 
+#include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
 
 #include "podio/ObjectID.h"
@@ -190,4 +192,155 @@ TEST_CASE("filter cascades along parents while dropping other daughters", "[filt
   REQUIRE(p1.daughters().size() == 1);
   REQUIRE(p1.daughters()[0] == p3);
   REQUIRE(p3.parents()[0] == p1);
+}
+
+// ---------------------------------------------------------------------------
+// Cross-collection filtering: filter one collection and rewire the relations of
+// *another* collection that references it. The key is that every collection gets
+// its own ObjectID-keyed remap, and rewiring a relation simply looks the target
+// up in the remap of the collection that owns the target type - so the same
+// pattern works whether the relation points within a collection (parents/
+// daughters above) or across collections (cluster -> hit here).
+
+namespace {
+
+template <typename MutableT>
+using Remap = std::unordered_map<podio::ObjectID, MutableT>;
+
+struct FilteredHits {
+  ExampleHitCollection hits;
+  ExampleClusterCollection clusters;
+};
+
+/// Filter ExampleHits by a predicate and rebuild the ExampleClusters that
+/// reference them through their `Hits` relation.
+///
+/// The per-relation policy applies to the cluster -> hit edge: LeaveUnconnected
+/// drops edges to removed hits and keeps the cluster; Cascade instead removes any
+/// cluster that referenced a removed hit.
+FilteredHits filterHits(const ExampleHitCollection& inHits, const ExampleClusterCollection& inClusters,
+                        const std::function<bool(const ExampleHit&)>& keepHit, OnDangling clusterHitsPolicy) {
+  // Phase 1: survivor sets. Hits are decided by the predicate alone (they own no
+  // relations here). A cluster only fails to survive when the policy cascades and
+  // one of its hits was removed.
+  std::unordered_set<podio::ObjectID> hitSurvive;
+  for (auto hit : inHits) {
+    if (keepHit(hit)) {
+      hitSurvive.insert(hit.getObjectID());
+    }
+  }
+
+  std::unordered_set<podio::ObjectID> clusterSurvive;
+  for (auto cluster : inClusters) {
+    bool survives = true;
+    if (clusterHitsPolicy == OnDangling::Cascade) {
+      for (auto hit : cluster.Hits()) {
+        if (!hitSurvive.count(hit.getObjectID())) {
+          survives = false;
+          break;
+        }
+      }
+    }
+    if (survives) {
+      clusterSurvive.insert(cluster.getObjectID());
+    }
+  }
+
+  // Phase 2: clone survivors of each collection, building one remap per collection.
+  FilteredHits out;
+  Remap<MutableExampleHit> hitRemap;
+  for (auto hit : inHits) {
+    if (!hitSurvive.count(hit.getObjectID())) {
+      continue;
+    }
+    auto cloned = hit.clone(/*cloneRelations=*/false);
+    hitRemap.emplace(hit.getObjectID(), cloned);
+    out.hits.push_back(cloned);
+  }
+  Remap<MutableExampleCluster> clusterRemap;
+  for (auto cluster : inClusters) {
+    if (!clusterSurvive.count(cluster.getObjectID())) {
+      continue;
+    }
+    auto cloned = cluster.clone(/*cloneRelations=*/false);
+    clusterRemap.emplace(cluster.getObjectID(), cloned);
+    out.clusters.push_back(cloned);
+  }
+
+  // Phase 3: rewire the cluster -> hit edges, resolving each hit through the hit
+  // remap (a *different* collection's table). Edges to removed hits are dropped;
+  // under Cascade the owning cluster is already gone, so none are.
+  for (auto cluster : inClusters) {
+    const auto self = clusterRemap.find(cluster.getObjectID());
+    if (self == clusterRemap.end()) {
+      continue;
+    }
+    auto newCluster = self->second;
+    for (auto hit : cluster.Hits()) {
+      if (const auto target = hitRemap.find(hit.getObjectID()); target != hitRemap.end()) {
+        newCluster.addHits(target->second);
+      }
+    }
+  }
+
+  return out;
+}
+
+/// Build two clusters over four hits:
+///   cluster 0 -> { hit0 (E=1), hit1 (E=2) }
+///   cluster 1 -> { hit2 (E=3), hit3 (E=0.5) }
+std::pair<ExampleHitCollection, ExampleClusterCollection> makeHitsAndClusters() {
+  ExampleHitCollection hits;
+  auto h0 = hits.create();
+  h0.energy(1.0);
+  auto h1 = hits.create();
+  h1.energy(2.0);
+  auto h2 = hits.create();
+  h2.energy(3.0);
+  auto h3 = hits.create();
+  h3.energy(0.5);
+
+  ExampleClusterCollection clusters;
+  auto c0 = clusters.create();
+  c0.addHits(h0);
+  c0.addHits(h1);
+  auto c1 = clusters.create();
+  c1.addHits(h2);
+  c1.addHits(h3);
+
+  return {std::move(hits), std::move(clusters)};
+}
+
+} // namespace
+
+TEST_CASE("cross-collection filter leaves dangling hit edges unconnected", "[filtering]") {
+  const auto [inHits, inClusters] = makeHitsAndClusters();
+
+  // Drop the low-energy hit (E=0.5); clusters survive but lose the dropped edge.
+  const auto out = filterHits(
+      inHits, inClusters, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      OnDangling::LeaveUnconnected);
+
+  REQUIRE(out.hits.size() == 3);
+  REQUIRE(out.clusters.size() == 2);
+
+  // cluster 0 keeps both of its hits; they now live in the new hit collection.
+  REQUIRE(out.clusters[0].Hits().size() == 2);
+  REQUIRE(out.clusters[0].Hits()[0] == out.hits[0]);
+  // cluster 1 referenced the removed hit, so only the surviving one (E=3) remains.
+  REQUIRE(out.clusters[1].Hits().size() == 1);
+  REQUIRE(out.clusters[1].Hits()[0].energy() == 3.0);
+}
+
+TEST_CASE("cross-collection filter cascades from hit to cluster", "[filtering]") {
+  const auto [inHits, inClusters] = makeHitsAndClusters();
+
+  // Same hit removed, but now removing it cascades to the cluster that used it.
+  const auto out = filterHits(
+      inHits, inClusters, [](const ExampleHit& h) { return h.energy() >= 1.0; }, OnDangling::Cascade);
+
+  REQUIRE(out.hits.size() == 3);
+  // cluster 1 referenced the removed hit and is gone; cluster 0 is intact.
+  REQUIRE(out.clusters.size() == 1);
+  REQUIRE(out.clusters[0].Hits().size() == 2);
 }
