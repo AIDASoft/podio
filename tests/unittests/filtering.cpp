@@ -8,6 +8,7 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleWithOneRelationCollection.h"
 
 #include "podio/ObjectID.h"
 
@@ -343,4 +344,228 @@ TEST_CASE("cross-collection filter cascades from hit to cluster", "[filtering]")
   // cluster 1 referenced the removed hit and is gone; cluster 0 is intact.
   REQUIRE(out.clusters.size() == 1);
   REQUIRE(out.clusters[0].Hits().size() == 2);
+}
+
+// ---------------------------------------------------------------------------
+// The full prototype: filter across three collections at once, covering every
+// relation kind - a cross-collection OneToMany (cluster -> hit), a self
+// OneToMany (cluster -> sub-cluster) and a OneToOne (ref -> cluster) - with a
+// removal closure that propagates across collections (hit -> cluster -> ref).
+
+namespace {
+
+struct EventPolicies {
+  OnDangling clusterHits;     ///< cluster -> hit (OneToMany, cross-collection)
+  OnDangling clusterClusters; ///< cluster -> sub-cluster (OneToMany, self)
+  OnDangling refCluster;      ///< ref -> cluster (OneToOne, cross-collection)
+};
+
+struct FilteredEvent {
+  ExampleHitCollection hits;
+  ExampleClusterCollection clusters;
+  ExampleWithOneRelationCollection refs;
+};
+
+FilteredEvent filterEvent(const ExampleHitCollection& inHits, const ExampleClusterCollection& inClusters,
+                          const ExampleWithOneRelationCollection& inRefs,
+                          const std::function<bool(const ExampleHit&)>& keepHit, EventPolicies policy) {
+  using IdSet = std::unordered_set<podio::ObjectID>;
+
+  // Phase 1: removal closure. The predicate seeds the removed hits; from there
+  // removal propagates along every relation configured to cascade, across
+  // collections, until the sets stop changing.
+  IdSet hitsRemoved;
+  for (auto hit : inHits) {
+    if (!keepHit(hit)) {
+      hitsRemoved.insert(hit.getObjectID());
+    }
+  }
+
+  IdSet clustersRemoved;
+  IdSet refsRemoved;
+  for (bool changed = true; changed;) {
+    changed = false;
+
+    for (auto cluster : inClusters) {
+      if (clustersRemoved.count(cluster.getObjectID())) {
+        continue;
+      }
+      bool remove = false;
+      if (policy.clusterHits == OnDangling::Cascade) {
+        for (auto hit : cluster.Hits()) {
+          remove |= static_cast<bool>(hitsRemoved.count(hit.getObjectID()));
+        }
+      }
+      if (policy.clusterClusters == OnDangling::Cascade) {
+        for (auto sub : cluster.Clusters()) {
+          remove |= static_cast<bool>(clustersRemoved.count(sub.getObjectID()));
+        }
+      }
+      if (remove) {
+        changed |= clustersRemoved.insert(cluster.getObjectID()).second;
+      }
+    }
+
+    for (auto ref : inRefs) {
+      if (refsRemoved.count(ref.getObjectID()) || policy.refCluster != OnDangling::Cascade) {
+        continue;
+      }
+      const auto cluster = ref.cluster();
+      if (cluster.isAvailable() && clustersRemoved.count(cluster.getObjectID())) {
+        changed |= refsRemoved.insert(ref.getObjectID()).second;
+      }
+    }
+  }
+
+  // Phase 2: clone survivors of every collection, one remap per collection.
+  FilteredEvent out;
+  Remap<MutableExampleHit> hitRemap;
+  for (auto hit : inHits) {
+    if (hitsRemoved.count(hit.getObjectID())) {
+      continue;
+    }
+    auto cloned = hit.clone(/*cloneRelations=*/false);
+    hitRemap.emplace(hit.getObjectID(), cloned);
+    out.hits.push_back(cloned);
+  }
+  Remap<MutableExampleCluster> clusterRemap;
+  for (auto cluster : inClusters) {
+    if (clustersRemoved.count(cluster.getObjectID())) {
+      continue;
+    }
+    auto cloned = cluster.clone(/*cloneRelations=*/false);
+    clusterRemap.emplace(cluster.getObjectID(), cloned);
+    out.clusters.push_back(cloned);
+  }
+  Remap<MutableExampleWithOneRelation> refRemap;
+  for (auto ref : inRefs) {
+    if (refsRemoved.count(ref.getObjectID())) {
+      continue;
+    }
+    auto cloned = ref.clone(/*cloneRelations=*/false);
+    refRemap.emplace(ref.getObjectID(), cloned);
+    out.refs.push_back(cloned);
+  }
+
+  // Phase 3: rewire every relation, resolving each target through the remap of
+  // the collection that owns it. OneToMany edges to removed targets are simply
+  // skipped; a OneToOne to a removed target is left unset.
+  for (auto cluster : inClusters) {
+    const auto self = clusterRemap.find(cluster.getObjectID());
+    if (self == clusterRemap.end()) {
+      continue;
+    }
+    auto newCluster = self->second;
+    for (auto hit : cluster.Hits()) {
+      if (const auto target = hitRemap.find(hit.getObjectID()); target != hitRemap.end()) {
+        newCluster.addHits(target->second);
+      }
+    }
+    for (auto sub : cluster.Clusters()) {
+      if (const auto target = clusterRemap.find(sub.getObjectID()); target != clusterRemap.end()) {
+        newCluster.addClusters(target->second);
+      }
+    }
+  }
+  for (auto ref : inRefs) {
+    const auto self = refRemap.find(ref.getObjectID());
+    if (self == refRemap.end()) {
+      continue;
+    }
+    const auto cluster = ref.cluster();
+    if (cluster.isAvailable()) {
+      if (const auto target = clusterRemap.find(cluster.getObjectID()); target != clusterRemap.end()) {
+        self->second.cluster(target->second);
+      }
+    }
+  }
+
+  return out;
+}
+
+/// Build a three-level event to filter:
+///   hits:     h0 (E=1)  h1 (E=2)  h2 (E=0.5)
+///   clusters: c0 -> {h0, h1}        c1 -> {h2},  c0 also has sub-cluster c1
+///   refs:     r0 -> c0              r1 -> c1
+FilteredEvent makeEvent() {
+  FilteredEvent ev;
+  auto h0 = ev.hits.create();
+  h0.energy(1.0);
+  auto h1 = ev.hits.create();
+  h1.energy(2.0);
+  auto h2 = ev.hits.create();
+  h2.energy(0.5);
+
+  auto c0 = ev.clusters.create();
+  c0.addHits(h0);
+  c0.addHits(h1);
+  auto c1 = ev.clusters.create();
+  c1.addHits(h2);
+  c0.addClusters(c1);
+
+  auto r0 = ev.refs.create();
+  r0.cluster(c0);
+  auto r1 = ev.refs.create();
+  r1.cluster(c1);
+
+  return ev;
+}
+
+} // namespace
+
+TEST_CASE("full filter leaves all dangling relations unconnected", "[filtering]") {
+  const auto in = makeEvent();
+
+  // Drop h2 (E=0.5). With every policy LeaveUnconnected, nothing else is removed;
+  // only the edges to h2 disappear.
+  const auto out = filterEvent(
+      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
+
+  REQUIRE(out.hits.size() == 2);
+  REQUIRE(out.clusters.size() == 2);
+  REQUIRE(out.refs.size() == 2);
+
+  // c0 keeps both hits and its sub-cluster; c1 lost its only hit but survives.
+  REQUIRE(out.clusters[0].Hits().size() == 2);
+  REQUIRE(out.clusters[0].Clusters().size() == 1);
+  REQUIRE(out.clusters[0].Clusters()[0] == out.clusters[1]);
+  REQUIRE(out.clusters[1].Hits().empty());
+  // OneToOne edges still point at the surviving clusters.
+  REQUIRE(out.refs[1].cluster() == out.clusters[1]);
+}
+
+TEST_CASE("full filter cascades across all three collections", "[filtering]") {
+  const auto in = makeEvent();
+
+  // Drop h2 (E=0.5) and cascade every relation: removing h2 removes c1 (it used
+  // h2), removing c1 removes both c0 (its sub-cluster is gone) and r1 (its
+  // cluster is gone), and removing c0 removes r0.
+  const auto out = filterEvent(
+      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::Cascade, OnDangling::Cascade, OnDangling::Cascade});
+
+  REQUIRE(out.hits.size() == 2);
+  REQUIRE(out.clusters.empty());
+  REQUIRE(out.refs.empty());
+}
+
+TEST_CASE("full filter cascades to cluster but leaves its ref unconnected", "[filtering]") {
+  const auto in = makeEvent();
+
+  // Cascade hit -> cluster, but leave ref -> cluster unconnected: c1 is removed,
+  // and r1 survives with its OneToOne relation left unset.
+  const auto out = filterEvent(
+      in.hits, in.clusters, in.refs, [](const ExampleHit& h) { return h.energy() >= 1.0; },
+      {OnDangling::Cascade, OnDangling::LeaveUnconnected, OnDangling::LeaveUnconnected});
+
+  // c1 (used h2) is gone; c0's sub-cluster edge to it is dropped but c0 survives.
+  REQUIRE(out.clusters.size() == 1);
+  REQUIRE(out.clusters[0].Hits().size() == 2);
+  REQUIRE(out.clusters[0].Clusters().empty());
+
+  // Both refs survive; r1's cluster was removed so its relation is now unset.
+  REQUIRE(out.refs.size() == 2);
+  REQUIRE(out.refs[0].cluster() == out.clusters[0]);
+  REQUIRE_FALSE(out.refs[1].cluster().isAvailable());
 }
