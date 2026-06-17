@@ -48,8 +48,6 @@ public:
 
   virtual bool hasID() const = 0;
 
-  virtual bool isValid() const = 0;
-
   /// number of elements in the collection
   virtual size_t size() const = 0;
 
