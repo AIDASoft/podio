@@ -44,7 +44,7 @@ def _hadd_path():
     return path
 
 
-def _merge_files_impl(output_file, input_files, metadata, get_names_fn, reader_cls, writer_cls, fmt_name):
+def _merge_files_impl(output_file, input_files, metadata, get_names_fn, reader_cls, writer_cls):
     """Common implementation for merge_files and merge_files_rntuple.
 
     Args:
@@ -54,7 +54,6 @@ def _merge_files_impl(output_file, input_files, metadata, get_names_fn, reader_c
         get_names_fn: Callable returning the set of object names in a file.
         reader_cls: Reader class to use (Reader or RNTupleReader).
         writer_cls: Writer class to use (Writer or RNTupleWriter).
-        fmt_name (str): Format label used in error messages (e.g. "TTree").
     """
     has_metadata_cat = "metadata" in get_names_fn(input_files[0])
 
@@ -102,7 +101,7 @@ def _merge_files_impl(output_file, input_files, metadata, get_names_fn, reader_c
         m.SetFastMethod(ROOT.kTRUE)
         m.AddObjectNames("metadata")
         if not m.PartialMerge(ROOT.TFileMerger.kAll | ROOT.TFileMerger.kOnlyListed | ROOT.TFileMerger.kIncremental):
-            raise RuntimeError(f"TFileMerger failed adding metadata {fmt_name} to {output_file}")
+            raise RuntimeError(f"TFileMerger failed adding metadata category to {output_file}")
     finally:
         if os.path.exists(tmp_path):
             os.unlink(tmp_path)
@@ -140,7 +139,7 @@ def merge_files(output_file, input_files, metadata="first"):
     input_files = [str(p) for p in convert_to_str_paths(input_files)]
     output_file = str(convert_to_str_paths(output_file)[0])
 
-    _merge_files_impl(output_file, input_files, metadata, _get_tree_names, Reader, Writer, "TTree")
+    _merge_files_impl(output_file, input_files, metadata, _get_tree_names, Reader, Writer)
 
 
 def merge_files_rntuple(output_file, input_files, metadata="first"):
@@ -175,4 +174,4 @@ def merge_files_rntuple(output_file, input_files, metadata="first"):
     input_files = [str(p) for p in convert_to_str_paths(input_files)]
     output_file = str(convert_to_str_paths(output_file)[0])
 
-    _merge_files_impl(output_file, input_files, metadata, _get_rntuple_names, RNTupleReader, RNTupleWriter, "RNTuple")
+    _merge_files_impl(output_file, input_files, metadata, _get_rntuple_names, RNTupleReader, RNTupleWriter)
