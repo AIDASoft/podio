@@ -34,11 +34,6 @@
 {% endif %}
   /// Get mutable reference to {{ member.docstring }}
   {{ member.full_type }}& {{ member.getter_name(get_syntax) }}();
-{% if get_syntax %}
-  /// Get reference to {{ member.docstring }}
-  [[deprecated("use {{ member.getter_name(get_syntax) }} instead")]]
-  {{ member.full_type }}& {{ member.name }}();
-{% endif %}
 {% if member.sub_members %}
 {% for sub_member in member.sub_members %}
 {% if sub_member.is_builtin %}
