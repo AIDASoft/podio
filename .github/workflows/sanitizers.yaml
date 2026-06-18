@@ -17,7 +17,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: [gcc15, clang19]
+        compiler: [gcc15, clang22]
         # Since Leak is usually part of Address, we do not run it separately in
         # CI. Keeping Address and Undefined separate for easier debugging
         sanitizer: [Thread,
