@@ -252,6 +252,10 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
   # the core headers
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
   LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
+  # Exclude the datamodel header (e.g. edm4hep.h)
+  # since it will include everything and include guards will be set
+  # causing clashes with Link type aliases at runtime.
+  LIST(FILTER HEADERS EXCLUDE REGEX "/${CORE_LIB}\\.h$")
 
   add_library(${dict_name} SHARED)
   target_link_libraries(${dict_name} PUBLIC
