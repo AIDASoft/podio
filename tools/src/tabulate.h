@@ -2,9 +2,9 @@
 #define PODIO_TOOLS_TABULATE_H // NOLINT(llvm-header-guard): folder structure not suitable
 
 #include <fmt/core.h>
+#include <fmt/ranges.h>
 
 #include <algorithm>
-#include <iostream>
 #include <iterator>
 #include <string>
 #include <tuple>
