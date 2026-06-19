@@ -89,28 +89,38 @@ SET(root_sources
   rootUtils.h
   ROOTWriter.cc
   ROOTReader.cc
+  ROOTLazyReader.cc
   ROOTLegacyReader.cc
   ROOTFrameData.cc
+  ROOTLazyFrameData.cc
   RootHelpers.cc
 )
 if(ENABLE_RNTUPLE)
   list(APPEND root_sources
+      RNTupleReaderCommon.cc
       RNTupleReader.cc
       RNTupleWriter.cc
+      RNTupleLazyReader.cc
+      RNTupleLazyFrameData.cc
      )
 endif()
 
 SET(root_headers
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLazyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
   ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
+  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLazyFrameData.h
   ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
   )
 if(ENABLE_RNTUPLE)
   list(APPEND root_headers
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleReader.h
       ${PROJECT_SOURCE_DIR}/include/podio/RNTupleWriter.h
+      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyReader.h
+      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleLazyFrameData.h
+      ${PROJECT_SOURCE_DIR}/include/podio/utilities/RNTupleHelpers.h
      )
 endif()
 
