@@ -255,7 +255,17 @@ function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
   # Exclude the datamodel header (e.g. edm4hep.h)
   # since it will include everything and include guards will be set
   # causing clashes with Link type aliases at runtime.
-  LIST(FILTER HEADERS EXCLUDE REGEX "/${CORE_LIB}\\.h$")
+  # Find patters like datamodel/datamodel.h or edm4hep/edm4hep.h
+  # to exclude them
+  foreach(_header ${HEADERS})
+    get_filename_component(_header_stem ${_header} NAME_WE)
+    get_filename_component(_header_dir ${_header} DIRECTORY)
+    get_filename_component(_parent_name ${_header_dir} NAME)
+    if(_header_stem STREQUAL _parent_name)
+      list(REMOVE_ITEM HEADERS ${_header})
+      break()
+    endif()
+  endforeach()
 
   add_library(${dict_name} SHARED)
   target_link_libraries(${dict_name} PUBLIC
