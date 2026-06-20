@@ -37,7 +37,7 @@ endif()
 #   preloaded via LD_PRELOAD so that cling can dlopen instrumented shared
 #   libraries in case a sanitizer has been enabled for the build.
 function(PODIO_SET_TEST_ENV test)
-  cmake_parse_arguments(PARSE_ARGV 1 ARG "PYTHON" "" "")
+  cmake_parse_arguments(PARSE_ARGV 1 ARG "PYTHON;CLING" "" "")
   # We need to convert this into a list of arguments that can be used as environment variable
   list(JOIN PODIO_IO_HANDLERS " " IO_HANDLERS)
   set(test_environment
@@ -64,7 +64,7 @@ function(PODIO_SET_TEST_ENV test)
     )
   endif()
   # Preload the sanitizer runtime so cling can dlopen instrumented libraries
-  if(ARG_PYTHON AND PODIO_SANITIZER_LIBRARY)
+  if((ARG_PYTHON OR ARG_CLING) AND PODIO_SANITIZER_LIBRARY)
     list(APPEND test_environment "LD_PRELOAD=${PODIO_SANITIZER_LIBRARY}:$ENV{LD_PRELOAD}")
   endif()
   set_property(TEST ${test}
