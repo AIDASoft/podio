@@ -134,4 +134,4 @@ if(ENABLE_DATASOURCE)
  endif()
 
 add_test(NAME root_test_macro COMMAND root -l -b -q ${CMAKE_CURRENT_SOURCE_DIR}/test_root_macro.C)
-PODIO_SET_TEST_ENV(root_test_macro)
+PODIO_SET_TEST_ENV(root_test_macro CLING)
