@@ -107,6 +107,8 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       podio-dump-rntuple
       podio-dump-detailed-rntuple
 
+      root_test_macro
+
       datamodel_def_store_roundtrip_rntuple
       datamodel_def_store_roundtrip_rntuple_extension
 
