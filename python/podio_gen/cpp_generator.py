@@ -627,7 +627,7 @@ have resolvable schema evolution incompatibilities:"
                     sourceClass=f"{datatype.full_type}Data",
                     targetClass=f"{new_type.full_type}Data",
                     source=f"{member_type} {member.name}",
-                    target=f"{member_type} {member.name}",
+                    target=member.name,
                     code=f"{member.name} = onfile.{member.name};",
                     version=version,
                 ))
