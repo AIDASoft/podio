@@ -17,6 +17,7 @@ class ChangeType(Enum):
     """Enumeration of supported schema change types."""
 
     RENAME_MEMBER = "rename_member"
+    RENAME_DATATYPE = "rename_datatype"
 
 
 @dataclass
@@ -40,6 +41,7 @@ class SchemaMigration:
         """Validate that the change has required fields based on its type."""
         required_fields = {
             ChangeType.RENAME_MEMBER: ["from", "to"],
+            ChangeType.RENAME_DATATYPE: ["from", "to"],
         }
 
         required = required_fields.get(self.type, [])

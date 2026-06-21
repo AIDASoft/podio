@@ -72,6 +72,7 @@ class RenamedDataType(SchemaChange):
     def __init__(self, name_old, name_new):
         self.name_old = name_old
         self.name_new = name_new
+        self.klassname = name_old
         super().__init__(
             f"'{self.name_new}': datatype '{self.name_old}' renamed to '{self.name_new}'."
         )
@@ -218,7 +219,7 @@ def root_filter(schema_changes):
     """
     relevant_schema_changes = []
     for schema_change in schema_changes:
-        if isinstance(schema_change, RenamedMember):
+        if isinstance(schema_change, (RenamedMember, RenamedDataType)):
             relevant_schema_changes.append(schema_change)
     return relevant_schema_changes
 
@@ -409,9 +410,10 @@ class SchemaEvolutionJudge:
                             schema_changes.append(schema_change)
                             is_known_evolution = True
                     if not is_known_evolution:
-                        warnings.append(
-                            f"Potential rename of '{dropped.klassname}' into '{added.klassname}'."
-                        )
+                        renamed = RenamedDataType(dropped.klassname, added.klassname)
+                        schema_changes.remove(dropped)
+                        schema_changes.remove(added)
+                        schema_changes.append(renamed)
 
         # are there dropped/added component pairs that could be interpreted as rename?
         dropped_components = [
@@ -441,6 +443,11 @@ class SchemaEvolutionJudge:
                 if migration.type == ChangeType.RENAME_MEMBER:
                     schema_change = RenamedMember(
                         klassname, migration.details["from"], migration.details["to"]
+                    )
+                    read_schema_changes.append(schema_change)
+                elif migration.type == ChangeType.RENAME_DATATYPE:
+                    schema_change = RenamedDataType(
+                        migration.details["from"], migration.details["to"]
                     )
                     read_schema_changes.append(schema_change)
 

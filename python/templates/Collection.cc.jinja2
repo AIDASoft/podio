@@ -221,6 +221,15 @@ bool register{{ class.bare_type }}Collection() {
 
 
 {% endif %}
+{% if renamed_to_collection is defined %}
+    // Schema Evolution for renamed datatypes: register old type buffers as new type
+    factory.registerCreationFunc("{{ class.full_type }}Collection", {{ renamed_from_version }},
+      [](bool isSubset) {
+        return *podio::CollectionBufferFactory::instance().createBuffers(
+           "{{ renamed_to_collection }}", 1, isSubset);
+      }
+    );
+{% endif %}
 
     return true;
   }();
