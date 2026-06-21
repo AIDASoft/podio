@@ -473,7 +473,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 if isinstance(change["schema_change"], RenamedDataType):
                     old_def = deepcopy(change["definition"])
                     old_def["renamed_to"] = change["schema_change"].name_new
-                    old_def["renamed_to_collection"] = str(DataType(change["schema_change"].name_new)) + "Collection"
+                    old_def["renamed_to_collection"] = (
+                        str(DataType(change["schema_change"].name_new)) + "Collection"
+                    )
                     old_def["renamed_from_version"] = change["version"]
                     self._process_datatype(name, old_def)
                     break
@@ -609,28 +611,32 @@ have resolvable schema evolution incompatibilities:"
                     member_type = member.full_type
                     break
 
-            return [RootIoRule(
-                sourceClass=f"{datatype.full_type}Data",
-                targetClass=f"{datatype.full_type}Data",
-                source=f"{member_type} {schema_change.member_name_old}",
-                target=schema_change.member_name_new,
-                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
-                version=version,
-            )]
+            return [
+                RootIoRule(
+                    sourceClass=f"{datatype.full_type}Data",
+                    targetClass=f"{datatype.full_type}Data",
+                    source=f"{member_type} {schema_change.member_name_old}",
+                    target=schema_change.member_name_new,
+                    code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                    version=version,
+                )
+            ]
 
         if isinstance(schema_change, RenamedDataType):
             new_type = DataType(schema_change.name_new)
             iorules = []
             for member in definition["Members"]:
                 member_type = member.full_type
-                iorules.append(RootIoRule(
-                    sourceClass=f"{datatype.full_type}Data",
-                    targetClass=f"{new_type.full_type}Data",
-                    source=f"{member_type} {member.name}",
-                    target=member.name,
-                    code=f"{member.name} = onfile.{member.name};",
-                    version=version,
-                ))
+                iorules.append(
+                    RootIoRule(
+                        sourceClass=f"{datatype.full_type}Data",
+                        targetClass=f"{new_type.full_type}Data",
+                        source=f"{member_type} {member.name}",
+                        target=member.name,
+                        code=f"{member.name} = onfile.{member.name};",
+                        version=version,
+                    )
+                )
             return iorules
 
         return []
