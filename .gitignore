@@ -1,6 +1,7 @@
 
 # Build/install/test directories
 build
+build-*/
 install
 tests/src
 tests/datamodel
@@ -68,6 +69,7 @@ spack*
 
 # Generated files
 *podio_generated_files.cmake
+TmpArrow/
 
 # Populated by cmake before build
 /include/podio/podioVersion.h

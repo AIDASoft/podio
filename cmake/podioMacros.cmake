@@ -197,11 +197,13 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
 
   # Filter out anything I/O backend related to build the core library
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
-  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
   LIST(FILTER SOURCES EXCLUDE REGEX .*SIOBlock.cc)
+  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
+  LIST(FILTER SOURCES EXCLUDE REGEX .*ArrowMapper.cc)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
   target_link_libraries(${lib_name} PUBLIC podio::podio)
+
   target_include_directories(${lib_name} PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -329,4 +331,49 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
 
   # Disable clang-tidy on generated sources
   set_target_properties(${CORE_LIB}SioBlocks PROPERTIES CXX_CLANG_TIDY "")
+endfunction()
+
+#---------------------------------------------------------------------------------------------------
+#---PODIO_ADD_ARROW_MAPPER( CORE_LIB HEADERS SOURCES
+#      OUTPUT_FOLDER output_directory
+#      )
+#
+# Conditionally add the ArrowMapper library to the targets if the corresponding
+# ArrowMapper code has been generated.
+#
+# Arguments:
+#    CORE_LIB             The name of the core datamodel library. The name of the Arrow Mapper library target will be ${CORE_LIB}ArrowMapper
+#    HEADERS              The list of all header files created by PODIO_GENERATE_DATAMODEL
+#    SOURCES              The list of all source files created by PODIO_GENERATE_DATAMODEL
+#
+# Parameters:
+#    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
+#---------------------------------------------------------------------------------------------------
+function(PODIO_ADD_ARROW_MAPPER CORE_LIB HEADERS SOURCES)
+  if(NOT ENABLE_ARROW)
+    return()
+  endif()
+
+  CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
+  IF(NOT ARG_OUTPUT_FOLDER)
+    SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
+  ENDIF()
+
+  # Only get the ArrowMapper handlers
+  LIST(FILTER HEADERS INCLUDE REGEX .*ArrowMapper.h)
+  LIST(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
+
+  IF(NOT HEADERS)
+    MESSAGE(STATUS "Not adding the Arrow Mapper library to the targets because the corresponding c++ sources have not been generated")
+    RETURN()
+  ENDIF()
+
+  add_library(${CORE_LIB}ArrowMapper SHARED ${SOURCES} ${HEADERS})
+  target_link_libraries(${CORE_LIB}ArrowMapper PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
+  target_include_directories(${CORE_LIB}ArrowMapper PUBLIC
+    $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+
+  # Disable clang-tidy on generated sources
+  set_target_properties(${CORE_LIB}ArrowMapper PROPERTIES CXX_CLANG_TIDY "")
 endfunction()
