@@ -45,7 +45,8 @@ public:
   CreatorFunc getConverter(const std::string& typeName) const;
 
 private:
-  ArrowConverterRegistry() = default;
+  ArrowConverterRegistry() : m_registry() {
+  }
 
   std::unordered_map<std::string, CreatorFunc> m_registry;
 };

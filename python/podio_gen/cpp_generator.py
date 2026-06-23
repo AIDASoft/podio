@@ -82,7 +82,6 @@ ARROW_BUILDERS = {
 }
 
 
-
 class IncludeFrom(IntEnum):
     """Enum to signify if an include is needed and from where it should come"""
 
@@ -214,9 +213,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             for member in datatype["Members"]
         )
         fields.extend(
-            self._arrow_field(
-                member.name, f"arrow::list({self._arrow_type(member)})"
-            )
+            self._arrow_field(member.name, f"arrow::list({self._arrow_type(member)})")
             for member in datatype["VectorMembers"]
         )
         fields.extend(
@@ -224,24 +221,30 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             for relation in datatype["OneToOneRelations"]
         )
         fields.extend(
-            self._arrow_field(
-                relation.name, "arrow::list(podio::objectRefType())"
-            )
+            self._arrow_field(relation.name, "arrow::list(podio::objectRefType())")
             for relation in datatype["OneToManyRelations"]
         )
         return fields
 
     def _get_arrow_metadata(self, datatype):
+        """Get Arrow metadata mapping for a datatype."""
         return {
             "class_full_type": datatype["class"].full_type,
             "class_bare_type": datatype["class"].bare_type,
             "members": [self._get_member_metadata(m) for m in datatype["Members"]],
             "vector_members": [self._get_vector_metadata(m) for m in datatype["VectorMembers"]],
-            "one_to_one_relations": [self._get_relation_metadata(r, is_mult=False) for r in datatype["OneToOneRelations"]],
-            "one_to_many_relations": [self._get_relation_metadata(r, is_mult=True) for r in datatype["OneToManyRelations"]],
+            "one_to_one_relations": [
+                self._get_relation_metadata(r, is_mult=False)
+                for r in datatype["OneToOneRelations"]
+            ],
+            "one_to_many_relations": [
+                self._get_relation_metadata(r, is_mult=True)
+                for r in datatype["OneToManyRelations"]
+            ],
         }
 
     def _get_member_metadata(self, member):
+        """Get Arrow metadata mapping for a member field."""
         meta = {
             "name": member.name,
             "getter": member.getter_name(self.get_syntax),
@@ -257,16 +260,22 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 }
             else:
                 comp_name = member.array_type.removeprefix("::")
-                comp = self.datamodel.components.get(comp_name) or (self.upstream_edm.components.get(comp_name) if self.upstream_edm else None)
+                comp = self.datamodel.components.get(comp_name) or (
+                    self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+                )
                 meta["value_builder"] = {
                     "builder_type": "arrow::StructBuilder",
                     "is_struct": True,
-                    "children": [self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]],
+                    "children": [
+                        self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]
+                    ],
                 }
             return meta
 
         comp_name = member.full_type.removeprefix("::")
-        comp = self.datamodel.components.get(comp_name) or (self.upstream_edm.components.get(comp_name) if self.upstream_edm else None)
+        comp = self.datamodel.components.get(comp_name) or (
+            self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+        )
         if comp:
             meta["builder_type"] = "arrow::StructBuilder"
             meta["is_struct"] = True
@@ -277,6 +286,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         return meta
 
     def _get_vector_metadata(self, member):
+        """Get Arrow metadata mapping for a vector member field."""
         meta = {
             "name": member.name,
             "getter": member.getter_name(self.get_syntax),
@@ -288,7 +298,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             }
         else:
             comp_name = member.full_type.removeprefix("::")
-            comp = self.datamodel.components.get(comp_name) or (self.upstream_edm.components.get(comp_name) if self.upstream_edm else None)
+            comp = self.datamodel.components.get(comp_name) or (
+                self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+            )
             meta["value_builder"] = {
                 "builder_type": "arrow::StructBuilder",
                 "is_struct": True,
@@ -297,13 +309,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         return meta
 
     def _get_relation_metadata(self, relation, is_mult):
+        """Get Arrow metadata mapping for a relation field."""
         return {
             "name": relation.name,
             "getter": relation.getter_name(self.get_syntax),
             "is_mult": is_mult,
         }
-
-
 
     def _arrow_field(self, name, type_expr, nullable=True):
         """Create a C++ arrow::field expression"""
