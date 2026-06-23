@@ -373,6 +373,7 @@ function(PODIO_ADD_ARROW_MAPPER CORE_LIB HEADERS SOURCES)
   target_include_directories(${CORE_LIB}ArrowMapper PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+  target_include_directories(${CORE_LIB}ArrowMapper SYSTEM PUBLIC ${Arrow_INCLUDE_DIR} ${ARROW_INCLUDE_DIR})
 
   # Disable clang-tidy on generated sources
   set_target_properties(${CORE_LIB}ArrowMapper PROPERTIES CXX_CLANG_TIDY "")

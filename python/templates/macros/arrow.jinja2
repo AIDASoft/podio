@@ -1,11 +1,11 @@
 {#
  # Apache Arrow Serialization Macros for PODIO Datamodels
- # 
+ #
  # This template handles recursive builder casting and value appending
  # for nested event data models (including structs, fixed arrays, and relations).
  #}
 
-{# 
+{#
  # Recursively casts and declares references to Arrow's child builders.
  #}
 {% macro declare_builder(member, parent_builder, child_idx, path_prefix) -%}
@@ -29,7 +29,7 @@ auto* builder_{{ path_prefix }}{{ member.name }} = static_cast<{{ member.builder
 {% endif -%}
 {%- endmacro %}
 
-{# 
+{#
  # Declares dynamic vector (list) builders and their inner value builders.
  #}
 {% macro declare_vector_builder(member, parent_builder, child_idx) -%}
@@ -44,7 +44,7 @@ auto* builder_{{ member.name }}_val = static_cast<arrow::StructBuilder*>(builder
 {% endif -%}
 {%- endmacro %}
 
-{# 
+{#
  # Declares reference coordinate builders for one-to-one and one-to-many relationship mappings.
  #}
 {% macro declare_relation_builder(relation, parent_builder, child_idx) -%}
@@ -60,7 +60,7 @@ auto* builder_{{ relation.name }}_index = static_cast<arrow::Int32Builder*>(buil
 {% endif -%}
 {%- endmacro %}
 
-{# 
+{#
  # Recursively appends structure, array, and primitive members to their builders.
  # Uses 'is_direct' to format C++ accessor paths (getter methods vs direct field indexes).
  #}
@@ -91,7 +91,7 @@ checkStatus(builder_{{ path_prefix }}{{ member.name }}->Append({{ value }}), "Fa
 {% endif -%}
 {%- endmacro %}
 
-{# 
+{#
  # Appends dynamic vector (list) fields to their list builders.
  #}
 {% macro append_vector(member) -%}
@@ -108,7 +108,7 @@ for (size_t vec_i = 0; vec_i < obj.{{ member.name }}_size(); ++vec_i) {
 }
 {%- endmacro %}
 
-{# 
+{#
  # Appends relation references (checks availability and serializes collectionID/index pairs).
  #}
 {% macro append_relation(relation) -%}

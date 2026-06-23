@@ -163,6 +163,7 @@ if(ENABLE_ARROW)
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
+  target_include_directories(podioArrow SYSTEM PUBLIC ${Arrow_INCLUDE_DIR} ${ARROW_INCLUDE_DIR})
   target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET})
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
