@@ -1780,10 +1780,10 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 }
 
 #if PODIO_ENABLE_ARROW
-  #include "podio/utilities/ArrowTypeRegistry.h"
   #include "datamodel/ArrowMapper.h"
   #include "datamodel/EnergyInNamespaceCollection.h"
   #include "datamodel/ExampleWithNamespaceCollection.h"
+  #include "podio/utilities/ArrowTypeRegistry.h"
   #include <arrow/type.h>
 
 // Helper lambda to extract the struct type from a registered List type

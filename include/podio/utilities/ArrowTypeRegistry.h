@@ -42,7 +42,8 @@ public:
   std::shared_ptr<arrow::DataType> getType(const std::string& typeName) const;
 
 private:
-  ArrowTypeRegistry() = default;
+  ArrowTypeRegistry() : m_registry() {
+  }
 
   std::unordered_map<std::string, std::shared_ptr<arrow::DataType>> m_registry;
 };
