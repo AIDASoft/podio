@@ -160,6 +160,10 @@ if(ENABLE_ARROW)
     message(FATAL_ERROR "Found Arrow, but no usable Arrow CMake target was exported")
   endif()
 
+  if(NOT Arrow_INCLUDE_DIR AND NOT ARROW_INCLUDE_DIR)
+    get_target_property(Arrow_INCLUDE_DIR ${PODIO_ARROW_TARGET} INTERFACE_INCLUDE_DIRECTORIES)
+  endif()
+
   message(STATUS "Found Arrow library - will build Arrow I/O support")
   list(APPEND PODIO_IO_HANDLERS ARROW)
 endif()
