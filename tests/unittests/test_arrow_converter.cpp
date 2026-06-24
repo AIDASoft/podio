@@ -6,6 +6,8 @@
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/ExampleWithArrayCollection.h"
+#include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
 #include "datamodel/ExampleWithVectorMemberCollection.h"
 
@@ -14,6 +16,9 @@
 
 // Arrow headers
 #include <arrow/api.h>
+#include <arrow/type.h>
+#include <iostream>
+#include <nlohmann/json.hpp>
 
 TEST_CASE("ArrowFrameConverter - convertFrameToTable Verification", "[arrow][converter]") {
   podio::Frame originalFrame;
@@ -191,4 +196,315 @@ TEST_CASE("ArrowFrameConverter - convertFrameToTable Verification", "[arrow][con
   auto stringValues = std::static_pointer_cast<arrow::StringArray>(stringItems->values());
   REQUIRE(stringValues->GetString(0) == "hello");
   REQUIRE(stringValues->GetString(1) == "world");
+}
+
+// ============================================================================
+// Arrow Table & Frame Parameters JSON Serialization Helpers
+// ============================================================================
+
+namespace {
+
+// wrap_relation:
+// In PODIO's native JSON output:
+//   - A one-to-one relation is wrapped in a 1-element array: "cluster": [{"collectionID": X, "index": Y}]
+//   - A one-to-many relation or subset collection is a simple flat list of elements: "Hits": [{"collectionID": X,
+//   "index": Y}, ...]
+// Since the Arrow Table structures them both as relation reference structs, we use wrap_relation=false inside list
+// loops (like listToJson) to prevent wrapping each individual element of a one-to-many list in its own array.
+nlohmann::json arrayElementToJson(const arrow::Array& array, int64_t idx, bool wrap_relation = true);
+
+nlohmann::json structToJson(const arrow::StructArray& struct_array, int64_t idx, bool wrap_relation = true) {
+  auto struct_type = struct_array.struct_type();
+
+  bool is_relation = false;
+  if (struct_array.num_fields() == 2) {
+    std::string f0 = struct_type->field(0)->name();
+    std::string f1 = struct_type->field(1)->name();
+    if ((f0 == "collectionID" && f1 == "index") || (f0 == "index" && f1 == "collectionID")) {
+      is_relation = true;
+    }
+  }
+
+  if (is_relation) {
+    auto ref = nlohmann::json::object();
+    for (int f = 0; f < struct_array.num_fields(); ++f) {
+      std::string name = struct_type->field(f)->name();
+      const auto& field_array = struct_array.field(f);
+      ref[name] = arrayElementToJson(*field_array, idx, true);
+    }
+    if (wrap_relation) {
+      return nlohmann::json::array({ref});
+    } else {
+      return ref;
+    }
+  }
+
+  auto j = nlohmann::json::object();
+  for (int f = 0; f < struct_array.num_fields(); ++f) {
+    std::string name = struct_type->field(f)->name();
+    const auto& field_array = struct_array.field(f);
+    j[name] = arrayElementToJson(*field_array, idx, true);
+  }
+  return j;
+}
+
+nlohmann::json listToJson(const arrow::ListArray& list_array, int64_t idx) {
+  auto j = nlohmann::json::array();
+  int64_t offset = list_array.value_offset(idx);
+  int64_t length = list_array.value_length(idx);
+  const auto& values = list_array.values();
+  for (int64_t val_i = 0; val_i < length; ++val_i) {
+    j.push_back(arrayElementToJson(*values, offset + val_i, false));
+  }
+  return j;
+}
+
+nlohmann::json fixedSizeListToJson(const arrow::FixedSizeListArray& list_array, int64_t idx) {
+  auto j = nlohmann::json::array();
+  int64_t offset = list_array.value_offset(idx);
+  int64_t length = list_array.value_length();
+  const auto& values = list_array.values();
+  for (int64_t val_i = 0; val_i < length; ++val_i) {
+    j.push_back(arrayElementToJson(*values, offset + val_i, false));
+  }
+  return j;
+}
+
+nlohmann::json mapToJson(const arrow::MapArray& map_array, int64_t idx) {
+  auto j = nlohmann::json::object();
+  int64_t offset = map_array.value_offset(idx);
+  int64_t length = map_array.value_length(idx);
+  const auto& keys = map_array.keys();
+  const auto& items = map_array.items();
+
+  auto string_keys = std::static_pointer_cast<arrow::StringArray>(keys);
+  for (int64_t k = 0; k < length; ++k) {
+    std::string key = string_keys->GetString(offset + k);
+    j[key] = arrayElementToJson(*items, offset + k, true);
+  }
+  return j;
+}
+
+nlohmann::json arrayElementToJson(const arrow::Array& array, int64_t idx, bool wrap_relation) {
+  if (array.type()->id() == arrow::Type::STRUCT) {
+    auto& struct_array = static_cast<const arrow::StructArray&>(array);
+    auto struct_type = struct_array.struct_type();
+    if (struct_array.num_fields() == 2) {
+      std::string f0 = struct_type->field(0)->name();
+      std::string f1 = struct_type->field(1)->name();
+      if ((f0 == "collectionID" && f1 == "index") || (f0 == "index" && f1 == "collectionID")) {
+        // Arrow represents an unset relation as a database Null value at the cell level.
+        // PODIO's native JSON serialization instead writes:
+        // collectionID = 4294967295 (0xFFFFFFFF) and index = -1.
+        if (struct_array.IsNull(idx)) {
+          auto ref = nlohmann::json::object();
+          ref["collectionID"] = 4294967295U;
+          ref["index"] = -1;
+          if (wrap_relation) {
+            return nlohmann::json::array({ref});
+          } else {
+            return ref;
+          }
+        }
+      }
+    }
+  }
+
+  if (array.IsNull(idx)) {
+    return nullptr;
+  }
+  switch (array.type()->id()) {
+  case arrow::Type::BOOL:
+    return static_cast<const arrow::BooleanArray&>(array).Value(idx);
+  case arrow::Type::INT8:
+    return static_cast<const arrow::Int8Array&>(array).Value(idx);
+  case arrow::Type::UINT8:
+    return static_cast<const arrow::UInt8Array&>(array).Value(idx);
+  case arrow::Type::INT16:
+    return static_cast<const arrow::Int16Array&>(array).Value(idx);
+  case arrow::Type::UINT16:
+    return static_cast<const arrow::UInt16Array&>(array).Value(idx);
+  case arrow::Type::INT32:
+    return static_cast<const arrow::Int32Array&>(array).Value(idx);
+  case arrow::Type::UINT32:
+    return static_cast<const arrow::UInt32Array&>(array).Value(idx);
+  case arrow::Type::INT64:
+    return static_cast<const arrow::Int64Array&>(array).Value(idx);
+  case arrow::Type::UINT64:
+    return static_cast<const arrow::UInt64Array&>(array).Value(idx);
+  case arrow::Type::FLOAT:
+    return static_cast<const arrow::FloatArray&>(array).Value(idx);
+  case arrow::Type::DOUBLE:
+    return static_cast<const arrow::DoubleArray&>(array).Value(idx);
+  case arrow::Type::STRING:
+    return static_cast<const arrow::StringArray&>(array).GetString(idx);
+  case arrow::Type::STRUCT:
+    return structToJson(static_cast<const arrow::StructArray&>(array), idx, wrap_relation);
+  case arrow::Type::LIST:
+    return listToJson(static_cast<const arrow::ListArray&>(array), idx);
+  case arrow::Type::FIXED_SIZE_LIST:
+    return fixedSizeListToJson(static_cast<const arrow::FixedSizeListArray&>(array), idx);
+  case arrow::Type::MAP:
+    return mapToJson(static_cast<const arrow::MapArray&>(array), idx);
+  default:
+    throw std::runtime_error("Unsupported Arrow type in JSON converter: " + array.type()->ToString());
+  }
+}
+
+nlohmann::json arrowTableToJson(const std::shared_ptr<arrow::Table>& table) {
+  auto j = nlohmann::json::object();
+  for (int c = 0; c < table->num_columns(); ++c) {
+    std::string name = table->schema()->field(c)->name();
+    auto chunked_arr = table->column(c);
+    auto chunk = chunked_arr->chunk(0);
+    j[name] = arrayElementToJson(*chunk, 0);
+  }
+  return j;
+}
+
+nlohmann::json genericParametersToJson(const podio::GenericParameters& params) {
+  auto j = nlohmann::json::object();
+
+  auto int_params = nlohmann::json::object();
+  for (const auto& key : params.getKeys<int>()) {
+    int_params[key] = params.get<std::vector<int>>(key).value_or(std::vector<int>{});
+  }
+  j["int_params"] = int_params;
+
+  auto float_params = nlohmann::json::object();
+  for (const auto& key : params.getKeys<float>()) {
+    float_params[key] = params.get<std::vector<float>>(key).value_or(std::vector<float>{});
+  }
+  j["float_params"] = float_params;
+
+  auto double_params = nlohmann::json::object();
+  for (const auto& key : params.getKeys<double>()) {
+    double_params[key] = params.get<std::vector<double>>(key).value_or(std::vector<double>{});
+  }
+  j["double_params"] = double_params;
+
+  auto string_params = nlohmann::json::object();
+  for (const auto& key : params.getKeys<std::string>()) {
+    string_params[key] = params.get<std::vector<std::string>>(key).value_or(std::vector<std::string>{});
+  }
+  j["string_params"] = string_params;
+
+  return j;
+}
+
+} // namespace
+
+TEST_CASE("ArrowFrameConverter - JSON Equivalence Check", "[arrow][converter][json]") {
+  podio::Frame originalFrame;
+
+  // 1. Prepare some hits
+  ExampleHitCollection hits;
+  auto hit1 = MutableExampleHit(0x42ULL, 1.0f, 2.0f, 3.0f, 10.5);
+  auto hit2 = MutableExampleHit(0x43ULL, 4.0f, 5.0f, 6.0f, 20.5);
+  hits.push_back(hit1);
+  hits.push_back(hit2);
+
+  // 2. Prepare some clusters with relations to hits
+  ExampleClusterCollection clusters;
+  auto cluster1 = MutableExampleCluster();
+  cluster1.energy(100.0);
+  cluster1.addHits(hit1);
+  cluster1.addHits(hit2);
+  clusters.push_back(cluster1);
+
+  // 3. Prepare a relation collection
+  ExampleWithOneRelationCollection relColls;
+  auto relObj = MutableExampleWithOneRelation();
+  relObj.cluster(cluster1);
+  relColls.push_back(relObj);
+  // Add an unset relation reference object
+  auto unsetRelObj = MutableExampleWithOneRelation();
+  relColls.push_back(unsetRelObj);
+
+  // 4. Prepare a vector member collection
+  ExampleWithVectorMemberCollection vecColls;
+  auto vecObj = MutableExampleWithVectorMember();
+  vecObj.addcount(42);
+  vecObj.addcount(137);
+  vecColls.push_back(vecObj);
+
+  // 5. Prepare a subset collection of hits
+  ExampleHitCollection subsetHits;
+  subsetHits.setSubsetCollection(true);
+  subsetHits.push_back(hit1);
+
+  // 6. Prepare a collection with fixed-size arrays (FixedSizeList)
+  ExampleWithArrayCollection arrays;
+  std::array<int, 4> arrayTest = {0, 1, 2, 3};
+  std::array<int, 4> arrayTest2 = {4, 5, 6, 7};
+  NotSoSimpleStruct a;
+  a.data.p = arrayTest2;
+  ex2::NamespaceStruct nstruct;
+  nstruct.x = 42;
+  std::array<ex2::NamespaceStruct, 4> structArrayTest = {nstruct, nstruct, nstruct, nstruct};
+  auto arrayObj = MutableExampleWithArray(a, arrayTest, arrayTest, arrayTest, arrayTest, structArrayTest);
+  arrays.push_back(arrayObj);
+
+  // 7. Prepare an empty collection
+  ExampleClusterCollection emptyClusterColl;
+
+  // 8. Prepare a fixed-width integers collection
+  ExampleWithFixedWidthIntegersCollection fixedWidthInts;
+  auto fixedWidthObj = fixedWidthInts.create();
+  fixedWidthObj.fixedI16(-12345);
+  fixedWidthObj.fixedU32(1234567890U);
+  fixedWidthObj.fixedU64(1234567890123456789ULL);
+
+  auto& maxComp = fixedWidthObj.fixedWidthStruct();
+  maxComp.fixedUnsigned16 = 65535;
+  maxComp.fixedInteger64 = 9223372036854775807LL;
+  maxComp.fixedInteger32 = 2147483647;
+
+  std::array<int16_t, 2> arrVal = {-10, 20};
+  fixedWidthObj.fixedWidthArray(arrVal);
+
+  // Put them all into the frame
+  originalFrame.put(std::move(hits), "Hits");
+  originalFrame.put(std::move(clusters), "Clusters");
+  originalFrame.put(std::move(relColls), "OneRelation");
+  originalFrame.put(std::move(vecColls), "VectorMember");
+  originalFrame.put(std::move(subsetHits), "SubsetHits");
+  originalFrame.put(std::move(arrays), "ExampleWithArray");
+  originalFrame.put(std::move(emptyClusterColl), "EmptyCluster");
+  originalFrame.put(std::move(fixedWidthInts), "FixedWidthInts");
+
+  // Put some frame parameters
+  originalFrame.putParameter("anInt", 42);
+  originalFrame.putParameter("someFloats", std::vector<float>{1.23f, 2.34f, 3.45f});
+  originalFrame.putParameter("someStrings", std::vector<std::string>{"hello", "world"});
+
+  std::vector<std::string> colls = {"Hits",       "Clusters",         "OneRelation",  "VectorMember",
+                                    "SubsetHits", "ExampleWithArray", "EmptyCluster", "FixedWidthInts"};
+
+  // Convert to Arrow Table
+  auto table = podio::convertFrameToTable(originalFrame, colls);
+  REQUIRE(table != nullptr);
+
+  // Convert Arrow Table to JSON
+  nlohmann::json arrowJson = arrowTableToJson(table);
+
+  // Convert Frame to JSON directly
+  nlohmann::json frameJson = nlohmann::json::object();
+  frameJson["Hits"] = originalFrame.get<ExampleHitCollection>("Hits");
+  frameJson["Clusters"] = originalFrame.get<ExampleClusterCollection>("Clusters");
+  frameJson["OneRelation"] = originalFrame.get<ExampleWithOneRelationCollection>("OneRelation");
+  frameJson["VectorMember"] = originalFrame.get<ExampleWithVectorMemberCollection>("VectorMember");
+  frameJson["SubsetHits"] = originalFrame.get<ExampleHitCollection>("SubsetHits");
+  frameJson["ExampleWithArray"] = originalFrame.get<ExampleWithArrayCollection>("ExampleWithArray");
+  frameJson["EmptyCluster"] = originalFrame.get<ExampleClusterCollection>("EmptyCluster");
+  frameJson["FixedWidthInts"] = originalFrame.get<ExampleWithFixedWidthIntegersCollection>("FixedWidthInts");
+  frameJson["frame_parameters"] = genericParametersToJson(originalFrame.getParameters());
+
+  std::cout << "--- ARROW TABLE JSON ---" << std::endl;
+  std::cout << arrowJson.dump(4) << std::endl;
+  std::cout << "--- FRAME DIRECT JSON ---" << std::endl;
+  std::cout << frameJson.dump(4) << std::endl;
+
+  // Compare the JSON representations
+  REQUIRE(arrowJson == frameJson);
 }
