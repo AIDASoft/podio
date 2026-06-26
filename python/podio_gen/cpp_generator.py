@@ -3,7 +3,6 @@
 
 import sys
 import os
-from copy import deepcopy
 from enum import IntEnum
 from collections import defaultdict
 from collections.abc import Mapping
@@ -471,12 +470,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for name, changes in self.changed_datatypes.items():
             for change in changes:
                 if isinstance(change["schema_change"], RenamedDataType):
-                    old_def = deepcopy(change["definition"])
-                    old_def["renamed_to"] = change["schema_change"].name_new
-                    old_def["renamed_to_collection"] = (
-                        str(DataType(change["schema_change"].name_new)) + "Collection"
-                    )
-                    old_def["renamed_from_version"] = change["version"]
+                    old_def = {
+                        **change["definition"],
+                        "renamed_to": change["schema_change"].name_new,
+                        "renamed_to_collection": (
+                            str(DataType(change["schema_change"].name_new)) + "Collection"
+                        ),
+                        "renamed_from_version": change["version"],
+                    }
                     self._process_datatype(name, old_def)
                     break
 
