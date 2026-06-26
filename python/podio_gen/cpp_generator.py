@@ -617,7 +617,7 @@ have resolvable schema evolution incompatibilities:"
                     targetClass=f"{datatype.full_type}Data",
                     source=f"{member_type} {schema_change.member_name_old}",
                     target=schema_change.member_name_new,
-                    code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
+                    code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};", # pylint: disable=line-too-long
                     version=version,
                 )
             ]
