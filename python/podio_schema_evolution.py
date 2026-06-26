@@ -394,12 +394,26 @@ class SchemaEvolutionJudge:
             change for change in schema_changes if isinstance(change, AddedDatatype)
         ]
 
+        _MEMBER_FIELDS = (
+            "Members",
+            "VectorMembers",
+            "OneToOneRelations",
+            "OneToManyRelations",
+        )
+
+        def _member_signature(datatype_definition):
+            """Build a set of (name, full_type) tuples for all member fields of a datatype"""
+            sig = set()
+            for field in _MEMBER_FIELDS:
+                for member in datatype_definition.get(field, []):
+                    sig.add((member.name, member.full_type))
+            return sig
+
         for dropped in dropped_datatypes:
-            dropped_members = {member.name: member for member in dropped.datatype["Members"]}
+            dropped_sig = _member_signature(dropped.datatype)
             is_known_evolution = False
             for added in added_datatypes:
-                added_members = {member.name: member for member in added.datatype["Members"]}
-                if set(dropped_members.keys()) == set(added_members.keys()):
+                if dropped_sig == _member_signature(added.datatype):
                     for schema_change in read_schema_changes:
                         if isinstance(schema_change, RenamedDataType) and (
                             schema_change.name_old == dropped.klassname
