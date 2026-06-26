@@ -470,14 +470,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         for name, changes in self.changed_datatypes.items():
             for change in changes:
                 if isinstance(change["schema_change"], RenamedDataType):
-                    old_def = {
-                        **change["definition"],
-                        "renamed_to": change["schema_change"].name_new,
-                        "renamed_to_collection": (
-                            str(DataType(change["schema_change"].name_new)) + "Collection"
-                        ),
-                        "renamed_from_version": change["version"],
-                    }
+                    old_def = change["definition"].copy()
+                    old_def["renamed_to"] = change["schema_change"].name_new
+                    old_def["renamed_to_collection"] = (
+                        str(DataType(change["schema_change"].name_new)) + "Collection"
+                    )
+                    old_def["renamed_from_version"] = change["version"]
                     self._process_datatype(name, old_def)
                     break
 
