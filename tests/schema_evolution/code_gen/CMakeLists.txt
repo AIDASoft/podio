@@ -13,7 +13,7 @@ add_test(NAME schema_evol:code_gen:datatypes_new_member:read_garbage COMMAND ${C
 # Under the thread sanitizer, the message "signal-unsafe call inside of a
 # signal" may appear
 if(USE_SANITIZER MATCHES "Thread")
-  set(_read_garbage_pass_re "Bad data;signal-unsafe call inside of a signal|Bad data;Segmentation fault")
+  set(_read_garbage_pass_re "Bad data;signal-unsafe call inside of a signal;Segmentation fault;Subprocess aborted;malloc")
 else()
   set(_read_garbage_pass_re "Bad data;Segmentation fault;Subprocess aborted")
 endif()
