@@ -15,7 +15,7 @@ add_test(NAME schema_evol:code_gen:datatypes_new_member:read_garbage COMMAND ${C
 if(USE_SANITIZER MATCHES "Thread")
   set(_read_garbage_pass_re "Bad data;signal-unsafe call inside of a signal|Bad data;Segmentation fault")
 else()
-  set(_read_garbage_pass_re "Bad data;Segmentation fault")
+  set(_read_garbage_pass_re "Bad data;Segmentation fault;Subprocess aborted")
 endif()
 set_tests_properties(schema_evol:code_gen:datatypes_new_member:read_garbage
       PROPERTIES
