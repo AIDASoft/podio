@@ -297,7 +297,7 @@ class TestSchemaMigrationReader(unittest.TestCase):
             with self.assertRaises(ValueError) as cm:
                 SchemaMigrationReader.read_yaml(temp_file)
             self.assertIn("Invalid change type 'invalid_type'", str(cm.exception))
-            self.assertIn("Valid types: ['rename_member']", str(cm.exception))
+            self.assertIn("Valid types: ['rename_member', 'rename_datatype']", str(cm.exception))
         finally:
             self._cleanup_temp_file(temp_file)
 

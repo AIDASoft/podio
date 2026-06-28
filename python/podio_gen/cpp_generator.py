@@ -11,6 +11,7 @@ from podio_schema_evolution import (
     DataModelComparator,
     SchemaEvolutionJudge,
     RootIoRule,
+    RenamedDataType,
     RenamedMember,
 )
 from podio_gen.podio_config_reader import PodioConfigReader
@@ -431,6 +432,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self.old_datamodels = self._read_old_schemas()
         self._regroup_old_datamodels(self.old_datamodels)
         self._identify_dropped_components()
+        self._identify_renamed_datatypes()
 
     def _regroup_old_datamodels(self, old_datamodels):
         """Re-organize the old schema into a structure that is easier to use.
@@ -461,6 +463,21 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             most_recent_comp["class"] = DataType(name)
             most_recent_comp["generate_current_version"] = False
             self._generate_component_code(most_recent_comp, comps)
+
+    def _identify_renamed_datatypes(self):
+        """Generate code for datatypes that have been renamed, so that their old
+        versioned data classes are available in the new dictionary for ROOT"""
+        for name, changes in self.changed_datatypes.items():
+            for change in changes:
+                if isinstance(change["schema_change"], RenamedDataType):
+                    old_def = change["definition"].copy()
+                    old_def["renamed_to"] = change["schema_change"].name_new
+                    old_def["renamed_to_collection"] = (
+                        str(DataType(change["schema_change"].name_new)) + "Collection"
+                    )
+                    old_def["renamed_from_version"] = change["version"]
+                    self._process_datatype(name, old_def)
+                    break
 
     def _generate_component_code(self, component, old_comp_versions):
         """Generate the component code for a given component definition and old
@@ -593,16 +610,55 @@ have resolvable schema evolution incompatibilities:"
                     member_type = member.full_type
                     break
 
-            return RootIoRule(
-                sourceClass=f"{datatype.full_type}Data",
-                targetClass=f"{datatype.full_type}Data",
-                source=f"{member_type} {schema_change.member_name_old}",
-                target=schema_change.member_name_new,
-                code=f"{schema_change.member_name_new} = onfile.{schema_change.member_name_old};",
-                version=version,
-            )
+            return [
+                RootIoRule(
+                    sourceClass=f"{datatype.full_type}Data",
+                    targetClass=f"{datatype.full_type}Data",
+                    source=f"{member_type} {schema_change.member_name_old}",
+                    target=schema_change.member_name_new,
+                    code=(
+                        f"{schema_change.member_name_new} = "
+                        f"onfile.{schema_change.member_name_old};"
+                    ),
+                    version=version,
+                )
+            ]
 
-        return None
+        if isinstance(schema_change, RenamedDataType):
+            new_type = DataType(schema_change.name_new)
+            iorules = []
+            for member in definition["Members"]:
+                member_type = member.full_type
+                iorules.append(
+                    RootIoRule(
+                        sourceClass=f"{datatype.full_type}Data",
+                        targetClass=f"{new_type.full_type}Data",
+                        source=f"{member_type} {member.name}",
+                        target=member.name,
+                        code=f"{member.name} = onfile.{member.name};",
+                        version=version,
+                    )
+                )
+            return iorules
+
+        return []
+
+    def _is_renamed_datatype(self, name):
+        """Check if a datatype is being renamed (has a RenamedDataType schema change)"""
+        for old_dtypes in self.changed_datatypes.get(name, []):
+            if isinstance(old_dtypes["schema_change"], RenamedDataType):
+                return True
+        return False
+
+    def _get_renamed_datatype_names(self):
+        """Get the old names of datatypes that are being renamed"""
+        names = []
+        for name, changes in self.changed_datatypes.items():
+            for change in changes:
+                if isinstance(change["schema_change"], RenamedDataType):
+                    names.append(name)
+                    break
+        return names
 
     def _prepare_iorules(self):
         """Create all the necessary I/O rules to do ROOT schema evolution
@@ -610,15 +666,15 @@ have resolvable schema evolution incompatibilities:"
         iorules = []
         for name, old_comps in self.changed_components.items():
             for comp in old_comps:
-                iorules.append(
-                    self._prepare_iorule_component(
-                        name, comp["definition"], comp["schema_change"], comp["version"]
-                    )
+                rule = self._prepare_iorule_component(
+                    name, comp["definition"], comp["schema_change"], comp["version"]
                 )
+                if rule is not None:
+                    iorules.append(rule)
 
         for name, old_dtypes in self.changed_datatypes.items():
             for dtype in old_dtypes:
-                iorules.append(
+                iorules.extend(
                     self._prepare_iorule_datatype(
                         name,
                         dtype["definition"],
@@ -762,6 +818,9 @@ have resolvable schema evolution incompatibilities:"
                 )
 
         for datatype_name, old_versions in self.old_datatypes.items():
+            if datatype_name not in self.datamodel.datatypes:
+                if not self._is_renamed_datatype(datatype_name):
+                    continue
             for old_version in old_versions:
                 old_schema_datatypes.append(
                     {
@@ -772,10 +831,14 @@ have resolvable schema evolution incompatibilities:"
 
         iorules = self._prepare_iorules()
 
+        datatypes = [DataType(d) for d in self.datamodel.datatypes]
+        renamed_types = self._get_renamed_datatype_names()
+        datatypes.extend(DataType(name) for name in renamed_types)
+
         data = {
             "version": self.datamodel.schema_version,
             "components": [DataType(c) for c in self.datamodel.components],
-            "datatypes": [DataType(d) for d in self.datamodel.datatypes],
+            "datatypes": datatypes,
             "old_schema_versions": list(self.old_datamodels.keys()),
             "old_schema_components": old_schema_components,
             "old_schema_datatypes": old_schema_datatypes,
