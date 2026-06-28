@@ -2,6 +2,7 @@
 #define PODIO_SIOBLOCK_H
 
 #include <podio/CollectionBase.h>
+#include <podio/CollectionBuffers.h>
 #include <podio/CollectionIDTable.h>
 #include <podio/GenericParameters.h>
 #include <podio/podioVersion.h>
@@ -72,7 +73,7 @@ public:
   SIOBlock& operator=(const SIOBlock&) = delete;
 
   podio::CollectionReadBuffers getBuffers() {
-    return std::move(m_buffers);
+    return std::move(m_readBuffers);
   }
 
   std::string name() {
@@ -85,14 +86,15 @@ public:
 
   void setCollection(podio::CollectionBase* col) {
     m_subsetColl = col->isSubsetCollection();
-    m_buffers = col->getBuffers();
+    m_writeBuffers = col->getBuffers();
   }
 
   virtual SIOBlock* create(const std::string& name) const = 0;
 
 protected:
   bool m_subsetColl{false};
-  podio::CollectionReadBuffers m_buffers{};
+  podio::CollectionWriteBuffers m_writeBuffers{};
+  podio::CollectionReadBuffers m_readBuffers{};
 };
 
 /// A dedicated block for handling the I/O of the CollectionIDTable

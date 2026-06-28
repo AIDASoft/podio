@@ -34,18 +34,18 @@ public:
     // - Error handling of empty optional
     auto maybeBuffers = bufferFactory.createBuffers(std::string(podio::LinkCollection<FromT, ToT>::typeName),
                                                     sio::version::major_version(version), m_subsetColl);
-    m_buffers = std::move(maybeBuffers.value());
+    m_readBuffers = std::move(maybeBuffers.value());
 
     if (!m_subsetColl) {
       unsigned size{0};
       device.data(size);
-      auto* dataVec = m_buffers.dataAsVector<float>();
+      auto* dataVec = m_readBuffers.template dataAsVector<float>();
       dataVec->resize(size);
       podio::handlePODDataSIO(device, dataVec->data(), size);
     }
 
     // ---- read ref collections
-    auto* refColls = m_buffers.references;
+    const auto* refColls = m_readBuffers.references;
     for (auto& refC : *refColls) {
       unsigned size{0};
       device.data(size);
@@ -56,14 +56,14 @@ public:
 
   void write(sio::write_device& device) override {
     if (!m_subsetColl) {
-      auto* dataVec = podio::CollectionWriteBuffers::asVector<float>(m_buffers.data);
+      const auto* dataVec = m_writeBuffers.template dataAsVector<float>();
       unsigned size = dataVec->size();
       device.data(size);
       podio::handlePODDataSIO(device, dataVec->data(), size);
     }
 
     // ---- write ref collections ------
-    auto* refColls = m_buffers.references;
+    const auto* refColls = m_writeBuffers.references;
     for (auto& refC : *refColls) {
       unsigned size = refC->size();
       device.data(size);
