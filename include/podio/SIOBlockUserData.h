@@ -41,12 +41,12 @@ public:
 
   void read(sio::read_device& device, sio::version_type version) override {
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
-    m_buffers =
+    m_readBuffers =
         bufferFactory
             .createBuffers(podio::userDataCollTypeName<BasicType>(), sio::version::major_version(version), false)
             .value();
 
-    auto* dataVec = m_buffers.dataAsVector<BasicType>();
+    auto* dataVec = m_readBuffers.template dataAsVector<BasicType>();
     unsigned size(0);
     device.data(size);
     dataVec->resize(size);
@@ -54,7 +54,7 @@ public:
   }
 
   void write(sio::write_device& device) override {
-    auto* dataVec = podio::CollectionWriteBuffers::asVector<BasicType>(m_buffers.data);
+    auto* dataVec = m_writeBuffers.template dataAsVector<BasicType>();
     unsigned size = dataVec->size();
     device.data(size);
     podio::handlePODDataSIO(device, &(*dataVec)[0], size);

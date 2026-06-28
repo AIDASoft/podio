@@ -21,23 +21,19 @@ using UVecPtr = std::unique_ptr<std::vector<T>>;
 using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;
 using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
-/// Simple helper struct that bundles all the potentially necessary buffers that
-/// are necessary to represent a collection for I/O purposes.
+/// Struct bundling the buffers that represent a collection for writing.
+///
+/// data is used by ROOT and holds the address of a unique_ptr.
+/// vecPtr holds the raw vector pointer, used by SIO and RNTuple.
 struct CollectionWriteBuffers {
   void* data{nullptr};
   void* vecPtr{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
 
-  template <typename DataT>
-  std::vector<DataT>* dataAsVector() {
-    return asVector<DataT>(data);
-  }
-
   template <typename T>
-  static std::vector<T>* asVector(void* raw) {
-    // Are we at a beach? I can almost smell the C...
-    return *static_cast<std::vector<T>**>(raw);
+  std::vector<T>* dataAsVector() {
+    return static_cast<std::vector<T>*>(vecPtr);
   }
 };
 
@@ -124,7 +120,6 @@ struct CollectionReadBuffers {
 
   template <typename T>
   static std::vector<T>* asVector(void* raw) {
-    // Are we at a beach? I can almost smell the C...
     return static_cast<std::vector<T>*>(raw);
   }
 
