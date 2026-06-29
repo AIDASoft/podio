@@ -316,7 +316,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             "is_mult": is_mult,
         }
 
-    def _arrow_field(self, name, type_expr, nullable=True):
+    def _arrow_field(self, name, type_expr, nullable=False):
         """Create a C++ arrow::field expression"""
         nullable_arg = "" if nullable else ", false"
         return f'arrow::field("{name}", {type_expr}{nullable_arg})'
