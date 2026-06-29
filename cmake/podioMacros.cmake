@@ -203,7 +203,6 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
   target_link_libraries(${lib_name} PUBLIC podio::podio)
-
   target_include_directories(${lib_name} PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
@@ -355,7 +354,7 @@ function(PODIO_ADD_ARROW_MAPPER CORE_LIB HEADERS SOURCES)
   endif()
 
   CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
-  IF(NOT ARG_OUTPUT_FOLDER)
+  if(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
   ENDIF()
 

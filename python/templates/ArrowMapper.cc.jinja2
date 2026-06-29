@@ -105,8 +105,7 @@ bool registerConverters() {
     {{ arrow_macros.declare_relation_builder(relation, 'objectBuilder', loop.index0 + datatype.arrow_metadata.members|length + datatype.arrow_metadata.vector_members|length + datatype.arrow_metadata.one_to_one_relations|length) | indent(4) }}
     {%- endfor %}
     checkStatus(collectionBuilder->Append(), "Failed to append to collectionBuilder");
-    for (size_t i = 0; i < concreteColl->size(); ++i) {
-      auto obj = (*concreteColl)[i];
+    for (auto& obj: concreteColl) {
       {% for member in datatype.arrow_metadata.members %}
       {{ arrow_macros.append_member(member, 'obj', '') | indent(6) }}
       {%- endfor %}
