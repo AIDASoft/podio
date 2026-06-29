@@ -155,6 +155,7 @@ endif()
 if(ENABLE_ARROW)
   SET(arrow_sources
     ArrowFrameConverter.cc
+    ArrowUtils.cc
     )
 
   add_library(podioArrow SHARED ${arrow_sources})
