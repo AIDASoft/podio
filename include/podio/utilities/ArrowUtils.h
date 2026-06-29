@@ -1,20 +1,18 @@
 #ifndef PODIO_ARROWUTILS_H
 #define PODIO_ARROWUTILS_H
 
-#include <arrow/status.h>
-#include <stdexcept>
 #include <string>
+
+namespace arrow {
+class Status;
+} // namespace arrow
 
 namespace podio::arrow_utils {
 
 /**
  * @brief Check if an arrow::Status is OK. If not, throw std::runtime_error.
  */
-inline void checkStatus(const arrow::Status& status, const std::string& msg) {
-  if (!status.ok()) {
-    throw std::runtime_error("Arrow error: " + msg + ": " + status.ToString());
-  }
-}
+void checkStatus(const arrow::Status& status, const std::string& msg);
 
 } // namespace podio::arrow_utils
 
