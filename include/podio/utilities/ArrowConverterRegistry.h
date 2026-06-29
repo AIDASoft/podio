@@ -36,7 +36,7 @@ public:
   /**
    * @brief Register an Arrow array converter callback for a specific type name.
    */
-  void registerConverter(const std::string& typeName, CreatorFunc converter);
+  void registerConverter(const std::string& typeName, CreatorFunc&& converter);
 
   /**
    * @brief Retrieve the Arrow collection converter registered for a specific type name.

@@ -11,7 +11,7 @@ ArrowConverterRegistry const& ArrowConverterRegistry::instance() {
   return mutInstance();
 }
 
-void ArrowConverterRegistry::registerConverter(const std::string& typeName, CreatorFunc converter) {
+void ArrowConverterRegistry::registerConverter(const std::string& typeName, CreatorFunc&& converter) {
   m_registry[typeName] = std::move(converter);
 }
 

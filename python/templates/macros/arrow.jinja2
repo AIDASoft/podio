@@ -114,24 +114,16 @@ for (size_t vec_i = 0; vec_i < obj.{{ member.name }}_size(); ++vec_i) {
 {% macro append_relation(relation) -%}
 {% if not relation.is_mult -%}
 auto relObj_{{ relation.name }} = obj.{{ relation.getter }}();
-if (relObj_{{ relation.name }}.isAvailable()) {
-  checkStatus(builder_{{ relation.name }}->Append(), "Failed to append relation struct");
-  checkStatus(builder_{{ relation.name }}_collId->Append(relObj_{{ relation.name }}.getObjectID().collectionID), "Failed to append relation collectionID");
-  checkStatus(builder_{{ relation.name }}_index->Append(relObj_{{ relation.name }}.getObjectID().index), "Failed to append relation index");
-} else {
-  checkStatus(builder_{{ relation.name }}->AppendNull(), "Failed to append null relation struct");
-}
+checkStatus(builder_{{ relation.name }}->Append(), "Failed to append relation struct");
+checkStatus(builder_{{ relation.name }}_collId->Append(relObj_{{ relation.name }}.getObjectID().collectionID), "Failed to append relation collectionID");
+checkStatus(builder_{{ relation.name }}_index->Append(relObj_{{ relation.name }}.getObjectID().index), "Failed to append relation index");
 {% else -%}
 checkStatus(builder_{{ relation.name }}->Append(), "Failed to append relation list");
 for (size_t rel_i = 0; rel_i < obj.{{ relation.name }}_size(); ++rel_i) {
   auto relObj = obj.{{ relation.getter }}(rel_i);
-  if (relObj.isAvailable()) {
-    checkStatus(builder_{{ relation.name }}_struct->Append(), "Failed to append relation list struct");
-    checkStatus(builder_{{ relation.name }}_collId->Append(relObj.getObjectID().collectionID), "Failed to append relation list collectionID");
-    checkStatus(builder_{{ relation.name }}_index->Append(relObj.getObjectID().index), "Failed to append relation list index");
-  } else {
-    checkStatus(builder_{{ relation.name }}_struct->AppendNull(), "Failed to append null relation list struct");
-  }
+  checkStatus(builder_{{ relation.name }}_struct->Append(), "Failed to append relation list struct");
+  checkStatus(builder_{{ relation.name }}_collId->Append(relObj.getObjectID().collectionID), "Failed to append relation list collectionID");
+  checkStatus(builder_{{ relation.name }}_index->Append(relObj.getObjectID().index), "Failed to append relation list index");
 }
 {% endif -%}
 {%- endmacro %}

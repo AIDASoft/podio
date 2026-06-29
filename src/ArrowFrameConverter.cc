@@ -2,6 +2,7 @@
 #include "podio/Frame.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
 #include "podio/utilities/ArrowTypeRegistry.h"
+#include "podio/utilities/ArrowUtils.h"
 
 #include <arrow/api.h>
 #include <stdexcept>
@@ -17,6 +18,10 @@ std::shared_ptr<arrow::DataType> objectRefType() {
 
 namespace {
 
+  void checkStatus(const arrow::Status& status, const std::string& msg) {
+    podio::arrow_utils::checkStatus(status, msg);
+  }
+
   template <typename T, typename BuilderType>
   std::shared_ptr<arrow::Array> buildParamMap(const podio::GenericParameters& params) {
     auto* pool = arrow::default_memory_pool();
@@ -25,12 +30,6 @@ namespace {
     auto valListBuilder = std::make_shared<arrow::ListBuilder>(pool, valValueBuilder);
 
     arrow::MapBuilder mapBuilder(pool, keyBuilder, valListBuilder);
-
-    auto checkStatus = [](const arrow::Status& s, const std::string& msg) {
-      if (!s.ok()) {
-        throw std::runtime_error("Arrow error in buildParamMap: " + msg + ": " + s.ToString());
-      }
-    };
 
     checkStatus(mapBuilder.Append(), "Failed to start map entry");
 
@@ -87,12 +86,6 @@ namespace {
     auto* objectBuilder = static_cast<arrow::StructBuilder*>(collectionBuilder->value_builder());
     auto* collIdBuilder = static_cast<arrow::UInt32Builder*>(objectBuilder->child(0));
     auto* indexBuilder = static_cast<arrow::Int32Builder*>(objectBuilder->child(1));
-
-    auto checkStatus = [](const arrow::Status& s, const std::string& msg) {
-      if (!s.ok()) {
-        throw std::runtime_error("Arrow error in subset converter: " + msg + ": " + s.ToString());
-      }
-    };
 
     checkStatus(collectionBuilder->Append(), "Failed to append to collectionBuilder");
     for (const auto& objId : refIDs) {

@@ -286,30 +286,6 @@ nlohmann::json mapToJson(const arrow::MapArray& map_array, int64_t idx) {
 }
 
 nlohmann::json arrayElementToJson(const arrow::Array& array, int64_t idx, bool wrap_relation) {
-  if (array.type()->id() == arrow::Type::STRUCT) {
-    auto& struct_array = static_cast<const arrow::StructArray&>(array);
-    auto struct_type = struct_array.struct_type();
-    if (struct_array.num_fields() == 2) {
-      std::string f0 = struct_type->field(0)->name();
-      std::string f1 = struct_type->field(1)->name();
-      if ((f0 == "collectionID" && f1 == "index") || (f0 == "index" && f1 == "collectionID")) {
-        // Arrow represents an unset relation as a database Null value at the cell level.
-        // PODIO's native JSON serialization instead writes:
-        // collectionID = 4294967295 (0xFFFFFFFF) and index = -1.
-        if (struct_array.IsNull(idx)) {
-          auto ref = nlohmann::json::object();
-          ref["collectionID"] = 4294967295U;
-          ref["index"] = -1;
-          if (wrap_relation) {
-            return nlohmann::json::array({ref});
-          } else {
-            return ref;
-          }
-        }
-      }
-    }
-  }
-
   if (array.IsNull(idx)) {
     return nullptr;
   }
