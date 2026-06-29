@@ -52,7 +52,7 @@ if (ENABLE_SIO)
 endif()
 if (ENABLE_ARROW)
   target_sources(unittest_podio PRIVATE test_arrow_converter.cpp)
-  target_link_libraries(unittest_podio PRIVATE podio::podioArrow ${PODIO_ARROW_TARGET} TestDataModelArrowMapper ExtensionDataModelArrowMapper InterfaceExtensionDataModelArrowMapper)
+  target_link_libraries(unittest_podio PRIVATE podio::podioArrow ${PODIO_ARROW_TARGET} TestDataModelArrow ExtensionDataModelArrow InterfaceExtensionDataModelArrow)
   target_compile_definitions(unittest_podio PRIVATE PODIO_ENABLE_ARROW=1)
 endif()
 
