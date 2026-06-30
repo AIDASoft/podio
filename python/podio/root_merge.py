@@ -67,7 +67,6 @@ def merge_files(output_file, input_files, metadata="first"):
         raise RuntimeError(f"hadd failed (exit {result.returncode}):\n{result.stderr}")
 
     # Delete the incorrectly merged metadata category (rewritten below)
-    # Always delete — hadd merges metadata regardless of TTree/RNTuple format
     out_f = ROOT.TFile.Open(output_file, "UPDATE")
     if not out_f or out_f.IsZombie():
         raise RuntimeError(f"Cannot open for UPDATE: {output_file}")
