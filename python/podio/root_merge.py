@@ -93,7 +93,7 @@ def merge_files(output_file, input_files, metadata="first"):
         frame.put_parameter("MergedInputFiles", list(input_files))
 
     with tempfile.NamedTemporaryFile(suffix=".root") as tmp_file:
-        tmp_file.close()
+        tmp_file.close()  # release the handle so Writer can open the file below
         tmp_path = tmp_file.name
 
         tmp_writer = Writer(tmp_path)
