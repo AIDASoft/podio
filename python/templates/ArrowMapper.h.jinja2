@@ -12,11 +12,6 @@ class KeyValueMetadata;
 
 namespace {{ package_name }}::arrow_io {
 
-std::shared_ptr<arrow::Schema> schema();
-
-std::shared_ptr<arrow::Schema>
-schemaWithMetadata(std::shared_ptr<const arrow::KeyValueMetadata> metadata);
-
 bool registerTypes();
 
 } // namespace {{ package_name }}::arrow_io

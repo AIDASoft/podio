@@ -29,15 +29,6 @@ void checkStatus(const arrow::Status& status, const std::string& msg) {
 } // namespace
 
 
-static std::shared_ptr<arrow::DataType> frameParametersType() {
-  return arrow::struct_({
-      arrow::field("int_params", arrow::map(arrow::utf8(), arrow::list(arrow::int32()))),
-      arrow::field("float_params", arrow::map(arrow::utf8(), arrow::list(arrow::float32()))),
-      arrow::field("double_params", arrow::map(arrow::utf8(), arrow::list(arrow::float64()))),
-      arrow::field("string_params", arrow::map(arrow::utf8(), arrow::list(arrow::utf8()))),
-  });
-}
-
 static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() {
   static const std::map<std::string, std::shared_ptr<arrow::DataType>> instance = {
 {% for datatype in datatypes %}
@@ -52,22 +43,6 @@ static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() 
 {% endfor %}
   };
   return instance;
-}
-
-std::shared_ptr<arrow::Schema> schema() {
-  const auto& types = typeMap();
-  static const auto instance = arrow::schema({
-{% for datatype in datatypes %}
-      arrow::field("{{ datatype.class.bare_type }}", types.at("{{ datatype.class.full_type }}")),
-{% endfor %}
-      arrow::field("frame_parameters", frameParametersType()),
-  });
-  return instance;
-}
-
-std::shared_ptr<arrow::Schema>
-schemaWithMetadata(std::shared_ptr<const arrow::KeyValueMetadata> metadata) {
-  return schema()->WithMetadata(std::move(metadata));
 }
 
 bool registerTypes() {
