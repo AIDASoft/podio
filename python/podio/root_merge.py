@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Utilities for merging podio ROOT files (TTree and RNTuple)."""
 
-import os
 import shutil
 import subprocess
 import tempfile
@@ -93,9 +92,10 @@ def merge_files(output_file, input_files, metadata="first"):
     for frame in frames:
         frame.put_parameter("MergedInputFiles", list(input_files))
 
-    tmp_fd, tmp_path = tempfile.mkstemp(suffix=".root")
-    os.close(tmp_fd)
-    try:
+    with tempfile.NamedTemporaryFile(suffix=".root") as tmp_file:
+        tmp_file.close()
+        tmp_path = tmp_file.name
+
         tmp_writer = Writer(tmp_path)
         for frame in frames:
             tmp_writer.write_frame(frame, "metadata")
@@ -110,9 +110,6 @@ def merge_files(output_file, input_files, metadata="first"):
             ROOT.TFileMerger.kAll | ROOT.TFileMerger.kOnlyListed | ROOT.TFileMerger.kIncremental
         ):
             raise RuntimeError(f"TFileMerger failed adding metadata category to {output_file}")
-    finally:
-        if os.path.exists(tmp_path):
-            os.unlink(tmp_path)
 
 
 def _detect_metadata(filename):
