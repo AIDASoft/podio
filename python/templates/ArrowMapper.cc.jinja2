@@ -27,7 +27,7 @@ using podio::arrow_utils::checkStatus;
 {% macro declare_arrays(member, parent_array, path_prefix) -%}
 {% if member.is_array -%}
 auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<arrow::FixedSizeListArray>({{ parent_array }}->GetFieldByName("{{ member.name }}"));
-{% set val_array_type = member.value_builder.builder_type | replace('Builder', 'Array') %}
+{% set val_array_type = member.value_builder.builder_type | replace('Builder', 'Array') -%}
 {% if member.value_builder.is_primitive -%}
 auto arr_{{ path_prefix }}{{ member.name }}_val = std::static_pointer_cast<{{ val_array_type }}>(arr_{{ path_prefix }}{{ member.name }}->values());
 {% else -%}
@@ -42,7 +42,7 @@ auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<arrow::St
 {{ declare_arrays(child, 'arr_' + path_prefix + member.name, path_prefix + member.name + '_') }}
 {% endfor -%}
 {% else -%}
-{% set array_type = member.builder_type | replace('Builder', 'Array') %}
+{% set array_type = member.builder_type | replace('Builder', 'Array') -%}
 auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<{{ array_type }}>({{ parent_array }}->GetFieldByName("{{ member.name }}"));
 {% endif -%}
 {%- endmacro %}
@@ -187,30 +187,27 @@ bool registerBufferReaders() {
     auto struct_array = std::static_pointer_cast<arrow::StructArray>(obj_array);
     size_t num_objs = struct_array->length();
     dataVec->resize(num_objs);
-    
-    {% for member in datatype.arrow_metadata.members %}
+    {%- for member in datatype.arrow_metadata.members %}
     {{ declare_arrays(member, 'struct_array', '') | indent(4) }}
-    {% endfor %}
-    
-    {% for member in datatype.arrow_metadata.vector_members %}
+    {%- endfor %}
+    {%- for member in datatype.arrow_metadata.vector_members %}
     auto arr_{{ member.name }} = std::static_pointer_cast<arrow::ListArray>(struct_array->GetFieldByName("{{ member.name }}"));
-    {% set val_array_type = member.value_builder.builder_type | replace('Builder', 'Array') %}
-    {% if member.value_builder.is_primitive -%}
+    {%- set val_array_type = member.value_builder.builder_type | replace('Builder', 'Array') %}
+    {%- if member.value_builder.is_primitive %}
     auto arr_{{ member.name }}_val = std::static_pointer_cast<{{ val_array_type }}>(arr_{{ member.name }}->values());
-    {% else -%}
+    {%- else %}
     auto arr_{{ member.name }}_val = std::static_pointer_cast<arrow::StructArray>(arr_{{ member.name }}->values());
-    {% for child in member.value_builder.children -%}
+    {%- for child in member.value_builder.children %}
     {{ declare_arrays(child, 'arr_' + member.name + '_val', member.name + '_val_') | indent(4) }}
-    {% endfor -%}
-    {% endif -%}
-    {% endfor %}
+    {%- endfor %}
+    {%- endif %}
+    {%- endfor %}
 
     for (size_t i = 0; i < num_objs; ++i) {
-      {% for member in datatype.arrow_metadata.members %}
+      {%- for member in datatype.arrow_metadata.members %}
       {{ read_member(member, '(*dataVec)[i]', '') | indent(6) }}
-      {% endfor %}
-      
-      {% for member in datatype.arrow_metadata.vector_members %}
+      {%- endfor %}
+      {%- for member in datatype.arrow_metadata.vector_members %}
       {
         auto* vecMemberBuffer = podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(buffers->vectorMembers->at({{ loop.index0 }}).second);
         size_t count_begin = vecMemberBuffer->size();
@@ -234,9 +231,8 @@ bool registerBufferReaders() {
         (*dataVec)[i].{{ member.name }}_begin = count_begin;
         (*dataVec)[i].{{ member.name }}_end = vecMemberBuffer->size();
       }
-      {% endfor %}
-      
-      {% for relation in datatype.arrow_metadata.one_to_many_relations %}
+      {%- endfor %}
+      {%- for relation in datatype.arrow_metadata.one_to_many_relations %}
       {
         auto rel_arr = std::static_pointer_cast<arrow::ListArray>(struct_array->GetFieldByName("{{ relation.name }}"));
         auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(rel_arr->values());
@@ -257,9 +253,8 @@ bool registerBufferReaders() {
         (*dataVec)[i].{{ relation.name }}_begin = count_begin;
         (*dataVec)[i].{{ relation.name }}_end = refVec->size();
       }
-      {% endfor %}
-      
-      {% for relation in datatype.arrow_metadata.one_to_one_relations %}
+      {%- endfor %}
+      {%- for relation in datatype.arrow_metadata.one_to_one_relations %}
       {
         auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(struct_array->GetFieldByName("{{ relation.name }}"));
         auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
@@ -272,7 +267,7 @@ bool registerBufferReaders() {
           refVec->push_back(podio::ObjectID{rel_index_arr->Value(i), rel_collId_arr->Value(i)});
         }
       }
-      {% endfor %}
+      {%- endfor %}
     }
     return std::move(buffers).value();
   });
