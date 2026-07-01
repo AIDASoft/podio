@@ -41,8 +41,6 @@ def merge_files(output_file, input_files, metadata="first", compression=101):
     """
     if not input_files:
         raise ValueError("input_files must not be empty")
-    if metadata not in ("first", "all", "none"):
-        raise ValueError(f"metadata must be 'first', 'all', or 'none', got {metadata!r}")
 
     input_files = [str(p) for p in convert_to_str_paths(input_files)]
     output_file = str(convert_to_str_paths(output_file)[0])
