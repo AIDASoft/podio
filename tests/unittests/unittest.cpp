@@ -1293,6 +1293,18 @@ TEST_CASE("GenericParameters empty vector single value access", "[generic-parame
   REQUIRE_FALSE(maybeVal.has_value());
 }
 
+TEST_CASE("GenericParameters getN", "[generic-parameters]") {
+  auto gp = podio::GenericParameters{};
+  gp.set("anInt", 42);
+  gp.set("manyInts", {1, 2, 3, 4});
+  gp.set("aFloat", 3.14f);
+
+  REQUIRE(gp.getN<int>("anInt") == 1);
+  REQUIRE(gp.getN<int>("manyInts") == 4);
+  REQUIRE(gp.getN<float>("aFloat") == 1);
+  REQUIRE(gp.getN<int>("nonExistent") == 0);
+}
+
 TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   // Tests for making sure that generic parameters can be moved / copied correctly
   auto originalParams = podio::GenericParameters{};
