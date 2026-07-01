@@ -1,0 +1,202 @@
+#include "podio/utilities/ArrowFrameData.h"
+#include "podio/utilities/ArrowConverterRegistry.h"
+
+#include <algorithm>
+#include <arrow/api.h>
+#include <stdexcept>
+#include <type_traits>
+
+namespace podio {
+
+namespace {
+
+  struct IntSetter {
+    using ArrayType = arrow::Int32Array;
+    using ValueType = int32_t;
+    static ValueType getValue(const ArrayType* arr, int32_t idx) {
+      return arr->Value(idx);
+    }
+    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<int32_t>& v) {
+      p->set(k, v);
+    }
+  };
+  struct FloatSetter {
+    using ArrayType = arrow::FloatArray;
+    using ValueType = float;
+    static ValueType getValue(const ArrayType* arr, int32_t idx) {
+      return arr->Value(idx);
+    }
+    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<float>& v) {
+      p->set(k, v);
+    }
+  };
+  struct DoubleSetter {
+    using ArrayType = arrow::DoubleArray;
+    using ValueType = double;
+    static ValueType getValue(const ArrayType* arr, int32_t idx) {
+      return arr->Value(idx);
+    }
+    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<double>& v) {
+      p->set(k, v);
+    }
+  };
+  struct StringSetter {
+    using ArrayType = arrow::StringArray;
+    using ValueType = std::string;
+    static ValueType getValue(const ArrayType* arr, int32_t idx) {
+      return arr->GetString(idx);
+    }
+    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<std::string>& v) {
+      p->set(k, v);
+    }
+  };
+
+  template <typename Setter>
+  void extractMap(const arrow::StructArray* struct_array, const std::string& fieldName, int64_t rowIndex, podio::GenericParameters* params) {
+    auto map_array = std::static_pointer_cast<arrow::MapArray>(struct_array->GetFieldByName(fieldName));
+    if (!map_array)
+      return;
+    auto keys_array = std::static_pointer_cast<arrow::StringArray>(map_array->keys());
+    auto items_array = map_array->items();
+    auto list_items = std::static_pointer_cast<arrow::ListArray>(items_array);
+
+    int32_t start = map_array->value_offset(rowIndex);
+    int32_t end = map_array->value_offset(rowIndex + 1);
+
+    using ArrayType = typename Setter::ArrayType;
+    using ValueType = typename Setter::ValueType;
+    auto val_array = std::static_pointer_cast<ArrayType>(list_items->values());
+
+    for (int32_t i = start; i < end; ++i) {
+      std::string key = keys_array->GetString(i);
+
+      int32_t list_start = list_items->value_offset(i);
+      int32_t list_end = list_items->value_offset(i + 1);
+
+      std::vector<ValueType> vals;
+      vals.reserve(list_end - list_start);
+      for (int32_t j = list_start; j < list_end; ++j) {
+        vals.push_back(Setter::getValue(val_array.get(), j));
+      }
+      Setter::set(params, key, vals);
+    }
+  }
+
+} // namespace
+
+ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex) :
+    m_table(std::move(table)), m_rowIndex(rowIndex) {
+  if (!m_table) {
+    throw std::runtime_error("ArrowTable is null");
+  }
+  if (m_rowIndex < 0 || m_rowIndex >= m_table->num_rows()) {
+    throw std::runtime_error("ArrowTable row index out of bounds");
+  }
+
+  std::vector<uint32_t> ids;
+  std::vector<std::string> names;
+
+  auto schema = m_table->schema();
+  for (int i = 0; i < schema->num_fields(); ++i) {
+    auto field = schema->field(i);
+    if (field->name() == "frame_parameters") {
+      continue;
+    }
+    m_availableCollections.push_back(field->name());
+
+    auto metadata = field->metadata();
+    if (!metadata) {
+      throw std::runtime_error("Missing metadata for collection column: " + field->name());
+    }
+    auto collIdIdx = metadata->FindKey("coll_id");
+    if (collIdIdx == -1) {
+      throw std::runtime_error("Missing coll_id in metadata for collection: " + field->name());
+    }
+
+    uint32_t collId = std::stoul(metadata->value(collIdIdx));
+    if (std::find(ids.begin(), ids.end(), collId) != ids.end() ||
+        std::find(names.begin(), names.end(), field->name()) != names.end()) {
+      throw std::runtime_error("Duplicate collection ID or name: " + field->name());
+    }
+    ids.push_back(collId);
+    names.push_back(field->name());
+  }
+  m_idTable = podio::CollectionIDTable(std::move(ids), std::move(names));
+}
+
+std::optional<podio::CollectionReadBuffers> ArrowFrameData::getCollectionBuffers(const std::string& name) {
+  auto chunked_array = m_table->GetColumnByName(name);
+  if (!chunked_array)
+    return std::nullopt;
+
+  auto field = m_table->schema()->GetFieldByName(name);
+  auto metadata = field->metadata();
+
+  auto typeNameIdx = metadata->FindKey("value_type");
+  auto isSubsetIdx = metadata->FindKey("is_subset");
+
+  if (typeNameIdx == -1 || isSubsetIdx == -1) {
+    throw std::runtime_error("Missing value_type or is_subset in metadata for: " + name);
+  }
+
+  std::string typeName = metadata->value(typeNameIdx);
+  bool isSubset = (metadata->value(isSubsetIdx) == "1");
+
+  int64_t remaining_idx = m_rowIndex;
+  std::shared_ptr<arrow::Array> chunk;
+  for (const auto& c : chunked_array->chunks()) {
+    if (remaining_idx < c->length()) {
+      chunk = c;
+      break;
+    }
+    remaining_idx -= c->length();
+  }
+  if (!chunk) {
+    throw std::runtime_error("Row index out of bounds in chunked array");
+  }
+
+  auto reader = podio::ArrowConverterRegistry::instance().getReader(typeName);
+  if (!reader) {
+    throw std::runtime_error("No Arrow reader registered for type: " + typeName);
+  }
+
+  return reader(chunk, remaining_idx, isSubset);
+}
+
+std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
+  auto chunked_array = m_table->GetColumnByName("frame_parameters");
+  if (!chunked_array) {
+    return std::make_unique<podio::GenericParameters>();
+  }
+  int64_t remaining_idx = m_rowIndex;
+  std::shared_ptr<arrow::Array> chunk;
+  for (const auto& c : chunked_array->chunks()) {
+    if (remaining_idx < c->length()) {
+      chunk = c;
+      break;
+    }
+    remaining_idx -= c->length();
+  }
+  if (!chunk)
+    return std::make_unique<podio::GenericParameters>();
+
+  auto struct_array = std::static_pointer_cast<arrow::StructArray>(chunk);
+  auto params = std::make_unique<podio::GenericParameters>();
+
+  extractMap<IntSetter>(struct_array.get(), "int_params", remaining_idx, params.get());
+  extractMap<FloatSetter>(struct_array.get(), "float_params", remaining_idx, params.get());
+  extractMap<DoubleSetter>(struct_array.get(), "double_params", remaining_idx, params.get());
+  extractMap<StringSetter>(struct_array.get(), "string_params", remaining_idx, params.get());
+
+  return params;
+}
+
+std::vector<std::string> ArrowFrameData::getAvailableCollections() const {
+  return m_availableCollections;
+}
+
+podio::CollectionIDTable ArrowFrameData::getIDTable() const {
+  return {m_idTable.ids(), m_idTable.names()};
+}
+
+} // namespace podio

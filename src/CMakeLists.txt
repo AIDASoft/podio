@@ -151,11 +151,11 @@ endif()
 
 # --- Arrow functionality
 if(ENABLE_ARROW)
-  SET(arrow_sources
     ArrowFrameConverter.cc
     ArrowUtils.cc
     ArrowTypeRegistry.cc
     ArrowConverterRegistry.cc
+    ArrowFrameData.cc
     )
 
   add_library(podioArrow SHARED ${arrow_sources})

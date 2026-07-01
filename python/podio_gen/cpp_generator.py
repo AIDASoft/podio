@@ -284,6 +284,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         meta = {
             "name": member.name,
             "getter": member.getter_name(self.get_syntax),
+            "full_type": member.full_type,
         }
         if member.full_type in ARROW_PRIMITIVE_TYPES:
             meta["value_builder"] = {

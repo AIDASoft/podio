@@ -3,7 +3,9 @@
 #include "podio/utilities/ArrowConverterRegistry.h"
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowUtils.h"
+#include "podio/utilities/ArrowFrameData.h"
 
+#include <algorithm>
 #include <arrow/api.h>
 #include <stdexcept>
 
@@ -52,10 +54,10 @@ namespace {
     auto stringMap = buildParamMap<std::string, arrow::StringBuilder>(params);
 
     std::vector<std::shared_ptr<arrow::Field>> fields = {
-        arrow::field("int_params", arrow::map(arrow::utf8(), arrow::list(arrow::int32())), true),
-        arrow::field("float_params", arrow::map(arrow::utf8(), arrow::list(arrow::float32())), true),
-        arrow::field("double_params", arrow::map(arrow::utf8(), arrow::list(arrow::float64())), true),
-        arrow::field("string_params", arrow::map(arrow::utf8(), arrow::list(arrow::utf8())), true),
+        arrow::field("int_params", arrow::map(arrow::utf8(), arrow::list(arrow::int32()))),
+        arrow::field("float_params", arrow::map(arrow::utf8(), arrow::list(arrow::float32()))),
+        arrow::field("double_params", arrow::map(arrow::utf8(), arrow::list(arrow::float64()))),
+        arrow::field("string_params", arrow::map(arrow::utf8(), arrow::list(arrow::utf8()))),
     };
 
     auto structResult = arrow::StructArray::Make({intMap, floatMap, doubleMap, stringMap}, fields);
@@ -174,6 +176,10 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
   }
 
   return tableResult.ValueOrDie();
+}
+
+std::unique_ptr<podio::Frame> convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex) {
+  return std::make_unique<podio::Frame>(std::make_unique<ArrowFrameData>(table, rowIndex));
 }
 
 } // namespace podio

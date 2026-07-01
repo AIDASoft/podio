@@ -23,4 +23,16 @@ ArrowConverterRegistry::CreatorFunc ArrowConverterRegistry::getConverter(const s
   return nullptr;
 }
 
+void ArrowConverterRegistry::registerReader(const std::string& typeName, BufferReaderFunc reader) {
+  m_readerRegistry[typeName] = std::move(reader);
+}
+
+ArrowConverterRegistry::BufferReaderFunc ArrowConverterRegistry::getReader(const std::string& typeName) const {
+  auto it = m_readerRegistry.find(typeName);
+  if (it != m_readerRegistry.end()) {
+    return it->second;
+  }
+  return nullptr;
+}
+
 } // namespace podio
