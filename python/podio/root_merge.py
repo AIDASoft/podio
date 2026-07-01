@@ -1,34 +1,22 @@
 #!/usr/bin/env python3
 """Utilities for merging podio ROOT files (TTree and RNTuple)."""
 
-import shutil
-import subprocess
+import os
 import tempfile
 
 import ROOT
 
 from podio.frame import Frame
 from podio.utils import convert_to_str_paths
-from podio.root_io import Reader, RNTupleReader, Writer
+from podio.root_io import Reader, RNTupleReader, RNTupleWriter, Writer
 
 
-def _hadd_path():
-    """Return the path to the hadd executable, or raise if not found"""
-    path = shutil.which("hadd")
-    if path is None:
-        raise RuntimeError(
-            "hadd not found on PATH. hadd is required by podio.root_merge.merge_files "
-            "and is distributed with ROOT."
-        )
-    return path
-
-
-def merge_files(output_file, input_files, metadata="first"):
+def merge_files(output_file, input_files, metadata="first", compression=101):
     """Merge podio ROOT files.
 
-    Uses hadd for the event data (both TTree and RNTuple), then rewrites the
-    ``metadata`` category (with the ``MergedInputFiles`` parameter set) via
-    a temp file and TFileMerger.
+    Uses ROOT's TFileMerger directly for the event data (both TTree and
+    RNTuple), then rewrites the ``metadata`` category correctly
+    (with the ``MergedInputFiles`` parameter set) via an incremental merge.
 
     All input files must have been written with the same category and
     collection layout.
@@ -40,12 +28,16 @@ def merge_files(output_file, input_files, metadata="first"):
             ``"first"``  -- copy only the first file's entry (default).
             ``"all"``    -- copy entries from every file.
             ``"none"``   -- omit the metadata category entirely.
+        compression (int): ROOT compression settings for the output file.
+            The format is ``<algorithm>*100 + <level>``, where algorithm is
+            1 (ZLIB), 2 (LZMA), 4 (LZ4) or 5 (ZSTD), and level is 1-9.
+            Defaults to 101 (ZLIB level 1).  Pass 0 to use the compression
+            of the first input file.
 
     Raises:
         ValueError: If *input_files* is empty or *metadata* is not one of the
             accepted values.
-        RuntimeError: If a file cannot be opened, hadd is not found, or
-            trees are inconsistent.
+        RuntimeError: If a file cannot be opened or the merge fails.
     """
     if not input_files:
         raise ValueError("input_files must not be empty")
@@ -55,61 +47,137 @@ def merge_files(output_file, input_files, metadata="first"):
     input_files = [str(p) for p in convert_to_str_paths(input_files)]
     output_file = str(convert_to_str_paths(output_file)[0])
 
+    if compression == 0:
+        compression = _first_file_compression(input_files[0])
+
     metadata_info = _detect_metadata(input_files[0])
-
-    hadd = _hadd_path()
-    result = subprocess.run(
-        [hadd, "-f", "-k", output_file] + input_files,
-        capture_output=True,
-        text=True,
-    )
-    if result.returncode != 0:
-        raise RuntimeError(f"hadd failed (exit {result.returncode}):\n{result.stderr}")
-
-    # Delete the incorrectly merged metadata category (rewritten below)
-    out_f = ROOT.TFile.Open(output_file, "UPDATE")
-    if not out_f or out_f.IsZombie():
-        raise RuntimeError(f"Cannot open for UPDATE: {output_file}")
-    try:
-        out_f.Delete("metadata;*")
-        out_f.Write("", ROOT.TObject.kOverwrite)
-    finally:
-        out_f.Close()
+    _main_merge(output_file, input_files, compression, metadata_info)
 
     if metadata == "none":
         return
 
-    # Write the corrected metadata category via a temp file, then copy only
-    # the metadata object into the output using TFileMerger
+    # Prepare the corrected metadata frames
     if metadata_info is not None:
-        reader_cls = metadata_info[0]
+        reader_cls, writer_cls = metadata_info
         src_reader = reader_cls([input_files[0]] if metadata == "first" else input_files)
         frames = list(src_reader.get("metadata"))
     else:
+        writer_cls = _detect_writer(input_files[0])
         frames = [Frame()]
 
     for frame in frames:
         frame.put_parameter("MergedInputFiles", list(input_files))
 
-    with tempfile.NamedTemporaryFile(suffix=".root") as tmp_file:
-        # NamedTemporaryFile opens on creation, close so Writer can reopen
-        tmp_file.close()
-        tmp_path = tmp_file.name
-
-        tmp_writer = Writer(tmp_path)
+    tmp_fd, tmp_path = tempfile.mkstemp(suffix=".root")
+    os.close(tmp_fd)
+    try:
+        tmp_writer = writer_cls(tmp_path)
         for frame in frames:
             tmp_writer.write_frame(frame, "metadata")
-        tmp_writer._writer.finish()
+        tmp_writer.finish()
 
-        m = ROOT.TFileMerger(ROOT.kFALSE)
-        m.OutputFile(output_file, "UPDATE")
-        m.AddFile(tmp_path)
-        m.SetFastMethod(ROOT.kTRUE)
-        m.AddObjectNames("metadata")
-        if not m.PartialMerge(
-            ROOT.TFileMerger.kAll | ROOT.TFileMerger.kOnlyListed | ROOT.TFileMerger.kIncremental
-        ):
-            raise RuntimeError(f"TFileMerger failed adding metadata category to {output_file}")
+        if metadata_info is not None:
+            # Metadata already exists in inputs: podio_metadata from the main
+            # merge already has the right entries. Only merge the metadata
+            # category data tree.
+            merger = ROOT.TFileMerger(ROOT.kFALSE)
+            merger.OutputFile(output_file, "UPDATE")
+            merger.AddFile(tmp_path)
+            merger.SetFastMethod(ROOT.kTRUE)
+            merger.AddObjectNames("metadata")
+            if not merger.PartialMerge(
+                ROOT.TFileMerger.kAll
+                | ROOT.TFileMerger.kOnlyListed
+                | ROOT.TFileMerger.kIncremental
+            ):
+                raise RuntimeError(f"TFileMerger failed adding metadata to {output_file}")
+        else:
+            # Metadata does not exist in inputs. We need to replace
+            # podio_metadata too so the Reader discovers the new category.
+            # The temp file only contains the metadata category, so its
+            # podio_metadata lacks the fields from the output. Rebuild the
+            # temp file with all categories to make the schemas match, then
+            # delete the old podio_metadata and merge the new one.
+            _rebuild_metadata(output_file, tmp_path, writer_cls, frames)
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)
+
+
+def _first_file_compression(filename):
+    """Return the compression settings of *filename* (like hadd -ff)."""
+    first_file = ROOT.TFile.Open(filename)
+    if first_file and not first_file.IsZombie():
+        compression = first_file.GetCompressionSettings()
+        first_file.Close()
+        return compression
+    return 0
+
+
+def _main_merge(output_file, input_files, compression, metadata_info):
+    """Merge all objects from all input files into *output_file*.
+
+    When metadata already exists in the inputs, skip it during the main
+    merge and write it correctly afterwards, to avoid duplicates.
+    """
+    merger = ROOT.TFileMerger(ROOT.kFALSE)
+    merger.OutputFile(output_file, ROOT.kTRUE, compression)
+    merger.SetFastMethod(ROOT.kTRUE)
+    for fp in input_files:
+        merger.AddFile(fp)
+    flags = ROOT.TFileMerger.kAll
+    if metadata_info is not None:
+        merger.AddObjectNames("metadata")
+        flags |= ROOT.TFileMerger.kSkipListed
+    if not merger.PartialMerge(flags):
+        raise RuntimeError(f"TFileMerger failed merging into {output_file}")
+
+
+def _rebuild_metadata(output_file, tmp_path, writer_cls, frames):
+    """Rebuild temp file with all categories so podio_metadata schemas match.
+
+    The RNTuple merger (and TTree merger for podio_metadata) require
+    matching field/branch structures between source and target.  Writing
+    one frame for each category from the merged output into the temp file
+    ensures the temp file's podio_metadata has all the same fields.
+    """
+    reader_cls = Reader if writer_cls is Writer else RNTupleReader
+    src_reader = reader_cls([output_file])
+
+    # Reopen the temp file with a writer that includes all categories
+    tmp_writer = writer_cls(tmp_path)
+    for frame in frames:
+        tmp_writer.write_frame(frame, "metadata")
+    for cat in src_reader.categories:
+        it = iter(src_reader.get(cat))
+        try:
+            tmp_writer.write_frame(next(it), cat)
+        except StopIteration:
+            pass
+    tmp_writer.finish()
+    del src_reader
+
+    # Delete old podio_metadata so it can be replaced
+    out_f = ROOT.TFile.Open(output_file, "UPDATE")
+    if not out_f or out_f.IsZombie():
+        raise RuntimeError(f"Cannot open for UPDATE: {output_file}")
+    try:
+        out_f.Delete("podio_metadata;*")
+        out_f.Write("", ROOT.TObject.kOverwrite)
+    finally:
+        out_f.Close()
+
+    # Merge metadata + podio_metadata from the rebuilt temp file
+    merger = ROOT.TFileMerger(ROOT.kFALSE)
+    merger.OutputFile(output_file, "UPDATE")
+    merger.AddFile(tmp_path)
+    merger.SetFastMethod(ROOT.kTRUE)
+    merger.AddObjectNames("metadata")
+    merger.AddObjectNames("podio_metadata")
+    if not merger.PartialMerge(
+        ROOT.TFileMerger.kAll | ROOT.TFileMerger.kOnlyListed | ROOT.TFileMerger.kIncremental
+    ):
+        raise RuntimeError(f"TFileMerger failed adding metadata to {output_file}")
 
 
 def _detect_metadata(filename):
@@ -118,18 +186,32 @@ def _detect_metadata(filename):
     Checks both TTrees and RNTuples since metadata may be stored in either
     format depending on how the file was written.
     """
-    f = ROOT.TFile.Open(filename)
-    if not f or f.IsZombie():
+    root_file = ROOT.TFile.Open(filename)
+    if not root_file or root_file.IsZombie():
         raise RuntimeError(f"Cannot open file: {filename}")
     try:
-        for elem in f.GetListOfKeys():
+        for elem in root_file.GetListOfKeys():
             if elem.GetName() != "metadata":
                 continue
             cls = elem.GetClassName()
             if "TTree" in cls:
                 return (Reader, Writer)
             if "RNTuple" in cls:
-                return (RNTupleReader, Writer)
+                return (RNTupleReader, RNTupleWriter)
     finally:
-        f.Close()
+        root_file.Close()
     return None
+
+
+def _detect_writer(filename):
+    """Return the writer class (Writer or RNTupleWriter) for the file backend."""
+    root_file = ROOT.TFile.Open(filename)
+    if not root_file or root_file.IsZombie():
+        raise RuntimeError(f"Cannot open file: {filename}")
+    try:
+        for elem in root_file.GetListOfKeys():
+            if "RNTuple" in elem.GetClassName():
+                return RNTupleWriter
+    finally:
+        root_file.Close()
+    return Writer

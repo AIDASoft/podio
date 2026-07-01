@@ -18,6 +18,15 @@ parser.add_argument(
     help="metadata to include in the output file, default: "
     "only the one from the first file, other options: all files, none",
 )
+parser.add_argument(
+    "-c",
+    "--compression",
+    type=int,
+    default=101,
+    help="ROOT compression settings for the output file "
+    "(<algorithm>*100 + <level>). 1=ZLIB, 2=LZMA, 4=LZ4, 5=ZSTD. "
+    "Default: 101 (ZLIB level 1). Pass 0 to use the first input file's compression.",
+)
 args = parser.parse_args()
 
 # Import podio later for quick help messages
@@ -33,7 +42,7 @@ for f in args.files:
 first = args.files[0]
 
 if first.endswith(".root"):
-    merge_files(args.output_file, args.files, metadata=args.metadata)
+    merge_files(args.output_file, args.files, metadata=args.metadata, compression=args.compression)
 elif first.endswith(".sio"):
     # Slow path: frame-by-frame copy
     from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
