@@ -1,0 +1,140 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}Collection.h"
+{% if From is defined %}
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+{% else %}
+{% for include in includes_coll_cc %}
+{{ include }}
+{% endfor %}
+{% endif %}
+
+#include <podio/detail/FilterHookRegistry.h>
+#include <podio/detail/FilterHooks.h>
+
+#include <cstddef>
+#include <memory>
+#include <span>
+#include <vector>
+
+{% set coll_type = class.full_type + 'Collection' %}
+namespace {
+
+struct {{ class.bare_type }}FilterHooks : podio::detail::FilterHooks {
+  void edges([[maybe_unused]] const podio::CollectionBase& coll, [[maybe_unused]] std::size_t index,
+             [[maybe_unused]] const podio::detail::EdgeSink& sink) const override {
+    [[maybe_unused]] const auto obj = static_cast<const {{ coll_type }}&>(coll)[index];
+{% if From is defined %}
+    if (obj.getFrom().isAvailable()) {
+      sink("from", obj.getFrom().getObjectID());
+    }
+    if (obj.getTo().isAvailable()) {
+      sink("to", obj.getTo().getObjectID());
+    }
+{% else %}
+    if (coll.isSubsetCollection()) {
+      // a subset entry's only edge is to the object it references
+      if (obj.isAvailable()) {
+        sink("", obj.getObjectID());
+      }
+      return;
+    }
+{% for relation in OneToOneRelations %}
+    if (obj.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
+      sink("{{ relation.name }}", obj.{{ relation.getter_name(use_get_syntax) }}().getObjectID());
+    }
+{% endfor %}
+{% for relation in OneToManyRelations %}
+    for (const auto& rel : obj.{{ relation.getter_name(use_get_syntax) }}()) {
+      sink("{{ relation.name }}", rel.getObjectID());
+    }
+{% endfor %}
+{% endif %}
+  }
+
+  std::unique_ptr<podio::CollectionBase>
+  cloneSurvivors(const podio::CollectionBase& coll, std::span<const std::size_t> survivors) const override {
+    auto out = std::make_unique<{{ coll_type }}>();
+{% if From is not defined %}
+    if (coll.isSubsetCollection()) {
+      // a subset owns no data; its surviving references are filled in during rewire
+      out->setSubsetCollection();
+      return out;
+    }
+{% endif %}
+    const auto& in = static_cast<const {{ coll_type }}&>(coll);
+    for (auto idx : survivors) {
+{% if VectorMembers %}
+      // clone(false) drops vector-member data along with the relations, so the
+      // vector members are copied back explicitly here.
+      auto cloned = in[idx].clone(false);
+{% for member in VectorMembers %}
+      for (const auto& value : in[idx].{{ member.getter_name(use_get_syntax) }}()) {
+        cloned.{{ member.setter_name(use_get_syntax, is_relation=True) }}(value);
+      }
+{% endfor %}
+      out->push_back(cloned);
+{% else %}
+      out->push_back(in[idx].clone(false));
+{% endif %}
+    }
+    return out;
+  }
+
+  void rewire([[maybe_unused]] const podio::CollectionBase& input,
+              [[maybe_unused]] std::span<const std::size_t> survivors,
+              [[maybe_unused]] podio::CollectionBase& output,
+              [[maybe_unused]] const podio::detail::FilterRemap& remap) const override {
+    [[maybe_unused]] const auto& in = static_cast<const {{ coll_type }}&>(input);
+    [[maybe_unused]] auto& out = static_cast<{{ coll_type }}&>(output);
+{% if From is not defined %}
+    if (output.isSubsetCollection()) {
+      // re-reference the surviving targets in the filtered output
+      for (auto idx : survivors) {
+        if (auto t = podio::detail::resolveTarget<{{ coll_type }}>(remap, in[idx].getObjectID())) {
+          out.push_back(*t);
+        }
+      }
+      return;
+    }
+{% endif %}
+    for (std::size_t j = 0; j < survivors.size(); ++j) {
+      [[maybe_unused]] auto obj = out[j];
+      [[maybe_unused]] const auto src = in[survivors[j]];
+{% if From is defined %}
+      if (src.getFrom().isAvailable()) {
+        if (auto t = {{ from_resolver }}(remap, src.getFrom().getObjectID())) {
+          obj.setFrom(*t);
+        }
+      }
+      if (src.getTo().isAvailable()) {
+        if (auto t = {{ to_resolver }}(remap, src.getTo().getObjectID())) {
+          obj.setTo(*t);
+        }
+      }
+{% else %}
+{% for relation in OneToOneRelations %}
+      if (src.{{ relation.getter_name(use_get_syntax) }}().isAvailable()) {
+        if (auto t = {{ relation.filter_resolver }}(remap, src.{{ relation.getter_name(use_get_syntax) }}().getObjectID())) {
+          obj.{{ relation.setter_name(use_get_syntax) }}(*t);
+        }
+      }
+{% endfor %}
+{% for relation in OneToManyRelations %}
+      for (const auto& rel : src.{{ relation.getter_name(use_get_syntax) }}()) {
+        if (auto t = {{ relation.filter_resolver }}(remap, rel.getObjectID())) {
+          obj.{{ relation.setter_name(use_get_syntax, is_relation=True) }}(*t);
+        }
+      }
+{% endfor %}
+{% endif %}
+    }
+  }
+};
+
+const bool {{ class.bare_type }}_filter_registered = podio::detail::registerFilterHooks(
+    std::string({{ coll_type }}::valueTypeName), std::make_unique<{{ class.bare_type }}FilterHooks>());
+
+} // namespace

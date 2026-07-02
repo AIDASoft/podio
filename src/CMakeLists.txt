@@ -55,6 +55,7 @@ SET(core_sources
   DatamodelRegistryIOHelpers.cc
   UserDataCollection.cc
   CollectionBufferFactory.cc
+  FilterHookRegistry.cc
   MurmurHash3.cpp
   SchemaEvolution.cc
   Glob.cc

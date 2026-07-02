@@ -149,6 +149,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         self._fill_templates("Collection", datatype)
         self._fill_templates("CollectionData", datatype)
 
+        # Each relation gets a resolver expression: a concrete relation resolves
+        # via its collection_type, an interface relation via the interface's
+        # generated resolver. This keeps the filter hooks free of any
+        # concrete/interface branching.
+        for relation in datatype["OneToOneRelations"] + datatype["OneToManyRelations"]:
+            relation.filter_resolver = self._filter_resolver_expr(relation.full_type)
+        self._fill_templates("FilterHooks", datatype)
+
         if "SIO" in self.io_handlers:
             self._fill_templates("SIOBlock", datatype)
 
@@ -234,6 +242,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         ]
 
         self._fill_templates("Interface", interface)
+        self._fill_templates("InterfaceFilterResolver", interface)
         return interface
 
     def do_process_link(self, _, link):
@@ -251,7 +260,19 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 )
             )
         self._fill_templates("LinkCollection", link)
+        # Each endpoint resolves either via its collection_type (concrete) or via
+        # the interface's generated resolver (interface).
+        link["from_resolver"] = self._filter_resolver_expr(link["From"].full_type)
+        link["to_resolver"] = self._filter_resolver_expr(link["To"].full_type)
+        self._fill_templates("FilterHooks", link)
         return link
+
+    def _filter_resolver_expr(self, full_type):
+        """The callable used by the filter hooks to resolve a relation target of
+        the given type to its handle in the filtered output."""
+        if self._is_in(full_type, "interfaces"):
+            return f"{full_type}::resolveFilteredTarget"
+        return f"podio::detail::resolveTarget<{full_type}::collection_type>"
 
     def print_report(self):
         """Print a summary report about the generated code"""
