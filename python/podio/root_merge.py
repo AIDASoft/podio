@@ -8,12 +8,7 @@ import ROOT
 from podio.frame import Frame
 from podio.utils import convert_to_str_paths
 from podio.reading import get_reader
-from podio.root_io import Reader, RNTupleReader, RNTupleWriter, Writer
-
-_WRITER_FOR_READER = {
-    Reader: Writer,
-    RNTupleReader: RNTupleWriter,
-}
+from podio.root_io import Reader, RNTupleWriter, Writer
 
 
 def merge_files(input_files, output_file, metadata="first", compression=101):
@@ -54,7 +49,7 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
         compression = _first_file_compression(input_files[0])
 
     has_metadata = _has_metadata(input_files[0])
-    _main_merge(output_file, input_files, compression, has_metadata)
+    _main_merge(input_files, output_file, compression, has_metadata)
 
     if metadata == "none":
         return
@@ -62,7 +57,7 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
     # Prepare the corrected metadata frames. get_reader auto-detects the
     # backend, and the matching writer is derived from the reader type.
     src_reader = get_reader(input_files if metadata == "all" else input_files[0])
-    writer_cls = _WRITER_FOR_READER[type(src_reader)]
+    writer_cls = Writer if isinstance(src_reader, Reader) else RNTupleWriter
     if has_metadata:
         frames = list(src_reader.get("metadata"))
     else:
@@ -96,17 +91,7 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
             _rebuild_metadata(output_file, tmp_path, writer_cls, frames)
 
 
-def _first_file_compression(filename):
-    """Return the compression settings of *filename* (like hadd -ff)."""
-    first_file = ROOT.TFile.Open(filename)
-    if first_file and not first_file.IsZombie():
-        compression = first_file.GetCompressionSettings()
-        first_file.Close()
-        return compression
-    return 0
-
-
-def _main_merge(output_file, input_files, compression, has_metadata):
+def _main_merge(input_files, output_file, compression, has_metadata):
     """Merge all objects from all input files into *output_file*.
 
     When metadata already exists in the inputs, skip it during the main
@@ -125,11 +110,21 @@ def _main_merge(output_file, input_files, compression, has_metadata):
         raise RuntimeError(f"TFileMerger failed merging into {output_file}")
 
 
+def _first_file_compression(filename):
+    """Return the compression settings of *filename* (like hadd -ff)."""
+    first_file = ROOT.TFile.Open(filename)
+    if first_file and not first_file.IsZombie():
+        compression = first_file.GetCompressionSettings()
+        first_file.Close()
+        return compression
+    return 0
+
+
 def _rebuild_metadata(output_file, tmp_path, writer_cls, frames):
     """Rebuild temp file with all categories so podio_metadata schemas match.
 
     The RNTuple merger (and TTree merger for podio_metadata) require
-    matching field/branch structures between source and target.  Writing
+    matching field/branch structures between source and target. Writing
     one frame for each category from the merged output into the temp file
     ensures the temp file's podio_metadata has all the same fields.
     """
