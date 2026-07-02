@@ -42,8 +42,8 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
     if not input_files:
         raise ValueError("input_files must not be empty")
 
-    input_files = [str(p) for p in convert_to_str_paths(input_files)]
-    output_file = str(convert_to_str_paths(output_file)[0])
+    input_files = convert_to_str_paths(input_files)
+    output_file = convert_to_str_paths(output_file)[0]
 
     if compression == 0:
         compression = _first_file_compression(input_files[0])
