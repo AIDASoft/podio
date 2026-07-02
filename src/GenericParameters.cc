@@ -1,6 +1,7 @@
 #include "podio/GenericParameters.h"
 
-#include <iomanip>
+#include <fmt/core.h>
+#include <fmt/ranges.h>
 
 namespace podio {
 
@@ -18,45 +19,34 @@ GenericParameters::GenericParameters(const GenericParameters& other) {
   _doubleMap = other._doubleMap;
 }
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
-  os << "[";
-  if (!values.empty()) {
-    os << values[0];
-    for (size_t i = 1; i < values.size(); ++i) {
-      os << ", " << values[i];
-    }
-  }
-
-  return os << "]";
-}
-
-template <typename MapType>
-void printMap(const MapType& map, std::ostream& os) {
-  const auto osflags = os.flags();
-  os << std::left << std::setw(30) << "Key "
-     << "Value " << '\n';
-  os << "--------------------------------------------------------------------------------\n";
-  for (const auto& [key, value] : map) {
-    os << std::left << std::setw(30) << key << value << '\n';
-  }
-
-  os.flags(osflags);
-}
-
 void GenericParameters::print(std::ostream& os, bool flush) const {
-  os << "int parameters\n\n";
-  printMap(getMap<int>(), os);
-  os << "\nfloat parameters\n";
-  printMap(getMap<float>(), os);
-  os << "\ndouble parameters\n";
-  printMap(getMap<double>(), os);
-  os << "\nstd::string parameters\n";
-  printMap(getMap<std::string>(), os);
-
+  fmt::format_to(std::ostreambuf_iterator(os), "{}", *this);
   if (flush) {
     os.flush();
   }
 }
 
 } // namespace podio
+
+fmt::format_context::iterator fmt::formatter<podio::GenericParameters>::format(const podio::GenericParameters& params,
+                                                                               fmt::format_context& ctx) const {
+  auto out = ctx.out();
+
+  auto formatMap = [&out](const auto& map) {
+    out = fmt::format_to(out, "{:<30}{}\n{:-<80}\n", "Key", "Value", "");
+    for (const auto& [key, value] : map) {
+      out = fmt::format_to(out, "{:<30}{}\n", key, value);
+    }
+  };
+
+  out = fmt::format_to(out, "int parameters\n\n");
+  formatMap(params.getMap<int>());
+  out = fmt::format_to(out, "float parameters\n\n");
+  formatMap(params.getMap<float>());
+  out = fmt::format_to(out, "double parameters\n\n");
+  formatMap(params.getMap<double>());
+  out = fmt::format_to(out, "string parameters\n\n");
+  formatMap(params.getMap<std::string>());
+
+  return out;
+}
