@@ -20,7 +20,7 @@ class AllWriters:
         """Finish all managed writers"""
         for writer in self.writers:
             try:
-                writer._writer.finish()  # pylint: disable=protected-access
+                writer.finish()
             except AttributeError:
                 pass
 
@@ -57,3 +57,7 @@ class BaseWriterMixin:
         if collections is not None:
             args.append(collections)
         self._writer.writeFrame(*args)
+
+    def finish(self):
+        """Finish writing and flush all data to the output file."""
+        self._writer.finish()  # pylint: disable=protected-access

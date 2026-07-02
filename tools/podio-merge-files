@@ -18,12 +18,20 @@ parser.add_argument(
     help="metadata to include in the output file, default: "
     "only the one from the first file, other options: all files, none",
 )
+parser.add_argument(
+    "-c",
+    "--compression",
+    type=int,
+    default=101,
+    help="ROOT compression settings for the output file "
+    "(<algorithm>*100 + <level>). 1=ZLIB, 2=LZMA, 4=LZ4, 5=ZSTD. "
+    "Default: 101 (ZLIB level 1). Pass 0 to use the first input file's compression.",
+)
 args = parser.parse_args()
 
 # Import podio later for quick help messages
 import podio  # pylint: disable=wrong-import-position # noqa: E402
-import podio.root_io  # pylint: disable=wrong-import-position # noqa: E402
-from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
+from podio.root_merge import merge_files  # pylint: disable=wrong-import-position # noqa: E402
 
 all_files = set()
 for f in args.files:
@@ -31,38 +39,47 @@ for f in args.files:
         raise ValueError(f"File {f} is present more than once in the input list")
     all_files.add(f)
 
-reader = reading.get_reader(args.files)
-if isinstance(reader, podio.root_io.Reader):
-    writer = podio.root_io.Writer(args.output_file)
-elif isinstance(reader, podio.root_io.RNTupleReader):
-    writer = podio.root_io.RNTupleWriter(args.output_file)
-else:
-    raise ValueError(f"Input file {args.files[0]} is not a TTree or RNTuple file")
+first = args.files[0]
 
-categories = list(reader.categories)
-is_metadata_available = True  # pylint: disable=invalid-name
-try:
-    # All frames will be copied as they are except the metadata ones
-    categories.remove("metadata")
-except ValueError:
-    is_metadata_available = False  # pylint: disable=invalid-name
+if first.endswith(".root"):
+    merge_files(args.files, args.output_file, metadata=args.metadata, compression=args.compression)
+elif first.endswith(".sio"):
+    # Slow path: frame-by-frame copy
+    from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
+    from podio import sio_io  # pylint: disable=wrong-import-position # noqa: E402
 
-for category in tqdm(categories):
-    all_frames = reader.get(category)
-    for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
-        writer.write_frame(frame, category)
+    reader = reading.get_reader(args.files)
+    writer = sio_io.Writer(args.output_file)
 
-if args.metadata == "none":
-    sys.exit(0)
+    categories = list(reader.categories)
+    is_metadata_available = True  # pylint: disable=invalid-name
+    try:
+        # All frames will be copied as they are except the metadata ones
+        categories.remove("metadata")
+    except ValueError:
+        is_metadata_available = False  # pylint: disable=invalid-name
 
-if not is_metadata_available:
-    print("Warning: metadata category 'metadata' not found in the input files, it will be created")
-    all_frames = [podio.Frame()]
-else:
-    if args.metadata == "first":
-        all_frames = [reader.get("metadata")[0]]
+    for category in tqdm(categories):
+        all_frames = reader.get(category)
+        for frame in tqdm(all_frames, desc=f"Merging category '{category}'"):
+            writer.write_frame(frame, category)
+
+    if args.metadata == "none":
+        sys.exit(0)
+
+    if not is_metadata_available:
+        print(
+            "Warning: metadata category 'metadata' not found in the input files,"
+            " it will be created"
+        )
+        all_frames = [podio.Frame()]
     else:
-        all_frames = reader.get("metadata")
-for frame in all_frames:
-    frame.put_parameter("MergedInputFiles", args.files)
-    writer.write_frame(frame, "metadata")
+        if args.metadata == "first":
+            all_frames = [reader.get("metadata")[0]]
+        else:
+            all_frames = reader.get("metadata")
+    for frame in all_frames:
+        frame.put_parameter("MergedInputFiles", args.files)
+        writer.write_frame(frame, "metadata")
+else:
+    raise ValueError(f"Unsupported file type: {first}. Supported types: .root, .sio")
