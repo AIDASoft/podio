@@ -42,7 +42,7 @@ for f in args.files:
 first = args.files[0]
 
 if first.endswith(".root"):
-    merge_files(args.output_file, args.files, metadata=args.metadata, compression=args.compression)
+    merge_files(args.files, args.output_file, metadata=args.metadata, compression=args.compression)
 elif first.endswith(".sio"):
     # Slow path: frame-by-frame copy
     from podio import reading  # pylint: disable=wrong-import-position # noqa: E402
