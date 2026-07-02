@@ -639,6 +639,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#podio.root_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio.root_merge">podio.root_merge module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio.root_merge.merge_files"><code class="docutils literal notranslate"><span class="pre">merge_files()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio.sio_io">podio.sio_io module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.sio_io.LegacyReader"><code class="docutils literal notranslate"><span class="pre">LegacyReader</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#podio.sio_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
@@ -1012,6 +1016,12 @@ following members:</p>
 <li><p>_writer: The actual writer that is able to write frames</p></li>
 </ul>
 <p>Initialize the writer</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="podio.base_writer.BaseWriterMixin.finish">
+<span class="sig-name descname"><span class="pre">finish</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_writer.BaseWriterMixin.finish" title="Link to this definition"></a></dt>
+<dd><p>Finish writing and flush all data to the output file.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="podio.base_writer.BaseWriterMixin.write_frame">
 <span class="sig-name descname"><span class="pre">write_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">category</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collections</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.base_writer.BaseWriterMixin.write_frame" title="Link to this definition"></a></dt>
@@ -1438,6 +1448,45 @@ Frame based I/O into Frames for a more seamless transition.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>filename</strong> (<em>str</em><em> or </em><em>Path</em>) – The name of the output file</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-podio.root_merge">
+<span id="podio-root-merge-module"></span><h2>podio.root_merge module<a class="headerlink" href="#module-podio.root_merge" title="Link to this heading"></a></h2>
+<p>Utilities for merging podio ROOT files (TTree and RNTuple).</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="podio.root_merge.merge_files">
+<span class="sig-prename descclassname"><span class="pre">podio.root_merge.</span></span><span class="sig-name descname"><span class="pre">merge_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_file</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'first'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">101</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.root_merge.merge_files" title="Link to this definition"></a></dt>
+<dd><p>Merge podio ROOT files.</p>
+<p>Uses ROOT’s TFileMerger directly for the event data (both TTree and
+RNTuple), then rewrites the metadata category correctly (with the
+MergedInputFiles parameter set) via an incremental merge.</p>
+<p>All input files must have been written with the same category and
+collection layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_files</strong> (<em>list</em><em>[</em><em>str</em><em>] or </em><em>list</em><em>[</em><em>Path</em><em>]</em>) – Ordered list of input files.</p></li>
+<li><p><strong>output_file</strong> (<em>str</em><em> or </em><em>Path</em>) – Path of the output file to create.</p></li>
+<li><p><strong>metadata</strong> (<em>str</em>) – How to handle the metadata Frame category.
+“first” copies only the first file’s entry (default), “all”
+copies entries from every file, “none” omits the metadata
+category entirely.</p></li>
+<li><p><strong>compression</strong> (<em>int</em>) – ROOT compression settings for the output file.
+The format is algorithm*100 + level, where algorithm is
+1 (ZLIB), 2 (LZMA), 4 (LZ4) or 5 (ZSTD), and level is 1-9.
+Defaults to 101 (ZLIB level 1). Pass 0 to use the compression
+of the first input file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If input_files is empty or metadata is not one of the
+    accepted values.</p></li>
+<li><p><strong>RuntimeError</strong> – If a file cannot be opened or the merge fails.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
