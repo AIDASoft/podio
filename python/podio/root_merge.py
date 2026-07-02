@@ -15,27 +15,27 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
     """Merge podio ROOT files.
 
     Uses ROOT's TFileMerger directly for the event data (both TTree and
-    RNTuple), then rewrites the ``metadata`` category correctly
-    (with the ``MergedInputFiles`` parameter set) via an incremental merge.
+    RNTuple), then rewrites the metadata category correctly (with the
+    MergedInputFiles parameter set) via an incremental merge.
 
     All input files must have been written with the same category and
     collection layout.
 
     Args:
-        output_file (str or Path): Path of the output file to create.
         input_files (list[str] or list[Path]): Ordered list of input files.
-        metadata (str): How to handle the ``metadata`` Frame category.
-            ``"first"``  -- copy only the first file's entry (default).
-            ``"all"``    -- copy entries from every file.
-            ``"none"``   -- omit the metadata category entirely.
+        output_file (str or Path): Path of the output file to create.
+        metadata (str): How to handle the metadata Frame category.
+            "first" copies only the first file's entry (default), "all"
+            copies entries from every file, "none" omits the metadata
+            category entirely.
         compression (int): ROOT compression settings for the output file.
-            The format is ``<algorithm>*100 + <level>``, where algorithm is
+            The format is algorithm*100 + level, where algorithm is
             1 (ZLIB), 2 (LZMA), 4 (LZ4) or 5 (ZSTD), and level is 1-9.
-            Defaults to 101 (ZLIB level 1).  Pass 0 to use the compression
+            Defaults to 101 (ZLIB level 1). Pass 0 to use the compression
             of the first input file.
 
     Raises:
-        ValueError: If *input_files* is empty or *metadata* is not one of the
+        ValueError: If input_files is empty or metadata is not one of the
             accepted values.
         RuntimeError: If a file cannot be opened or the merge fails.
     """
@@ -92,7 +92,7 @@ def merge_files(input_files, output_file, metadata="first", compression=101):
 
 
 def _main_merge(input_files, output_file, compression, has_metadata):
-    """Merge all objects from all input files into *output_file*.
+    """Merge all objects from all input files into the output file.
 
     When metadata already exists in the inputs, skip it during the main
     merge and write it correctly afterwards, to avoid duplicates.
@@ -111,7 +111,7 @@ def _main_merge(input_files, output_file, compression, has_metadata):
 
 
 def _first_file_compression(filename):
-    """Return the compression settings of *filename* (like hadd -ff)."""
+    """Return the compression settings of the file (like hadd -ff)."""
     first_file = ROOT.TFile.Open(filename)
     if first_file and not first_file.IsZombie():
         compression = first_file.GetCompressionSettings()
@@ -167,7 +167,7 @@ def _rebuild_metadata(output_file, tmp_path, writer_cls, frames):
 
 
 def _has_metadata(filename):
-    """Return True if a 'metadata' category is present in *filename*."""
+    """Return True if a 'metadata' category is present in the file."""
     root_file = ROOT.TFile.Open(filename)
     if not root_file or root_file.IsZombie():
         raise RuntimeError(f"Cannot open file: {filename}")
