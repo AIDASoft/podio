@@ -1793,100 +1793,193 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 
 #if PODIO_ENABLE_ARROW
   #include "datamodel/ArrowMapper.h"
+  #include "datamodel/EnergyInNamespaceCollection.h"
+  #include "datamodel/ExampleWithNamespaceCollection.h"
+  #include "podio/utilities/ArrowTypeRegistry.h"
   #include <arrow/type.h>
 
-TEST_CASE("Arrow schema mapping", "[arrow]") {
-  auto schema = datamodel::arrow_io::schema();
-  REQUIRE(schema != nullptr);
+// Helper lambda to extract the struct type from a registered List type
+inline std::shared_ptr<arrow::StructType> getArrowStructType(const std::shared_ptr<arrow::DataType>& type) {
+  if (!type || type->id() != arrow::Type::LIST) {
+    return nullptr;
+  }
+  auto listType = std::static_pointer_cast<arrow::ListType>(type);
+  return std::static_pointer_cast<arrow::StructType>(listType->value_type());
+}
 
-  // 1. Verify top-level fields
-  auto field_names = schema->field_names();
-  REQUIRE(std::find(field_names.begin(), field_names.end(), "EventInfo") != field_names.end());
-  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleHit") != field_names.end());
-  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleMC") != field_names.end());
-  REQUIRE(std::find(field_names.begin(), field_names.end(), "ExampleWithArray") != field_names.end());
-  REQUIRE(std::find(field_names.begin(), field_names.end(), "frame_parameters") != field_names.end());
+TEST_CASE("ArrowTypeRegistry - Comprehensive Verification", "[arrow]") {
+  auto const& reg = podio::ArrowTypeRegistry::instance();
 
-  // 2. Verify EventInfo (Simple type)
-  auto eventInfoField = schema->GetFieldByName("EventInfo");
-  REQUIRE(eventInfoField != nullptr);
-  REQUIRE(eventInfoField->type()->id() == arrow::Type::LIST);
-  auto eventInfoList = std::static_pointer_cast<arrow::ListType>(eventInfoField->type());
-  auto eventInfoStruct = std::static_pointer_cast<arrow::StructType>(eventInfoList->value_type());
-  REQUIRE(eventInfoStruct != nullptr);
-  auto numberField = eventInfoStruct->GetFieldByName("Number");
-  REQUIRE(numberField != nullptr);
-  REQUIRE(numberField->type()->id() == arrow::Type::INT32);
+  SECTION("Verify that all expected datamodel types are registered") {
+    // Check using exact valueTypeNames from generated collections
+    REQUIRE(reg.getType(std::string(EventInfoCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleHitCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleClusterCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleForCyclicDependency1Collection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleForCyclicDependency2Collection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleWithOneRelationCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleWithUserInitCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ExampleWithVectorMemberCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(ex42::ExampleWithNamespaceCollection::valueTypeName)) != nullptr);
+    REQUIRE(reg.getType(std::string(nsp::EnergyInNamespaceCollection::valueTypeName)) != nullptr);
 
-  // 3. Verify ExampleHit (Primitive and struct mapping)
-  auto exampleHitField = schema->GetFieldByName("ExampleHit");
-  REQUIRE(exampleHitField != nullptr);
-  REQUIRE(exampleHitField->type()->id() == arrow::Type::LIST);
-  auto exampleHitList = std::static_pointer_cast<arrow::ListType>(exampleHitField->type());
-  auto exampleHitStruct = std::static_pointer_cast<arrow::StructType>(exampleHitList->value_type());
-  REQUIRE(exampleHitStruct != nullptr);
+    // Check raw string names of other datatypes
+    const std::vector<std::string> expectedTypes = {"ExampleMC",
+                                                    "ExampleReferencingType",
+                                                    "ExampleWithArrayComponent",
+                                                    "ExampleWithComponent",
+                                                    "ex42::ExampleWithARelation",
+                                                    "ExampleWithDifferentNamespaceRelations",
+                                                    "ExampleWithArray",
+                                                    "ExampleWithFixedWidthIntegers",
+                                                    "ExampleWithSingleSelfRelation",
+                                                    "ExampleWithInterfaceRelation",
+                                                    "ExampleWithExternalExtraCode"};
 
-  auto cellIDField = exampleHitStruct->GetFieldByName("cellID");
-  REQUIRE(cellIDField != nullptr);
-  REQUIRE(cellIDField->type()->id() == arrow::Type::UINT64);
+    for (const auto& typeName : expectedTypes) {
+      INFO("Checking registration of type: " << typeName);
+      REQUIRE(reg.getType(typeName) != nullptr);
+    }
+  }
 
-  auto energyField = exampleHitStruct->GetFieldByName("energy");
-  REQUIRE(energyField != nullptr);
-  REQUIRE(energyField->type()->id() == arrow::Type::DOUBLE);
+  SECTION("Verify primitive types mapping") {
+    auto structType = getArrowStructType(reg.getType(std::string(EventInfoCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
+    auto numberField = structType->GetFieldByName("Number");
+    REQUIRE(numberField != nullptr);
+    REQUIRE(numberField->type()->id() == arrow::Type::INT32);
+  }
 
-  auto xField = exampleHitStruct->GetFieldByName("x");
-  REQUIRE(xField != nullptr);
-  REQUIRE(xField->type()->id() == arrow::Type::DOUBLE);
+  SECTION("Verify multi-field hit type mapping") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleHitCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
 
-  // 4. Verify ExampleWithArray (Fixed size lists)
-  auto exampleWithArrayField = schema->GetFieldByName("ExampleWithArray");
-  REQUIRE(exampleWithArrayField != nullptr);
-  auto exampleWithArrayList = std::static_pointer_cast<arrow::ListType>(exampleWithArrayField->type());
-  auto exampleWithArrayStruct = std::static_pointer_cast<arrow::StructType>(exampleWithArrayList->value_type());
-  REQUIRE(exampleWithArrayStruct != nullptr);
+    const std::vector<std::pair<std::string, arrow::Type::type>> expectedFields = {{"cellID", arrow::Type::UINT64},
+                                                                                   {"x", arrow::Type::DOUBLE},
+                                                                                   {"y", arrow::Type::DOUBLE},
+                                                                                   {"z", arrow::Type::DOUBLE},
+                                                                                   {"energy", arrow::Type::DOUBLE}};
 
-  auto myArrayField = exampleWithArrayStruct->GetFieldByName("myArray");
-  REQUIRE(myArrayField != nullptr);
-  REQUIRE(myArrayField->type()->id() == arrow::Type::FIXED_SIZE_LIST);
-  auto myArrayType = std::static_pointer_cast<arrow::FixedSizeListType>(myArrayField->type());
-  REQUIRE(myArrayType->list_size() == 4);
-  REQUIRE(myArrayType->value_type()->id() == arrow::Type::INT32);
+    for (const auto& [fieldName, typeId] : expectedFields) {
+      auto field = structType->GetFieldByName(fieldName);
+      REQUIRE(field != nullptr);
+      REQUIRE(field->type()->id() == typeId);
+    }
+  }
 
-  // 5. Verify ExampleMC (Relations mapped to object references)
-  auto exampleMCField = schema->GetFieldByName("ExampleMC");
-  REQUIRE(exampleMCField != nullptr);
-  auto exampleMCList = std::static_pointer_cast<arrow::ListType>(exampleMCField->type());
-  auto exampleMCStruct = std::static_pointer_cast<arrow::StructType>(exampleMCList->value_type());
-  REQUIRE(exampleMCStruct != nullptr);
+  SECTION("Verify vector members mapping (List of primitives)") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleWithVectorMemberCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
 
-  auto parentsField = exampleMCStruct->GetFieldByName("parents");
-  REQUIRE(parentsField != nullptr);
-  REQUIRE(parentsField->type()->id() == arrow::Type::LIST);
-  auto parentsList = std::static_pointer_cast<arrow::ListType>(parentsField->type());
-  auto parentsStruct = std::static_pointer_cast<arrow::StructType>(parentsList->value_type());
-  REQUIRE(parentsStruct != nullptr);
+    auto countField = structType->GetFieldByName("count");
+    REQUIRE(countField != nullptr);
+    REQUIRE(countField->type()->id() == arrow::Type::LIST);
 
-  auto parentCollId = parentsStruct->GetFieldByName("collectionID");
-  REQUIRE(parentCollId != nullptr);
-  REQUIRE(parentCollId->type()->id() == arrow::Type::UINT32);
+    auto listType = std::static_pointer_cast<arrow::ListType>(countField->type());
+    REQUIRE(listType->value_type()->id() == arrow::Type::INT32);
+  }
 
-  auto parentIndex = parentsStruct->GetFieldByName("index");
-  REQUIRE(parentIndex != nullptr);
-  REQUIRE(parentIndex->type()->id() == arrow::Type::INT32);
+  SECTION("Verify one-to-one relations mapping (Object Reference struct)") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleWithOneRelationCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
 
-  // 6. Verify frame_parameters (Map mapping)
-  auto frameParamsField = schema->GetFieldByName("frame_parameters");
-  REQUIRE(frameParamsField != nullptr);
-  REQUIRE(frameParamsField->type()->id() == arrow::Type::STRUCT);
+    auto clusterField = structType->GetFieldByName("cluster");
+    REQUIRE(clusterField != nullptr);
+    REQUIRE(clusterField->type()->id() == arrow::Type::STRUCT);
 
-  auto frameParamsType = std::static_pointer_cast<arrow::StructType>(frameParamsField->type());
-  auto intParamsField = frameParamsType->GetFieldByName("int_params");
-  REQUIRE(intParamsField != nullptr);
-  REQUIRE(intParamsField->type()->id() == arrow::Type::MAP);
-  auto intParamsType = std::static_pointer_cast<arrow::MapType>(intParamsField->type());
-  REQUIRE(intParamsType->key_type()->id() == arrow::Type::STRING);
-  REQUIRE(intParamsType->item_type()->id() == arrow::Type::LIST);
-  auto intParamsList = std::static_pointer_cast<arrow::ListType>(intParamsType->item_type());
-  REQUIRE(intParamsList->value_type()->id() == arrow::Type::INT32);
+    auto clusterStruct = std::static_pointer_cast<arrow::StructType>(clusterField->type());
+    auto colIDField = clusterStruct->GetFieldByName("collectionID");
+    auto indexField = clusterStruct->GetFieldByName("index");
+    REQUIRE(colIDField != nullptr);
+    REQUIRE(colIDField->type()->id() == arrow::Type::UINT32);
+    REQUIRE(indexField != nullptr);
+    REQUIRE(indexField->type()->id() == arrow::Type::INT32);
+  }
+
+  SECTION("Verify one-to-many relations mapping (List of Object References)") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleClusterCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
+
+    auto hitsField = structType->GetFieldByName("Hits");
+    REQUIRE(hitsField != nullptr);
+    REQUIRE(hitsField->type()->id() == arrow::Type::LIST);
+
+    auto listType = std::static_pointer_cast<arrow::ListType>(hitsField->type());
+    REQUIRE(listType->value_type()->id() == arrow::Type::STRUCT);
+
+    auto refStruct = std::static_pointer_cast<arrow::StructType>(listType->value_type());
+    REQUIRE(refStruct->GetFieldByName("collectionID") != nullptr);
+    REQUIRE(refStruct->GetFieldByName("index") != nullptr);
+  }
+
+  SECTION("Verify nested component structures & fixed-size arrays mapping") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleWithArrayComponentCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
+
+    auto sField = structType->GetFieldByName("s");
+    REQUIRE(sField != nullptr);
+    REQUIRE(sField->type()->id() == arrow::Type::STRUCT);
+
+    auto componentStruct = std::static_pointer_cast<arrow::StructType>(sField->type());
+
+    // Check primitive fields in component SimpleStruct
+    REQUIRE(componentStruct->GetFieldByName("x")->type()->id() == arrow::Type::INT32);
+    REQUIRE(componentStruct->GetFieldByName("y")->type()->id() == arrow::Type::INT32);
+    REQUIRE(componentStruct->GetFieldByName("z")->type()->id() == arrow::Type::INT32);
+
+    // Check fixed size list in component SimpleStruct (int p[4])
+    auto pField = componentStruct->GetFieldByName("p");
+    REQUIRE(pField != nullptr);
+    REQUIRE(pField->type()->id() == arrow::Type::FIXED_SIZE_LIST);
+    auto pListType = std::static_pointer_cast<arrow::FixedSizeListType>(pField->type());
+    REQUIRE(pListType->list_size() == 4);
+    REQUIRE(pListType->value_type()->id() == arrow::Type::INT32);
+  }
+
+  SECTION("Verify fixed-width integer types and custom struct layouts") {
+    auto structType =
+        getArrowStructType(reg.getType(std::string(ExampleWithFixedWidthIntegersCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
+
+    // Direct members
+    REQUIRE(structType->GetFieldByName("fixedI16")->type()->id() == arrow::Type::INT16);
+    REQUIRE(structType->GetFieldByName("fixedU64")->type()->id() == arrow::Type::UINT64);
+    REQUIRE(structType->GetFieldByName("fixedU32")->type()->id() == arrow::Type::UINT32);
+
+    // Struct member containing fixed-width types
+    auto structField = structType->GetFieldByName("fixedWidthStruct");
+    REQUIRE(structField != nullptr);
+    REQUIRE(structField->type()->id() == arrow::Type::STRUCT);
+    auto subStruct = std::static_pointer_cast<arrow::StructType>(structField->type());
+    REQUIRE(subStruct->GetFieldByName("fixedUnsigned16")->type()->id() == arrow::Type::UINT16);
+    REQUIRE(subStruct->GetFieldByName("fixedInteger64")->type()->id() == arrow::Type::INT64);
+    REQUIRE(subStruct->GetFieldByName("fixedInteger32")->type()->id() == arrow::Type::INT32);
+
+    // Fixed-width integer array (int16_t fixedWidthArray[2])
+    auto arrayField = structType->GetFieldByName("fixedWidthArray");
+    REQUIRE(arrayField != nullptr);
+    REQUIRE(arrayField->type()->id() == arrow::Type::FIXED_SIZE_LIST);
+    auto fslType = std::static_pointer_cast<arrow::FixedSizeListType>(arrayField->type());
+    REQUIRE(fslType->list_size() == 2);
+    REQUIRE(fslType->value_type()->id() == arrow::Type::INT16);
+  }
+
+  SECTION("Verify fixed-size array of struct components") {
+    auto structType = getArrowStructType(reg.getType(std::string(ExampleWithArrayCollection::valueTypeName)));
+    REQUIRE(structType != nullptr);
+
+    // structArray field (array of structs: NamespaceStruct structArray[4])
+    auto structArrayField = structType->GetFieldByName("structArray");
+    REQUIRE(structArrayField != nullptr);
+    REQUIRE(structArrayField->type()->id() == arrow::Type::FIXED_SIZE_LIST);
+
+    auto fslType = std::static_pointer_cast<arrow::FixedSizeListType>(structArrayField->type());
+    REQUIRE(fslType->list_size() == 4);
+    REQUIRE(fslType->value_type()->id() == arrow::Type::STRUCT);
+
+    auto subStruct = std::static_pointer_cast<arrow::StructType>(fslType->value_type());
+    REQUIRE(subStruct->GetFieldByName("x")->type()->id() == arrow::Type::INT32);
+    REQUIRE(subStruct->GetFieldByName("y")->type()->id() == arrow::Type::INT32);
+  }
 }
 #endif

@@ -1,0 +1,110 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+{% import "macros/arrow.jinja2" as arrow_macros %}
+
+#include "{{ incfolder }}ArrowMapper.h"
+#include "podio/utilities/ArrowFrameConverter.h"
+#include "podio/utilities/ArrowTypeRegistry.h"
+#include "podio/utilities/ArrowConverterRegistry.h"
+#include <arrow/type.h>
+#include <arrow/util/key_value_metadata.h>
+#include <arrow/api.h>
+
+#include "podio/utilities/ArrowUtils.h"
+
+#include <map>
+#include <memory>
+#include <stdexcept>
+#include <string>
+
+{% for datatype in datatypes %}
+#include "{{ incfolder }}{{ datatype.class.bare_type }}Collection.h"
+{% endfor %}
+
+namespace {{ package_name }}::arrow_io {
+
+namespace {
+void checkStatus(const arrow::Status& status, const std::string& msg) {
+  podio::arrow_utils::checkStatus(status, msg);
+}
+} // namespace
+
+
+static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() {
+  static const std::map<std::string, std::shared_ptr<arrow::DataType>> instance = {
+{% for datatype in datatypes %}
+    {
+      "{{ datatype.class.full_type }}",
+      arrow::list(arrow::struct_({
+{% for field in datatype.arrow_fields %}
+          {{ field }},
+{% endfor %}
+      }))
+    },
+{% endfor %}
+  };
+  return instance;
+}
+
+bool registerTypes() {
+  auto& reg = podio::ArrowTypeRegistry::mutInstance();
+  for (const auto& [typeName, type] : typeMap()) {
+    reg.registerType(typeName, type);
+  }
+  return true;
+}
+
+static const bool typesRegistered = registerTypes();
+
+bool registerConverters() {
+  auto& convRegistry = podio::ArrowConverterRegistry::mutInstance();
+{% for datatype in datatypes %}
+  convRegistry.registerConverter("{{ datatype.class.full_type }}", [](const podio::CollectionBase* coll) {
+    const auto* concreteColl = static_cast<const {{ datatype.class.full_type }}Collection*>(coll);
+    auto type = podio::ArrowTypeRegistry::instance().getType("{{ datatype.class.full_type }}");
+    std::unique_ptr<arrow::ArrayBuilder> builder;
+    auto status = arrow::MakeBuilder(arrow::default_memory_pool(), type, &builder);
+    if (!status.ok()) {
+      throw std::runtime_error("Failed to create builder for type '{{ datatype.class.full_type }}': " + status.ToString());
+    }
+    auto* collectionBuilder = static_cast<arrow::ListBuilder*>(builder.get());
+    auto* objectBuilder = static_cast<arrow::StructBuilder*>(collectionBuilder->value_builder());
+
+    {% for member in datatype.arrow_metadata.members %}
+    {{ arrow_macros.declare_builder(member, 'objectBuilder', loop.index0, '') | indent(4) }}
+    {%- endfor %}
+    {% for member in datatype.arrow_metadata.vector_members %}
+    {{ arrow_macros.declare_vector_builder(member, 'objectBuilder', loop.index0 + datatype.arrow_metadata.members|length) | indent(4) }}
+    {%- endfor %}
+    {% for relation in datatype.arrow_metadata.one_to_one_relations %}
+    {{ arrow_macros.declare_relation_builder(relation, 'objectBuilder', loop.index0 + datatype.arrow_metadata.members|length + datatype.arrow_metadata.vector_members|length) | indent(4) }}
+    {%- endfor %}
+    {% for relation in datatype.arrow_metadata.one_to_many_relations %}
+    {{ arrow_macros.declare_relation_builder(relation, 'objectBuilder', loop.index0 + datatype.arrow_metadata.members|length + datatype.arrow_metadata.vector_members|length + datatype.arrow_metadata.one_to_one_relations|length) | indent(4) }}
+    {%- endfor %}
+    checkStatus(collectionBuilder->Append(), "Failed to append to collectionBuilder");
+    for (const auto obj: *concreteColl) {
+      {% for member in datatype.arrow_metadata.members %}
+      {{ arrow_macros.append_member(member, 'obj', '') | indent(6) }}
+      {%- endfor %}
+      {% for member in datatype.arrow_metadata.vector_members %}
+      {{ arrow_macros.append_vector(member) | indent(6) }}
+      {%- endfor %}
+      {% for relation in datatype.arrow_metadata.one_to_one_relations %}
+      {{ arrow_macros.append_relation(relation) | indent(6) }}
+      {%- endfor %}
+      {% for relation in datatype.arrow_metadata.one_to_many_relations %}
+      {{ arrow_macros.append_relation(relation) | indent(6) }}
+      {%- endfor %}
+      checkStatus(objectBuilder->Append(), "Failed to append to objectBuilder");
+    }
+    std::shared_ptr<arrow::Array> array;
+    checkStatus(collectionBuilder->Finish(&array), "Failed to finish collectionBuilder");
+    return array;
+  });
+{% endfor %}
+  return true;
+}
+
+static const bool convertersRegistered = registerConverters();
+
+} // namespace {{ package_name }}::arrow_io

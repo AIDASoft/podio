@@ -53,6 +53,34 @@ ARROW_PRIMITIVE_TYPES = {
     "std::string": "arrow::utf8()",
 }
 
+ARROW_BUILDERS = {
+    "bool": "arrow::BooleanBuilder",
+    "char": "arrow::Int8Builder",
+    "short": "arrow::Int16Builder",
+    "int": "arrow::Int32Builder",
+    "long": "arrow::Int64Builder",
+    "long long": "arrow::Int64Builder",
+    "unsigned": "arrow::UInt32Builder",
+    "unsigned int": "arrow::UInt32Builder",
+    "unsigned long": "arrow::UInt64Builder",
+    "unsigned long long": "arrow::UInt64Builder",
+    "float": "arrow::FloatBuilder",
+    "double": "arrow::DoubleBuilder",
+    "int16_t": "arrow::Int16Builder",
+    "int32_t": "arrow::Int32Builder",
+    "int64_t": "arrow::Int64Builder",
+    "uint16_t": "arrow::UInt16Builder",
+    "uint32_t": "arrow::UInt32Builder",
+    "uint64_t": "arrow::UInt64Builder",
+    "std::int16_t": "arrow::Int16Builder",
+    "std::int32_t": "arrow::Int32Builder",
+    "std::int64_t": "arrow::Int64Builder",
+    "std::uint16_t": "arrow::UInt16Builder",
+    "std::uint32_t": "arrow::UInt32Builder",
+    "std::uint64_t": "arrow::UInt64Builder",
+    "std::string": "arrow::StringBuilder",
+}
+
 
 class IncludeFrom(IntEnum):
     """Enum to signify if an include is needed and from where it should come"""
@@ -159,16 +187,22 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         datatypes = []
         for datatype in datamodel["datatypes"]:
             datatype["arrow_fields"] = self._arrow_fields(datatype)
+            datatype["arrow_metadata"] = self._get_arrow_metadata(datatype)
             datatypes.append(datatype)
 
         data = {
             "package_name": self.package_name,
             "schema_version": self.datamodel.schema_version,
             "datatypes": datatypes,
+            "incfolder": self.incfolder,
         }
         self._write_file(
             "ArrowMapper.h",
             self._eval_template("ArrowMapper.h.jinja2", data),
+        )
+        self._write_file(
+            "ArrowMapper.cc",
+            self._eval_template("ArrowMapper.cc.jinja2", data),
         )
 
     def _arrow_fields(self, datatype):
@@ -183,18 +217,108 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             for member in datatype["VectorMembers"]
         )
         fields.extend(
-            self._arrow_field(relation.name, "objectRefType()")
+            self._arrow_field(relation.name, "podio::objectRefType()")
             for relation in datatype["OneToOneRelations"]
         )
         fields.extend(
-            self._arrow_field(relation.name, "arrow::list(objectRefType())")
+            self._arrow_field(relation.name, "arrow::list(podio::objectRefType())")
             for relation in datatype["OneToManyRelations"]
         )
         return fields
 
+    def _get_arrow_metadata(self, datatype):
+        """Get Arrow metadata mapping for a datatype."""
+        return {
+            "class_full_type": datatype["class"].full_type,
+            "class_bare_type": datatype["class"].bare_type,
+            "members": [self._get_member_metadata(m) for m in datatype["Members"]],
+            "vector_members": [self._get_vector_metadata(m) for m in datatype["VectorMembers"]],
+            "one_to_one_relations": [
+                self._get_relation_metadata(r, is_mult=False)
+                for r in datatype["OneToOneRelations"]
+            ],
+            "one_to_many_relations": [
+                self._get_relation_metadata(r, is_mult=True)
+                for r in datatype["OneToManyRelations"]
+            ],
+        }
+
+    def _get_member_metadata(self, member):
+        """Get Arrow metadata mapping for a member field."""
+        meta = {
+            "name": member.name,
+            "getter": member.getter_name(self.get_syntax),
+            "is_array": member.is_array,
+        }
+        if member.is_array:
+            meta["array_size"] = member.array_size
+            meta["array_type"] = member.array_type
+            if member.array_type in ARROW_PRIMITIVE_TYPES:
+                meta["value_builder"] = {
+                    "builder_type": ARROW_BUILDERS[member.array_type],
+                    "is_primitive": True,
+                }
+            else:
+                comp_name = member.array_type.removeprefix("::")
+                comp = self.datamodel.components.get(comp_name) or (
+                    self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+                )
+                meta["value_builder"] = {
+                    "builder_type": "arrow::StructBuilder",
+                    "is_struct": True,
+                    "children": [
+                        self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]
+                    ],
+                }
+            return meta
+
+        comp_name = member.full_type.removeprefix("::")
+        comp = self.datamodel.components.get(comp_name) or (
+            self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+        )
+        if comp:
+            meta["builder_type"] = "arrow::StructBuilder"
+            meta["is_struct"] = True
+            meta["children"] = [self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]]
+        else:
+            meta["builder_type"] = ARROW_BUILDERS.get(member.full_type)
+            meta["is_primitive"] = True
+        return meta
+
+    def _get_vector_metadata(self, member):
+        """Get Arrow metadata mapping for a vector member field."""
+        meta = {
+            "name": member.name,
+            "getter": member.getter_name(self.get_syntax),
+        }
+        if member.full_type in ARROW_PRIMITIVE_TYPES:
+            meta["value_builder"] = {
+                "builder_type": ARROW_BUILDERS[member.full_type],
+                "is_primitive": True,
+            }
+        else:
+            comp_name = member.full_type.removeprefix("::")
+            comp = self.datamodel.components.get(comp_name) or (
+                self.upstream_edm.components.get(comp_name) if self.upstream_edm else None
+            )
+            meta["value_builder"] = {
+                "builder_type": "arrow::StructBuilder",
+                "is_struct": True,
+                "children": [self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]],
+            }
+        return meta
+
+    def _get_relation_metadata(self, relation, is_mult):
+        """Get Arrow metadata mapping for a relation field."""
+        return {
+            "name": relation.name,
+            "getter": relation.getter_name(self.get_syntax),
+            "is_mult": is_mult,
+        }
+
     def _arrow_field(self, name, type_expr, nullable=False):
         """Create a C++ arrow::field expression"""
-        nullable_arg = ", true" if nullable else ""
+        nullable_arg = "" if nullable else ", false"
         return f'arrow::field("{name}", {type_expr}{nullable_arg})'
 
     def _arrow_type(self, member):

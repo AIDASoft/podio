@@ -15,6 +15,7 @@ set(PODIO_TEMPLATES
   ${CMAKE_CURRENT_LIST_DIR}/MutableObject.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/MutableObject.h.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/ArrowMapper.h.jinja2
+  ${CMAKE_CURRENT_LIST_DIR}/ArrowMapper.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/selection.xml.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.cc.jinja2
   ${CMAKE_CURRENT_LIST_DIR}/SIOBlock.h.jinja2

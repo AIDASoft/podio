@@ -51,9 +51,11 @@ if (ENABLE_SIO)
   target_link_libraries(unittest_podio PRIVATE podio::podioSioIO)
 endif()
 if (ENABLE_ARROW)
-  target_link_libraries(unittest_podio PRIVATE Arrow::arrow_shared)
+  target_sources(unittest_podio PRIVATE test_arrow_converter.cpp)
+  target_link_libraries(unittest_podio PRIVATE podio::podioArrow ${PODIO_ARROW_TARGET} TestDataModelArrow ExtensionDataModelArrow InterfaceExtensionDataModelArrow)
   target_compile_definitions(unittest_podio PRIVATE PODIO_ENABLE_ARROW=1)
 endif()
+
 
 # The unittests can easily be filtered and they are labelled so we can put together a
 # list of labels that we want to ignore

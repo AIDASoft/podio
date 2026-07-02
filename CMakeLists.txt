@@ -150,10 +150,16 @@ endif()
 # optionally build with Arrow -----------------------------------------------
 if(ENABLE_ARROW)
   find_package(Arrow REQUIRED)
-  if(Arrow_FOUND)
-    message(STATUS "Found Arrow library - will build Arrow I/O support")
-    list(APPEND PODIO_IO_HANDLERS ARROW)
+  if(TARGET Arrow::arrow_shared)
+    set(PODIO_ARROW_TARGET Arrow::arrow_shared)
+  elseif(TARGET Arrow::arrow_static)
+    set(PODIO_ARROW_TARGET Arrow::arrow_static)
+  else()
+    message(FATAL_ERROR "Found Arrow, but no usable Arrow CMake target was exported")
   endif()
+
+  message(STATUS "Found Arrow library - will build Arrow I/O support")
+  list(APPEND PODIO_IO_HANDLERS ARROW)
 endif()
 
 #--- enable unit testing capabilities ------------------------------------------
