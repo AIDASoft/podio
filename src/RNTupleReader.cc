@@ -94,6 +94,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
+  std::ranges::sort(m_availableCategories);
 
   // Pre-fill the entries map
   for (const auto& category : m_availableCategories) {
