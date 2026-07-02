@@ -157,12 +157,6 @@ public:
         getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
   }
 
-  [[deprecated("isValid will be removed, use hasID() if you want to check if it has an ID, otherwise assume the "
-               "collection is valid")]]
-  bool isValid() const override {
-    return hasID();
-  }
-
   /// number of elements in the collection
   size_t size() const override {
     return _vec.size();
