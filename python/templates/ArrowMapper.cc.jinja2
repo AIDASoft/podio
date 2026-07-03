@@ -163,16 +163,16 @@ bool registerBufferReaders() {
   convRegistry.registerReader("{{ datatype.class.full_type }}", [](std::shared_ptr<arrow::Array> array, int64_t rowIndex, bool isSubset) {
     auto buffers = podio::CollectionBufferFactory::instance().createBuffers("{{ datatype.class.full_type }}Collection", 1, isSubset);
     if (!buffers->data) {
-      auto list_array = std::static_pointer_cast<arrow::ListArray>(array);
-      auto obj_array = list_array->value_slice(rowIndex);
-      auto struct_array = std::static_pointer_cast<arrow::StructArray>(obj_array);
-      auto collId_arr = std::static_pointer_cast<arrow::UInt32Array>(struct_array->field(0));
-      auto index_arr = std::static_pointer_cast<arrow::Int32Array>(struct_array->field(1));
+      auto collection_frames_list = std::static_pointer_cast<arrow::ListArray>(array);
+      auto frame_collection_slice = collection_frames_list->value_slice(rowIndex);
+      auto raw_data_struct_array = std::static_pointer_cast<arrow::StructArray>(frame_collection_slice);
+      auto collId_arr = std::static_pointer_cast<arrow::UInt32Array>(raw_data_struct_array->field(0));
+      auto index_arr = std::static_pointer_cast<arrow::Int32Array>(raw_data_struct_array->field(1));
       auto* refVec = buffers->references->at(0).get();
-      size_t num_objs = struct_array->length();
-      refVec->reserve(num_objs);
-      for (size_t i = 0; i < num_objs; ++i) {
-        if (struct_array->IsNull(i)) {
+      size_t collection_size = raw_data_struct_array->length();
+      refVec->reserve(collection_size);
+      for (size_t i = 0; i < collection_size; ++i) {
+        if (raw_data_struct_array->IsNull(i)) {
           refVec->push_back(podio::ObjectID{podio::ObjectID::invalid, static_cast<uint32_t>(podio::ObjectID::untracked)});
         } else {
           refVec->push_back(podio::ObjectID{index_arr->Value(i), collId_arr->Value(i)});
@@ -182,16 +182,16 @@ bool registerBufferReaders() {
     }
     
     auto* dataVec = buffers->dataAsVector<{{ datatype.class.full_type }}Data>();
-    auto list_array = std::static_pointer_cast<arrow::ListArray>(array);
-    auto obj_array = list_array->value_slice(rowIndex);
-    auto struct_array = std::static_pointer_cast<arrow::StructArray>(obj_array);
-    size_t num_objs = struct_array->length();
-    dataVec->resize(num_objs);
+    auto collection_frames_list = std::static_pointer_cast<arrow::ListArray>(array);
+    auto frame_collection_slice = collection_frames_list->value_slice(rowIndex);
+    auto raw_data_struct_array = std::static_pointer_cast<arrow::StructArray>(frame_collection_slice);
+    size_t collection_size = raw_data_struct_array->length();
+    dataVec->resize(collection_size);
     {%- for member in datatype.arrow_metadata.members %}
-    {{ declare_arrays(member, 'struct_array', '') | indent(4) }}
+    {{ declare_arrays(member, 'raw_data_struct_array', '') | indent(4) }}
     {%- endfor %}
     {%- for member in datatype.arrow_metadata.vector_members %}
-    auto arr_{{ member.name }} = std::static_pointer_cast<arrow::ListArray>(struct_array->GetFieldByName("{{ member.name }}"));
+    auto arr_{{ member.name }} = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ member.name }}"));
     {%- set val_array_type = member.value_builder.builder_type | replace('Builder', 'Array') %}
     {%- if member.value_builder.is_primitive %}
     auto arr_{{ member.name }}_val = std::static_pointer_cast<{{ val_array_type }}>(arr_{{ member.name }}->values());
@@ -203,7 +203,7 @@ bool registerBufferReaders() {
     {%- endif %}
     {%- endfor %}
 
-    for (size_t i = 0; i < num_objs; ++i) {
+    for (size_t i = 0; i < collection_size; ++i) {
       {%- for member in datatype.arrow_metadata.members %}
       {{ read_member(member, '(*dataVec)[i]', '') | indent(6) }}
       {%- endfor %}
@@ -234,7 +234,7 @@ bool registerBufferReaders() {
       {%- endfor %}
       {%- for relation in datatype.arrow_metadata.one_to_many_relations %}
       {
-        auto rel_arr = std::static_pointer_cast<arrow::ListArray>(struct_array->GetFieldByName("{{ relation.name }}"));
+        auto rel_arr = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
         auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(rel_arr->values());
         auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
         auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
@@ -256,7 +256,7 @@ bool registerBufferReaders() {
       {%- endfor %}
       {%- for relation in datatype.arrow_metadata.one_to_one_relations %}
       {
-        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(struct_array->GetFieldByName("{{ relation.name }}"));
+        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
         auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
         auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
         
