@@ -229,8 +229,6 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
     def _get_arrow_metadata(self, datatype):
         """Get Arrow metadata mapping for a datatype."""
         return {
-            "class_full_type": datatype["class"].full_type,
-            "class_bare_type": datatype["class"].bare_type,
             "members": [self._get_member_metadata(m) for m in datatype["Members"]],
             "vector_members": [self._get_vector_metadata(m) for m in datatype["VectorMembers"]],
             "one_to_one_relations": [

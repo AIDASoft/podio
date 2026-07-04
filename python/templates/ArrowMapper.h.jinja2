@@ -3,17 +3,4 @@
 #ifndef {{ package_name.upper() }}_ARROWMAPPER_H
 #define {{ package_name.upper() }}_ARROWMAPPER_H
 
-#include <memory>
-
-namespace arrow {
-class Schema;
-class KeyValueMetadata;
-}
-
-namespace {{ package_name }}::arrow_io {
-
-bool registerTypes();
-
-} // namespace {{ package_name }}::arrow_io
-
 #endif

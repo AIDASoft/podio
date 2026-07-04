@@ -59,8 +59,6 @@ SET(core_sources
   SchemaEvolution.cc
   Glob.cc
   Pythonizations.cc
-  ArrowTypeRegistry.cc
-  ArrowConverterRegistry.cc
   )
 
 SET(core_headers
@@ -156,6 +154,8 @@ if(ENABLE_ARROW)
   SET(arrow_sources
     ArrowFrameConverter.cc
     ArrowUtils.cc
+    ArrowTypeRegistry.cc
+    ArrowConverterRegistry.cc
     )
 
   add_library(podioArrow SHARED ${arrow_sources})

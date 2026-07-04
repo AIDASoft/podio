@@ -476,11 +476,6 @@ TEST_CASE("ArrowFrameConverter - JSON Equivalence Check", "[arrow][converter][js
   frameJson["FixedWidthInts"] = originalFrame.get<ExampleWithFixedWidthIntegersCollection>("FixedWidthInts");
   frameJson["frame_parameters"] = genericParametersToJson(originalFrame.getParameters());
 
-  std::cout << "--- ARROW TABLE JSON ---" << std::endl;
-  std::cout << arrowJson.dump(4) << std::endl;
-  std::cout << "--- FRAME DIRECT JSON ---" << std::endl;
-  std::cout << frameJson.dump(4) << std::endl;
-
   // Compare the JSON representations
   REQUIRE(arrowJson == frameJson);
 }

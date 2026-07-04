@@ -18,9 +18,7 @@ std::shared_ptr<arrow::DataType> objectRefType() {
 
 namespace {
 
-  void checkStatus(const arrow::Status& status, const std::string& msg) {
-    podio::arrow_utils::checkStatus(status, msg);
-  }
+  using podio::arrow_utils::checkStatus;
 
   template <typename T, typename BuilderType>
   std::shared_ptr<arrow::Array> buildParamMap(const podio::GenericParameters& params) {

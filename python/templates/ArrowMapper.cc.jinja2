@@ -6,7 +6,6 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
 #include <arrow/type.h>
-#include <arrow/util/key_value_metadata.h>
 #include <arrow/api.h>
 
 #include "podio/utilities/ArrowUtils.h"
@@ -23,11 +22,7 @@
 namespace {{ package_name }}::arrow_io {
 
 namespace {
-void checkStatus(const arrow::Status& status, const std::string& msg) {
-  podio::arrow_utils::checkStatus(status, msg);
-}
-} // namespace
-
+using podio::arrow_utils::checkStatus;
 
 static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() {
   static const std::map<std::string, std::shared_ptr<arrow::DataType>> instance = {
@@ -106,5 +101,7 @@ bool registerConverters() {
 }
 
 static const bool convertersRegistered = registerConverters();
+
+} // namespace
 
 } // namespace {{ package_name }}::arrow_io
