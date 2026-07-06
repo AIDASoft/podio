@@ -16,8 +16,8 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 
 // Test frame validation helpers
-#include "write_frame.h"
 #include "read_frame.h"
+#include "write_frame.h"
 
 // Arrow headers
 #include <arrow/api.h>
@@ -624,9 +624,7 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Reader-Only Verification", 
   std::shared_ptr<arrow::Array> array;
   REQUIRE(collectionBuilder->Finish(&array).ok());
 
-  auto metadata = arrow::KeyValueMetadata::Make(
-      {"value_type", "is_subset", "coll_id"},
-      {"ExampleHit", "0", "101"});
+  auto metadata = arrow::KeyValueMetadata::Make({"value_type", "is_subset", "coll_id"}, {"ExampleHit", "0", "101"});
   auto field = arrow::field("Hits", arrowType, true, std::move(metadata));
 
   auto schema = arrow::schema({field});
@@ -634,7 +632,7 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Reader-Only Verification", 
   REQUIRE(batch != nullptr);
   auto tableResult = arrow::Table::FromRecordBatches({batch});
   REQUIRE(tableResult.ok());
-  auto table = tableResult.ValueOrDie();
+  const auto& table = tableResult.ValueOrDie();
 
   auto frame = podio::convertTableToFrame(table, 0);
   REQUIRE(frame != nullptr);
@@ -800,33 +798,34 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
 TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arrow][converter][common]") {
   auto originalFrame = makeFrame(0);
 
-  const std::vector<std::string> colls = {
-    "mcparticles",
-    "moreMCs",
-    "arrays",
-    "mcParticleRefs",
-    "hits",
-    "hitRefs",
-    "refs",
-    "refs2",
-    "clusters",
-    "OneRelation",
-    "info",
-    "WithVectorMember",
-    "VectorMemberSubsetColl",
-    "fixedWidthInts",
-    "WithNamespaceMember",
-    "WithNamespaceRelation",
-    "WithNamespaceRelationCopy",
-    "emptyCollection",
-    "emptySubsetColl",
-    "extension_Contained",
-    "extension_ExternalComponent",
-    "extension_ExternalRelation",
-    "interface_examples",
-    "anotherHits",
-    "extension_interface_relation"
-  };
+  const std::vector<std::string> colls = {"mcparticles",
+                                          "moreMCs",
+                                          "arrays",
+                                          "mcParticleRefs",
+                                          "hits",
+                                          "hitRefs",
+                                          "refs",
+                                          "refs2",
+                                          "clusters",
+                                          "OneRelation",
+                                          "info",
+                                          "WithVectorMember",
+                                          "VectorMemberSubsetColl",
+                                          "fixedWidthInts",
+                                          "WithNamespaceMember",
+                                          "WithNamespaceRelation",
+                                          "WithNamespaceRelationCopy",
+                                          "emptyCollection",
+                                          "emptySubsetColl",
+                                          "extension_Contained",
+                                          "extension_ExternalComponent",
+                                          "extension_ExternalRelation",
+                                          "interface_examples",
+                                          "anotherHits",
+                                          "extension_interface_relation",
+                                          "links",
+                                          "links_with_interfaces",
+                                          "extension_interface_links"};
 
   auto table = podio::convertFrameToTable(originalFrame, colls);
   REQUIRE(table != nullptr);
@@ -839,22 +838,20 @@ TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arro
   processExtensions(*reconstructedFrame, 0, podio::version::build_version);
   checkVecMemSubsetColl(*reconstructedFrame);
   checkInterfaceCollection(*reconstructedFrame);
-  // verify interface relation (excluding link collection check)
-  const auto& interfaceColl = reconstructedFrame->get<iextension::ExampleWithInterfaceRelationCollection>("extension_interface_relation");
-  REQUIRE(interfaceColl.size() == 2);
-  const auto& hits = reconstructedFrame->get<ExampleHitCollection>("hits");
-  const auto& anotherHits = reconstructedFrame->get<iextension::AnotherHitCollection>("anotherHits");
-  const auto iface0 = interfaceColl[0];
-  const auto iface1 = interfaceColl[1];
-  REQUIRE(iface0.singleEnergy() == hits[0]);
-  REQUIRE(iface1.singleEnergy() == anotherHits[0]);
-  const auto iface0Rels = iface0.manyEnergies();
-  REQUIRE(iface0Rels.size() == 2);
-  REQUIRE(iface0Rels[0] == hits[0]);
-  REQUIRE(iface0Rels[1] == anotherHits[0]);
-  const auto iface1Rels = iface1.manyEnergies();
-  REQUIRE(iface1Rels.size() == 2);
-  REQUIRE(iface1Rels[0] == hits[0]);
-  REQUIRE(iface1Rels[1] == anotherHits[0]);
-}
+  checkInterfaceExtension(*reconstructedFrame);
 
+  const auto& hits = reconstructedFrame->get<ExampleHitCollection>("hits");
+  const auto& clusters = reconstructedFrame->get<ExampleClusterCollection>("clusters");
+  checkLinkCollection(*reconstructedFrame, hits, clusters);
+
+  // Verify Link collection with interfaces
+  const auto& interfaceLinks = reconstructedFrame->get<TestInterfaceLinkCollection>("links_with_interfaces");
+  REQUIRE(interfaceLinks.size() == 3);
+  const auto& mcps = reconstructedFrame->get<ExampleMCCollection>("mcparticles");
+  REQUIRE(interfaceLinks[0].get<ExampleCluster>() == clusters[0]);
+  REQUIRE(interfaceLinks[0].get<TypeWithEnergy>() == hits[0]);
+  REQUIRE(interfaceLinks[1].get<ExampleCluster>() == clusters[1]);
+  REQUIRE(interfaceLinks[1].get<TypeWithEnergy>() == mcps[0]);
+  REQUIRE(interfaceLinks[2].get<ExampleCluster>() == clusters[0]);
+  REQUIRE(interfaceLinks[2].get<TypeWithEnergy>() == clusters[1]);
+}

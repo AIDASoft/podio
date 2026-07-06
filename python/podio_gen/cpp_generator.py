@@ -194,6 +194,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             "package_name": self.package_name,
             "schema_version": self.datamodel.schema_version,
             "datatypes": datatypes,
+            "links": datamodel.get("links", []),
             "incfolder": self.incfolder,
         }
         self._write_file(
