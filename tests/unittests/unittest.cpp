@@ -1792,7 +1792,6 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 }
 
 #if PODIO_ENABLE_ARROW
-  #include "datamodel/ArrowMapper.h"
   #include "datamodel/EnergyInNamespaceCollection.h"
   #include "datamodel/ExampleWithNamespaceCollection.h"
   #include "podio/utilities/ArrowTypeRegistry.h"

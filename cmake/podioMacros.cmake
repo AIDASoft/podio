@@ -198,7 +198,6 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
   # Filter out anything I/O backend related to build the core library
   LIST(FILTER HEADERS EXCLUDE REGEX .*SIOBlock.h)
   LIST(FILTER SOURCES EXCLUDE REGEX .*SIOBlock.cc)
-  LIST(FILTER HEADERS EXCLUDE REGEX .*ArrowMapper.h)
   LIST(FILTER SOURCES EXCLUDE REGEX .*ArrowMapper.cc)
 
   add_library(${lib_name} SHARED ${SOURCES} ${HEADERS})
@@ -359,15 +358,14 @@ function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
   endif()
 
   # Only get the ArrowMapper handlers
-  list(FILTER HEADERS INCLUDE REGEX .*ArrowMapper.h)
   list(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
 
-  if(NOT HEADERS)
+  if(NOT SOURCES)
     message(STATUS "Not adding the Arrow library to the targets because the corresponding c++ sources have not been generated")
     return()
   endif()
 
-  add_library(${CORE_LIB}Arrow SHARED ${SOURCES} ${HEADERS})
+  add_library(${CORE_LIB}Arrow SHARED ${SOURCES})
   target_link_libraries(${CORE_LIB}Arrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
   target_include_directories(${CORE_LIB}Arrow PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
