@@ -151,6 +151,7 @@ endif()
 
 # --- Arrow functionality
 if(ENABLE_ARROW)
+  SET(arrow_sources
     ArrowFrameConverter.cc
     ArrowUtils.cc
     ArrowTypeRegistry.cc

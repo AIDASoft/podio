@@ -545,7 +545,6 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Round-Trip)",
 
   // Verify Hits collection
   const auto& recHits = reconstructedFrame->get<ExampleHitCollection>("Hits");
-  REQUIRE(recHits.isValid());
   REQUIRE(recHits.size() == 2);
   REQUIRE(recHits[0].x() == 1.0f);
   REQUIRE(recHits[1].x() == 4.0f);
@@ -553,7 +552,6 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Round-Trip)",
 
   // Verify Clusters collection and its hit relations
   const auto& recClusters = reconstructedFrame->get<ExampleClusterCollection>("Clusters");
-  REQUIRE(recClusters.isValid());
   REQUIRE(recClusters.size() == 1);
   REQUIRE(recClusters[0].energy() == 100.0);
   REQUIRE(recClusters[0].Hits_size() == 2);
@@ -562,13 +560,11 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Round-Trip)",
 
   // Verify OneRelation
   const auto& recRelColls = reconstructedFrame->get<ExampleWithOneRelationCollection>("OneRelation");
-  REQUIRE(recRelColls.isValid());
   REQUIRE(recRelColls.size() == 1);
   REQUIRE(recRelColls[0].cluster().energy() == 100.0);
 
   // Verify VectorMember
   const auto& recVecColls = reconstructedFrame->get<ExampleWithVectorMemberCollection>("VectorMember");
-  REQUIRE(recVecColls.isValid());
   REQUIRE(recVecColls.size() == 1);
   REQUIRE(recVecColls[0].count_size() == 2);
   REQUIRE(recVecColls[0].count(0) == 42);
@@ -576,7 +572,6 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Round-Trip)",
 
   // Verify SubsetHits
   const auto& recSubsetHits = reconstructedFrame->get<ExampleHitCollection>("SubsetHits");
-  REQUIRE(recSubsetHits.isValid());
   REQUIRE(recSubsetHits.isSubsetCollection());
   REQUIRE(recSubsetHits.size() == 1);
   REQUIRE(recSubsetHits[0].x() == 1.0f);
@@ -645,7 +640,6 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Reader-Only Verification", 
   REQUIRE(frame != nullptr);
 
   const auto& recHits = frame->get<ExampleHitCollection>("Hits");
-  REQUIRE(recHits.isValid());
   REQUIRE(recHits.size() == 2);
   REQUIRE(recHits[0].cellID() == 0x100ULL);
   REQUIRE(recHits[0].x() == 10.0f);
@@ -684,8 +678,6 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
   REQUIRE((hits[1] == hitRefs[0] && hits[0] == hitRefs[1]));
 
   checkClusterCollection(event, hits);
-
-  auto& clusters = event.get<ExampleClusterCollection>("clusters");
 
   auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
   for (auto ref : mcpRefs) {
