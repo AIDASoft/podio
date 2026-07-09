@@ -59,7 +59,7 @@ public:
   BufferReaderFunc getReader(const std::string& typeName) const;
 
 private:
-  ArrowConverterRegistry() : m_registry() {
+  ArrowConverterRegistry() : m_registry(), m_readerRegistry() {
   }
 
   std::unordered_map<std::string, CreatorFunc> m_registry;

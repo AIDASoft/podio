@@ -52,10 +52,12 @@ namespace {
   };
 
   template <typename Setter>
-  void extractMap(const arrow::StructArray* struct_array, const std::string& fieldName, int64_t rowIndex, podio::GenericParameters* params) {
+  void extractMap(const arrow::StructArray* struct_array, const std::string& fieldName, int64_t rowIndex,
+                  podio::GenericParameters* params) {
     auto map_array = std::static_pointer_cast<arrow::MapArray>(struct_array->GetFieldByName(fieldName));
-    if (!map_array)
+    if (!map_array) {
       return;
+    }
     auto keys_array = std::static_pointer_cast<arrow::StringArray>(map_array->keys());
     auto items_array = map_array->items();
     auto list_items = std::static_pointer_cast<arrow::ListArray>(items_array);
@@ -85,7 +87,7 @@ namespace {
 } // namespace
 
 ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex) :
-    m_table(std::move(table)), m_rowIndex(rowIndex) {
+    m_table(std::move(table)), m_rowIndex(rowIndex), m_availableCollections(), m_idTable() {
   if (!m_table) {
     throw std::runtime_error("ArrowTable is null");
   }
@@ -126,8 +128,9 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
 
 std::optional<podio::CollectionReadBuffers> ArrowFrameData::getCollectionBuffers(const std::string& name) {
   auto chunked_array = m_table->GetColumnByName(name);
-  if (!chunked_array)
+  if (!chunked_array) {
     return std::nullopt;
+  }
 
   auto field = m_table->schema()->GetFieldByName(name);
   auto metadata = field->metadata();
@@ -177,8 +180,9 @@ std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
     }
     remaining_idx -= c->length();
   }
-  if (!chunk)
+  if (!chunk) {
     return std::make_unique<podio::GenericParameters>();
+  }
 
   auto struct_array = std::static_pointer_cast<arrow::StructArray>(chunk);
   auto params = std::make_unique<podio::GenericParameters>();

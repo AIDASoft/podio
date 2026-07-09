@@ -1,9 +1,9 @@
 #include "podio/utilities/ArrowFrameConverter.h"
 #include "podio/Frame.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
+#include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowUtils.h"
-#include "podio/utilities/ArrowFrameData.h"
 
 #include <algorithm>
 #include <arrow/api.h>
