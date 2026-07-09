@@ -144,11 +144,6 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
                                std::to_string(array->length()) + ", expected 1");
     }
 
-    auto validateStatus = array->ValidateFull();
-    if (!validateStatus.ok()) {
-      throw std::runtime_error("Validation failed for collection '" + collName + "': " + validateStatus.ToString());
-    }
-
     // Attach "value_type", "is_subset", and "coll_id" metadata to the field
     auto metadata = arrow::KeyValueMetadata::Make(
         {"value_type", "is_subset", "coll_id"},
@@ -178,7 +173,7 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
     throw std::runtime_error("Failed to construct Arrow Table: " + tableResult.status().ToString());
   }
 
-  return std::move(tableResult).ValueOrDie();
+  return tableResult.ValueOrDie();
 }
 
 } // namespace podio
