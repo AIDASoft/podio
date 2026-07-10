@@ -146,10 +146,11 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
                                std::to_string(array->length()) + ", expected 1");
     }
 
-    // Attach "value_type", "is_subset", and "coll_id" metadata to the field
-    auto metadata = arrow::KeyValueMetadata::Make(
-        {"value_type", "is_subset", "coll_id"},
-        {typeName, coll->isSubsetCollection() ? "1" : "0", std::to_string(coll->getID())});
+    // Attach "value_type", "is_subset", "coll_id", and "schema_version" metadata to the field
+    auto metadata =
+        arrow::KeyValueMetadata::Make({"value_type", "is_subset", "coll_id", "schema_version"},
+                                      {typeName, coll->isSubsetCollection() ? "1" : "0", std::to_string(coll->getID()),
+                                       std::to_string(coll->getSchemaVersion())});
     auto field = arrow::field(collName, arrowType, /*nullable=*/true, std::move(metadata));
 
     fields.push_back(std::move(field));

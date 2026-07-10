@@ -84,6 +84,18 @@ namespace {
     }
   }
 
+  std::shared_ptr<arrow::Array> getChunkOrThrow(const std::shared_ptr<arrow::ChunkedArray>& chunked_array,
+                                                int64_t rowIndex, int64_t& remaining_idx) {
+    remaining_idx = rowIndex;
+    for (const auto& c : chunked_array->chunks()) {
+      if (remaining_idx < c->length()) {
+        return c;
+      }
+      remaining_idx -= c->length();
+    }
+    throw std::runtime_error("Row index out of bounds in chunked array");
+  }
+
 } // namespace
 
 ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex) :
@@ -145,25 +157,21 @@ std::optional<podio::CollectionReadBuffers> ArrowFrameData::getCollectionBuffers
   std::string typeName = metadata->value(typeNameIdx);
   bool isSubset = (metadata->value(isSubsetIdx) == "1");
 
-  int64_t remaining_idx = m_rowIndex;
-  std::shared_ptr<arrow::Array> chunk;
-  for (const auto& c : chunked_array->chunks()) {
-    if (remaining_idx < c->length()) {
-      chunk = c;
-      break;
-    }
-    remaining_idx -= c->length();
+  auto schemaVersionIdx = metadata->FindKey("schema_version");
+  uint32_t schemaVersion = 1;
+  if (schemaVersionIdx != -1) {
+    schemaVersion = std::stoul(metadata->value(schemaVersionIdx));
   }
-  if (!chunk) {
-    throw std::runtime_error("Row index out of bounds in chunked array");
-  }
+
+  int64_t remaining_idx = 0;
+  auto chunk = getChunkOrThrow(chunked_array, m_rowIndex, remaining_idx);
 
   auto reader = podio::ArrowConverterRegistry::instance().getReader(typeName);
   if (!reader) {
     throw std::runtime_error("No Arrow reader registered for type: " + typeName);
   }
 
-  return reader(chunk, remaining_idx, isSubset);
+  return reader(chunk, remaining_idx, isSubset, schemaVersion);
 }
 
 std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
@@ -171,18 +179,8 @@ std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
   if (!chunked_array) {
     return std::make_unique<podio::GenericParameters>();
   }
-  int64_t remaining_idx = m_rowIndex;
-  std::shared_ptr<arrow::Array> chunk;
-  for (const auto& c : chunked_array->chunks()) {
-    if (remaining_idx < c->length()) {
-      chunk = c;
-      break;
-    }
-    remaining_idx -= c->length();
-  }
-  if (!chunk) {
-    return std::make_unique<podio::GenericParameters>();
-  }
+  int64_t remaining_idx = 0;
+  auto chunk = getChunkOrThrow(chunked_array, m_rowIndex, remaining_idx);
 
   auto struct_array = std::static_pointer_cast<arrow::StructArray>(chunk);
   auto params = std::make_unique<podio::GenericParameters>();

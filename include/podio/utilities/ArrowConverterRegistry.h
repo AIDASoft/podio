@@ -2,9 +2,11 @@
 #define PODIO_ARROWCONVERTERREGISTRY_H
 
 #include "podio/CollectionBuffers.h"
+#include "podio/SchemaEvolution.h"
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -22,7 +24,8 @@ class CollectionBase;
 class ArrowConverterRegistry {
 public:
   using CreatorFunc = std::function<std::shared_ptr<arrow::Array>(const podio::CollectionBase*)>;
-  using BufferReaderFunc = std::function<podio::CollectionReadBuffers(std::shared_ptr<arrow::Array>, int64_t, bool)>;
+  using BufferReaderFunc = std::function<std::optional<podio::CollectionReadBuffers>(std::shared_ptr<arrow::Array>,
+                                                                                     int64_t, bool, SchemaVersionT)>;
 
   ArrowConverterRegistry(const ArrowConverterRegistry&) = delete;
   ArrowConverterRegistry& operator=(const ArrowConverterRegistry&) = delete;
