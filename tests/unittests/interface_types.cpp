@@ -53,116 +53,117 @@ TEST_CASE("InterfaceTypes basic functionality", "[interface-types][basics]") {
   hitColl.setID(42);
   wrapper1 = hitColl.create();
   REQUIRE(wrapper1.id() == podio::ObjectID{0, 42});
-}
 
-TEST_CASE("InterfaceTypes static checks", "[interface-types][static-checks]") {
-  using namespace std::string_view_literals;
+  // static checks
   STATIC_REQUIRE(podio::detail::isInterfaceType<TypeWithEnergy>);
+  using namespace std::string_view_literals;
   STATIC_REQUIRE(TypeWithEnergy::typeName == "TypeWithEnergy"sv);
 }
 
-TEST_CASE("InterfaceTypes hash", "[interface-types][hash]") {
-  auto hit = ExampleHit();
-  auto wrapper1 = TypeWithEnergy(hit);
-  auto hash1 = std::hash<TypeWithEnergy>{}(wrapper1);
+TEST_CASE("InterfaceTypes hash and containers", "[interface-types][hash]") {
+  SECTION("hash") {
+    auto hit = ExampleHit();
+    auto wrapper1 = TypeWithEnergy(hit);
+    auto hash1 = std::hash<TypeWithEnergy>{}(wrapper1);
 
-  // podio specific:
-  // interface and interfaced datatype objects have the same hash
-  REQUIRE(hash1 == std::hash<ExampleHit>{}(hit));
+    // podio specific:
+    // interface and interfaced datatype objects have the same hash
+    REQUIRE(hash1 == std::hash<ExampleHit>{}(hit));
 
-  // rehashing should give the same result
-  auto rehash = std::hash<TypeWithEnergy>{}(wrapper1);
-  REQUIRE(rehash == hash1);
+    // rehashing should give the same result
+    auto rehash = std::hash<TypeWithEnergy>{}(wrapper1);
+    REQUIRE(rehash == hash1);
 
-  // same object should have the same hash
-  auto wrapper2 = wrapper1;
-  auto hash2 = std::hash<TypeWithEnergy>{}(wrapper2);
-  REQUIRE(wrapper2 == wrapper1);
-  REQUIRE(hash2 == hash1);
+    // same object should have the same hash
+    auto wrapper2 = wrapper1;
+    auto hash2 = std::hash<TypeWithEnergy>{}(wrapper2);
+    REQUIRE(wrapper2 == wrapper1);
+    REQUIRE(hash2 == hash1);
 
-  // different objects should have different hashes
-  auto different_hit = ExampleHit();
-  auto different_wrapper = TypeWithEnergy(different_hit);
-  auto hash_different = std::hash<TypeWithEnergy>{}(different_wrapper);
-  REQUIRE(different_wrapper != wrapper1);
-  REQUIRE(hash_different != hash1);
+    // different objects should have different hashes
+    auto different_hit = ExampleHit();
+    auto different_wrapper = TypeWithEnergy(different_hit);
+    auto hash_different = std::hash<TypeWithEnergy>{}(different_wrapper);
+    REQUIRE(different_wrapper != wrapper1);
+    REQUIRE(hash_different != hash1);
+  }
+
+  SECTION("STL usage") {
+    // Make sure that interface types can be used with STL map and set
+    std::map<TypeWithEnergy, int> counterMap{};
+
+    auto empty = TypeWithEnergy::makeEmpty();
+    counterMap[empty]++;
+
+    ExampleHit hit{};
+    auto wrapper = TypeWithEnergy{hit};
+    counterMap[wrapper]++;
+
+    // No way this implicit conversion could ever lead to a subtle bug ;)
+    counterMap[hit]++;
+
+    REQUIRE(counterMap[empty] == 1);
+    REQUIRE(counterMap[hit] == 2);
+    REQUIRE(counterMap[wrapper] == 2);
+
+    auto mc = MutableExampleMC{};
+    mc.energy() = 3.14f;
+
+    // check container of interfaces move constructor and direct initialization
+    auto interfaces = std::vector<TypeWithEnergy>{empty, hit, mc};
+    auto interfaces2 = std::vector<TypeWithEnergy>{std::move(interfaces)};
+    REQUIRE_FALSE(interfaces2.at(0).isAvailable());
+    REQUIRE(interfaces2.at(1).isA<ExampleHit>());
+    REQUIRE(interfaces2.at(2).energy() == 3.14f);
+
+    // unordered associative containers
+    std::unordered_map<TypeWithEnergy, int> counterUnorderedMap{};
+    counterUnorderedMap[empty]++;
+    counterUnorderedMap[wrapper]++;
+    counterUnorderedMap[hit]++;
+    REQUIRE(counterUnorderedMap[empty] == 1);
+    REQUIRE(counterUnorderedMap[hit] == 2);
+    REQUIRE(counterUnorderedMap[wrapper] == 2);
+  }
 }
 
-TEST_CASE("InterfaceTypes STL usage", "[interface-types][basics][hash]") {
-  // Make sure that interface types can be used with STL map and set
-  std::map<TypeWithEnergy, int> counterMap{};
-
-  auto empty = TypeWithEnergy::makeEmpty();
-  counterMap[empty]++;
-
-  ExampleHit hit{};
-  auto wrapper = TypeWithEnergy{hit};
-  counterMap[wrapper]++;
-
-  // No way this implicit conversion could ever lead to a subtle bug ;)
-  counterMap[hit]++;
-
-  REQUIRE(counterMap[empty] == 1);
-  REQUIRE(counterMap[hit] == 2);
-  REQUIRE(counterMap[wrapper] == 2);
-
-  auto mc = MutableExampleMC{};
-  mc.energy() = 3.14f;
-
-  // check container of interfaces move constructor and direct initialization
-  auto interfaces = std::vector<TypeWithEnergy>{empty, hit, mc};
-  auto interfaces2 = std::vector<TypeWithEnergy>{std::move(interfaces)};
-  REQUIRE_FALSE(interfaces2.at(0).isAvailable());
-  REQUIRE(interfaces2.at(1).isA<ExampleHit>());
-  REQUIRE(interfaces2.at(2).energy() == 3.14f);
-
-  // unordered associative containers
-  std::unordered_map<TypeWithEnergy, int> counterUnorderedMap{};
-  counterUnorderedMap[empty]++;
-  counterUnorderedMap[wrapper]++;
-  counterUnorderedMap[hit]++;
-  REQUIRE(counterUnorderedMap[empty] == 1);
-  REQUIRE(counterUnorderedMap[hit] == 2);
-  REQUIRE(counterUnorderedMap[wrapper] == 2);
-}
-
-TEST_CASE("InterfaceType from immutable", "[interface-types][basics]") {
+TEST_CASE("InterfaceType construction and type checking", "[interface-types][basics]") {
   using WrapperT = TypeWithEnergy;
 
-  ExampleHit hit{};
-  WrapperT wrapper{hit};
-  REQUIRE(wrapper.isA<ExampleHit>());
-  REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
-  REQUIRE(wrapper.as<ExampleHit>() == hit);
-  REQUIRE(wrapper == hit);
+  SECTION("from immutable") {
+    ExampleHit hit{};
+    WrapperT wrapper{hit};
+    REQUIRE(wrapper.isA<ExampleHit>());
+    REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
+    REQUIRE(wrapper.as<ExampleHit>() == hit);
+    REQUIRE(wrapper == hit);
 
-  ExampleCluster cluster{};
-  wrapper = cluster;
-  REQUIRE(wrapper.isA<ExampleCluster>());
-  REQUIRE(wrapper.as<ExampleCluster>() == cluster);
-  REQUIRE_THROWS_AS(wrapper.as<ExampleHit>(), std::runtime_error);
-  REQUIRE(wrapper != hit);
-}
+    ExampleCluster cluster{};
+    wrapper = cluster;
+    REQUIRE(wrapper.isA<ExampleCluster>());
+    REQUIRE(wrapper.as<ExampleCluster>() == cluster);
+    REQUIRE_THROWS_AS(wrapper.as<ExampleHit>(), std::runtime_error);
+    REQUIRE(wrapper != hit);
+  }
 
-TEST_CASE("InterfaceType from mutable", "[interface-types][basics]") {
-  using WrapperT = TypeWithEnergy;
+  SECTION("from mutable") {
+    ExampleHit hit{};
+    WrapperT wrapper{hit};
+    REQUIRE(wrapper.isA<ExampleHit>());
+    REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
+    REQUIRE(wrapper.as<ExampleHit>() == hit);
+    REQUIRE(wrapper == hit);
+    // Comparison also work against the immutable classes
+    ExampleHit immutableHit = hit;
+    REQUIRE(wrapper == immutableHit);
 
-  ExampleHit hit{};
-  WrapperT wrapper{hit};
-  REQUIRE(wrapper.isA<ExampleHit>());
-  REQUIRE_FALSE(wrapper.isA<ExampleCluster>());
-  REQUIRE(wrapper.as<ExampleHit>() == hit);
-  REQUIRE(wrapper == hit);
-  // Comparison also work against the immutable classes
-  ExampleHit immutableHit = hit;
-  REQUIRE(wrapper == immutableHit);
-
-  MutableExampleCluster cluster{};
-  wrapper = cluster;
-  REQUIRE(wrapper.isA<ExampleCluster>());
-  REQUIRE(wrapper.as<ExampleCluster>() == cluster);
-  REQUIRE_THROWS_AS(wrapper.as<ExampleHit>(), std::runtime_error);
-  REQUIRE(wrapper != hit);
+    MutableExampleCluster cluster{};
+    wrapper = cluster;
+    REQUIRE(wrapper.isA<ExampleCluster>());
+    REQUIRE(wrapper.as<ExampleCluster>() == cluster);
+    REQUIRE_THROWS_AS(wrapper.as<ExampleHit>(), std::runtime_error);
+    REQUIRE(wrapper != hit);
+  }
 }
 
 TEST_CASE("InterfaceType getters", "[basics][interface-types][code-gen]") {
