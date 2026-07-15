@@ -159,6 +159,7 @@ TEST_CASE("Link basics", "[links]") {
     REQUIRE(link != newLink);
   }
 }
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 TEST_CASE("Links hash and containers", "[links][hash]") {
   // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
