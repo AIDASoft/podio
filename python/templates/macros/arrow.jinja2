@@ -1,0 +1,129 @@
+{#
+ # Apache Arrow Serialization Macros for PODIO Datamodels
+ #
+ # This template handles recursive builder casting and value appending
+ # for nested event data models (including structs, fixed arrays, and relations).
+ #}
+
+{#
+ # Recursively casts and declares references to Arrow's child builders.
+ #}
+{% macro declare_builder(member, parent_builder, child_idx, path_prefix) -%}
+{% if member.is_array -%}
+auto* builder_{{ path_prefix }}{{ member.name }} = static_cast<arrow::FixedSizeListBuilder*>({{ parent_builder }}->child({{ child_idx }}));
+{% if member.value_builder.is_primitive -%}
+auto* builder_{{ path_prefix }}{{ member.name }}_val = static_cast<{{ member.value_builder.builder_type }}*>(builder_{{ path_prefix }}{{ member.name }}->value_builder());
+{% else -%}
+auto* builder_{{ path_prefix }}{{ member.name }}_val = static_cast<arrow::StructBuilder*>(builder_{{ path_prefix }}{{ member.name }}->value_builder());
+{% for child in member.value_builder.children -%}
+{{ declare_builder(child, 'builder_' + path_prefix + member.name + '_val', loop.index0, path_prefix + member.name + '_val_') }}
+{% endfor -%}
+{% endif -%}
+{% elif member.is_struct -%}
+auto* builder_{{ path_prefix }}{{ member.name }} = static_cast<arrow::StructBuilder*>({{ parent_builder }}->child({{ child_idx }}));
+{% for child in member.children -%}
+{{ declare_builder(child, 'builder_' + path_prefix + member.name, loop.index0, path_prefix + member.name + '_') }}
+{% endfor -%}
+{% else -%}
+auto* builder_{{ path_prefix }}{{ member.name }} = static_cast<{{ member.builder_type }}*>({{ parent_builder }}->child({{ child_idx }}));
+{% endif -%}
+{%- endmacro %}
+
+{#
+ # Declares dynamic vector (list) builders and their inner value builders.
+ #}
+{% macro declare_vector_builder(member, parent_builder, child_idx) -%}
+auto* builder_{{ member.name }} = static_cast<arrow::ListBuilder*>({{ parent_builder }}->child({{ child_idx }}));
+{% if member.value_builder.is_primitive -%}
+auto* builder_{{ member.name }}_val = static_cast<{{ member.value_builder.builder_type }}*>(builder_{{ member.name }}->value_builder());
+{% else -%}
+auto* builder_{{ member.name }}_val = static_cast<arrow::StructBuilder*>(builder_{{ member.name }}->value_builder());
+{% for child in member.value_builder.children -%}
+{{ declare_builder(child, 'builder_' + member.name + '_val', loop.index0, member.name + '_val_') }}
+{% endfor -%}
+{% endif -%}
+{%- endmacro %}
+
+{#
+ # Declares reference coordinate builders for one-to-one and one-to-many relationship mappings.
+ #}
+{% macro declare_relation_builder(relation, parent_builder, child_idx) -%}
+{% if not relation.is_mult -%}
+auto* builder_{{ relation.name }} = static_cast<arrow::StructBuilder*>({{ parent_builder }}->child({{ child_idx }}));
+auto* builder_{{ relation.name }}_collId = static_cast<arrow::UInt32Builder*>(builder_{{ relation.name }}->child(0));
+auto* builder_{{ relation.name }}_index = static_cast<arrow::Int32Builder*>(builder_{{ relation.name }}->child(1));
+{% else -%}
+auto* builder_{{ relation.name }} = static_cast<arrow::ListBuilder*>({{ parent_builder }}->child({{ child_idx }}));
+auto* builder_{{ relation.name }}_struct = static_cast<arrow::StructBuilder*>(builder_{{ relation.name }}->value_builder());
+auto* builder_{{ relation.name }}_collId = static_cast<arrow::UInt32Builder*>(builder_{{ relation.name }}_struct->child(0));
+auto* builder_{{ relation.name }}_index = static_cast<arrow::Int32Builder*>(builder_{{ relation.name }}_struct->child(1));
+{% endif -%}
+{%- endmacro %}
+
+{#
+ # Recursively appends structure, array, and primitive members to their builders.
+ # Uses 'is_direct' to format C++ accessor paths (getter methods vs direct field indexes).
+ #}
+{% macro append_member(member, obj_expr, path_prefix, is_direct=true) -%}
+{% if member.is_array -%}
+checkStatus(builder_{{ path_prefix }}{{ member.name }}->Append(), "Failed to append fixed_size_list");
+for (size_t arr_i = 0; arr_i < {{ member.array_size }}; ++arr_i) {
+{% if member.value_builder.is_primitive -%}
+{% set value = (obj_expr + '.' + member.getter + '(arr_i)') if is_direct else (obj_expr + '.' + member.name + '[arr_i]') -%}
+  checkStatus(builder_{{ path_prefix }}{{ member.name }}_val->Append({{ value }}), "Failed to append array element");
+{% else -%}
+  checkStatus(builder_{{ path_prefix }}{{ member.name }}_val->Append(), "Failed to append struct in array");
+{% set sub_obj = (obj_expr + '.' + member.getter + '(arr_i)') if is_direct else (obj_expr + '.' + member.name + '[arr_i]') -%}
+{% for child in member.value_builder.children -%}
+{{ append_member(child, sub_obj, path_prefix + member.name + '_val_', is_direct=false) | indent(2, first=True) }}
+{% endfor -%}
+{% endif -%}
+}
+{% elif member.is_struct -%}
+checkStatus(builder_{{ path_prefix }}{{ member.name }}->Append(), "Failed to append struct");
+{% set sub_obj = (obj_expr + '.' + member.getter + '()') if is_direct else (obj_expr + '.' + member.name) -%}
+{% for child in member.children -%}
+{{ append_member(child, sub_obj, path_prefix + member.name + '_', is_direct=false) }}
+{% endfor -%}
+{% else -%}
+{% set value = (obj_expr + '.' + member.getter + '()') if is_direct else (obj_expr + '.' + member.name) -%}
+checkStatus(builder_{{ path_prefix }}{{ member.name }}->Append({{ value }}), "Failed to append member {{ member.name }}");
+{% endif -%}
+{%- endmacro %}
+
+{#
+ # Appends dynamic vector (list) fields to their list builders.
+ #}
+{% macro append_vector(member) -%}
+checkStatus(builder_{{ member.name }}->Append(), "Failed to append list");
+for (size_t vec_i = 0; vec_i < obj.{{ member.name }}_size(); ++vec_i) {
+{% if member.value_builder.is_primitive -%}
+  checkStatus(builder_{{ member.name }}_val->Append(obj.{{ member.getter }}(vec_i)), "Failed to append vector element");
+{% else -%}
+  checkStatus(builder_{{ member.name }}_val->Append(), "Failed to append vector struct element");
+{% for child in member.value_builder.children -%}
+{{ append_member(child, 'obj.' + member.getter + '(vec_i)', member.name + '_val_', is_direct=false) | indent(2, first=True) }}
+{% endfor -%}
+{% endif -%}
+}
+{%- endmacro %}
+
+{#
+ # Appends relation references (checks availability and serializes collectionID/index pairs).
+ #}
+{% macro append_relation(relation) -%}
+{% if not relation.is_mult -%}
+auto relObj_{{ relation.name }} = obj.{{ relation.getter }}();
+checkStatus(builder_{{ relation.name }}->Append(), "Failed to append relation struct");
+checkStatus(builder_{{ relation.name }}_collId->Append(relObj_{{ relation.name }}.getObjectID().collectionID), "Failed to append relation collectionID");
+checkStatus(builder_{{ relation.name }}_index->Append(relObj_{{ relation.name }}.getObjectID().index), "Failed to append relation index");
+{% else -%}
+checkStatus(builder_{{ relation.name }}->Append(), "Failed to append relation list");
+for (size_t rel_i = 0; rel_i < obj.{{ relation.name }}_size(); ++rel_i) {
+  auto relObj = obj.{{ relation.getter }}(rel_i);
+  checkStatus(builder_{{ relation.name }}_struct->Append(), "Failed to append relation list struct");
+  checkStatus(builder_{{ relation.name }}_collId->Append(relObj.getObjectID().collectionID), "Failed to append relation list collectionID");
+  checkStatus(builder_{{ relation.name }}_index->Append(relObj.getObjectID().index), "Failed to append relation list index");
+}
+{% endif -%}
+{%- endmacro %}
