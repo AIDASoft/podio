@@ -768,11 +768,13 @@ TEST_CASE("LinkNavigator", "[links]") {
     using podio::detail::links::WeightedObject;
     using WeightedObjVec = std::vector<WeightedObject<ExampleCluster>>;
     linkedClusters = navigator.getLinkedTo(clusters[0]);
-    REQUIRE_THAT(linkedClusters,
-                 UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
+    REQUIRE_THAT(
+        linkedClusters,
+        UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
 
     linkedClusters = navigator.getLinkedFrom(clusters[2]);
-    REQUIRE_THAT(linkedClusters,
-                 UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
+    REQUIRE_THAT(
+        linkedClusters,
+        UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
   }
 }
