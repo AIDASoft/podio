@@ -15,6 +15,9 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/format.h>
+#include "podio/utilities/FormatHelpers.h"
+
 #include <map>
 #include <set>
 #include <type_traits>
@@ -28,6 +31,21 @@ using TestMutL = podio::MutableLink<ExampleHit, ExampleCluster>;
 using TestLColl = podio::LinkCollection<ExampleHit, ExampleCluster>;
 using TestLIter = podio::LinkCollectionIterator<ExampleHit, ExampleCluster>;
 using TestLMutIter = podio::LinkMutableCollectionIterator<ExampleHit, ExampleCluster>;
+
+// Custom format overloads for testing the 'u' format specifier
+namespace podio {
+fmt::format_context::iterator customFormat(const TestL& link, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-link(w={})", link.getWeight());
+}
+
+fmt::format_context::iterator customFormat(const TestMutL& link, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-mut-link(w={})", link.getWeight());
+}
+
+fmt::format_context::iterator customFormat(const TestLColl& coll, fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "custom-link-coll(n={})", coll.size());
+}
+} // namespace podio
 
 TEST_CASE("Link constness", "[links][static-checks]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestMutL>().getFrom()), const ExampleHit>);
@@ -299,6 +317,64 @@ TEST_CASE("Links templated accessors", "[links]") {
   }
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+TEST_CASE("Link formatting", "[links]") {
+  TestL link;
+
+  SECTION("Default format (detailed)") {
+    auto formatted = fmt::format("{}", link);
+    REQUIRE_FALSE(formatted.empty());
+    REQUIRE(formatted != "[not available]");
+    std::stringstream manual;
+    manual << " id: " << link.id() << '\n'
+           << " weight: " << link.getWeight() << '\n'
+           << " from: " << link.getFrom().id() << '\n'
+           << " to: " << link.getTo().id() << '\n';
+    REQUIRE(formatted == manual.str());
+
+    // Explicit detailed format should be the same
+    auto formatted_detailed = fmt::format("{:d}", link);
+    REQUIRE(formatted_detailed == formatted);
+  }
+
+  SECTION("Brief format") {
+    auto formatted_basic = fmt::format("{:b}", link);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic == "ffffffff|-1 | ffffffff|-1 ffffffff|-1 1");
+  }
+
+  SECTION("Empty link") {
+    auto emptyLink = TestL::makeEmpty();
+    auto emptyFmt = fmt::format("{}", emptyLink);
+    REQUIRE(emptyFmt == "[not available]");
+
+    // Basic format should also show [not available] for empty link
+    auto emptyFmtBasic = fmt::format("{:b}", emptyLink);
+    REQUIRE(emptyFmtBasic == "[not available]");
+  }
+
+  SECTION("Mutable link") {
+    TestMutL mutLink;
+    auto formatted = fmt::format("{}", mutLink);
+    REQUIRE(formatted != "[not avialable]");
+
+    auto formatted_basic = fmt::format("{:b}", mutLink);
+    REQUIRE_FALSE(formatted_basic.empty());
+  }
+
+  SECTION("User-defined format") {
+    auto formatted = fmt::format("{:u}", link);
+    REQUIRE(formatted == "custom-link(w=1)");
+  }
+
+  SECTION("User-defined format for mutable link") {
+    TestMutL mutLink;
+    mutLink.setWeight(3.5f);
+    auto formatted = fmt::format("{:u}", mutLink);
+    REQUIRE(formatted == "custom-mut-link(w=3.5)");
+  }
+}
+
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<TestLColl>);
   STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<TestLColl>, TestL>);
@@ -440,6 +516,78 @@ TEST_CASE("LinkCollection basics", "[links]") {
   links.setID(42);
   for (auto l : links) {
     REQUIRE(l.id().collectionID == 42);
+  }
+}
+
+TEST_CASE("LinkCollection formatting", "[links][formatting]") {
+  ExampleHitCollection hits;
+  ExampleClusterCollection clusters;
+  auto hit1 = hits.create();
+  auto hit2 = hits.create();
+  auto cluster1 = clusters.create();
+  auto cluster2 = clusters.create();
+
+  podio::LinkCollection<ExampleHit, ExampleCluster> links;
+  links.setID(42);
+  const auto idHex = fmt::format("{:8x}", 42);
+
+  SECTION("Empty collection") {
+    auto formatted = fmt::format("{}", links);
+    REQUIRE_FALSE(formatted.empty());
+
+    auto formatted_basic = fmt::format("{:b}", links);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic.find(idHex) != std::string::npos); // Should contain collection ID
+    REQUIRE(formatted_basic.find("0") != std::string::npos);   // Should contain size = 0
+  }
+
+  SECTION("Non-empty collection") {
+    auto link1 = links.create();
+    link1.setFrom(hit1);
+    link1.setTo(cluster1);
+    link1.setWeight(1.5f);
+
+    auto link2 = links.create();
+    link2.setFrom(hit2);
+    link2.setTo(cluster2);
+    link2.setWeight(2.5f);
+
+    // Test default format (detailed)
+    auto formatted_default = fmt::format("{}", links);
+    REQUIRE_FALSE(formatted_default.empty());
+    REQUIRE(formatted_default.find("id:") != std::string::npos);
+    REQUIRE(formatted_default.find("weight:") != std::string::npos);
+    REQUIRE(formatted_default.find("from") != std::string::npos);
+    REQUIRE(formatted_default.find("to") != std::string::npos);
+
+    // Test explicit detailed format
+    auto formatted_detailed = fmt::format("{:d}", links);
+    REQUIRE(formatted_detailed == formatted_default);
+
+    // Test basic format
+    auto formatted_basic = fmt::format("{:b}", links);
+    REQUIRE_FALSE(formatted_basic.empty());
+    REQUIRE(formatted_basic.find(idHex) != std::string::npos);                   // Should contain collection ID
+    REQUIRE(formatted_basic.find("2") != std::string::npos);                     // Should contain size = 2
+    REQUIRE(formatted_basic.find("podio::LinkCollection") != std::string::npos); // Should contain type name
+    // Basic format should be much shorter than detailed
+    REQUIRE(formatted_basic.size() < formatted_default.size());
+
+    // Test that basic format doesn't contain detailed information
+    REQUIRE(formatted_basic.find("from") == std::string::npos);
+    REQUIRE(formatted_basic.find("to") == std::string::npos);
+  }
+
+  SECTION("User-defined format") {
+    auto link1 = links.create();
+    link1.setFrom(hit1);
+    link1.setTo(cluster1);
+    auto link2 = links.create();
+    link2.setFrom(hit2);
+    link2.setTo(cluster2);
+
+    auto formatted = fmt::format("{:u}", links);
+    REQUIRE(formatted == "custom-link-coll(n=2)");
   }
 }
 

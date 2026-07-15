@@ -18,9 +18,6 @@
 #include <string>
 #include <tuple>
 
-template <>
-struct fmt::formatter<podio::version::Version> : ostream_formatter {};
-
 struct ParsedArgs {
   std::string inputFile{};
   std::string category{"events"};
