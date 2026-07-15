@@ -15,6 +15,8 @@
   #include "nlohmann/json.hpp"
 #endif
 
+#include <fmt/format.h>
+
 #include <map>
 #include <set>
 #include <type_traits>
@@ -299,6 +301,22 @@ TEST_CASE("Links templated accessors", "[links]") {
   }
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+
+TEST_CASE("Link formatting", "[links]") {
+  TestL link;
+  auto formatted = fmt::format("{}", link);
+  REQUIRE_FALSE(formatted.empty());
+  REQUIRE(formatted != "[not available]");
+
+  auto emptyLink = TestL::makeEmpty();
+  auto emptyFmt = fmt::format("{}", emptyLink);
+  REQUIRE(emptyFmt == "[not available]");
+
+  TestMutL mutLink;
+  formatted = fmt::format("{}", mutLink);
+  REQUIRE(formatted != "[not avialable]");
+}
+
 TEST_CASE("LinkCollection collection concept", "[links][concepts]") {
   STATIC_REQUIRE(podio::CollectionType<TestLColl>);
   STATIC_REQUIRE(std::is_same_v<std::ranges::range_value_t<TestLColl>, TestL>);
@@ -441,6 +459,19 @@ TEST_CASE("LinkCollection basics", "[links]") {
   for (auto l : links) {
     REQUIRE(l.id().collectionID == 42);
   }
+}
+
+TEST_CASE("LinkCollection formatting", "[links][formatting]") {
+  podio::LinkCollection<ExampleHit, ExampleCluster> links;
+
+  auto formatted = fmt::format("{}", links);
+  REQUIRE_FALSE(formatted.empty());
+
+  links.create();
+  links.create();
+
+  auto formatted2 = fmt::format("{}", links);
+  REQUIRE(formatted2.size() > formatted.size());
 }
 
 auto createLinkCollections(const size_t nElements = 3u) {
