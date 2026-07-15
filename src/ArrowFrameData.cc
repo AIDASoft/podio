@@ -193,6 +193,7 @@ std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
   return params;
 }
 
+// cppcheck-suppress returnByReference
 std::vector<std::string> ArrowFrameData::getAvailableCollections() const {
   return m_availableCollections;
 }

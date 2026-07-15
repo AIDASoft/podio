@@ -22,6 +22,7 @@ public:
 
   podio::CollectionIDTable getIDTable() const;
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
+  // cppcheck-suppress returnByReference
   std::vector<std::string> getAvailableCollections() const;
   std::unique_ptr<podio::GenericParameters> getParameters();
 

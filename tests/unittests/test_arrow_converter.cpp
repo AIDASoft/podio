@@ -21,6 +21,7 @@
 
 // Arrow headers
 #include <arrow/api.h>
+#include <arrow/table.h>
 #include <arrow/type.h>
 #include <iostream>
 #include <nlohmann/json.hpp>
@@ -854,4 +855,85 @@ TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arro
   REQUIRE(interfaceLinks[1].get<TypeWithEnergy>() == mcps[0]);
   REQUIRE(interfaceLinks[2].get<ExampleCluster>() == clusters[0]);
   REQUIRE(interfaceLinks[2].get<TypeWithEnergy>() == clusters[1]);
+}
+
+TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Multi-Row / rowIndex > 0)",
+          "[arrow][converter][reader]") {
+  auto frame1 = makeFrame(0);
+  auto frame2 = makeFrame(1);
+
+  const std::vector<std::string> colls = {"mcparticles",
+                                          "moreMCs",
+                                          "arrays",
+                                          "mcParticleRefs",
+                                          "hits",
+                                          "hitRefs",
+                                          "refs",
+                                          "refs2",
+                                          "clusters",
+                                          "OneRelation",
+                                          "info",
+                                          "WithVectorMember",
+                                          "VectorMemberSubsetColl",
+                                          "fixedWidthInts",
+                                          "WithNamespaceMember",
+                                          "WithNamespaceRelation",
+                                          "WithNamespaceRelationCopy",
+                                          "emptyCollection",
+                                          "emptySubsetColl",
+                                          "extension_Contained",
+                                          "extension_ExternalComponent",
+                                          "extension_ExternalRelation",
+                                          "interface_examples",
+                                          "anotherHits",
+                                          "extension_interface_relation",
+                                          "links",
+                                          "links_with_interfaces",
+                                          "extension_interface_links"};
+
+  // Convert both frames to Arrow Tables
+  auto table1 = podio::convertFrameToTable(frame1, colls);
+  REQUIRE(table1 != nullptr);
+  auto table2 = podio::convertFrameToTable(frame2, colls);
+  REQUIRE(table2 != nullptr);
+
+  // Concatenate tables to simulate a multi-row table (e.g. from multiple events)
+  auto concatResult = arrow::ConcatenateTables({table1, table2});
+  REQUIRE(concatResult.ok());
+  const auto& concatTable = concatResult.ValueOrDie();
+  REQUIRE(concatTable->num_rows() == 2);
+
+  auto verifyFrame = [](const podio::Frame& reconstructedFrame, int eventNum) {
+    verifyEventNoUserData(reconstructedFrame, eventNum);
+
+    processExtensions(reconstructedFrame, eventNum, podio::version::build_version);
+    checkVecMemSubsetColl(reconstructedFrame);
+    checkInterfaceCollection(reconstructedFrame);
+    checkInterfaceExtension(reconstructedFrame);
+
+    const auto& hits = reconstructedFrame.get<ExampleHitCollection>("hits");
+    const auto& clusters = reconstructedFrame.get<ExampleClusterCollection>("clusters");
+    checkLinkCollection(reconstructedFrame, hits, clusters);
+
+    // Verify Link collection with interfaces
+    const auto& interfaceLinks = reconstructedFrame.get<TestInterfaceLinkCollection>("links_with_interfaces");
+    REQUIRE(interfaceLinks.size() == 3);
+    const auto& mcps = reconstructedFrame.get<ExampleMCCollection>("mcparticles");
+    REQUIRE(interfaceLinks[0].get<ExampleCluster>() == clusters[0]);
+    REQUIRE(interfaceLinks[0].get<TypeWithEnergy>() == hits[0]);
+    REQUIRE(interfaceLinks[1].get<ExampleCluster>() == clusters[1]);
+    REQUIRE(interfaceLinks[1].get<TypeWithEnergy>() == mcps[0]);
+    REQUIRE(interfaceLinks[2].get<ExampleCluster>() == clusters[0]);
+    REQUIRE(interfaceLinks[2].get<TypeWithEnergy>() == clusters[1]);
+  };
+
+  // --- Reconstruct and verify Frame 1 at rowIndex = 0 ---
+  auto reconstructedFrame1 = podio::convertTableToFrame(concatTable, 0);
+  REQUIRE(reconstructedFrame1 != nullptr);
+  verifyFrame(*reconstructedFrame1, 0);
+
+  // --- Reconstruct and verify Frame 2 at rowIndex = 1 ---
+  auto reconstructedFrame2 = podio::convertTableToFrame(concatTable, 1);
+  REQUIRE(reconstructedFrame2 != nullptr);
+  verifyFrame(*reconstructedFrame2, 1);
 }
