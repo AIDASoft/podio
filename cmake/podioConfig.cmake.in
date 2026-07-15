@@ -47,6 +47,7 @@ if(ENABLE_SIO)
 endif()
 
 SET(ENABLE_ARROW @ENABLE_ARROW@)
+SET(podio_ENABLE_ARROW @ENABLE_ARROW@)
 if(ENABLE_ARROW)
   find_dependency(Arrow)
 endif()
