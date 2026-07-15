@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Class podio::RelationRange &mdash; PODIO  documentation</title>
+  <title>Class podio::ArrowTypeRegistry &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -24,8 +24,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Class podio::SIOBlock" href="classpodio_1_1_s_i_o_block.html" />
-    <link rel="prev" title="Class podio::Reader" href="classpodio_1_1_reader.html" /> 
+    <link rel="next" title="Class podio::CollectionBase" href="classpodio_1_1_collection_base.html" />
+    <link rel="prev" title="Class podio::ArrowConverterRegistry" href="classpodio_1_1_arrow_converter_registry.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -275,8 +275,8 @@
 <li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowConverterRegistry</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Class podio::ArrowTypeRegistry</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -379,8 +379,8 @@
 <li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_reader.html#_CPPv4N5podio6ReaderE"><code class="docutils literal notranslate"><span class="pre">podio::Reader</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">Class podio::RelationRange</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE"><code class="docutils literal notranslate"><span class="pre">podio::RelationRange</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_relation_range.html">Class podio::RelationRange</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_relation_range.html#_CPPv4I0EN5podio13RelationRangeE"><code class="docutils literal notranslate"><span class="pre">podio::RelationRange</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_s_i_o_block.html">Class podio::SIOBlock</a><ul>
@@ -800,7 +800,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">C++ API documentation</a></li>
           <li class="breadcrumb-item"><a href="../classlist.html">Class list</a></li>
-      <li class="breadcrumb-item active">Class podio::RelationRange</li>
+      <li class="breadcrumb-item active">Class podio::ArrowTypeRegistry</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -809,96 +809,69 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="class-podio-relationrange">
-<h1>Class podio::RelationRange<a class="headerlink" href="#class-podio-relationrange" title="Link to this heading"></a></h1>
+  <section id="class-podio-arrowtyperegistry">
+<h1>Class podio::ArrowTypeRegistry<a class="headerlink" href="#class-podio-arrowtyperegistry" title="Link to this heading"></a></h1>
 <dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio13RelationRangeE">
-<span id="_CPPv3I0EN5podio13RelationRangeE"></span><span id="_CPPv2I0EN5podio13RelationRangeE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReferenceType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_relation_range"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RelationRange</span></span></span><a class="headerlink" href="#_CPPv4I0EN5podio13RelationRangeE" title="Link to this definition"></a><br /></dt>
-<dd><p>A simple helper class that allows one to return related objects in a way that makes it possible to use the return type in a range-based for loop. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
-<dl class="cpp type">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RelationRange17ConstIteratorTypeE">
-<span id="_CPPv3N5podio13RelationRange17ConstIteratorTypeE"></span><span id="_CPPv2N5podio13RelationRange17ConstIteratorTypeE"></span><span class="target" id="classpodio_1_1_relation_range_1a3372c148079362f55cbe30b80145c380"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ConstIteratorType</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE" title="podio::RelationRange::ReferenceType"><span class="n"><span class="pre">ReferenceType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">const_iterator</span></span><a class="headerlink" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistryE">
+<span id="_CPPv3N5podio17ArrowTypeRegistryE"></span><span id="_CPPv2N5podio17ArrowTypeRegistryE"></span><span id="podio::ArrowTypeRegistry"></span><span class="target" id="classpodio_1_1_arrow_type_registry"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="Link to this definition"></a><br /></dt>
+<dd><p>Global singleton registry mapping PODIO type name strings to their corresponding Apache Arrow DataTypes. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RelationRange13RelationRangeEv">
-<span id="_CPPv3N5podio13RelationRange13RelationRangeEv"></span><span id="_CPPv2N5podio13RelationRange13RelationRangeEv"></span><span id="podio::RelationRange::RelationRange"></span><span class="target" id="classpodio_1_1_relation_range_1a552d00568d9279354a41a9e11e99e4d2"></span><span class="sig-name descname"><span class="n"><span class="pre">RelationRange</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio13RelationRange13RelationRangeEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERK17ArrowTypeRegistry">
+<span id="_CPPv3N5podio17ArrowTypeRegistry17ArrowTypeRegistryERK17ArrowTypeRegistry"></span><span id="_CPPv2N5podio17ArrowTypeRegistry17ArrowTypeRegistryERK17ArrowTypeRegistry"></span><span id="podio::ArrowTypeRegistry::ArrowTypeRegistry__ArrowTypeRegistryCR"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1aa9c9090429eccb18ea0c8b15f85a2c77"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERK17ArrowTypeRegistry" title="podio::ArrowTypeRegistry::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERK17ArrowTypeRegistry" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType">
-<span id="_CPPv3N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType"></span><span id="_CPPv2N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType"></span><span id="podio::RelationRange::RelationRange__ConstIteratorType.ConstIteratorType"></span><span class="target" id="classpodio_1_1_relation_range_1ab038c8c5256ac2635f3b9a4c118feea3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RelationRange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">begin</span></span>, <a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">end</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio13RelationRange13RelationRangeE17ConstIteratorType17ConstIteratorType" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistryaSERK17ArrowTypeRegistry">
+<span id="_CPPv3N5podio17ArrowTypeRegistryaSERK17ArrowTypeRegistry"></span><span id="_CPPv2N5podio17ArrowTypeRegistryaSERK17ArrowTypeRegistry"></span><span id="podio::ArrowTypeRegistry::assign-operator__ArrowTypeRegistryCR"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a91fbfeee3cce83c537d46bf5d9dd2b2f"></span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistryaSERK17ArrowTypeRegistry" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange5beginEv">
-<span id="_CPPv3NK5podio13RelationRange5beginEv"></span><span id="_CPPv2NK5podio13RelationRange5beginEv"></span><span id="podio::RelationRange::beginC"></span><span class="target" id="classpodio_1_1_relation_range_1adfa5e4408a4c985c09a58cd69af89971"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">begin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange5beginEv" title="Link to this definition"></a><br /></dt>
-<dd><p>begin of the range (necessary for range-based for loop) </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERR17ArrowTypeRegistry">
+<span id="_CPPv3N5podio17ArrowTypeRegistry17ArrowTypeRegistryERR17ArrowTypeRegistry"></span><span id="_CPPv2N5podio17ArrowTypeRegistry17ArrowTypeRegistryERR17ArrowTypeRegistry"></span><span id="podio::ArrowTypeRegistry::ArrowTypeRegistry__ArrowTypeRegistryRR"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a8625ed673aef74fef967636e706b9d6a"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERR17ArrowTypeRegistry" title="podio::ArrowTypeRegistry::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistry17ArrowTypeRegistryERR17ArrowTypeRegistry" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistryaSERR17ArrowTypeRegistry">
+<span id="_CPPv3N5podio17ArrowTypeRegistryaSERR17ArrowTypeRegistry"></span><span id="_CPPv2N5podio17ArrowTypeRegistryaSERR17ArrowTypeRegistry"></span><span id="podio::ArrowTypeRegistry::assign-operator__ArrowTypeRegistryRR"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a633ea770a2cc4c772e153142aef683cc"></span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistryaSERR17ArrowTypeRegistry" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistryD0Ev">
+<span id="_CPPv3N5podio17ArrowTypeRegistryD0Ev"></span><span id="_CPPv2N5podio17ArrowTypeRegistryD0Ev"></span><span id="podio::ArrowTypeRegistry::~ArrowTypeRegistry"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a2b21113a84aaa7282163586c9ca6b3a8"></span><span class="sig-name descname"><span class="n"><span class="pre">~ArrowTypeRegistry</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistryD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE">
+<span id="_CPPv3N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE"></span><span id="_CPPv2N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE"></span><span id="podio::ArrowTypeRegistry::registerType__ssCR.std::shared_ptr:arrow::DataType:"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a2d8f7a8a87172f111c85864be8771604"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerType</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DataType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Register an Arrow DataType for a specific type name. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange3endEv">
-<span id="_CPPv3NK5podio13RelationRange3endEv"></span><span id="_CPPv2NK5podio13RelationRange3endEv"></span><span id="podio::RelationRange::endC"></span><span class="target" id="classpodio_1_1_relation_range_1aa54c981b96e4d42eb16beea8d67346c7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">end</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange3endEv" title="Link to this definition"></a><br /></dt>
-<dd><p>end of the range (necessary for range-based for loop) </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio17ArrowTypeRegistry7getTypeERKNSt6stringE">
+<span id="_CPPv3NK5podio17ArrowTypeRegistry7getTypeERKNSt6stringE"></span><span id="_CPPv2NK5podio17ArrowTypeRegistry7getTypeERKNSt6stringE"></span><span id="podio::ArrowTypeRegistry::getType__ssCRC"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1ac2e6b88626a9f42f4cb49bde1db566de"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">DataType</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getType</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio17ArrowTypeRegistry7getTypeERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Retrieve the Arrow DataType registered for a specific type name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The registered DataType, or nullptr if not registered. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistry11mutInstanceEv">
+<span id="_CPPv3N5podio17ArrowTypeRegistry11mutInstanceEv"></span><span id="_CPPv2N5podio17ArrowTypeRegistry11mutInstanceEv"></span><span id="podio::ArrowTypeRegistry::mutInstance"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1a2218ab2f4d331667bb9c12297bb5dc1f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">mutInstance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistry11mutInstanceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the mutable singleton instance for registration. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange6cbeginEv">
-<span id="_CPPv3NK5podio13RelationRange6cbeginEv"></span><span id="_CPPv2NK5podio13RelationRange6cbeginEv"></span><span id="podio::RelationRange::cbeginC"></span><span class="target" id="classpodio_1_1_relation_range_1a5d32d57fef80391a8c05ddc4a750229d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cbegin</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange6cbeginEv" title="Link to this definition"></a><br /></dt>
-<dd><p>constant begin of the range </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange4cendEv">
-<span id="_CPPv3NK5podio13RelationRange4cendEv"></span><span id="_CPPv2NK5podio13RelationRange4cendEv"></span><span id="podio::RelationRange::cendC"></span><span class="target" id="classpodio_1_1_relation_range_1a123d910a53c174cc28e5cffed38ad1cf"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio13RelationRange17ConstIteratorTypeE" title="podio::RelationRange::ConstIteratorType"><span class="n"><span class="pre">ConstIteratorType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cend</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange4cendEv" title="Link to this definition"></a><br /></dt>
-<dd><p>constant end of the range </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange4sizeEv">
-<span id="_CPPv3NK5podio13RelationRange4sizeEv"></span><span id="_CPPv2NK5podio13RelationRange4sizeEv"></span><span id="podio::RelationRange::sizeC"></span><span class="target" id="classpodio_1_1_relation_range_1abd5970971ffbbe432eff912d38be19b6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">size</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange4sizeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>convenience overload for size </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange5emptyEv">
-<span id="_CPPv3NK5podio13RelationRange5emptyEv"></span><span id="_CPPv2NK5podio13RelationRange5emptyEv"></span><span id="podio::RelationRange::emptyC"></span><span class="target" id="classpodio_1_1_relation_range_1a339cde6120fd1b858454b6f1f809d818"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">empty</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange5emptyEv" title="Link to this definition"></a><br /></dt>
-<dd><p>convenience overload to check if the range is empty </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRangecvbEv">
-<span id="_CPPv3NK5podio13RelationRangecvbEv"></span><span id="_CPPv2NK5podio13RelationRangecvbEv"></span><span id="podio::RelationRange::castto-b-operatorC"></span><span class="target" id="classpodio_1_1_relation_range_1aa5016d10779e46f447bbcb4b1ff8a4b1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRangecvbEv" title="Link to this definition"></a><br /></dt>
-<dd><p>check whether the range is not empty </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRangeixE6size_t">
-<span id="_CPPv3NK5podio13RelationRangeixE6size_t"></span><span id="_CPPv2NK5podio13RelationRangeixE6size_t"></span><span id="podio::RelationRange::subscript-operator__sC"></span><span class="target" id="classpodio_1_1_relation_range_1a60e21685a822618306a3ea1f7a080f07"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE" title="podio::RelationRange::ReferenceType"><span class="n"><span class="pre">ReferenceType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRangeixE6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Indexed access. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange5frontEv">
-<span id="_CPPv3NK5podio13RelationRange5frontEv"></span><span id="_CPPv2NK5podio13RelationRange5frontEv"></span><span id="podio::RelationRange::frontC"></span><span class="target" id="classpodio_1_1_relation_range_1a6506bca3512db453ca2f7009fc674b8c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE" title="podio::RelationRange::ReferenceType"><span class="n"><span class="pre">ReferenceType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">front</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange5frontEv" title="Link to this definition"></a><br /></dt>
-<dd><p>First element of the range. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange4backEv">
-<span id="_CPPv3NK5podio13RelationRange4backEv"></span><span id="_CPPv2NK5podio13RelationRange4backEv"></span><span id="podio::RelationRange::backC"></span><span class="target" id="classpodio_1_1_relation_range_1af14d97552a4c2f487b46a0864f06438f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE" title="podio::RelationRange::ReferenceType"><span class="n"><span class="pre">ReferenceType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">back</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange4backEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Last element of the range. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK5podio13RelationRange2atE6size_t">
-<span id="_CPPv3NK5podio13RelationRange2atE6size_t"></span><span id="_CPPv2NK5podio13RelationRange2atE6size_t"></span><span id="podio::RelationRange::at__sC"></span><span class="target" id="classpodio_1_1_relation_range_1ac16268afc8ab29493e59a80ba0510343"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4I0EN5podio13RelationRangeE" title="podio::RelationRange::ReferenceType"><span class="n"><span class="pre">ReferenceType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">at</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio13RelationRange2atE6size_t" title="Link to this definition"></a><br /></dt>
-<dd><p>Indexed access with range check. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio17ArrowTypeRegistry8instanceEv">
+<span id="_CPPv3N5podio17ArrowTypeRegistry8instanceEv"></span><span id="_CPPv2N5podio17ArrowTypeRegistry8instanceEv"></span><span id="podio::ArrowTypeRegistry::instance"></span><span class="target" id="classpodio_1_1_arrow_type_registry_1acdf8f2e62971983ce50cb55fe5b83809"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio17ArrowTypeRegistryE" title="podio::ArrowTypeRegistry"><span class="n"><span class="pre">ArrowTypeRegistry</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio17ArrowTypeRegistry8instanceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Get the read-only singleton instance. </p>
 </dd></dl>
 
 </div>
