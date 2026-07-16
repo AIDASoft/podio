@@ -86,10 +86,10 @@
   void unlink() { m_obj = podio::utils::MaybeSharedPtr<{{ type }}Obj>{nullptr}; }
 
 {% set inverse_type = type if prefix else 'Mutable' + type %}
-  bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
+  constexpr bool operator==(const {{ full_type }}& other) const { return m_obj == other.m_obj; }
   bool operator==(const {{ inverse_type }}& other) const;
 
-  bool operator!=(const {{ full_type }}& other) const { return !(*this == other); }
+  constexpr bool operator!=(const {{ full_type }}& other) const { return !(*this == other); }
   bool operator!=(const {{ inverse_type }}& other) const { return !(*this == other); }
 
   // less comparison operator, so that objects can be e.g. stored in sets.

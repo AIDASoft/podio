@@ -7,9 +7,16 @@
 namespace podio::utils {
 
 /// Helper struct to concatenate a set of string_views into a single string_view at compile time
+///
+// consteval fails with GCC 13
+#if defined(__GNUC__) && __GNUC__ < 14
+  #define PODIO_STATIC_CONCATENATE_INIT_CONSTEVAL constexpr
+#else
+  #define PODIO_STATIC_CONCATENATE_INIT_CONSTEVAL consteval
+#endif
 template <const std::string_view&... strs>
 struct static_concatenate {
-  static constexpr auto init_arr() {
+  static PODIO_STATIC_CONCATENATE_INIT_CONSTEVAL auto init_arr() {
     constexpr auto total_size = (strs.size() + ... + 1); // reserve space for '\0'
     auto arr = std::array<char, total_size>();
     auto it = arr.begin();
@@ -20,6 +27,8 @@ struct static_concatenate {
   constexpr static auto array = init_arr();
   constexpr static auto value = std::string_view(array.data(), array.size() - 1); // skip '\0'
 };
+
+#undef PODIO_STATIC_CONCATENATE_INIT_CONSTEVAL
 
 /// Variable template for concatenating a set of string_views into a single string_view at compile time
 template <const std::string_view&... strs>

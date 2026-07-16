@@ -306,27 +306,27 @@ public:
     return getObjectID();
   }
 
-  bool operator==(const LinkT& other) const {
+  constexpr bool operator==(const LinkT& other) const {
     return m_obj == other.m_obj;
   }
 
-  bool operator!=(const LinkT& other) const {
+  constexpr bool operator!=(const LinkT& other) const {
     return !(*this == other);
   }
 
   template <typename FromU, typename ToU>
     requires sameTypes<FromU, ToU>
-  bool operator==(const LinkT<FromU, ToU, !Mutable>& other) const {
+  constexpr bool operator==(const LinkT<FromU, ToU, !Mutable>& other) const {
     return m_obj == other.m_obj;
   }
 
   template <typename FromU, typename ToU>
     requires sameTypes<FromU, ToU>
-  bool operator!=(const LinkT<FromU, ToU, !Mutable>& other) const {
+  constexpr bool operator!=(const LinkT<FromU, ToU, !Mutable>& other) const {
     return !(*this == other);
   }
 
-  bool operator<(const LinkT& other) const {
+  constexpr bool operator<(const LinkT& other) const {
     return m_obj < other.m_obj;
   }
 

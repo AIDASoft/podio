@@ -14,50 +14,50 @@ public:
 
   RelationRange() = delete;
 
-  RelationRange(ConstIteratorType begin, ConstIteratorType end) :
+  constexpr RelationRange(ConstIteratorType begin, ConstIteratorType end) :
       m_begin(begin), m_end(end), m_size(std::distance(m_begin, m_end)) {
   }
 
   /// begin of the range (necessary for range-based for loop)
-  ConstIteratorType begin() const {
+  constexpr ConstIteratorType begin() const {
     return m_begin;
   }
   /// end of the range (necessary for range-based for loop)
-  ConstIteratorType end() const {
+  constexpr ConstIteratorType end() const {
     return m_end;
   }
   /// constant begin of the range
-  ConstIteratorType cbegin() const {
+  constexpr ConstIteratorType cbegin() const {
     return begin();
   }
   /// constant end of the range
-  ConstIteratorType cend() const {
+  constexpr ConstIteratorType cend() const {
     return end();
   }
   /// convenience overload for size
-  size_t size() const {
+  constexpr size_t size() const {
     return m_size;
   }
   /// convenience overload to check if the range is empty
-  bool empty() const {
+  constexpr bool empty() const {
     return m_begin == m_end;
   }
   /// check whether the range is not empty
-  explicit operator bool() const {
+  constexpr explicit operator bool() const {
     return !empty();
   }
   /// Indexed access
-  ReferenceType operator[](size_t i) const {
+  constexpr ReferenceType operator[](size_t i) const {
     auto it = m_begin;
     std::advance(it, i);
     return *it;
   }
   /// First element of the range
-  ReferenceType front() const {
+  constexpr ReferenceType front() const {
     return *m_begin;
   }
   /// Last element of the range
-  ReferenceType back() const {
+  constexpr ReferenceType back() const {
     return *(m_end - 1);
   }
 
