@@ -138,34 +138,36 @@ TEST_CASE("makeEmpty", "[basics]") {
   REQUIRE(hit.energy() == 0);
 }
 
-TEST_CASE("Cyclic", "[basics][relations][memory-management]") {
-  auto coll1 = ExampleForCyclicDependency1Collection();
-  auto start = coll1.create();
-  REQUIRE_FALSE(start.ref().isAvailable());
-  auto coll2 = ExampleForCyclicDependency2Collection();
-  auto end = coll2.create();
-  start.ref(end);
-  REQUIRE(start.ref().isAvailable());
-  end.ref(start);
-  REQUIRE(start == end.ref());
-  auto end_eq = start.ref();
-  auto start_eq = end_eq.ref();
-  REQUIRE(start == start_eq);
-  REQUIRE(start == start.ref().ref());
-}
+TEST_CASE("Cyclic dependencies", "[LEAK-FAIL][basics][relations][memory-management]") {
+  SECTION("with collections") {
+    auto coll1 = ExampleForCyclicDependency1Collection();
+    auto start = coll1.create();
+    REQUIRE_FALSE(start.ref().isAvailable());
+    auto coll2 = ExampleForCyclicDependency2Collection();
+    auto end = coll2.create();
+    start.ref(end);
+    REQUIRE(start.ref().isAvailable());
+    end.ref(start);
+    REQUIRE(start == end.ref());
+    auto end_eq = start.ref();
+    auto start_eq = end_eq.ref();
+    REQUIRE(start == start_eq);
+    REQUIRE(start == start.ref().ref());
+  }
 
-TEST_CASE("Cyclic w/o collection", "[LEAK-FAIL][basics][relations][memory-management]") {
-  auto start = MutableExampleForCyclicDependency1{};
-  REQUIRE_FALSE(start.ref().isAvailable());
-  auto end = MutableExampleForCyclicDependency2{};
-  start.ref(end);
-  REQUIRE(start.ref().isAvailable());
-  end.ref(start);
-  REQUIRE(start == end.ref());
-  auto end_eq = start.ref();
-  auto start_eq = end_eq.ref();
-  REQUIRE(start == start_eq);
-  REQUIRE(start == start.ref().ref());
+  SECTION("without collections") {
+    auto start = MutableExampleForCyclicDependency1{};
+    REQUIRE_FALSE(start.ref().isAvailable());
+    auto end = MutableExampleForCyclicDependency2{};
+    start.ref(end);
+    REQUIRE(start.ref().isAvailable());
+    end.ref(start);
+    REQUIRE(start == end.ref());
+    auto end_eq = start.ref();
+    auto start_eq = end_eq.ref();
+    REQUIRE(start == start_eq);
+    REQUIRE(start == start.ref().ref());
+  }
 }
 
 TEST_CASE("Container lifetime", "[basics][memory-management]") {
@@ -217,42 +219,44 @@ TEST_CASE("Looping", "[basics]") {
 }
 
 TEST_CASE("Reverse iterators", "[basics]") {
-  auto coll = ExampleHitCollection();
-  coll.create();
-  coll.create();
-  auto it = std::rbegin(coll);
-  (*it).energy(43);
-  (*++it).energy(42);
-  REQUIRE((*it).energy() == 42);
-  REQUIRE((*--it).energy() == 43);
-  it = std::rend(coll);
-  REQUIRE((*--it).energy() == 42);
-  REQUIRE((*--it).energy() == 43);
-  auto cit = std::crbegin(coll);
-  REQUIRE((*cit).energy() == 43);
-  REQUIRE((*++cit).energy() == 42);
-  cit = std::crend(coll);
-  REQUIRE((*--cit).energy() == 42);
-  REQUIRE((*--cit).energy() == 43);
-}
+  SECTION("collections") {
+    auto coll = ExampleHitCollection();
+    coll.create();
+    coll.create();
+    auto it = std::rbegin(coll);
+    (*it).energy(43);
+    (*++it).energy(42);
+    REQUIRE((*it).energy() == 42);
+    REQUIRE((*--it).energy() == 43);
+    it = std::rend(coll);
+    REQUIRE((*--it).energy() == 42);
+    REQUIRE((*--it).energy() == 43);
+    auto cit = std::crbegin(coll);
+    REQUIRE((*cit).energy() == 43);
+    REQUIRE((*++cit).energy() == 42);
+    cit = std::crend(coll);
+    REQUIRE((*--cit).energy() == 42);
+    REQUIRE((*--cit).energy() == 43);
+  }
 
-TEST_CASE("UserDataCollection reverse iterators", "[basics]") {
-  auto coll = podio::UserDataCollection<int>();
-  coll.push_back(42);
-  coll.push_back(43);
-  auto it = std::rbegin(coll);
-  REQUIRE(*it == 43);
-  REQUIRE(*++it == 42);
-  REQUIRE(*--it == 43);
-  it = std::rend(coll);
-  REQUIRE(*--it == 42);
-  REQUIRE(*--it == 43);
-  auto cit = std::crbegin(coll);
-  REQUIRE(*cit == 43);
-  REQUIRE(*++cit == 42);
-  cit = std::crend(coll);
-  REQUIRE(*--cit == 42);
-  REQUIRE(*--cit == 43);
+  SECTION("UserDataCollection") {
+    auto coll = podio::UserDataCollection<int>();
+    coll.push_back(42);
+    coll.push_back(43);
+    auto it = std::rbegin(coll);
+    REQUIRE(*it == 43);
+    REQUIRE(*++it == 42);
+    REQUIRE(*--it == 43);
+    it = std::rend(coll);
+    REQUIRE(*--it == 42);
+    REQUIRE(*--it == 43);
+    auto cit = std::crbegin(coll);
+    REQUIRE(*cit == 43);
+    REQUIRE(*++cit == 42);
+    cit = std::crend(coll);
+    REQUIRE(*--cit == 42);
+    REQUIRE(*--cit == 43);
+  }
 }
 
 TEST_CASE("Notebook", "[basics]") {
@@ -403,29 +407,31 @@ TEST_CASE("UserDataCollection collection concept", "[concepts]") {
       podio::SupportedUserDataTypes{});
 }
 
-TEST_CASE("UserDataCollection print", "[basics]") {
-  auto coll = podio::UserDataCollection<int32_t>();
-  coll.push_back(1);
-  coll.push_back(2);
-  coll.push_back(3);
+TEST_CASE("UserDataCollection basics", "[basics]") {
+  SECTION("print") {
+    auto coll = podio::UserDataCollection<int32_t>();
+    coll.push_back(1);
+    coll.push_back(2);
+    coll.push_back(3);
 
-  std::stringstream sstr;
-  coll.print(sstr);
+    std::stringstream sstr;
+    coll.print(sstr);
 
-  REQUIRE(sstr.str() == "[1, 2, 3]");
-}
+    REQUIRE(sstr.str() == "[1, 2, 3]");
+  }
 
-TEST_CASE("UserDataCollection access", "[basics]") {
-  auto coll = podio::UserDataCollection<int32_t>();
-  auto& x = coll.create();
-  x = 42;
-  REQUIRE(coll.size() == 1);
-  REQUIRE(coll.at(0) == 42);
-  coll.at(0) = 43;
-  REQUIRE(coll[0] == 43);
-  coll[0] = 44;
-  REQUIRE(std::as_const(coll).at(0) == 44);
-  REQUIRE(std::as_const(coll)[0] == 44);
+  SECTION("access") {
+    auto coll = podio::UserDataCollection<int32_t>();
+    auto& x = coll.create();
+    x = 42;
+    REQUIRE(coll.size() == 1);
+    REQUIRE(coll.at(0) == 42);
+    coll.at(0) = 43;
+    REQUIRE(coll[0] == 43);
+    coll[0] = 44;
+    REQUIRE(std::as_const(coll).at(0) == 44);
+    REQUIRE(std::as_const(coll)[0] == 44);
+  }
 }
 
 TEST_CASE("UserDataCollection construct from range", "[basics]") {
@@ -490,135 +496,139 @@ TEST_CASE("member getter return types", "[basics][code-gen][const-correctness]")
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const MutableExampleWithArray>().data()), const SimpleStruct&>);
 }
 
-TEST_CASE("Extracode", "[basics][code-gen]") {
-  auto ev = MutableEventInfo();
-  ev.setNumber(42);
-  REQUIRE(ev.getNumber() == 42);
+TEST_CASE("Extra code", "[basics][code-gen]") {
+  SECTION("basic extra code") {
+    auto ev = MutableEventInfo();
+    ev.setNumber(42);
+    REQUIRE(ev.getNumber() == 42);
 
-  int ia[3] = {1, 2, 3};
-  auto simple = SimpleStruct(ia);
-  REQUIRE(simple.x == 1);
-  REQUIRE(simple.y == 2);
-  REQUIRE(simple.z == 3);
+    int ia[3] = {1, 2, 3};
+    auto simple = SimpleStruct(ia);
+    REQUIRE(simple.x == 1);
+    REQUIRE(simple.y == 2);
+    REQUIRE(simple.z == 3);
+  }
+
+  SECTION("declarationFile and implementationFile") {
+    auto mutable_number = MutableExampleWithExternalExtraCode();
+    REQUIRE(mutable_number.reset() == 0);
+    REQUIRE(mutable_number.add(2) == 2);
+    REQUIRE(mutable_number.add_inplace(1) == 1);
+    REQUIRE(mutable_number.gt(-1));
+    REQUIRE(mutable_number.lt(100));
+    ExampleWithExternalExtraCode number = mutable_number;
+    REQUIRE(number.add(1) == 2);
+    REQUIRE(number.gt(-1));
+    REQUIRE(number.lt(100));
+  }
+
+  SECTION("declarationFile in component") {
+    auto value = StructWithExtraCode();
+    value.x = 1;
+    REQUIRE(value.negate() == -1);
+    REQUIRE(value.reset() == 0);
+  }
 }
 
-TEST_CASE("ExtraCode declarationFile and implementationFile", "[basics][code-gen]") {
-  auto mutable_number = MutableExampleWithExternalExtraCode();
-  REQUIRE(mutable_number.reset() == 0);
-  REQUIRE(mutable_number.add(2) == 2);
-  REQUIRE(mutable_number.add_inplace(1) == 1);
-  REQUIRE(mutable_number.gt(-1));
-  REQUIRE(mutable_number.lt(100));
-  ExampleWithExternalExtraCode number = mutable_number;
-  REQUIRE(number.add(1) == 2);
-  REQUIRE(number.gt(-1));
-  REQUIRE(number.lt(100));
-}
+TEST_CASE("Datatype hash and containers", "[basics][hash]") {
+  SECTION("object hash") {
+    auto hit1 = MutableExampleHit();
+    auto hash1 = std::hash<MutableExampleHit>{}(hit1);
 
-TEST_CASE("ExtraCode declarationFile in component", "[basics][code-gen]") {
-  auto value = StructWithExtraCode();
-  value.x = 1;
-  REQUIRE(value.negate() == -1);
-  REQUIRE(value.reset() == 0);
-}
+    // rehashing should give the same result
+    auto rehash = std::hash<MutableExampleHit>{}(hit1);
+    REQUIRE(rehash == hash1);
 
-TEST_CASE("Datatype object hash", "[hash]") {
-  auto hit1 = MutableExampleHit();
-  auto hash1 = std::hash<MutableExampleHit>{}(hit1);
+    // same object should have the same hash
+    auto hit2 = hit1;
+    auto hash2 = std::hash<MutableExampleHit>{}(hit2);
+    REQUIRE(hit2 == hit1);
+    REQUIRE(hash2 == hash1);
 
-  // rehashing should give the same result
-  auto rehash = std::hash<MutableExampleHit>{}(hit1);
-  REQUIRE(rehash == hash1);
+    // different objects should have different hashes
+    auto different_hit = MutableExampleHit();
+    auto hash_different = std::hash<MutableExampleHit>{}(different_hit);
+    REQUIRE(different_hit != hit1);
+    REQUIRE(hash_different != hash1);
 
-  // same object should have the same hash
-  auto hit2 = hit1;
-  auto hash2 = std::hash<MutableExampleHit>{}(hit2);
-  REQUIRE(hit2 == hit1);
-  REQUIRE(hash2 == hash1);
+    // podio specific:
+    // changing  properties doesn't change hash as long as the same object is used
+    hit1.energy(42);
+    auto hash_mod = std::hash<MutableExampleHit>{}(hit1);
+    REQUIRE(hit1 == hit2);
+    REQUIRE(hash_mod == hash2);
 
-  // different objects should have different hashes
-  auto different_hit = MutableExampleHit();
-  auto hash_different = std::hash<MutableExampleHit>{}(different_hit);
-  REQUIRE(different_hit != hit1);
-  REQUIRE(hash_different != hash1);
+    // podio specific:
+    // mutable and immutable objects should have the same hash
+    auto immutable_hit = ExampleHit(hit1);
+    auto hash_immutable = std::hash<ExampleHit>{}(immutable_hit);
+    REQUIRE(immutable_hit == hit1);
+    REQUIRE(hash_immutable == hash1);
+  }
 
-  // podio specific:
-  // changing  properties doesn't change hash as long as the same object is used
-  hit1.energy(42);
-  auto hash_mod = std::hash<MutableExampleHit>{}(hit1);
-  REQUIRE(hit1 == hit2);
-  REQUIRE(hash_mod == hash2);
+  SECTION("associative containers") {
+    auto clu1 = MutableExampleCluster();
+    auto clu2 = MutableExampleCluster();
+    auto clu3 = MutableExampleCluster();
+    auto clu4 = MutableExampleCluster();
+    auto clu5 = MutableExampleCluster();
 
-  // podio specific:
-  // mutable and immutable objects should have the same hash
-  auto immutable_hit = ExampleHit(hit1);
-  auto hash_immutable = std::hash<ExampleHit>{}(immutable_hit);
-  REQUIRE(immutable_hit == hit1);
-  REQUIRE(hash_immutable == hash1);
-}
+    std::set<ExampleCluster> cSet;
+    cSet.insert(clu1);
+    cSet.insert(clu2);
+    cSet.insert(clu3);
+    cSet.insert(clu4);
+    cSet.insert(clu5);
+    cSet.insert(clu1);
+    cSet.insert(clu2);
+    cSet.insert(clu3);
+    cSet.insert(clu4);
+    cSet.insert(clu5);
 
-TEST_CASE("AssociativeContainer", "[basics][hash]") {
-  auto clu1 = MutableExampleCluster();
-  auto clu2 = MutableExampleCluster();
-  auto clu3 = MutableExampleCluster();
-  auto clu4 = MutableExampleCluster();
-  auto clu5 = MutableExampleCluster();
+    REQUIRE(cSet.size() == 5);
 
-  std::set<ExampleCluster> cSet;
-  cSet.insert(clu1);
-  cSet.insert(clu2);
-  cSet.insert(clu3);
-  cSet.insert(clu4);
-  cSet.insert(clu5);
-  cSet.insert(clu1);
-  cSet.insert(clu2);
-  cSet.insert(clu3);
-  cSet.insert(clu4);
-  cSet.insert(clu5);
+    std::map<ExampleCluster, int> cMap;
+    cMap[clu1] = 1;
+    cMap[clu2] = 2;
+    cMap[clu3] = 3;
+    cMap[clu4] = 4;
+    cMap[clu5] = 5;
 
-  REQUIRE(cSet.size() == 5);
+    REQUIRE(cMap[clu3] == 3);
 
-  std::map<ExampleCluster, int> cMap;
-  cMap[clu1] = 1;
-  cMap[clu2] = 2;
-  cMap[clu3] = 3;
-  cMap[clu4] = 4;
-  cMap[clu5] = 5;
+    cMap[clu3] = 42;
 
-  REQUIRE(cMap[clu3] == 3);
+    REQUIRE(cMap[clu3] == 42);
 
-  cMap[clu3] = 42;
+    // unordered associative containers
 
-  REQUIRE(cMap[clu3] == 42);
+    std::unordered_set<ExampleCluster> cUnorderedSet;
+    cUnorderedSet.insert(clu1);
+    cUnorderedSet.insert(clu2);
+    cUnorderedSet.insert(clu3);
+    cUnorderedSet.insert(clu4);
+    cUnorderedSet.insert(clu5);
+    cUnorderedSet.insert(clu1);
+    cUnorderedSet.insert(clu2);
+    cUnorderedSet.insert(clu3);
+    cUnorderedSet.insert(clu4);
+    cUnorderedSet.insert(clu5);
 
-  // unordered associative containers
+    REQUIRE(cUnorderedSet.size() == 5);
 
-  std::unordered_set<ExampleCluster> cUnorderedSet;
-  cUnorderedSet.insert(clu1);
-  cUnorderedSet.insert(clu2);
-  cUnorderedSet.insert(clu3);
-  cUnorderedSet.insert(clu4);
-  cUnorderedSet.insert(clu5);
-  cUnorderedSet.insert(clu1);
-  cUnorderedSet.insert(clu2);
-  cUnorderedSet.insert(clu3);
-  cUnorderedSet.insert(clu4);
-  cUnorderedSet.insert(clu5);
+    std::unordered_map<ExampleCluster, int> cUnorderedMap;
+    cUnorderedMap[clu1] = 1;
+    cUnorderedMap[clu2] = 2;
+    cUnorderedMap[clu3] = 3;
+    cUnorderedMap[clu4] = 4;
+    cUnorderedMap[clu5] = 5;
 
-  REQUIRE(cUnorderedSet.size() == 5);
+    REQUIRE(cUnorderedMap[clu3] == 3);
 
-  std::unordered_map<ExampleCluster, int> cUnorderedMap;
-  cUnorderedMap[clu1] = 1;
-  cUnorderedMap[clu2] = 2;
-  cUnorderedMap[clu3] = 3;
-  cUnorderedMap[clu4] = 4;
-  cUnorderedMap[clu5] = 5;
+    cUnorderedMap[clu3] = 42;
 
-  REQUIRE(cUnorderedMap[clu3] == 3);
-
-  cUnorderedMap[clu3] = 42;
-
-  REQUIRE(cUnorderedMap[clu3] == 42);
+    REQUIRE(cUnorderedMap[clu3] == 42);
+  }
 }
 
 TEST_CASE("Equality", "[basics]") {
@@ -728,181 +738,185 @@ TEST_CASE("Collection construction via ranges::to", "[basics][collections]") {
 }
 #endif
 
-TEST_CASE("const correct indexed access to const collections", "[const-correctness]") {
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>()[0]),
-                                ExampleCluster>); // const collections should only have indexed access to mutable
-                                                  // objects
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>().at(0)),
-                                ExampleCluster>); // const collections should only have indexed access to mutable
-                                                  // objects
-}
-
-TEST_CASE("const correct indexed access to collections", "[const-correctness]") {
-  auto collection = ExampleHitCollection();
-
-  STATIC_REQUIRE(std::is_same_v<decltype(collection[0]), MutableExampleHit>); // non-const collections should have
-                                                                              // indexed access to mutable objects
-
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>()[0]),
-                                MutableExampleCluster>); // collections should have indexed access to mutable objects
-
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().at(0)),
-                                MutableExampleCluster>); // collections should have indexed access to mutable objects
-}
-
-TEST_CASE("const correct iterators on const collections", "[const-correctness]") {
-  const auto collection = ExampleHitCollection();
-  // this essentially checks the whole "chain" from begin() / end() through
-  // iterator operators
-  for (auto hit [[maybe_unused]] : collection) {
-    STATIC_REQUIRE(std::is_same_v<decltype(hit), ExampleHit>); // const collection iterators should only return
-                                                               // immutable objects
+TEST_CASE("Const-correctness of collections", "[const-correctness]") {
+  SECTION("const correct indexed access to const collections") {
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>()[0]),
+                                  ExampleCluster>); // const collections should only have indexed access to mutable
+                                                    // objects
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleClusterCollection>().at(0)),
+                                  ExampleCluster>); // const collections should only have indexed access to mutable
+                                                    // objects
   }
 
-  // but we can exercise it in a detailed fashion as well to make it easier to
-  // spot where things fail, should they fail
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleHitCollection>().begin()),
-                                ExampleHitCollectionIterator>); // const collection begin() should return a
-                                                                // CollectionIterator
+  SECTION("const correct indexed access to collections") {
+    auto collection = ExampleHitCollection();
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleHitCollection>().end()),
-                                ExampleHitCollectionIterator>); // const collection end() should return a
-                                                                // CollectionIterator
+    STATIC_REQUIRE(std::is_same_v<decltype(collection[0]), MutableExampleHit>); // non-const collections should have
+                                                                                // indexed access to mutable objects
 
-  STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<const ExampleHitCollection>().begin()),
-                                ExampleHit>); // CollectionIterator should only give access to immutable objects
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>()[0]),
+                                  MutableExampleCluster>); // collections should have indexed access to mutable objects
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
-                                ExampleHit*>); // CollectionIterator should only give access to immutable objects
-}
-
-TEST_CASE("const correct iterators on collections", "[const-correctness]") {
-  auto collection = ExampleClusterCollection();
-  for (auto cluster : collection) {
-    STATIC_REQUIRE(std::is_same_v<decltype(cluster), MutableExampleCluster>); // collection iterators should return
-                                                                              // mutable objects
-    cluster.energy(42);                                                       // this will necessarily also compile
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().at(0)),
+                                  MutableExampleCluster>); // collections should have indexed access to mutable objects
   }
 
-  // check the individual steps again from above, to see where things fail if they fail
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
-                                ExampleClusterMutableCollectionIterator>); // non const collection end() should return a
-                                                                           // MutableCollectionIterator
+  SECTION("const correct iterators on const collections") {
+    const auto collection = ExampleHitCollection();
+    // this essentially checks the whole "chain" from begin() / end() through
+    // iterator operators
+    for (auto hit [[maybe_unused]] : collection) {
+      STATIC_REQUIRE(std::is_same_v<decltype(hit), ExampleHit>); // const collection iterators should only return
+                                                                 // immutable objects
+    }
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
-                                ExampleClusterMutableCollectionIterator>); // non const collection end() should return a
-                                                                           // MutableCollectionIterator
+    // but we can exercise it in a detailed fashion as well to make it easier to
+    // spot where things fail, should they fail
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleHitCollection>().begin()),
+                                  ExampleHitCollectionIterator>); // const collection begin() should return a
+                                                                  // CollectionIterator
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
-                                ExampleClusterMutableCollectionIterator>); // collection end() should return a
-                                                                           // MutableCollectionIterator
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<const ExampleHitCollection>().end()),
+                                  ExampleHitCollectionIterator>); // const collection end() should return a
+                                                                  // CollectionIterator
 
-  STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<ExampleClusterCollection>().begin()),
-                                MutableExampleCluster>); // MutableCollectionIterator should give access to mutable
-                                                         // objects
+    STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<const ExampleHitCollection>().begin()),
+                                  ExampleHit>); // CollectionIterator should only give access to immutable objects
 
-  STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
-                                MutableExampleCluster*>); // CollectionIterator should only give access to mutable
-                                                          // objects
-}
-
-TEST_CASE("Subset collection basics", "[subset-colls]") {
-  auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setSubsetCollection();
-
-  // The following will always be true
-  REQUIRE(clusterRefs.isSubsetCollection());
-  const auto refCollBuffers = clusterRefs.getBuffers();
-  REQUIRE(refCollBuffers.data == nullptr);
-  REQUIRE(refCollBuffers.vectorMembers->empty());
-  REQUIRE(refCollBuffers.references->size() == 1u);
-}
-
-TEST_CASE("Subset collection can handle subsets", "[subset-colls]") {
-  // Can only collect things that already live in a different collection
-  auto clusters = ExampleClusterCollection();
-  auto cluster = clusters.create();
-
-  auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setSubsetCollection();
-  clusterRefs.push_back(cluster);
-
-  auto clusterRef = clusterRefs[0];
-  STATIC_REQUIRE(std::is_same_v<decltype(clusterRef), decltype(cluster)>); // Elements that can be obtained from a
-                                                                           // collection and a subset collection should
-                                                                           // have the same type
-
-  REQUIRE(clusterRef == cluster);
-
-  // These are "true" subsets, so changes should propagate
-  cluster.energy(42);
-  REQUIRE(clusterRef.energy() == 42);
-  // Also in the other direction
-  clusterRef.energy(-42);
-  REQUIRE(cluster.energy() == -42);
-
-  clusters.setID(42);
-  for (auto c : clusters) {
-    REQUIRE(c.getObjectID().collectionID == 42);
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleHitCollectionIterator>().operator->()),
+                                  ExampleHit*>); // CollectionIterator should only give access to immutable objects
   }
 
-  // Setting the ID on a subset collection should not change the IDs of the
-  // reference objects as otherwise we cannot use them in I/O
-  clusterRefs.setID(314);
-  REQUIRE(clusterRefs.getID() == 314);
-  for (auto c : clusterRefs) {
-    REQUIRE(c.getObjectID().collectionID == 42);
+  SECTION("const correct iterators on collections") {
+    auto collection = ExampleClusterCollection();
+    for (auto cluster : collection) {
+      STATIC_REQUIRE(std::is_same_v<decltype(cluster), MutableExampleCluster>); // collection iterators should return
+                                                                                // mutable objects
+      cluster.energy(42);                                                       // this will necessarily also compile
+    }
+
+    // check the individual steps again from above, to see where things fail if they fail
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
+                                  ExampleClusterMutableCollectionIterator>); // non const collection end() should return
+                                                                             // a MutableCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
+                                  ExampleClusterMutableCollectionIterator>); // non const collection end() should return
+                                                                             // a MutableCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterCollection>().end()),
+                                  ExampleClusterMutableCollectionIterator>); // collection end() should return a
+                                                                             // MutableCollectionIterator
+
+    STATIC_REQUIRE(std::is_same_v<decltype(*std::declval<ExampleClusterCollection>().begin()),
+                                  MutableExampleCluster>); // MutableCollectionIterator should give access to mutable
+                                                           // objects
+
+    STATIC_REQUIRE(std::is_same_v<decltype(std::declval<ExampleClusterMutableCollectionIterator>().operator->()),
+                                  MutableExampleCluster*>); // CollectionIterator should only give access to mutable
+                                                            // objects
   }
 }
 
-TEST_CASE("Collection iterators work with subset collections", "[subset-colls]") {
-  auto hits = ExampleHitCollection();
-  auto hit1 = hits.create(0x42ULL, 0., 0., 0., 0.);
-  auto hit2 = hits.create(0x42ULL, 1., 1., 1., 1.);
+TEST_CASE("Subset collections", "[subset-colls]") {
+  SECTION("basics") {
+    auto clusterRefs = ExampleClusterCollection();
+    clusterRefs.setSubsetCollection();
 
-  auto hitRefs = ExampleHitCollection();
-  hitRefs.setSubsetCollection();
-  for (const auto h : hits) {
-    hitRefs.push_back(h);
+    // The following will always be true
+    REQUIRE(clusterRefs.isSubsetCollection());
+    const auto refCollBuffers = clusterRefs.getBuffers();
+    REQUIRE(refCollBuffers.data == nullptr);
+    REQUIRE(refCollBuffers.vectorMembers->empty());
+    REQUIRE(refCollBuffers.references->size() == 1u);
   }
 
-  // index-based looping / access
-  for (size_t i = 0; i < hitRefs.size(); ++i) {
-    REQUIRE(hitRefs[i].energy() == i);
+  SECTION("can handle subsets") {
+    // Can only collect things that already live in a different collection
+    auto clusters = ExampleClusterCollection();
+    auto cluster = clusters.create();
+
+    auto clusterRefs = ExampleClusterCollection();
+    clusterRefs.setSubsetCollection();
+    clusterRefs.push_back(cluster);
+
+    auto clusterRef = clusterRefs[0];
+    STATIC_REQUIRE(std::is_same_v<decltype(clusterRef), decltype(cluster)>); // Elements that can be obtained from a
+                                                                             // collection and a subset collection
+                                                                             // should have the same type
+
+    REQUIRE(clusterRef == cluster);
+
+    // These are "true" subsets, so changes should propagate
+    cluster.energy(42);
+    REQUIRE(clusterRef.energy() == 42);
+    // Also in the other direction
+    clusterRef.energy(-42);
+    REQUIRE(cluster.energy() == -42);
+
+    clusters.setID(42);
+    for (auto c : clusters) {
+      REQUIRE(c.getObjectID().collectionID == 42);
+    }
+
+    // Setting the ID on a subset collection should not change the IDs of the
+    // reference objects as otherwise we cannot use them in I/O
+    clusterRefs.setID(314);
+    REQUIRE(clusterRefs.getID() == 314);
+    for (auto c : clusterRefs) {
+      REQUIRE(c.getObjectID().collectionID == 42);
+    }
   }
 
-  // range-based for loop
-  int index = 0;
-  for (const auto h : hitRefs) {
-    REQUIRE(h.energy() == index++);
+  SECTION("iterators work with subset collections") {
+    auto hits = ExampleHitCollection();
+    auto hit1 = hits.create(0x42ULL, 0., 0., 0., 0.);
+    auto hit2 = hits.create(0x42ULL, 1., 1., 1., 1.);
+
+    auto hitRefs = ExampleHitCollection();
+    hitRefs.setSubsetCollection();
+    for (const auto h : hits) {
+      hitRefs.push_back(h);
+    }
+
+    // index-based looping / access
+    for (size_t i = 0; i < hitRefs.size(); ++i) {
+      REQUIRE(hitRefs[i].energy() == i);
+    }
+
+    // range-based for loop
+    int index = 0;
+    for (const auto h : hitRefs) {
+      REQUIRE(h.energy() == index++);
+    }
   }
-}
 
-TEST_CASE("Cannot convert a normal collection into a subset collection", "[subset-colls]") {
-  auto clusterRefs = ExampleClusterCollection();
-  auto cluster = clusterRefs.create();
+  SECTION("cannot convert a normal collection into a subset collection") {
+    auto clusterRefs = ExampleClusterCollection();
+    auto cluster = clusterRefs.create();
 
-  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(), std::logic_error);
-}
+    REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(), std::logic_error);
+  }
 
-TEST_CASE("Cannot convert a subset collection into a normal collection", "[subset-colls]") {
-  auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setSubsetCollection();
+  SECTION("cannot convert a subset collection into a normal collection") {
+    auto clusterRefs = ExampleClusterCollection();
+    clusterRefs.setSubsetCollection();
 
-  auto clusters = ExampleClusterCollection();
-  auto cluster = clusters.create();
-  clusterRefs.push_back(cluster);
+    auto clusters = ExampleClusterCollection();
+    auto cluster = clusters.create();
+    clusterRefs.push_back(cluster);
 
-  REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(false), std::logic_error);
-}
+    REQUIRE_THROWS_AS(clusterRefs.setSubsetCollection(false), std::logic_error);
+  }
 
-TEST_CASE("Subset collection only handles tracked objects", "[subset-colls]") {
-  auto clusterRefs = ExampleClusterCollection();
-  clusterRefs.setSubsetCollection();
-  auto cluster = MutableExampleCluster();
+  SECTION("only handles tracked objects") {
+    auto clusterRefs = ExampleClusterCollection();
+    clusterRefs.setSubsetCollection();
+    auto cluster = MutableExampleCluster();
 
-  REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
-  REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
+    REQUIRE_THROWS_AS(clusterRefs.push_back(cluster), std::invalid_argument);
+    REQUIRE_THROWS_AS(clusterRefs.create(), std::logic_error);
+  }
 }
 
 // Helper functionality to keep the tests below with a common setup a bit shorter
@@ -1276,33 +1290,31 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
   REQUIRE_FALSE(gp.get<std::vector<int>>("Missing"));
   REQUIRE_FALSE(gp.get<std::vector<float>>("Missing"));
   REQUIRE_FALSE(gp.get<std::vector<std::string>>("Missing"));
-}
 
-TEST_CASE("GenericParameters empty vector single value access", "[generic-parameters]") {
-  auto gp = podio::GenericParameters();
-  gp.set("empty-ints", std::vector<int>{});
+  SECTION("empty vector single value access") {
+    gp.set("empty-ints", std::vector<int>{});
 
-  // Getting the whole vector works
-  const auto maybeVec = gp.get<std::vector<int>>("empty-ints");
-  REQUIRE(maybeVec.has_value());
-  const auto& vec = maybeVec.value();
-  REQUIRE(vec.empty());
+    // Getting the whole vector works
+    const auto maybeVec = gp.get<std::vector<int>>("empty-ints");
+    REQUIRE(maybeVec.has_value());
+    const auto& vec = maybeVec.value();
+    REQUIRE(vec.empty());
 
-  // Trying to get a single (i.e. the first) value will not work
-  const auto maybeVal = gp.get<int>("empty-ints");
-  REQUIRE_FALSE(maybeVal.has_value());
-}
+    // Trying to get a single (i.e. the first) value will not work
+    const auto maybeVal = gp.get<int>("empty-ints");
+    REQUIRE_FALSE(maybeVal.has_value());
+  }
 
-TEST_CASE("GenericParameters getN", "[generic-parameters]") {
-  auto gp = podio::GenericParameters{};
-  gp.set("anInt", 42);
-  gp.set("manyInts", {1, 2, 3, 4});
-  gp.set("aFloat", 3.14f);
+  SECTION("getN") {
+    gp.set("anInt", 42);
+    gp.set("manyInts", {1, 2, 3, 4});
+    gp.set("aFloat", 3.14f);
 
-  REQUIRE(gp.getN<int>("anInt") == 1);
-  REQUIRE(gp.getN<int>("manyInts") == 4);
-  REQUIRE(gp.getN<float>("aFloat") == 1);
-  REQUIRE(gp.getN<int>("nonExistent") == 0);
+    REQUIRE(gp.getN<int>("anInt") == 1);
+    REQUIRE(gp.getN<int>("manyInts") == 4);
+    REQUIRE(gp.getN<float>("aFloat") == 1);
+    REQUIRE(gp.getN<int>("nonExistent") == 0);
+  }
 }
 
 TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
@@ -1347,82 +1359,86 @@ TEST_CASE("GenericParameters constructors", "[generic-parameters]") {
   }
 }
 
-TEST_CASE("Missing files (ROOT readers)", "[basics]") {
-  auto root_legacy_reader = podio::ROOTLegacyReader();
-  REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
+TEST_CASE("Missing files", "[basics]") {
+  SECTION("ROOT readers") {
+    auto root_legacy_reader = podio::ROOTLegacyReader();
+    REQUIRE_THROWS_AS(root_legacy_reader.openFile("NonExistentFile.root"), std::runtime_error);
 
-  auto root_frame_reader = podio::ROOTReader();
-  REQUIRE_THROWS_AS(root_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
-}
+    auto root_frame_reader = podio::ROOTReader();
+    REQUIRE_THROWS_AS(root_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
+  }
 
 #if PODIO_ENABLE_SIO
-TEST_CASE("Missing files (SIO readers)", "[basics]") {
-  auto sio_legacy_reader = podio::SIOLegacyReader();
-  REQUIRE_THROWS_AS(sio_legacy_reader.openFile("NonExistentFile.sio"), std::runtime_error);
+  SECTION("SIO readers") {
+    auto sio_legacy_reader = podio::SIOLegacyReader();
+    REQUIRE_THROWS_AS(sio_legacy_reader.openFile("NonExistentFile.sio"), std::runtime_error);
 
-  auto sio_frame_reader = podio::SIOReader();
-  REQUIRE_THROWS_AS(sio_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
-}
+    auto sio_frame_reader = podio::SIOReader();
+    REQUIRE_THROWS_AS(sio_frame_reader.openFile("NonExistentFile.root"), std::runtime_error);
+  }
 #endif
+}
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
 
-TEST_CASE("JSON", "[json]") {
-  const auto& [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
-  const nlohmann::json json{
-      {"clusters", clusterColl}, {"hits", hitColl}, {"vectors", vecMemColl}, {"userData", userDataColl}};
+TEST_CASE("JSON output", "[json]") {
+  SECTION("full collections") {
+    const auto& [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
+    const nlohmann::json json{
+        {"clusters", clusterColl}, {"hits", hitColl}, {"vectors", vecMemColl}, {"userData", userDataColl}};
 
-  REQUIRE(json["clusters"].size() == 3);
+    REQUIRE(json["clusters"].size() == 3);
 
-  int i = 0;
-  for (const auto& clu : json["clusters"]) {
-    REQUIRE(clu["Hits"][0]["index"] == i++);
+    int i = 0;
+    for (const auto& clu : json["clusters"]) {
+      REQUIRE(clu["Hits"][0]["index"] == i++);
+    }
+
+    i = 0;
+    REQUIRE(json["hits"].size() == 3);
+    for (const auto& hit : json["hits"]) {
+      REQUIRE(hit["cellID"] == i);
+      REQUIRE(hit["energy"] == 100.f * i);
+      i++;
+    }
+
+    i = 0;
+    REQUIRE(json["vectors"].size() == 3);
+    for (const auto& vec : json["vectors"]) {
+      REQUIRE(vec["count"].size() == 2);
+      REQUIRE(vec["count"][0] == i);
+      REQUIRE(vec["count"][1] == i + 42);
+      i++;
+    }
+
+    REQUIRE(json["userData"].size() == 3);
+    for (size_t j = 0; j < 3; ++j) {
+      REQUIRE(json["userData"][j] == 3.14f * j);
+    }
   }
 
-  i = 0;
-  REQUIRE(json["hits"].size() == 3);
-  for (const auto& hit : json["hits"]) {
-    REQUIRE(hit["cellID"] == i);
-    REQUIRE(hit["energy"] == 100.f * i);
-    i++;
-  }
+  SECTION("subset collections") {
+    auto clusters = ExampleClusterCollection();
+    clusters.setID(42);
+    for (int i = 0; i < 5; ++i) {
+      clusters.create(i * 1.0);
+    }
 
-  i = 0;
-  REQUIRE(json["vectors"].size() == 3);
-  for (const auto& vec : json["vectors"]) {
-    REQUIRE(vec["count"].size() == 2);
-    REQUIRE(vec["count"][0] == i);
-    REQUIRE(vec["count"][1] == i + 42);
-    i++;
-  }
+    auto subsetClusters = ExampleClusterCollection();
+    subsetClusters.setID(123);
+    subsetClusters.setSubsetCollection();
+    for (int i = clusters.size() - 1; i >= 0; i--) {
+      subsetClusters.push_back(clusters[i]);
+    }
 
-  REQUIRE(json["userData"].size() == 3);
-  for (size_t j = 0; j < 3; ++j) {
-    REQUIRE(json["userData"][j] == 3.14f * j);
-  }
-}
+    const nlohmann::json json{{"subset", subsetClusters}};
+    REQUIRE(json["subset"].size() == 5);
 
-TEST_CASE("subset collection JSON", "[json]") {
-  auto clusters = ExampleClusterCollection();
-  clusters.setID(42);
-  for (int i = 0; i < 5; ++i) {
-    clusters.create(i * 1.0);
-  }
-
-  auto subsetClusters = ExampleClusterCollection();
-  subsetClusters.setID(123);
-  subsetClusters.setSubsetCollection();
-  for (int i = clusters.size() - 1; i >= 0; i--) {
-    subsetClusters.push_back(clusters[i]);
-  }
-
-  const nlohmann::json json{{"subset", subsetClusters}};
-  REQUIRE(json["subset"].size() == 5);
-
-  for (int i = 0; i < 5; ++i) {
-    REQUIRE(json["subset"][i]["collectionID"] == clusters.getID());
-    REQUIRE(json["subset"][i]["index"] == 4 - i);
+    for (int i = 0; i < 5; ++i) {
+      REQUIRE(json["subset"][i]["collectionID"] == clusters.getID());
+      REQUIRE(json["subset"][i]["index"] == 4 - i);
+    }
   }
 }
 

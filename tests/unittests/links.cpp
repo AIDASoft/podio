@@ -159,109 +159,115 @@ TEST_CASE("Link basics", "[links]") {
     REQUIRE(link != newLink);
   }
 }
-
-TEST_CASE("Links hash", "[links][hash]") {
-  auto hit1 = ExampleHit();
-  auto cluster1 = ExampleCluster();
-  auto link1 = TestMutL();
-  link1.set(hit1);
-  link1.set(cluster1);
-  auto hash1 = std::hash<TestMutL>{}(link1);
-  // rehashing should give the same result
-  auto rehash = std::hash<TestMutL>{}(link1);
-  REQUIRE(rehash == hash1);
-
-  // same object should have the same hash
-  auto link2 = link1;
-  auto hash2 = std::hash<TestMutL>{}(link2);
-  REQUIRE(link2 == link1);
-  REQUIRE(hash2 == hash1);
-
-  // different objects should have different hashes
-  auto different_link = TestMutL();
-  auto hash_different = std::hash<TestMutL>{}(different_link);
-  REQUIRE(different_link != link1);
-  REQUIRE(hash_different != hash1);
-
-  // podio specific:
-  // changing  properties doesn't change hash as long as the same object is used
-  auto another_hit = ExampleHit();
-  link1.setWeight(3.14);
-  link1.set(another_hit);
-  auto hash_mod = std::hash<TestMutL>{}(link1);
-  REQUIRE(link1 == link2);
-  REQUIRE(hash_mod == hash2);
-
-  // podio specific:
-  // mutable and immutable objects should have the same hash
-  auto immutable_link = TestL(link1);
-  auto hash_immutable = std::hash<TestL>{}(immutable_link);
-  REQUIRE(immutable_link == link1);
-  REQUIRE(hash_immutable == hash1);
-}
-
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
-TEST_CASE("Links associative containers", "[links][hash]") {
-  ExampleHit hit1, hit2;
-  ExampleCluster cluster1, cluster2;
-  TestMutL link1, link2, link3, link4;
-  link1.set(hit1);
-  link1.set(cluster1);
-  link1.setWeight(1.0);
-  link2.set(hit2);
-  link2.set(cluster2);
-  link2.setWeight(2.0);
-  link3.set(hit1);
-  link3.set(cluster2);
-  link3.setWeight(3.0);
-  link4.set(hit1);
-  link4.set(cluster1);
-  link4.setWeight(4.0);
-  auto link5 = link2;
 
-  std::set<TestL> linkSet;
-  linkSet.insert(link1);
-  linkSet.insert(link2);
-  linkSet.insert(link3);
-  linkSet.insert(link4);
-  linkSet.insert(link4);
-  linkSet.insert(link5);
-  REQUIRE(linkSet.size() == 4);
+TEST_CASE("Links hash and containers", "[links][hash]") {
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
+  // false positives here from clang-tidy that we are confident are false
+  // positives, because we don't see issues in our builds with sanitizers
+  SECTION("hash") {
+    auto hit1 = ExampleHit();
+    auto cluster1 = ExampleCluster();
+    auto link1 = TestMutL();
+    link1.set(hit1);
+    link1.set(cluster1);
+    auto hash1 = std::hash<TestMutL>{}(link1);
+    // rehashing should give the same result
+    auto rehash = std::hash<TestMutL>{}(link1);
+    REQUIRE(rehash == hash1);
 
-  std::map<TestL, int> linkMap;
-  linkMap[link1]++;
-  linkMap[link2]++;
-  linkMap[link3]++;
-  linkMap[link4]++;
-  linkMap[link5]++;
-  REQUIRE(linkMap[link1] == 1);
-  REQUIRE(linkMap[link2] == 2);
-  REQUIRE(linkMap[link3] == 1);
-  REQUIRE(linkMap[link4] == 1);
-  REQUIRE(linkMap[link5] == 2);
+    // same object should have the same hash
+    auto link2 = link1;
+    auto hash2 = std::hash<TestMutL>{}(link2);
+    REQUIRE(link2 == link1);
+    REQUIRE(hash2 == hash1);
 
-  // unordered associative containers
-  std::unordered_set<TestL> linkUnorderedSet;
-  linkUnorderedSet.insert(link1);
-  linkUnorderedSet.insert(link2);
-  linkUnorderedSet.insert(link3);
-  linkUnorderedSet.insert(link4);
-  linkUnorderedSet.insert(link4);
-  linkUnorderedSet.insert(link5);
-  REQUIRE(linkUnorderedSet.size() == 4);
+    // different objects should have different hashes
+    auto different_link = TestMutL();
+    auto hash_different = std::hash<TestMutL>{}(different_link);
+    REQUIRE(different_link != link1);
+    REQUIRE(hash_different != hash1);
 
-  std::unordered_map<TestL, int> linkUnorderedMap;
-  linkUnorderedMap[link1]++;
-  linkUnorderedMap[link2]++;
-  linkUnorderedMap[link3]++;
-  linkUnorderedMap[link4]++;
-  linkUnorderedMap[link5]++;
+    // podio specific:
+    // changing  properties doesn't change hash as long as the same object is used
+    auto another_hit = ExampleHit();
+    link1.setWeight(3.14);
+    link1.set(another_hit);
+    auto hash_mod = std::hash<TestMutL>{}(link1);
+    REQUIRE(link1 == link2);
+    REQUIRE(hash_mod == hash2);
 
-  REQUIRE(linkUnorderedMap[link1] == 1);
-  REQUIRE(linkUnorderedMap[link2] == 2);
-  REQUIRE(linkUnorderedMap[link3] == 1);
-  REQUIRE(linkUnorderedMap[link4] == 1);
-  REQUIRE(linkUnorderedMap[link5] == 2);
+    // podio specific:
+    // mutable and immutable objects should have the same hash
+    auto immutable_link = TestL(link1);
+    auto hash_immutable = std::hash<TestL>{}(immutable_link);
+    REQUIRE(immutable_link == link1);
+    REQUIRE(hash_immutable == hash1);
+  }
+
+  SECTION("associative containers") {
+    ExampleHit hit1, hit2;
+    ExampleCluster cluster1, cluster2;
+    TestMutL link1, link2, link3, link4;
+    link1.set(hit1);
+    link1.set(cluster1);
+    link1.setWeight(1.0);
+    link2.set(hit2);
+    link2.set(cluster2);
+    link2.setWeight(2.0);
+    link3.set(hit1);
+    link3.set(cluster2);
+    link3.setWeight(3.0);
+    link4.set(hit1);
+    link4.set(cluster1);
+    link4.setWeight(4.0);
+    auto link5 = link2;
+
+    std::set<TestL> linkSet;
+    linkSet.insert(link1);
+    linkSet.insert(link2);
+    linkSet.insert(link3);
+    linkSet.insert(link4);
+    linkSet.insert(link4);
+    linkSet.insert(link5);
+    REQUIRE(linkSet.size() == 4);
+
+    std::map<TestL, int> linkMap;
+    linkMap[link1]++;
+    linkMap[link2]++;
+    linkMap[link3]++;
+    linkMap[link4]++;
+    linkMap[link5]++;
+    REQUIRE(linkMap[link1] == 1);
+    REQUIRE(linkMap[link2] == 2);
+    REQUIRE(linkMap[link3] == 1);
+    REQUIRE(linkMap[link4] == 1);
+    REQUIRE(linkMap[link5] == 2);
+
+    // unordered associative containers
+    std::unordered_set<TestL> linkUnorderedSet;
+    linkUnorderedSet.insert(link1);
+    linkUnorderedSet.insert(link2);
+    linkUnorderedSet.insert(link3);
+    linkUnorderedSet.insert(link4);
+    linkUnorderedSet.insert(link4);
+    linkUnorderedSet.insert(link5);
+    REQUIRE(linkUnorderedSet.size() == 4);
+
+    std::unordered_map<TestL, int> linkUnorderedMap;
+    linkUnorderedMap[link1]++;
+    linkUnorderedMap[link2]++;
+    linkUnorderedMap[link3]++;
+    linkUnorderedMap[link4]++;
+    linkUnorderedMap[link5]++;
+
+    REQUIRE(linkUnorderedMap[link1] == 1);
+    REQUIRE(linkUnorderedMap[link2] == 2);
+    REQUIRE(linkUnorderedMap[link3] == 1);
+    REQUIRE(linkUnorderedMap[link4] == 1);
+    REQUIRE(linkUnorderedMap[link5] == 2);
+  }
+  // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 }
 
 TEST_CASE("Links templated accessors", "[links]") {
@@ -480,34 +486,34 @@ void checkCollections(const TestLColl& links, const ExampleHitCollection& hits,
   }
 }
 
-TEST_CASE("LinkCollection element access", "[links][basics]") {
-  auto [linkColl, hitColl, clusterColl] = createLinkCollections();
-
-  for (size_t i = 0; i < linkColl.size(); ++i) {
-    REQUIRE(linkColl[i].getWeight() == i);
-    REQUIRE(std::as_const(linkColl)[i].getWeight() == i);
-    REQUIRE(linkColl.at(i).getWeight() == i);
-    REQUIRE(std::as_const(linkColl).at(i).getWeight() == i);
-  }
-
-  REQUIRE_THROWS_AS(linkColl.at(linkColl.size()), std::out_of_range);
-  REQUIRE_THROWS_AS(std::as_const(linkColl).at(linkColl.size()), std::out_of_range);
-}
-
-TEST_CASE("LinkCollection looping", "[links][basics]") {
+TEST_CASE("LinkCollection access and iteration", "[links][basics]") {
   const auto [linkColl, hitColl, clusterColl] = createLinkCollections();
 
-  int i = 0;
-  const auto collSize = linkColl.size();
-  for (const auto& [from, to, weight] : linkColl) {
-    STATIC_REQUIRE(std::is_same_v<decltype(from), const ExampleHit>);
-    STATIC_REQUIRE(std::is_same_v<decltype(to), const ExampleCluster>);
-    STATIC_REQUIRE(std::is_same_v<decltype(weight), const float>);
+  SECTION("element access") {
+    for (size_t i = 0; i < linkColl.size(); ++i) {
+      REQUIRE(linkColl[i].getWeight() == i);
+      REQUIRE(std::as_const(linkColl)[i].getWeight() == i);
+      REQUIRE(linkColl.at(i).getWeight() == i);
+      REQUIRE(std::as_const(linkColl).at(i).getWeight() == i);
+    }
 
-    REQUIRE(from == hitColl[i]);
-    REQUIRE(to == clusterColl[collSize - 1 - i]);
-    REQUIRE(weight == i);
-    i++;
+    REQUIRE_THROWS_AS(linkColl.at(linkColl.size()), std::out_of_range);
+    REQUIRE_THROWS_AS(std::as_const(linkColl).at(linkColl.size()), std::out_of_range);
+  }
+
+  SECTION("looping") {
+    int i = 0;
+    const auto collSize = linkColl.size();
+    for (const auto& [from, to, weight] : linkColl) {
+      STATIC_REQUIRE(std::is_same_v<decltype(from), const ExampleHit>);
+      STATIC_REQUIRE(std::is_same_v<decltype(to), const ExampleCluster>);
+      STATIC_REQUIRE(std::is_same_v<decltype(weight), const float>);
+
+      REQUIRE(from == hitColl[i]);
+      REQUIRE(to == clusterColl[collSize - 1 - i]);
+      REQUIRE(weight == i);
+      i++;
+    }
   }
 }
 
@@ -685,87 +691,91 @@ TEST_CASE("LinkCollection construction from ranges::to", "[links][range]") {
 }
 #endif
 
-TEST_CASE("LinkNavigator basics", "[links]") {
-  TestLColl coll{};
-  std::vector<ExampleHit> hits(11);
-  std::vector<ExampleCluster> clusters(3);
+TEST_CASE("LinkNavigator", "[links]") {
+  SECTION("basics") {
+    TestLColl coll{};
+    std::vector<ExampleHit> hits(11);
+    std::vector<ExampleCluster> clusters(3);
 
-  for (size_t i = 0; i < 10; ++i) {
+    for (size_t i = 0; i < 10; ++i) {
+      auto a = coll.create();
+      a.set(hits[i]);
+      a.set(clusters[i % 3]);
+      a.setWeight(i * 0.1f);
+    }
+
     auto a = coll.create();
-    a.set(hits[i]);
-    a.set(clusters[i % 3]);
-    a.setWeight(i * 0.1f);
+    a.set(hits[10]);
+
+    podio::LinkNavigator nav{coll};
+
+    for (size_t i = 0; i < 10; ++i) {
+      const auto& hit = hits[i];
+      const auto linkedClusters = nav.getLinked(hit);
+      REQUIRE(linkedClusters.size() == 1);
+      const auto& [cluster, weight] = linkedClusters[0];
+      REQUIRE(cluster == clusters[i % 3]);
+      REQUIRE(weight == i * 0.1f);
+    }
+
+    using Catch::Matchers::UnorderedEquals;
+    using podio::detail::links::WeightedObject;
+    using WeightedHits = std::vector<WeightedObject<ExampleHit>>;
+
+    auto linkedHits = nav.getLinked(clusters[0]);
+    REQUIRE_THAT(linkedHits,
+                 UnorderedEquals(WeightedHits{WeightedObject{hits[0], 0.f}, WeightedObject{hits[3], 3 * 0.1f},
+                                              WeightedObject{hits[6], 6 * 0.1f}, WeightedObject{hits[9], 9 * 0.1f}}));
+
+    linkedHits = nav.getLinked(clusters[1]);
+    REQUIRE_THAT(linkedHits,
+                 UnorderedEquals(WeightedHits{WeightedObject{hits[1], 0.1f}, WeightedObject{hits[4], 0.4f},
+                                              WeightedObject{hits[7], 0.7f}}));
+
+    const auto [noCluster, noWeight] = nav.getLinked(hits[10])[0];
+    REQUIRE_FALSE(noCluster.isAvailable());
   }
 
-  auto a = coll.create();
-  a.set(hits[10]);
+  SECTION("same types") {
+    std::vector<ExampleCluster> clusters(3);
+    auto linkColl = podio::LinkCollection<ExampleCluster, ExampleCluster>{};
+    auto link = linkColl.create();
+    link.setFrom(clusters[0]);
+    link.setTo(clusters[1]);
+    link.setWeight(0.5f);
 
-  podio::LinkNavigator nav{coll};
+    link = linkColl.create();
+    link.setFrom(clusters[0]);
+    link.setTo(clusters[2]);
+    link.setWeight(0.25f);
 
-  for (size_t i = 0; i < 10; ++i) {
-    const auto& hit = hits[i];
-    const auto linkedClusters = nav.getLinked(hit);
+    link = linkColl.create();
+    link.setFrom(clusters[1]);
+    link.setTo(clusters[2]);
+    link.setWeight(0.66f);
+
+    auto navigator = podio::LinkNavigator{linkColl};
+    auto linkedClusters = navigator.getLinkedTo(clusters[1]);
     REQUIRE(linkedClusters.size() == 1);
-    const auto& [cluster, weight] = linkedClusters[0];
-    REQUIRE(cluster == clusters[i % 3]);
-    REQUIRE(weight == i * 0.1f);
+    REQUIRE(linkedClusters[0].o == clusters[2]);
+    REQUIRE(linkedClusters[0].weight == 0.66f);
+
+    linkedClusters = navigator.getLinkedFrom(clusters[1]);
+    REQUIRE(linkedClusters.size() == 1);
+    REQUIRE(linkedClusters[0].o == clusters[0]);
+    REQUIRE(linkedClusters[0].weight == 0.5f);
+
+    using Catch::Matchers::UnorderedEquals;
+    using podio::detail::links::WeightedObject;
+    using WeightedObjVec = std::vector<WeightedObject<ExampleCluster>>;
+    linkedClusters = navigator.getLinkedTo(clusters[0]);
+    REQUIRE_THAT(
+        linkedClusters,
+        UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
+
+    linkedClusters = navigator.getLinkedFrom(clusters[2]);
+    REQUIRE_THAT(
+        linkedClusters,
+        UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
   }
-
-  using Catch::Matchers::UnorderedEquals;
-  using podio::detail::links::WeightedObject;
-  using WeightedHits = std::vector<WeightedObject<ExampleHit>>;
-
-  auto linkedHits = nav.getLinked(clusters[0]);
-  REQUIRE_THAT(linkedHits,
-               UnorderedEquals(WeightedHits{WeightedObject{hits[0], 0.f}, WeightedObject{hits[3], 3 * 0.1f},
-                                            WeightedObject{hits[6], 6 * 0.1f}, WeightedObject{hits[9], 9 * 0.1f}}));
-
-  linkedHits = nav.getLinked(clusters[1]);
-  REQUIRE_THAT(linkedHits,
-               UnorderedEquals(WeightedHits{WeightedObject{hits[1], 0.1f}, WeightedObject{hits[4], 0.4f},
-                                            WeightedObject{hits[7], 0.7f}}));
-
-  const auto [noCluster, noWeight] = nav.getLinked(hits[10])[0];
-  REQUIRE_FALSE(noCluster.isAvailable());
-}
-
-TEST_CASE("LinkNavigator same types", "[links]") {
-  std::vector<ExampleCluster> clusters(3);
-  auto linkColl = podio::LinkCollection<ExampleCluster, ExampleCluster>{};
-  auto link = linkColl.create();
-  link.setFrom(clusters[0]);
-  link.setTo(clusters[1]);
-  link.setWeight(0.5f);
-
-  link = linkColl.create();
-  link.setFrom(clusters[0]);
-  link.setTo(clusters[2]);
-  link.setWeight(0.25f);
-
-  link = linkColl.create();
-  link.setFrom(clusters[1]);
-  link.setTo(clusters[2]);
-  link.setWeight(0.66f);
-
-  auto navigator = podio::LinkNavigator{linkColl};
-  auto linkedClusters = navigator.getLinkedTo(clusters[1]);
-  REQUIRE(linkedClusters.size() == 1);
-  REQUIRE(linkedClusters[0].o == clusters[2]);
-  REQUIRE(linkedClusters[0].weight == 0.66f);
-
-  linkedClusters = navigator.getLinkedFrom(clusters[1]);
-  REQUIRE(linkedClusters.size() == 1);
-  REQUIRE(linkedClusters[0].o == clusters[0]);
-  REQUIRE(linkedClusters[0].weight == 0.5f);
-
-  using Catch::Matchers::UnorderedEquals;
-  using podio::detail::links::WeightedObject;
-  using WeightedObjVec = std::vector<WeightedObject<ExampleCluster>>;
-  linkedClusters = navigator.getLinkedTo(clusters[0]);
-  REQUIRE_THAT(linkedClusters,
-               UnorderedEquals(WeightedObjVec{WeightedObject(clusters[1], 0.5f), WeightedObject{clusters[2], 0.25f}}));
-
-  linkedClusters = navigator.getLinkedFrom(clusters[2]);
-  REQUIRE_THAT(linkedClusters,
-               UnorderedEquals(WeightedObjVec{WeightedObject{clusters[0], 0.25f}, WeightedObject{clusters[1], 0.66f}}));
 }

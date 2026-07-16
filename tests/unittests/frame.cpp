@@ -12,54 +12,56 @@
 #include <utility>
 #include <vector>
 
-TEST_CASE("Frame collections", "[frame][basics]") {
-  auto event = podio::Frame();
-  auto clusters = ExampleClusterCollection();
-  clusters.create(3.14f);
-  clusters.create(42.0f);
+TEST_CASE("Frame basics", "[frame][basics]") {
+  SECTION("collections") {
+    auto event = podio::Frame();
+    auto clusters = ExampleClusterCollection();
+    clusters.create(3.14f);
+    clusters.create(42.0f);
 
-  event.put(std::move(clusters), "clusters");
+    event.put(std::move(clusters), "clusters");
 
-  auto& coll = event.get<ExampleClusterCollection>("clusters");
-  REQUIRE(coll[0].energy() == 3.14f);
-  REQUIRE(coll[1].energy() == 42.0f);
+    auto& coll = event.get<ExampleClusterCollection>("clusters");
+    REQUIRE(coll[0].energy() == 3.14f);
+    REQUIRE(coll[1].energy() == 42.0f);
 
-  REQUIRE_FALSE(event.get("non-existant"));
+    REQUIRE_FALSE(event.get("non-existant"));
 
-  REQUIRE_THROWS_AS(event.get<ExampleClusterCollection>("non-existant"), std::runtime_error);
-  REQUIRE_THROWS_AS(event.get<ExampleHitCollection>("clusters"), std::runtime_error);
-}
+    REQUIRE_THROWS_AS(event.get<ExampleClusterCollection>("non-existant"), std::runtime_error);
+    REQUIRE_THROWS_AS(event.get<ExampleHitCollection>("clusters"), std::runtime_error);
+  }
 
-TEST_CASE("Frame parameters", "[frame][basics]") {
-  auto event = podio::Frame();
+  SECTION("parameters") {
+    auto event = podio::Frame();
 
-  event.putParameter("aString", "from a string literal");
-  REQUIRE(event.getParameter<std::string>("aString") == "from a string literal");
+    event.putParameter("aString", "from a string literal");
+    REQUIRE(event.getParameter<std::string>("aString") == "from a string literal");
 
-  event.putParameter("someInts", {42, 123});
-  const auto ints = event.getParameter<std::vector<int>>("someInts").value();
-  REQUIRE(ints.size() == 2);
-  REQUIRE(ints[0] == 42);
-  REQUIRE(ints[1] == 123);
+    event.putParameter("someInts", {42, 123});
+    const auto ints = event.getParameter<std::vector<int>>("someInts").value();
+    REQUIRE(ints.size() == 2);
+    REQUIRE(ints[0] == 42);
+    REQUIRE(ints[1] == 123);
 
-  event.putParameter("someStrings", {"one", "two", "three"});
-  const auto strings = event.getParameter<std::vector<std::string>>("someStrings").value();
-  REQUIRE(strings.size() == 3);
-  REQUIRE(strings[0] == "one");
-  REQUIRE(strings[1] == "two");
-  REQUIRE(strings[2] == "three");
+    event.putParameter("someStrings", {"one", "two", "three"});
+    const auto strings = event.getParameter<std::vector<std::string>>("someStrings").value();
+    REQUIRE(strings.size() == 3);
+    REQUIRE(strings[0] == "one");
+    REQUIRE(strings[1] == "two");
+    REQUIRE(strings[2] == "three");
 
-  const auto stringKeys = event.getParameterKeys<std::string>();
-  REQUIRE(stringKeys.size() == 2);
-  // Can't rely on an insertion order here
-  REQUIRE(std::ranges::find(stringKeys, "aString") != stringKeys.end());
-  REQUIRE(std::ranges::find(stringKeys, "someStrings") != stringKeys.end());
+    const auto stringKeys = event.getParameterKeys<std::string>();
+    REQUIRE(stringKeys.size() == 2);
+    // Can't rely on an insertion order here
+    REQUIRE(std::ranges::find(stringKeys, "aString") != stringKeys.end());
+    REQUIRE(std::ranges::find(stringKeys, "someStrings") != stringKeys.end());
 
-  // Check the cases with empty vectors as parameters
-  event.putParameter("emptyVec", std::vector<int>{});
-  const auto emptyVec = event.getParameter<std::vector<int>>("emptyVec").value();
-  REQUIRE(emptyVec.empty());
-  REQUIRE_FALSE(event.getParameter<int>("emptyVec").has_value());
+    // Check the cases with empty vectors as parameters
+    event.putParameter("emptyVec", std::vector<int>{});
+    const auto emptyVec = event.getParameter<std::vector<int>>("emptyVec").value();
+    REQUIRE(emptyVec.empty());
+    REQUIRE_FALSE(event.getParameter<int>("emptyVec").has_value());
+  }
 }
 
 // NOTE: Due to the extremely small tasks that are done in these tests, they will
