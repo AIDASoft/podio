@@ -1,4 +1,5 @@
 noExplicitConstructor:*
+*:*.ixx
 unusedFunction:*
 missingInclude:*
 missingIncludeSystem:*
