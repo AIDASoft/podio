@@ -20,6 +20,12 @@ module;
 #include <vector>
 
 // Podio core headers (module-safe - no ROOT dependencies)
+// NOTE: PODIO_JSON_OUTPUT is undefined here because nlohmann/json 3.11 has
+// TU-local entities that cannot be exposed in C++20 module interfaces.
+// JSON serialization is available for non-module users.
+#if defined(PODIO_JSON_OUTPUT)
+  #undef PODIO_JSON_OUTPUT
+#endif
 #include "podio/CollectionBase.h"
 #include "podio/ICollectionProvider.h"
 #include "podio/SchemaEvolution.h"
