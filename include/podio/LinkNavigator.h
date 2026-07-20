@@ -22,7 +22,7 @@ namespace detail::links {
     T o;          ///< The object
     float weight; ///< The weight in the link
 
-    bool operator==(const WeightedObject<T>& other) const {
+    constexpr bool operator==(const WeightedObject<T>& other) const {
       return other.o == o && other.weight == weight;
     }
   };

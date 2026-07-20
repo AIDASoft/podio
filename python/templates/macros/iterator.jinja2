@@ -21,11 +21,11 @@ public:
   {{ iterator_type }}& operator=({{iterator_type}}&&) = default;
   ~{{ iterator_type }}() = default;
 
-  auto operator<=>(const {{ iterator_type}}& other) const {
+  constexpr auto operator<=>(const {{ iterator_type}}& other) const {
     return m_index <=> other.m_index;
   }
 
-  bool operator==(const {{ iterator_type }}& x) const {
+  constexpr bool operator==(const {{ iterator_type }}& x) const {
     return m_index ==  x.m_index;
   }
 

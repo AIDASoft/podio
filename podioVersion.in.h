@@ -72,7 +72,7 @@ inline std::ostream& operator<<(std::ostream& os, const Version& v) {
 static constexpr Version build_version{podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH};
 
 /// Decode a version from a 64 bit unsigned
-static constexpr Version decode_version(unsigned long version) noexcept {
+static consteval Version decode_version(unsigned long version) noexcept {
   return Version{static_cast<uint16_t>(PODIO_MAJOR_VERSION(version)),
                  static_cast<uint16_t>(PODIO_MINOR_VERSION(version)),
                  static_cast<uint16_t>(PODIO_PATCH_VERSION(version))};

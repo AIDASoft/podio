@@ -33,11 +33,11 @@ public:
   LinkCollectionIteratorT& operator=(LinkCollectionIteratorT&&) = default;
   ~LinkCollectionIteratorT() = default;
 
-  auto operator<=>(const LinkCollectionIteratorT& other) const {
+  constexpr auto operator<=>(const LinkCollectionIteratorT& other) const {
     return m_index <=> other.m_index;
   }
 
-  bool operator==(const LinkCollectionIteratorT& other) const {
+  constexpr bool operator==(const LinkCollectionIteratorT& other) const {
     return m_index == other.m_index;
   }
 

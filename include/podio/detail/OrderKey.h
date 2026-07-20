@@ -14,9 +14,9 @@ namespace podio::detail {
 /// from different datamodels in an interface type.
 class OrderKey {
 public:
-  OrderKey(const void* orderKey) noexcept : m_orderKey(orderKey) {
+  constexpr OrderKey(const void* orderKey) noexcept : m_orderKey(orderKey) {
   }
-  friend bool operator<(const OrderKey& lhs, const OrderKey& rhs) noexcept {
+  friend constexpr bool operator<(const OrderKey& lhs, const OrderKey& rhs) noexcept {
     return std::less<const void*>{}(lhs.m_orderKey, rhs.m_orderKey);
   }
 

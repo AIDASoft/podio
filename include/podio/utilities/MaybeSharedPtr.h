@@ -88,7 +88,7 @@ public:
     return m_ptr;
   }
 
-  operator bool() const {
+  constexpr operator bool() const {
     return m_ptr;
   }
 
@@ -113,11 +113,11 @@ public:
   // comparison operators
 #define DECLARE_COMPARISON_OPERATOR(op)                                                                                \
   template <typename U>                                                                                                \
-  friend bool operator op(const MaybeSharedPtr<U>& lhs, const MaybeSharedPtr<U>& rhs);                                 \
+  friend constexpr bool operator op(const MaybeSharedPtr<U>& lhs, const MaybeSharedPtr<U>& rhs);                       \
   template <typename U>                                                                                                \
-  friend bool operator op(const MaybeSharedPtr<U>& lhs, const U* rhs);                                                 \
+  friend constexpr bool operator op(const MaybeSharedPtr<U>& lhs, const U* rhs);                                       \
   template <typename U>                                                                                                \
-  friend bool operator op(const U* lhs, const MaybeSharedPtr<U>& rhs);
+  friend constexpr bool operator op(const U* lhs, const MaybeSharedPtr<U>& rhs);
 
   DECLARE_COMPARISON_OPERATOR(==)
   DECLARE_COMPARISON_OPERATOR(!=)
@@ -149,7 +149,7 @@ void swap(MaybeSharedPtr<T>& a, MaybeSharedPtr<T>& b) {
 // helper macro for avoiding a bit of typing/repetition
 #define DEFINE_COMPARISON_OPERATOR(op)                                                                                 \
   template <typename U>                                                                                                \
-  bool operator op(const MaybeSharedPtr<U>& lhs, const MaybeSharedPtr<U>& rhs) {                                       \
+  constexpr bool operator op(const MaybeSharedPtr<U>& lhs, const MaybeSharedPtr<U>& rhs) {                             \
     return lhs.m_ptr op rhs.m_ptr;                                                                                     \
   }
 

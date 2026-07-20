@@ -27,12 +27,7 @@ public:
 
   /// index and collectionID uniquely defines the object.
   /// this operator is necessary for meaningful comparisons in python
-  bool operator==(const ObjectID& other) const {
-    return index == other.index && collectionID == other.collectionID;
-  }
-  bool operator!=(const ObjectID& other) const {
-    return !(*this == other);
-  }
+  constexpr bool operator==(const ObjectID&) const noexcept = default;
 };
 
 inline std::ostream& operator<<(std::ostream& os, const podio::ObjectID& id) {
@@ -52,6 +47,8 @@ inline void to_json(nlohmann::json& j, const podio::ObjectID& id) {
 
 template <>
 struct std::hash<podio::ObjectID> {
+  // constexpr works with GCC 16 and Clang 22, but doesn't with
+  // older compilers
   std::size_t operator()(const podio::ObjectID& id) const noexcept {
     auto hash_collectionID = std::hash<uint32_t>{}(id.collectionID);
     auto hash_index = std::hash<int>{}(id.index);
