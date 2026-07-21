@@ -307,6 +307,10 @@ endfunction()
 #    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
+  if(NOT ENABLE_SIO AND NOT podio_ENABLE_SIO)
+    return()
+  endif()
+
   CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
@@ -348,7 +352,7 @@ endfunction()
 #    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
-  if(NOT ENABLE_ARROW)
+  if(NOT ENABLE_ARROW AND NOT podio_ENABLE_ARROW)
     return()
   endif()
 
