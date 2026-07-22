@@ -682,11 +682,11 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
   for (auto ref : mcpRefs) {
     const auto daughters = ref.daughters();
     if (!daughters.empty()) {
-      auto d [[maybe_unused]] = daughters[0];
+      REQUIRE(daughters[0].isAvailable());
     }
     const auto parents = ref.parents();
     if (!parents.empty()) {
-      auto d [[maybe_unused]] = parents[0];
+      REQUIRE(parents[0].isAvailable());
     }
   }
 
@@ -716,13 +716,8 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
     }
   }
 
-  auto& refs = event.get<ExampleReferencingTypeCollection>("refs");
-  auto ref = refs[0];
-  for (auto cluster : ref.Clusters()) {
-    for (auto hit [[maybe_unused]] : cluster.Hits()) {
-    }
-  }
-  auto& rels [[maybe_unused]] = event.get<ExampleWithOneRelationCollection>("OneRelation");
+  const auto& rels = event.get<ExampleWithOneRelationCollection>("OneRelation");
+  REQUIRE(rels.size() == 2);
 
   auto& vecs = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");
   REQUIRE(vecs.size() == 2);
