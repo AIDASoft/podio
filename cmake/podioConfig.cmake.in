@@ -31,8 +31,8 @@ else()
   find_dependency(Python3 COMPONENTS Interpreter Development)
 endif()
 
-SET(podio_ENABLE_SIO @ENABLE_SIO@)
-if(podio_ENABLE_SIO)
+SET(PODIO_ENABLE_SIO @ENABLE_SIO@)
+if(PODIO_ENABLE_SIO)
   find_dependency(SIO)
   # Targets from SIO only become available with v00-01 so we rig them here to be
   # able to use them
@@ -46,8 +46,8 @@ if(podio_ENABLE_SIO)
   endif()
 endif()
 
-SET(podio_ENABLE_ARROW @ENABLE_ARROW@)
-if(podio_ENABLE_ARROW)
+SET(PODIO_ENABLE_ARROW @ENABLE_ARROW@)
+if(PODIO_ENABLE_ARROW)
   find_dependency(Arrow)
 endif()
 
