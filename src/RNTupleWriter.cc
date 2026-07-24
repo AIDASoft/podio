@@ -135,11 +135,9 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
 
       if (const auto vmInfo = collBuffers.vectorMembers) {
         size_t i = 0;
-        for (const auto& [type, vec] : *vmInfo) {
-          const auto typeName = "vector<" + type + ">";
+        for (const auto& vectorMember : *vmInfo) {
           const auto brName = root_utils::vecBranch(name, relVecNames.vectorMembers[i]);
-          auto ptr = *static_cast<std::vector<int>**>(vec);
-          entry->BindRawPtr(brName, ptr);
+          entry->BindRawPtr(brName, *static_cast<void**>(vectorMember.second));
           ++i;
         }
       }
