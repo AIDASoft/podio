@@ -309,9 +309,11 @@ endfunction()
 function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   if(DEFINED PODIO_ENABLE_SIO)
     if(NOT PODIO_ENABLE_SIO)
+      message(STATUS "Not adding the SIO Blocks library to the targets because PODIO_ENABLE_SIO is not set")
       return()
     endif()
   elseif(NOT ENABLE_SIO)
+    message(STATUS "Not adding the SIO Blocks library to the targets because ENABLE_SIO is not set")
     return()
   endif()
 
@@ -323,11 +325,6 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   # Only get the SIOBlock handlers
   LIST(FILTER HEADERS INCLUDE REGEX .*SIOBlock.h)
   LIST(FILTER SOURCES INCLUDE REGEX .*SIOBlock.cc)
-
-  IF(NOT HEADERS)
-    MESSAGE(STATUS "Not adding the SIO Blocks library to the targets because the corresponding c++ sources have not been generated")
-    RETURN()
-  ENDIF()
 
   add_library(${CORE_LIB}SioBlocks SHARED ${SOURCES} ${HEADERS})
   target_link_libraries(${CORE_LIB}SioBlocks PUBLIC ${CORE_LIB} podio::podio podio::podioSioIO SIO::sio)
@@ -358,9 +355,11 @@ endfunction()
 function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
   if(DEFINED PODIO_ENABLE_ARROW)
     if(NOT PODIO_ENABLE_ARROW)
+      message(STATUS "Not adding the Arrow library to the targets because PODIO_ENABLE_ARROW is not set")
       return()
     endif()
   elseif(NOT ENABLE_ARROW)
+    message(STATUS "Not adding the Arrow library to the targets because ENABLE_ARROW is not set")
     return()
   endif()
 
@@ -371,11 +370,6 @@ function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
 
   # Only get the ArrowMapper handlers
   list(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
-
-  if(NOT SOURCES)
-    message(STATUS "Not adding the Arrow library to the targets because the corresponding c++ sources have not been generated")
-    return()
-  endif()
 
   add_library(${CORE_LIB}Arrow SHARED ${SOURCES})
   target_link_libraries(${CORE_LIB}Arrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
