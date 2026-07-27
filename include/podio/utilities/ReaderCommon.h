@@ -56,12 +56,7 @@ public:
   ///
   /// @returns The names of the available categories from the file
   std::vector<std::string_view> getAvailableCategories() const {
-    std::vector<std::string_view> categories;
-    categories.reserve(m_availableCategories.size());
-    for (const auto& category : m_availableCategories) {
-      categories.emplace_back(category);
-    }
-    return categories;
+    return std::vector<std::string_view>(m_availableCategories.cbegin(), m_availableCategories.cend());
   }
 
 protected:
