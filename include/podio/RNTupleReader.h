@@ -90,11 +90,6 @@ public:
   std::unique_ptr<podio::ROOTFrameData> readEntry(std::string_view name, const unsigned entry,
                                                   const std::vector<std::string>& collsToRead = {});
 
-  /// Get the names of all the available Frame categories in the current file(s).
-  ///
-  /// @returns The names of the available categores from the file
-  std::vector<std::string_view> getAvailableCategories() const;
-
   /// Get the number of entries for the given name
   ///
   /// @param name The name of the category
@@ -130,8 +125,6 @@ private:
 
   /// Map each category to the collections that have been written and are available
   std::unordered_map<std::string_view, std::vector<podio::root_utils::CollectionWriteInfo>> m_collectionInfo{};
-
-  std::vector<std::string> m_availableCategories{};
 
   std::unordered_map<std::string_view, std::shared_ptr<podio::CollectionIDTable>> m_idTables{};
 };

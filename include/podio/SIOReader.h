@@ -82,11 +82,6 @@ public:
   /// @param filename The path to the file to read from
   void openFile(const std::string& filename);
 
-  /// Get the names of all the available Frame categories in the current file.
-  ///
-  /// @returns The names of the available categores from the file
-  std::vector<std::string_view> getAvailableCategories() const;
-
 private:
   void readPodioHeader();
 

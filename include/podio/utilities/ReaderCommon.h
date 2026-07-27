@@ -52,9 +52,22 @@ public:
     return m_datamodelHolder.getAvailableDatamodels();
   }
 
+  /// Get the names of all the available Frame categories in the current file(s).
+  ///
+  /// @returns The names of the available categories from the file
+  std::vector<std::string_view> getAvailableCategories() const {
+    std::vector<std::string_view> categories;
+    categories.reserve(m_availableCategories.size());
+    for (const auto& category : m_availableCategories) {
+      categories.emplace_back(category);
+    }
+    return categories;
+  }
+
 protected:
   podio::version::Version m_fileVersion{};
   DatamodelDefinitionHolder m_datamodelHolder{};
+  std::vector<std::string> m_availableCategories{};
 };
 
 } // namespace podio

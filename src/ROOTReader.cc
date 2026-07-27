@@ -331,8 +331,8 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on
   // demand when the category is first read
-  m_availCategories = ::podio::getAvailableCategories(m_metaChain.get());
-  for (const auto& cat : m_availCategories) {
+  m_availableCategories = ::podio::getAvailableCategories(m_metaChain.get());
+  for (const auto& cat : m_availableCategories) {
     const auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
     for (const auto& fn : filenames) {
       it->second.chain->Add(fn.c_str());
@@ -346,15 +346,6 @@ unsigned ROOTReader::getEntries(std::string_view name) const {
   }
 
   return 0;
-}
-
-std::vector<std::string_view> ROOTReader::getAvailableCategories() const {
-  std::vector<std::string_view> cats;
-  cats.reserve(m_categories.size());
-  for (const auto& [cat, _] : m_categories) {
-    cats.emplace_back(cat);
-  }
-  return cats;
 }
 
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>

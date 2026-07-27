@@ -111,11 +111,6 @@ public:
   /// @returns The number of entries that are available for the category
   unsigned getEntries(std::string_view name) const;
 
-  /// Get the names of all the available Frame categories in the current file(s).
-  ///
-  /// @returns The names of the available categories from the file
-  std::vector<std::string_view> getAvailableCategories() const;
-
   std::optional<std::map<std::string, SizeStats>> getSizeStats(std::string_view category);
 
 private:
@@ -165,7 +160,6 @@ private:
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
   std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
-  std::vector<std::string> m_availCategories{};                      ///< All available categories from this file
 };
 
 } // namespace podio
