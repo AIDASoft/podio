@@ -129,15 +129,6 @@ unsigned RNTupleReader::getEntries(std::string_view name) const {
   return 0;
 }
 
-std::vector<std::string_view> RNTupleReader::getAvailableCategories() const {
-  std::vector<std::string_view> cats;
-  cats.reserve(m_availableCategories.size());
-  for (const auto& cat : m_availableCategories) {
-    cats.emplace_back(cat);
-  }
-  return cats;
-}
-
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view category,
                                                             const std::vector<std::string>& collsToRead) {
   return readEntry(category, m_entries[category], collsToRead);
