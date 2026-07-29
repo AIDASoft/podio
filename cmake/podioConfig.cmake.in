@@ -49,6 +49,7 @@ endif()
 SET(PODIO_ENABLE_ARROW @ENABLE_ARROW@)
 if(PODIO_ENABLE_ARROW)
   find_dependency(Arrow)
+  set(PODIO_ARROW_TARGET @PODIO_ARROW_TARGET@)
 endif()
 
 if(NOT TARGET podio::podio)
