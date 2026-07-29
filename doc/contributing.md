@@ -52,7 +52,6 @@ provided at the Github web page when creating the PR, e.g.
 ```text
 
 BEGINRELEASENOTES
-- export the selected Arrow CMake target for consumers building Arrow I/O libraries
 - updated documentation
     - add guidelines for contributing
 - reverted some name changes in tests/examples
@@ -63,4 +62,5 @@ ENDRELEASENOTES
 
 
 ```
+
 
