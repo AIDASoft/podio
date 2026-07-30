@@ -179,8 +179,8 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
   return tableResult.ValueOrDie();
 }
 
-std::unique_ptr<podio::Frame> convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex) {
-  return std::make_unique<podio::Frame>(std::make_unique<ArrowFrameData>(table, rowIndex));
+podio::Frame convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex) {
+  return podio::Frame(std::make_unique<ArrowFrameData>(table, rowIndex));
 }
 
 } // namespace podio

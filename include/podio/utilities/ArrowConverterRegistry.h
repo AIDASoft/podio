@@ -5,10 +5,10 @@
 #include "podio/SchemaEvolution.h"
 #include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 
 namespace arrow {
 class Array;
@@ -53,7 +53,7 @@ public:
   /**
    * @brief Register an Arrow array reader callback for a specific type name.
    */
-  void registerReader(const std::string& typeName, BufferReaderFunc reader);
+  void registerReader(const std::string& typeName, BufferReaderFunc&& reader);
 
   /**
    * @brief Retrieve the Arrow collection reader registered for a specific type name.
@@ -65,8 +65,8 @@ private:
   ArrowConverterRegistry() : m_registry(), m_readerRegistry() {
   }
 
-  std::unordered_map<std::string, CreatorFunc> m_registry;
-  std::unordered_map<std::string, BufferReaderFunc> m_readerRegistry;
+  std::map<std::string, CreatorFunc> m_registry;
+  std::map<std::string, BufferReaderFunc> m_readerRegistry;
 };
 
 } // namespace podio

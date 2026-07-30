@@ -42,9 +42,9 @@ std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
  *
  * @param table The Arrow Table containing the frame data.
  * @param rowIndex The index of the row to read.
- * @return A unique pointer to the reconstructed Frame.
+ * @return The reconstructed Frame.
  */
-std::unique_ptr<podio::Frame> convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex = 0);
+podio::Frame convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex = 0);
 
 } // namespace podio
 

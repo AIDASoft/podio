@@ -23,7 +23,7 @@ ArrowConverterRegistry::CreatorFunc ArrowConverterRegistry::getConverter(const s
   return nullptr;
 }
 
-void ArrowConverterRegistry::registerReader(const std::string& typeName, BufferReaderFunc reader) {
+void ArrowConverterRegistry::registerReader(const std::string& typeName, BufferReaderFunc&& reader) {
   m_readerRegistry[typeName] = std::move(reader);
 }
 

@@ -185,9 +185,8 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Reader-Only Verification", 
   const auto& table = tableResult.ValueOrDie();
 
   auto frame = podio::convertTableToFrame(table, 0);
-  REQUIRE(frame != nullptr);
 
-  const auto& recHits = frame->get<ExampleHitCollection>("Hits");
+  const auto& recHits = frame.get<ExampleHitCollection>("Hits");
   REQUIRE(recHits.size() == 2);
   REQUIRE(recHits[0].cellID() == 0x100ULL);
   REQUIRE(recHits[0].x() == 10.0f);
@@ -376,23 +375,22 @@ TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arro
   REQUIRE(table != nullptr);
 
   auto reconstructedFrame = podio::convertTableToFrame(table, 0);
-  REQUIRE(reconstructedFrame != nullptr);
 
-  verifyEventNoUserData(*reconstructedFrame, 0);
+  verifyEventNoUserData(reconstructedFrame, 0);
 
-  processExtensions(*reconstructedFrame, 0, podio::version::build_version);
-  checkVecMemSubsetColl(*reconstructedFrame);
-  checkInterfaceCollection(*reconstructedFrame);
-  checkInterfaceExtension(*reconstructedFrame);
+  processExtensions(reconstructedFrame, 0, podio::version::build_version);
+  checkVecMemSubsetColl(reconstructedFrame);
+  checkInterfaceCollection(reconstructedFrame);
+  checkInterfaceExtension(reconstructedFrame);
 
-  const auto& hits = reconstructedFrame->get<ExampleHitCollection>("hits");
-  const auto& clusters = reconstructedFrame->get<ExampleClusterCollection>("clusters");
-  checkLinkCollection(*reconstructedFrame, hits, clusters);
+  const auto& hits = reconstructedFrame.get<ExampleHitCollection>("hits");
+  const auto& clusters = reconstructedFrame.get<ExampleClusterCollection>("clusters");
+  checkLinkCollection(reconstructedFrame, hits, clusters);
 
   // Verify Link collection with interfaces
-  const auto& interfaceLinks = reconstructedFrame->get<TestInterfaceLinkCollection>("links_with_interfaces");
+  const auto& interfaceLinks = reconstructedFrame.get<TestInterfaceLinkCollection>("links_with_interfaces");
   REQUIRE(interfaceLinks.size() == 3);
-  const auto& mcps = reconstructedFrame->get<ExampleMCCollection>("mcparticles");
+  const auto& mcps = reconstructedFrame.get<ExampleMCCollection>("mcparticles");
   REQUIRE(interfaceLinks[0].get<ExampleCluster>() == clusters[0]);
   REQUIRE(interfaceLinks[0].get<TypeWithEnergy>() == hits[0]);
   REQUIRE(interfaceLinks[1].get<ExampleCluster>() == clusters[1]);
@@ -473,11 +471,9 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Multi-Row / r
 
   // --- Reconstruct and verify Frame 1 at rowIndex = 0 ---
   auto reconstructedFrame1 = podio::convertTableToFrame(concatTable, 0);
-  REQUIRE(reconstructedFrame1 != nullptr);
-  verifyFrame(*reconstructedFrame1, 0);
+  verifyFrame(reconstructedFrame1, 0);
 
   // --- Reconstruct and verify Frame 2 at rowIndex = 1 ---
   auto reconstructedFrame2 = podio::convertTableToFrame(concatTable, 1);
-  REQUIRE(reconstructedFrame2 != nullptr);
-  verifyFrame(*reconstructedFrame2, 1);
+  verifyFrame(reconstructedFrame2, 1);
 }
