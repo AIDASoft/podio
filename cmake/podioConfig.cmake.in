@@ -48,6 +48,7 @@ endif()
 
 SET(PODIO_ENABLE_ARROW @ENABLE_ARROW@)
 if(PODIO_ENABLE_ARROW)
+  set(lz4Alt_FIND_QUIETLY TRUE)
   find_dependency(Arrow)
   set(PODIO_ARROW_TARGET @PODIO_ARROW_TARGET@)
 endif()
