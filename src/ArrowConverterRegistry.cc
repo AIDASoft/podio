@@ -1,4 +1,9 @@
 #include "podio/utilities/ArrowConverterRegistry.h"
+#include <cstdlib>
+#include <dlfcn.h>
+#include <filesystem>
+#include <iostream>
+#include <sstream>
 
 namespace podio {
 
@@ -16,6 +21,7 @@ void ArrowConverterRegistry::registerConverter(const std::string& typeName, Crea
 }
 
 ArrowConverterRegistry::CreatorFunc ArrowConverterRegistry::getConverter(const std::string& typeName) const {
+  ArrowConverterLibraryLoader::instance();
   auto it = m_registry.find(typeName);
   if (it != m_registry.end()) {
     return it->second;
@@ -28,11 +34,74 @@ void ArrowConverterRegistry::registerReader(const std::string& typeName, BufferR
 }
 
 ArrowConverterRegistry::BufferReaderFunc ArrowConverterRegistry::getReader(const std::string& typeName) const {
+  ArrowConverterLibraryLoader::instance();
   auto it = m_readerRegistry.find(typeName);
   if (it != m_readerRegistry.end()) {
     return it->second;
   }
   return nullptr;
+}
+
+ArrowConverterLibraryLoader::ArrowConverterLibraryLoader() {
+  for (const auto& [lib, dir] : getLibNames()) {
+    const auto status = loadLib(lib, dir);
+    switch (status) {
+    case LoadStatus::Success:
+      break;
+    case LoadStatus::AlreadyLoaded:
+      break;
+    case LoadStatus::Error:
+      std::cerr << "ERROR while loading Arrow library \'" << lib << "\' (from " << dir << ")" << std::endl;
+      break;
+    }
+  }
+}
+
+ArrowConverterLibraryLoader::LoadStatus ArrowConverterLibraryLoader::loadLib(const std::string& libname,
+                                                                             const std::string& directory) {
+  if (m_loadedLibs.find(libname) != m_loadedLibs.end()) {
+    return LoadStatus::AlreadyLoaded;
+  }
+  void* libhandle = dlopen((directory + "/" + libname).c_str(), RTLD_LAZY | RTLD_GLOBAL);
+  if (libhandle) {
+    m_loadedLibs.insert({libname, libhandle});
+    return LoadStatus::Success;
+  }
+
+  return LoadStatus::Error;
+}
+
+std::vector<std::tuple<std::string, std::string>> ArrowConverterLibraryLoader::getLibNames() {
+  namespace fs = std::filesystem;
+  std::vector<std::tuple<std::string, std::string>> libs;
+
+  const auto ldLibPath = []() {
+    auto pathVar = std::getenv("PODIO_ARROW_PATH");
+    if (!pathVar) {
+      pathVar = std::getenv("LD_LIBRARY_PATH");
+    }
+    return pathVar;
+  }();
+  if (!ldLibPath) {
+    return libs;
+  }
+
+  std::string dir;
+  std::istringstream stream(ldLibPath);
+  while (std::getline(stream, dir, ':')) {
+    if (not fs::exists(dir)) {
+      continue;
+    }
+
+    for (auto& lib : fs::directory_iterator(dir)) {
+      const auto filename = lib.path().filename().string();
+      if (filename.find("Arrow") != std::string::npos && filename.find("libarrow") == std::string::npos) {
+        libs.emplace_back(std::move(filename), dir);
+      }
+    }
+  }
+
+  return libs;
 }
 
 } // namespace podio
