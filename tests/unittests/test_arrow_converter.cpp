@@ -344,7 +344,8 @@ TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arro
   std::vector<std::string> colls;
   for (const auto& name : originalFrame.getAvailableCollections()) {
     if (const auto* coll = originalFrame.get(name)) {
-      if (coll->isSubsetCollection() || podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
+      if (coll->isSubsetCollection() ||
+          podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
         colls.push_back(name);
       }
     }
@@ -385,7 +386,8 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Multi-Row / r
   std::vector<std::string> colls;
   for (const auto& name : frame1.getAvailableCollections()) {
     if (const auto* coll = frame1.get(name)) {
-      if (coll->isSubsetCollection() || podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
+      if (coll->isSubsetCollection() ||
+          podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
         colls.push_back(name);
       }
     }
