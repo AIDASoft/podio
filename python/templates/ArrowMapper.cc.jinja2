@@ -184,8 +184,7 @@ bool registerConverters() {
     };
 
     checkStatus(collectionBuilder->Append(), "Failed to append to collectionBuilder");
-    for (size_t i = 0; i < concreteColl->size(); ++i) {
-      auto obj = (*concreteColl)[i];
+    for (const auto& obj: *concreteColl) {
       checkStatus(objectBuilder->Append(), "Failed to append to objectBuilder");
       checkStatus(weightBuilder->Append(obj.getWeight()), "Failed to append weight");
       appendRelationRef(fromBuilder, obj.getFrom().getObjectID());

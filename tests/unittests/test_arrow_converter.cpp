@@ -3,7 +3,6 @@
 #include "podio/Frame.h"
 
 // Test datatypes
-#include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithArrayCollection.h"
@@ -342,35 +341,14 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
 TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arrow][converter][common]") {
   auto originalFrame = makeFrame(0);
 
-  const std::vector<std::string> colls = {"mcparticles",
-                                          "moreMCs",
-                                          "arrays",
-                                          "mcParticleRefs",
-                                          "hits",
-                                          "hitRefs",
-                                          "refs",
-                                          "refs2",
-                                          "clusters",
-                                          "OneRelation",
-                                          "info",
-                                          "WithVectorMember",
-                                          "VectorMemberSubsetColl",
-                                          "fixedWidthInts",
-                                          "WithNamespaceMember",
-                                          "WithNamespaceRelation",
-                                          "WithNamespaceRelationCopy",
-                                          "emptyCollection",
-                                          "emptySubsetColl",
-                                          "extension_Contained",
-                                          "extension_ExternalComponent",
-                                          "extension_ExternalRelation",
-                                          "interface_examples",
-                                          "anotherHits",
-                                          "extension_interface_relation",
-                                          "links",
-                                          "links_with_interfaces",
-                                          "extension_interface_links"};
-
+  std::vector<std::string> colls;
+  for (const auto& name : originalFrame.getAvailableCollections()) {
+    if (const auto* coll = originalFrame.get(name)) {
+      if (coll->isSubsetCollection() || podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
+        colls.push_back(name);
+      }
+    }
+  }
   auto table = podio::convertFrameToTable(originalFrame, colls);
   REQUIRE(table != nullptr);
 
@@ -404,35 +382,14 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Verification (Multi-Row / r
   auto frame1 = makeFrame(0);
   auto frame2 = makeFrame(1);
 
-  const std::vector<std::string> colls = {"mcparticles",
-                                          "moreMCs",
-                                          "arrays",
-                                          "mcParticleRefs",
-                                          "hits",
-                                          "hitRefs",
-                                          "refs",
-                                          "refs2",
-                                          "clusters",
-                                          "OneRelation",
-                                          "info",
-                                          "WithVectorMember",
-                                          "VectorMemberSubsetColl",
-                                          "fixedWidthInts",
-                                          "WithNamespaceMember",
-                                          "WithNamespaceRelation",
-                                          "WithNamespaceRelationCopy",
-                                          "emptyCollection",
-                                          "emptySubsetColl",
-                                          "extension_Contained",
-                                          "extension_ExternalComponent",
-                                          "extension_ExternalRelation",
-                                          "interface_examples",
-                                          "anotherHits",
-                                          "extension_interface_relation",
-                                          "links",
-                                          "links_with_interfaces",
-                                          "extension_interface_links"};
-
+  std::vector<std::string> colls;
+  for (const auto& name : frame1.getAvailableCollections()) {
+    if (const auto* coll = frame1.get(name)) {
+      if (coll->isSubsetCollection() || podio::ArrowTypeRegistry::instance().getType(std::string(coll->getValueTypeName()))) {
+        colls.push_back(name);
+      }
+    }
+  }
   // Convert both frames to Arrow Tables
   auto table1 = podio::convertFrameToTable(frame1, colls);
   REQUIRE(table1 != nullptr);

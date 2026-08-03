@@ -10,48 +10,7 @@ namespace podio {
 
 namespace {
 
-  struct IntSetter {
-    using ArrayType = arrow::Int32Array;
-    using ValueType = int32_t;
-    static ValueType getValue(const ArrayType* arr, int32_t idx) {
-      return arr->Value(idx);
-    }
-    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<int32_t>& v) {
-      p->set(k, v);
-    }
-  };
-  struct FloatSetter {
-    using ArrayType = arrow::FloatArray;
-    using ValueType = float;
-    static ValueType getValue(const ArrayType* arr, int32_t idx) {
-      return arr->Value(idx);
-    }
-    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<float>& v) {
-      p->set(k, v);
-    }
-  };
-  struct DoubleSetter {
-    using ArrayType = arrow::DoubleArray;
-    using ValueType = double;
-    static ValueType getValue(const ArrayType* arr, int32_t idx) {
-      return arr->Value(idx);
-    }
-    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<double>& v) {
-      p->set(k, v);
-    }
-  };
-  struct StringSetter {
-    using ArrayType = arrow::StringArray;
-    using ValueType = std::string;
-    static ValueType getValue(const ArrayType* arr, int32_t idx) {
-      return arr->GetString(idx);
-    }
-    static void set(podio::GenericParameters* p, const std::string& k, const std::vector<std::string>& v) {
-      p->set(k, v);
-    }
-  };
-
-  template <typename Setter>
+  template <typename ArrayType, typename ValueType>
   void extractMap(const arrow::StructArray* struct_array, const std::string& fieldName, int64_t rowIndex,
                   podio::GenericParameters* params) {
     auto map_array = std::static_pointer_cast<arrow::MapArray>(struct_array->GetFieldByName(fieldName));
@@ -65,8 +24,6 @@ namespace {
     int32_t start = map_array->value_offset(rowIndex);
     int32_t end = map_array->value_offset(rowIndex + 1);
 
-    using ArrayType = typename Setter::ArrayType;
-    using ValueType = typename Setter::ValueType;
     auto val_array = std::static_pointer_cast<ArrayType>(list_items->values());
 
     for (int32_t i = start; i < end; ++i) {
@@ -78,9 +35,13 @@ namespace {
       std::vector<ValueType> vals;
       vals.reserve(list_end - list_start);
       for (int32_t j = list_start; j < list_end; ++j) {
-        vals.push_back(Setter::getValue(val_array.get(), j));
+        if constexpr (std::is_same_v<ArrayType, arrow::StringArray>) {
+          vals.push_back(val_array->GetString(j));
+        } else {
+          vals.push_back(val_array->Value(j));
+        }
       }
-      Setter::set(params, key, vals);
+      params->set(key, vals);
     }
   }
 
@@ -185,10 +146,10 @@ std::unique_ptr<podio::GenericParameters> ArrowFrameData::getParameters() {
   auto struct_array = std::static_pointer_cast<arrow::StructArray>(chunk);
   auto params = std::make_unique<podio::GenericParameters>();
 
-  extractMap<IntSetter>(struct_array.get(), "int_params", remaining_idx, params.get());
-  extractMap<FloatSetter>(struct_array.get(), "float_params", remaining_idx, params.get());
-  extractMap<DoubleSetter>(struct_array.get(), "double_params", remaining_idx, params.get());
-  extractMap<StringSetter>(struct_array.get(), "string_params", remaining_idx, params.get());
+  extractMap<arrow::Int32Array, int32_t>(struct_array.get(), "int_params", remaining_idx, params.get());
+  extractMap<arrow::FloatArray, float>(struct_array.get(), "float_params", remaining_idx, params.get());
+  extractMap<arrow::DoubleArray, double>(struct_array.get(), "double_params", remaining_idx, params.get());
+  extractMap<arrow::StringArray, std::string>(struct_array.get(), "string_params", remaining_idx, params.get());
 
   return params;
 }
