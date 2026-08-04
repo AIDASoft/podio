@@ -15,3 +15,6 @@ useStlAlgorithm:LinkCollectionImpl.h
 useStlAlgorithm:podio-dump-tool.cpp
 useStlAlgorithm:SIOFrameData.cc
 useStlAlgorithm:rootUtils.h
+
+# getAvailableCollections must return by value to satisfy C++20 FrameDataType concept (std::same_as)
+returnByReference:*ArrowFrameData*

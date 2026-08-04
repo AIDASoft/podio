@@ -81,6 +81,34 @@ ARROW_BUILDERS = {
     "std::string": "arrow::StringBuilder",
 }
 
+ARROW_ARRAYS = {
+    "bool": "arrow::BooleanArray",
+    "char": "arrow::Int8Array",
+    "short": "arrow::Int16Array",
+    "int": "arrow::Int32Array",
+    "long": "arrow::Int64Array",
+    "long long": "arrow::Int64Array",
+    "unsigned": "arrow::UInt32Array",
+    "unsigned int": "arrow::UInt32Array",
+    "unsigned long": "arrow::UInt64Array",
+    "unsigned long long": "arrow::UInt64Array",
+    "float": "arrow::FloatArray",
+    "double": "arrow::DoubleArray",
+    "int16_t": "arrow::Int16Array",
+    "int32_t": "arrow::Int32Array",
+    "int64_t": "arrow::Int64Array",
+    "uint16_t": "arrow::UInt16Array",
+    "uint32_t": "arrow::UInt32Array",
+    "uint64_t": "arrow::UInt64Array",
+    "std::int16_t": "arrow::Int16Array",
+    "std::int32_t": "arrow::Int32Array",
+    "std::int64_t": "arrow::Int64Array",
+    "std::uint16_t": "arrow::UInt16Array",
+    "std::uint32_t": "arrow::UInt32Array",
+    "std::uint64_t": "arrow::UInt64Array",
+    "std::string": "arrow::StringArray",
+}
+
 
 class IncludeFrom(IntEnum):
     """Enum to signify if an include is needed and from where it should come"""
@@ -194,6 +222,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             "package_name": self.package_name,
             "schema_version": self.datamodel.schema_version,
             "datatypes": datatypes,
+            "links": datamodel.get("links", []),
             "incfolder": self.incfolder,
         }
         self._write_file(
@@ -243,6 +272,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             "name": member.name,
             "getter": member.getter_name(self.get_syntax),
             "is_array": member.is_array,
+            "full_type": member.full_type,
         }
         if member.is_array:
             meta["array_size"] = member.array_size
@@ -250,7 +280,9 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             if member.array_type in ARROW_PRIMITIVE_TYPES:
                 meta["value_builder"] = {
                     "builder_type": ARROW_BUILDERS[member.array_type],
+                    "arrow_array_type": ARROW_ARRAYS[member.array_type],
                     "is_primitive": True,
+                    "full_type": member.array_type,
                 }
             else:
                 comp_name = member.array_type.removeprefix("::")
@@ -259,10 +291,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 )
                 meta["value_builder"] = {
                     "builder_type": "arrow::StructBuilder",
+                    "arrow_array_type": "arrow::StructArray",
                     "is_struct": True,
                     "children": [
                         self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]
                     ],
+                    "full_type": member.array_type,
                 }
             return meta
 
@@ -272,10 +306,12 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         )
         if comp:
             meta["builder_type"] = "arrow::StructBuilder"
+            meta["arrow_array_type"] = "arrow::StructArray"
             meta["is_struct"] = True
             meta["children"] = [self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]]
         else:
             meta["builder_type"] = ARROW_BUILDERS.get(member.full_type)
+            meta["arrow_array_type"] = ARROW_ARRAYS.get(member.full_type)
             meta["is_primitive"] = True
         return meta
 
@@ -284,11 +320,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         meta = {
             "name": member.name,
             "getter": member.getter_name(self.get_syntax),
+            "full_type": member.full_type,
         }
         if member.full_type in ARROW_PRIMITIVE_TYPES:
             meta["value_builder"] = {
                 "builder_type": ARROW_BUILDERS[member.full_type],
+                "arrow_array_type": ARROW_ARRAYS[member.full_type],
                 "is_primitive": True,
+                "full_type": member.full_type,
             }
         else:
             comp_name = member.full_type.removeprefix("::")
@@ -297,8 +336,10 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
             )
             meta["value_builder"] = {
                 "builder_type": "arrow::StructBuilder",
+                "arrow_array_type": "arrow::StructArray",
                 "is_struct": True,
                 "children": [self._get_member_metadata(sub_mem) for sub_mem in comp["Members"]],
+                "full_type": member.full_type,
             }
         return meta
 

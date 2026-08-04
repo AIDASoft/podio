@@ -4,6 +4,7 @@
 #include "podio/utilities/ArrowFrameConverter.h"
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
+#include "podio/CollectionBufferFactory.h"
 #include <arrow/type.h>
 #include <arrow/api.h>
 
@@ -14,14 +15,70 @@
 #include <stdexcept>
 #include <string>
 
+#include "podio/LinkCollection.h"
+
 {% for datatype in datatypes %}
 #include "{{ incfolder }}{{ datatype.class.bare_type }}Collection.h"
+{% endfor %}
+{% for link in links %}
+#include "{{ incfolder }}{{ link['class'].bare_type }}Collection.h"
 {% endfor %}
 
 namespace {{ package_name }}::arrow_io {
 
 namespace {
 using podio::arrow_utils::checkStatus;
+
+{% macro declare_arrays(member, parent_array, path_prefix) -%}
+{% if member.is_array -%}
+auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<arrow::FixedSizeListArray>({{ parent_array }}->GetFieldByName("{{ member.name }}"));
+{% set val_array_type = member.value_builder.arrow_array_type -%}
+{% if member.value_builder.is_primitive -%}
+auto arr_{{ path_prefix }}{{ member.name }}_val = std::static_pointer_cast<{{ val_array_type }}>(arr_{{ path_prefix }}{{ member.name }}->values());
+{% else -%}
+auto arr_{{ path_prefix }}{{ member.name }}_val = std::static_pointer_cast<arrow::StructArray>(arr_{{ path_prefix }}{{ member.name }}->values());
+{% for child in member.value_builder.children -%}
+{{ declare_arrays(child, 'arr_' + path_prefix + member.name + '_val', path_prefix + member.name + '_val_') }}
+{% endfor -%}
+{% endif -%}
+{% elif member.is_struct -%}
+auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<arrow::StructArray>({{ parent_array }}->GetFieldByName("{{ member.name }}"));
+{% for child in member.children -%}
+{{ declare_arrays(child, 'arr_' + path_prefix + member.name, path_prefix + member.name + '_') }}
+{% endfor -%}
+{% else -%}
+{% set array_type = member.arrow_array_type -%}
+auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<{{ array_type }}>({{ parent_array }}->GetFieldByName("{{ member.name }}"));
+{% endif -%}
+{%- endmacro %}
+
+{% macro read_member(member, obj_expr, path_prefix, index_var='i') -%}
+{% if member.is_array -%}
+for (size_t arr_i = 0; arr_i < {{ member.array_size }}; ++arr_i) {
+{% if member.value_builder.is_primitive -%}
+{% set value = (obj_expr + '.' + member.name + '[arr_i]') -%}
+  {{ value }} = arr_{{ path_prefix }}{{ member.name }}_val->Value({{ index_var }} * {{ member.array_size }} + arr_i);
+{% else -%}
+{% set sub_obj = (obj_expr + '.' + member.name + '[arr_i]') -%}
+{% for child in member.value_builder.children -%}
+{{ read_member(child, sub_obj, path_prefix + member.name + '_val_', index_var) | indent(2, first=True) }}
+{% endfor -%}
+{% endif -%}
+}
+{% elif member.is_struct -%}
+{% set sub_obj = (obj_expr + '.' + member.name) -%}
+{% for child in member.children -%}
+{{ read_member(child, sub_obj, path_prefix + member.name + '_', index_var) }}
+{% endfor -%}
+{% else -%}
+{% set value = (obj_expr + '.' + member.name) -%}
+{% if member.full_type == 'std::string' -%}
+  {{ value }} = arr_{{ path_prefix }}{{ member.name }}->GetString({{ index_var }});
+{% else -%}
+  {{ value }} = arr_{{ path_prefix }}{{ member.name }}->Value({{ index_var }});
+{% endif -%}
+{% endif -%}
+{%- endmacro %}
 
 static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() {
   static const std::map<std::string, std::shared_ptr<arrow::DataType>> instance = {
@@ -32,6 +89,16 @@ static const std::map<std::string, std::shared_ptr<arrow::DataType>>& typeMap() 
 {% for field in datatype.arrow_fields %}
           {{ field }},
 {% endfor %}
+      }))
+    },
+{% endfor %}
+{% for link in links %}
+    {
+      "podio::Link<{{ link.From.full_type }},{{ link.To.full_type }}>",
+      arrow::list(arrow::struct_({
+          arrow::field("weight", arrow::float32()),
+          arrow::field("from", podio::objectRefType()),
+          arrow::field("to", podio::objectRefType()),
       }))
     },
 {% endfor %}
@@ -62,7 +129,6 @@ bool registerConverters() {
     }
     auto* collectionBuilder = static_cast<arrow::ListBuilder*>(builder.get());
     auto* objectBuilder = static_cast<arrow::StructBuilder*>(collectionBuilder->value_builder());
-
     {% for member in datatype.arrow_metadata.members %}
     {{ arrow_macros.declare_builder(member, 'objectBuilder', loop.index0, '') | indent(4) }}
     {%- endfor %}
@@ -96,10 +162,203 @@ bool registerConverters() {
     return array;
   });
 {% endfor %}
+{% for link in links %}
+  convRegistry.registerConverter("podio::Link<{{ link.From.full_type }},{{ link.To.full_type }}>", [](const podio::CollectionBase* coll) {
+    const auto* concreteColl = static_cast<const podio::LinkCollection<{{ link.From.full_type }},{{ link.To.full_type }}>*>(coll);
+    auto type = podio::ArrowTypeRegistry::instance().getType("podio::Link<{{ link.From.full_type }},{{ link.To.full_type }}>");
+    std::unique_ptr<arrow::ArrayBuilder> builder;
+    auto status = arrow::MakeBuilder(arrow::default_memory_pool(), type, &builder);
+    if (!status.ok()) {
+      throw std::runtime_error("Failed to create builder for Link: " + status.ToString());
+    }
+    auto* collectionBuilder = static_cast<arrow::ListBuilder*>(builder.get());
+    auto* objectBuilder = static_cast<arrow::StructBuilder*>(collectionBuilder->value_builder());
+    auto* weightBuilder = static_cast<arrow::FloatBuilder*>(objectBuilder->child(0));
+    auto* fromBuilder = static_cast<arrow::StructBuilder*>(objectBuilder->child(1));
+    auto* toBuilder = static_cast<arrow::StructBuilder*>(objectBuilder->child(2));
+
+    auto appendRelationRef = [](arrow::StructBuilder* structBuilder, const podio::ObjectID& objId) {
+      checkStatus(structBuilder->Append(), "Failed to append relation struct");
+      checkStatus(static_cast<arrow::UInt32Builder*>(structBuilder->child(0))->Append(objId.collectionID), "Failed to append collectionID");
+      checkStatus(static_cast<arrow::Int32Builder*>(structBuilder->child(1))->Append(objId.index), "Failed to append index");
+    };
+
+    checkStatus(collectionBuilder->Append(), "Failed to append to collectionBuilder");
+    for (const auto& obj: *concreteColl) {
+      checkStatus(objectBuilder->Append(), "Failed to append to objectBuilder");
+      checkStatus(weightBuilder->Append(obj.getWeight()), "Failed to append weight");
+      appendRelationRef(fromBuilder, obj.getFrom().getObjectID());
+      appendRelationRef(toBuilder, obj.getTo().getObjectID());
+    }
+    std::shared_ptr<arrow::Array> array;
+    checkStatus(collectionBuilder->Finish(&array), "Failed to finish collectionBuilder");
+    return array;
+  });
+{% endfor %}
   return true;
 }
 
 static const bool convertersRegistered = registerConverters();
+
+bool registerBufferReaders() {
+  auto& convRegistry = podio::ArrowConverterRegistry::mutInstance();
+{% for datatype in datatypes %}
+  convRegistry.registerReader("{{ datatype.class.full_type }}", [](std::shared_ptr<arrow::Array> array, int64_t rowIndex, bool isSubset, podio::SchemaVersionT version) -> std::optional<podio::CollectionReadBuffers> {
+    auto buffers = podio::CollectionBufferFactory::instance().createBuffers("{{ datatype.class.full_type }}Collection", version, isSubset);
+    if (!buffers) {
+      return std::nullopt;
+    }
+
+    auto collection_frames_list = std::static_pointer_cast<arrow::ListArray>(array);
+    auto frame_collection_slice = collection_frames_list->value_slice(rowIndex);
+    auto raw_data_struct_array = std::static_pointer_cast<arrow::StructArray>(frame_collection_slice);
+
+    if (!buffers->data) {
+      auto collId_arr = std::static_pointer_cast<arrow::UInt32Array>(raw_data_struct_array->field(0));
+      auto index_arr = std::static_pointer_cast<arrow::Int32Array>(raw_data_struct_array->field(1));
+      auto* refVec = buffers->references->at(0).get();
+      size_t collection_size = raw_data_struct_array->length();
+      refVec->reserve(collection_size);
+      for (size_t i = 0; i < collection_size; ++i) {
+        refVec->push_back(podio::ObjectID{index_arr->Value(i), collId_arr->Value(i)});
+      }
+      return buffers;
+    }
+
+    auto* dataVec = buffers->dataAsVector<{{ datatype.class.full_type }}Data>();
+    size_t collection_size = raw_data_struct_array->length();
+    dataVec->resize(collection_size);
+    {%- for member in datatype.arrow_metadata.members %}
+    {{ declare_arrays(member, 'raw_data_struct_array', '') | indent(4) }}
+    {%- endfor %}
+    {%- for member in datatype.arrow_metadata.vector_members %}
+    auto arr_{{ member.name }} = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ member.name }}"));
+    {%- set val_array_type = member.value_builder.arrow_array_type %}
+    {%- if member.value_builder.is_primitive %}
+    auto arr_{{ member.name }}_val = std::static_pointer_cast<{{ val_array_type }}>(arr_{{ member.name }}->values());
+    {%- else %}
+    auto arr_{{ member.name }}_val = std::static_pointer_cast<arrow::StructArray>(arr_{{ member.name }}->values());
+    {%- for child in member.value_builder.children %}
+    {{ declare_arrays(child, 'arr_' + member.name + '_val', member.name + '_val_') | indent(4) }}
+    {%- endfor %}
+    {%- endif %}
+    {%- endfor %}
+
+    for (size_t i = 0; i < collection_size; ++i) {
+      {%- for member in datatype.arrow_metadata.members %}
+      {{ read_member(member, '(*dataVec)[i]', '') | indent(6) }}
+      {%- endfor %}
+      {%- for member in datatype.arrow_metadata.vector_members %}
+      {
+        auto* vecMemberBuffer = podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(buffers->vectorMembers->at({{ loop.index0 }}).second);
+        size_t count_begin = vecMemberBuffer->size();
+        // Get start and end offsets of the vector/list element in the flat values array
+        int32_t start_offset = arr_{{ member.name }}->value_offset(i);
+        int32_t end_offset = arr_{{ member.name }}->value_offset(i + 1);
+        for (int32_t j = start_offset; j < end_offset; ++j) {
+        {% if member.value_builder.is_primitive -%}
+        {% if member.value_builder.full_type == 'std::string' -%}
+          vecMemberBuffer->push_back(arr_{{ member.name }}_val->GetString(j));
+        {% else -%}
+          vecMemberBuffer->push_back(arr_{{ member.name }}_val->Value(j));
+        {% endif -%}
+        {% else -%}
+          {{ member.full_type }} val;
+        {% for child in member.value_builder.children -%}
+          {{ read_member(child, 'val', member.name + '_val_', 'j') | indent(10) }}
+        {% endfor -%}
+          vecMemberBuffer->push_back(val);
+        {% endif -%}
+        }
+        (*dataVec)[i].{{ member.name }}_begin = count_begin;
+        (*dataVec)[i].{{ member.name }}_end = vecMemberBuffer->size();
+      }
+      {%- endfor %}
+      {%- for relation in datatype.arrow_metadata.one_to_many_relations %}
+      {
+        auto rel_arr = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
+        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(rel_arr->values());
+        auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
+        auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
+
+        auto* refVec = buffers->references->at({{ loop.index0 }}).get();
+        size_t count_begin = refVec->size();
+        // Get start and end offsets of the relation list in the flat values array
+        int32_t start_offset = rel_arr->value_offset(i);
+        int32_t end_offset = rel_arr->value_offset(i + 1);
+        for (int32_t j = start_offset; j < end_offset; ++j) {
+          refVec->push_back(podio::ObjectID{rel_index_arr->Value(j), rel_collId_arr->Value(j)});
+        }
+        (*dataVec)[i].{{ relation.name }}_begin = count_begin;
+        (*dataVec)[i].{{ relation.name }}_end = refVec->size();
+      }
+      {%- endfor %}
+      {%- for relation in datatype.arrow_metadata.one_to_one_relations %}
+      {
+        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
+        auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
+        auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
+
+        auto* refVec = buffers->references->at({{ loop.index0 + datatype.arrow_metadata.one_to_many_relations|length }}).get();
+        refVec->push_back(podio::ObjectID{rel_index_arr->Value(i), rel_collId_arr->Value(i)});
+      }
+      {%- endfor %}
+    }
+    return buffers;
+  });
+{% endfor %}
+{% for link in links %}
+  convRegistry.registerReader("podio::Link<{{ link.From.full_type }},{{ link.To.full_type }}>", [](std::shared_ptr<arrow::Array> array, int64_t rowIndex, bool isSubset, podio::SchemaVersionT version) -> std::optional<podio::CollectionReadBuffers> {
+    auto buffers = podio::CollectionBufferFactory::instance().createBuffers("podio::LinkCollection<{{ link.From.full_type }},{{ link.To.full_type }}>", version, isSubset);
+    if (!buffers) {
+      return std::nullopt;
+    }
+    auto list_array = std::static_pointer_cast<arrow::ListArray>(array);
+    auto obj_array = list_array->value_slice(rowIndex);
+    auto struct_array = std::static_pointer_cast<arrow::StructArray>(obj_array);
+    size_t num_objs = struct_array->length();
+
+    if (!buffers->data) {
+      auto collId_arr = std::static_pointer_cast<arrow::UInt32Array>(struct_array->field(0));
+      auto index_arr = std::static_pointer_cast<arrow::Int32Array>(struct_array->field(1));
+      auto* refVec = buffers->references->at(0).get();
+      refVec->reserve(num_objs);
+      for (size_t i = 0; i < num_objs; ++i) {
+        refVec->push_back(podio::ObjectID{index_arr->Value(i), collId_arr->Value(i)});
+      }
+      return buffers;
+    }
+
+    auto* dataVec = buffers->dataAsVector<podio::LinkData>();
+    dataVec->resize(num_objs);
+
+    auto weight_arr = std::static_pointer_cast<arrow::FloatArray>(struct_array->GetFieldByName("weight"));
+    auto from_struct_arr = std::static_pointer_cast<arrow::StructArray>(struct_array->GetFieldByName("from"));
+    auto to_struct_arr = std::static_pointer_cast<arrow::StructArray>(struct_array->GetFieldByName("to"));
+
+    auto* fromRefVec = buffers->references->at(0).get();
+    auto* toRefVec = buffers->references->at(1).get();
+    fromRefVec->reserve(num_objs);
+    toRefVec->reserve(num_objs);
+
+    auto readRelationRef = [](arrow::StructArray* structArr, size_t idx, std::vector<podio::ObjectID>* refVec) {
+      auto collId = std::static_pointer_cast<arrow::UInt32Array>(structArr->field(0))->Value(idx);
+      auto index = std::static_pointer_cast<arrow::Int32Array>(structArr->field(1))->Value(idx);
+      refVec->push_back(podio::ObjectID{index, collId});
+    };
+
+    for (size_t i = 0; i < num_objs; ++i) {
+      (*dataVec)[i].weight = weight_arr->Value(i);
+      readRelationRef(from_struct_arr.get(), i, fromRefVec);
+      readRelationRef(to_struct_arr.get(), i, toRefVec);
+    }
+    return buffers;
+  });
+{% endfor %}
+  return true;
+}
+
+static const bool readersRegistered = registerBufferReaders();
 
 } // namespace
 

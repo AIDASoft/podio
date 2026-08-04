@@ -1,10 +1,14 @@
 #ifndef PODIO_ARROWCONVERTERREGISTRY_H
 #define PODIO_ARROWCONVERTERREGISTRY_H
 
+#include "podio/CollectionBuffers.h"
+#include "podio/SchemaEvolution.h"
+#include <cstdint>
 #include <functional>
+#include <map>
 #include <memory>
+#include <optional>
 #include <string>
-#include <unordered_map>
 
 namespace arrow {
 class Array;
@@ -20,6 +24,8 @@ class CollectionBase;
 class ArrowConverterRegistry {
 public:
   using CreatorFunc = std::function<std::shared_ptr<arrow::Array>(const podio::CollectionBase*)>;
+  using BufferReaderFunc = std::function<std::optional<podio::CollectionReadBuffers>(std::shared_ptr<arrow::Array>,
+                                                                                     int64_t, bool, SchemaVersionT)>;
 
   ArrowConverterRegistry(const ArrowConverterRegistry&) = delete;
   ArrowConverterRegistry& operator=(const ArrowConverterRegistry&) = delete;
@@ -44,11 +50,23 @@ public:
    */
   CreatorFunc getConverter(const std::string& typeName) const;
 
+  /**
+   * @brief Register an Arrow array reader callback for a specific type name.
+   */
+  void registerReader(const std::string& typeName, BufferReaderFunc&& reader);
+
+  /**
+   * @brief Retrieve the Arrow collection reader registered for a specific type name.
+   * @return The registered BufferReaderFunc, or nullptr if not registered.
+   */
+  BufferReaderFunc getReader(const std::string& typeName) const;
+
 private:
-  ArrowConverterRegistry() : m_registry() {
+  ArrowConverterRegistry() : m_registry(), m_readerRegistry() {
   }
 
-  std::unordered_map<std::string, CreatorFunc> m_registry;
+  std::map<std::string, CreatorFunc> m_registry;
+  std::map<std::string, BufferReaderFunc> m_readerRegistry;
 };
 
 } // namespace podio
