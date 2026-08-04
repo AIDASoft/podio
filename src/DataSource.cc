@@ -39,18 +39,13 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   nEventsInFiles = podioReader.getEntries(podio::Category::Event);
   frame = podioReader.readFrame(podio::Category::Event, 0, collsToRead);
 
-  // Read the file-level metadata once from the first metadata frame.
-  // If EventWeightNames exists, copy it into DataSource-owned memory so
-  // the same labels remain available throughout the full RDataFrame run.
+  // Store event-weight labels from the file metadata for use during the analysis.
   auto nMetadataFrames = podioReader.getEntries(podio::Category::Metadata);
 
   if (nMetadataFrames > 0) {
-    auto metadataFrame =
-        podioReader.readFrame(podio::Category::Metadata, 0);
+    auto metadataFrame = podioReader.readFrame(podio::Category::Metadata, 0);
 
-    auto weightNames =
-        metadataFrame.getParameter<std::vector<std::string>>(
-            "EventWeightNames");
+    auto weightNames = metadataFrame.getParameter<std::vector<std::string>>("EventWeightNames");
 
     if (weightNames) {
       m_eventWeightNames = *weightNames;
@@ -78,31 +73,22 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   for (auto&& collName : collNames) {
     const podio::CollectionBase* coll = frame.get(collName);
     if (coll) {
-      // Store each valid event collection in both lists:
-      // m_eventColumnNames will later be used to read only real event-frame collections,
-      // while m_columnNames will also contain metadata columns exposed to RDataFrame.
+      // Keep event-frame columns separate from additional columns exposed to RDataFrame.
       m_eventColumnNames.emplace_back(collName);
       m_columnNames.emplace_back(std::move(collName));
       m_columnTypes.emplace_back(coll->getTypeName());
     }
   }
-  // Expose the stored event-weight labels to RDataFrame as a metadata column.
-  // It is added only to m_columnNames because it does not exist in event frames.
-  //Only continue when m_eventWeightNames actually contains weight labels. (! = not)
+  // Expose the stored event-weight labels to RDataFrame.
   if (!m_eventWeightNames.empty()) {
     m_columnNames.emplace_back("_EventWeightNames");
-    //adds a new column name called _EventWeightNames to the list of columns RDataFrame can see.
     m_columnTypes.emplace_back("std::vector<std::string>");
-    //tells RDataFrame that this column contains a vector of strings
   }
-  
-  
 }
 
 void DataSource::SetNSlots(unsigned int nSlots) {
   m_nSlots = nSlots;
-  // Create one metadata reader pointer for each RDataFrame processing slot.
-  // Every pointer refers to the same file-level event-weight labels.
+  // Provide each processing slot with access to the stored metadata labels.
   m_eventWeightNameReaders.assign(m_nSlots, &m_eventWeightNames);
 
   if (m_nSlots > m_nEvents) {
@@ -154,8 +140,8 @@ void DataSource::InitSlot(unsigned int, ULong64_t) {
 }
 
 bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
-  m_frames[slot] =
-      std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_eventColumnNames));
+  m_frames[slot] = std::make_unique<podio::Frame>(
+      m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_eventColumnNames));
 
   for (auto& collectionIndex : m_activeCollections) {
     m_Collections[collectionIndex][slot] = m_frames[slot]->get(m_columnNames.at(collectionIndex));
@@ -179,22 +165,16 @@ std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName,
     throw std::runtime_error(errMsg);
   }
 
-  // We already stored the metadata labels in m_eventWeightNames and registered
-  // _EventWeightNames as an RDataFrame column. This block connects that column
-  // to the stored vector, so RDataFrame reads the real metadata values instead
-  // of looking for _EventWeightNames inside each event frame.
-
-  //check whether RDataFrame is asking for the metadata column.
+  // Make the stored event-weight labels available to RDataFrame.
   if (columnName == "_EventWeightNames") {
     std::vector<void*> columnReaders(m_nSlots);
 
     for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
-      columnReaders[slotIndex] =
-        static_cast<void*>(&m_eventWeightNameReaders[slotIndex]);
+      columnReaders[slotIndex] = static_cast<void*>(&m_eventWeightNameReaders[slotIndex]);
     }
 
-  return columnReaders;
-}
+    return columnReaders;
+  }
 
   auto columnIndex = std::distance(m_columnNames.begin(), itr);
   m_activeCollections.emplace_back(columnIndex);
