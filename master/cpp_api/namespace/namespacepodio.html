@@ -275,6 +275,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowConverterRegistry</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_frame_data.html">Class podio::ArrowFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
 </ul>
@@ -1103,6 +1107,24 @@
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A shared pointer to the created 1-row Arrow Table. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio19convertTableToFrameERKNSt10shared_ptrIN5arrow5TableEEEi">
+<span id="_CPPv3N5podio19convertTableToFrameERKNSt10shared_ptrIN5arrow5TableEEEi"></span><span id="_CPPv2N5podio19convertTableToFrameERKNSt10shared_ptrIN5arrow5TableEEEi"></span><span id="podio::convertTableToFrame__std::shared_ptr:arrow::Table:CR.i"></span><span class="target" id="namespacepodio_1a77f65fb5027ce9e273f3939ca3bc1f95"></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">convertTableToFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Table</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">table</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowIndex</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio19convertTableToFrameERKNSt10shared_ptrIN5arrow5TableEEEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Convert a 1-row slice of an Arrow Table to a PODIO Frame. </p>
+<p>Reconstructs the frame parameters and all collection buffers using registered BufferReaderFuncs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>table</strong> – The Arrow Table containing the frame data. </p></li>
+<li><p><strong>rowIndex</strong> – The index of the row to read. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The reconstructed Frame. </p>
 </dd>
 </dl>
 </dd></dl>
@@ -6249,6 +6271,11 @@
 <span id="_CPPv3N5podio22ArrowConverterRegistry11CreatorFuncE"></span><span id="_CPPv2N5podio22ArrowConverterRegistry11CreatorFuncE"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a1a1bfb9fbcf2cd697be22ec491525afe"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreatorFunc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE">
+<span id="_CPPv3N5podio22ArrowConverterRegistry16BufferReaderFuncE"></span><span id="_CPPv2N5podio22ArrowConverterRegistry16BufferReaderFuncE"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1aa53f6a8c8109c01d7c56915982bb6417"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferReaderFunc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14SchemaVersionTE" title="podio::SchemaVersionT"><span class="n"><span class="pre">SchemaVersionT</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -6294,6 +6321,23 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc">
+<span id="_CPPv3N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc"></span><span id="_CPPv2N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc"></span><span id="podio::ArrowConverterRegistry::registerReader__ssCR.BufferReaderFuncRR"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a5f2d069ca4816724029dc3ef6b9b621e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span>, <a class="reference internal" href="../class/classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE" title="podio::ArrowConverterRegistry::BufferReaderFunc"><span class="n"><span class="pre">BufferReaderFunc</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">reader</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Register an Arrow array reader callback for a specific type name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE">
+<span id="_CPPv3NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE"></span><span id="_CPPv2NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE"></span><span id="podio::ArrowConverterRegistry::getReader__ssCRC"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a7e8e2509fb6f614282fd95771fdf4da1"></span><a class="reference internal" href="../class/classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE" title="podio::ArrowConverterRegistry::BufferReaderFunc"><span class="n"><span class="pre">BufferReaderFunc</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Retrieve the Arrow collection reader registered for a specific type name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The registered BufferReaderFunc, or nullptr if not registered. </p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
@@ -6308,6 +6352,41 @@
 <span id="_CPPv3N5podio22ArrowConverterRegistry8instanceEv"></span><span id="_CPPv2N5podio22ArrowConverterRegistry8instanceEv"></span><span id="podio::ArrowConverterRegistry::instance"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1ac6e79cadac96a5e648bbbc5f5418a3f1"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistryE" title="podio::ArrowConverterRegistry"><span class="n"><span class="pre">ArrowConverterRegistry</span></span></a><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Get the read-only singleton instance. </p>
 </dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameDataE">
+<span id="_CPPv3N5podio14ArrowFrameDataE"></span><span id="_CPPv2N5podio14ArrowFrameDataE"></span><span id="podio::ArrowFrameData"></span><span class="target" id="classpodio_1_1_arrow_frame_data"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrowFrameData</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/utilities/ArrowFrameData.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t">
+<span id="_CPPv3N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"></span><span id="_CPPv2N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"></span><span id="podio::ArrowFrameData::ArrowFrameData__std::shared_ptr:arrow::Table:.int64_t"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1a42b876fe826975d258cc168d687e505c"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowFrameData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Table</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">table</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowIndex</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14ArrowFrameData10getIDTableEv">
+<span id="_CPPv3NK5podio14ArrowFrameData10getIDTableEv"></span><span id="_CPPv2NK5podio14ArrowFrameData10getIDTableEv"></span><span id="podio::ArrowFrameData::getIDTableC"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1a020b9b59029f99ca4df18f294f6e0c31"></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE" title="podio::CollectionIDTable"><span class="n"><span class="pre">CollectionIDTable</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getIDTable</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameData20getCollectionBuffersERKNSt6stringE">
+<span id="_CPPv3N5podio14ArrowFrameData20getCollectionBuffersERKNSt6stringE"></span><span id="_CPPv2N5podio14ArrowFrameData20getCollectionBuffersERKNSt6stringE"></span><span id="podio::ArrowFrameData::getCollectionBuffers__ssCR"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1aa518133d84fb60b822c9c7de613b4ca2"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getCollectionBuffers</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio14ArrowFrameData23getAvailableCollectionsEv">
+<span id="_CPPv3NK5podio14ArrowFrameData23getAvailableCollectionsEv"></span><span id="_CPPv2NK5podio14ArrowFrameData23getAvailableCollectionsEv"></span><span id="podio::ArrowFrameData::getAvailableCollectionsC"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1a03f54da0d7464ec2e4636d82c4ff2e9b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableCollections</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameData13getParametersEv">
+<span id="_CPPv3N5podio14ArrowFrameData13getParametersEv"></span><span id="_CPPv2N5podio14ArrowFrameData13getParametersEv"></span><span id="podio::ArrowFrameData::getParameters"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1ae8360077c2ccc3b8e0a686fa64e1a003"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_generic_parameters.html#_CPPv4N5podio17GenericParametersE" title="podio::GenericParameters"><span class="n"><span class="pre">GenericParameters</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
 
 </div>
 </dd></dl>

@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Class podio::ArrowTypeRegistry" href="classpodio_1_1_arrow_type_registry.html" />
+    <link rel="next" title="Class podio::ArrowFrameData" href="classpodio_1_1_arrow_frame_data.html" />
     <link rel="prev" title="Class list" href="../classlist.html" /> 
 </head>
 
@@ -273,6 +273,10 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../classlist.html">Class list</a><ul class="current">
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Class podio::ArrowConverterRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio22ArrowConverterRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowConverterRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_arrow_frame_data.html">Class podio::ArrowFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
@@ -826,6 +830,11 @@
 <span id="_CPPv3N5podio22ArrowConverterRegistry11CreatorFuncE"></span><span id="_CPPv2N5podio22ArrowConverterRegistry11CreatorFuncE"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a1a1bfb9fbcf2cd697be22ec491525afe"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CreatorFunc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_collection_base.html#_CPPv4N5podio14CollectionBaseE" title="podio::CollectionBase"><span class="n"><span class="pre">CollectionBase</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio22ArrowConverterRegistry11CreatorFuncE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE">
+<span id="_CPPv3N5podio22ArrowConverterRegistry16BufferReaderFuncE"></span><span id="_CPPv2N5podio22ArrowConverterRegistry16BufferReaderFuncE"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1aa53f6a8c8109c01d7c56915982bb6417"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BufferReaderFunc</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv4N5podio21CollectionReadBuffersE" title="podio::CollectionReadBuffers"><span class="n"><span class="pre">CollectionReadBuffers</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../namespace/namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Array</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv4N5podio14SchemaVersionTE" title="podio::SchemaVersionT"><span class="n"><span class="pre">SchemaVersionT</span></span></a><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -867,6 +876,23 @@
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>The registered CreatorFunc, or nullptr if not registered. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc">
+<span id="_CPPv3N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc"></span><span id="_CPPv2N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc"></span><span id="podio::ArrowConverterRegistry::registerReader__ssCR.BufferReaderFuncRR"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a5f2d069ca4816724029dc3ef6b9b621e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">registerReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span>, <a class="reference internal" href="#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE" title="podio::ArrowConverterRegistry::BufferReaderFunc"><span class="n"><span class="pre">BufferReaderFunc</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">reader</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc" title="Link to this definition"></a><br /></dt>
+<dd><p>Register an Arrow array reader callback for a specific type name. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE">
+<span id="_CPPv3NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE"></span><span id="_CPPv2NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE"></span><span id="podio::ArrowConverterRegistry::getReader__ssCRC"></span><span class="target" id="classpodio_1_1_arrow_converter_registry_1a7e8e2509fb6f614282fd95771fdf4da1"></span><a class="reference internal" href="#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE" title="podio::ArrowConverterRegistry::BufferReaderFunc"><span class="n"><span class="pre">BufferReaderFunc</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">typeName</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Retrieve the Arrow collection reader registered for a specific type name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The registered BufferReaderFunc, or nullptr if not registered. </p>
 </dd>
 </dl>
 </dd></dl>

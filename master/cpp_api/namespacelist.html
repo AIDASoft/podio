@@ -275,6 +275,10 @@
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_converter_registry.html#_CPPv4N5podio22ArrowConverterRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowConverterRegistry</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html">Class podio::ArrowFrameData</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
 </ul>
@@ -870,6 +874,7 @@
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE"><code class="docutils literal notranslate"><span class="pre">operator&lt;&lt;()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13objectRefTypeEv"><code class="docutils literal notranslate"><span class="pre">objectRefType()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio19convertFrameToTableERKN5podio5FrameERKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">convertFrameToTable()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio19convertTableToFrameERKNSt10shared_ptrIN5arrow5TableEEEi"><code class="docutils literal notranslate"><span class="pre">convertTableToFrame()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">makeWriter()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I0EN5podio26isSupportedGenericDataTypeE"><code class="docutils literal notranslate"><span class="pre">isSupportedGenericDataType</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14CollectionBaseE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionBase</span></code></a><ul>
@@ -1628,6 +1633,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowConverterRegistry</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry11CreatorFuncE"><code class="docutils literal notranslate"><span class="pre">CreatorFunc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry16BufferReaderFuncE"><code class="docutils literal notranslate"><span class="pre">BufferReaderFunc</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry22ArrowConverterRegistryERK22ArrowConverterRegistry"><code class="docutils literal notranslate"><span class="pre">ArrowConverterRegistry()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistryaSERK22ArrowConverterRegistry"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry22ArrowConverterRegistryERR22ArrowConverterRegistry"><code class="docutils literal notranslate"><span class="pre">ArrowConverterRegistry()</span></code></a></li>
@@ -1635,8 +1641,18 @@
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistryD0Ev"><code class="docutils literal notranslate"><span class="pre">~ArrowConverterRegistry()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry17registerConverterERKNSt6stringERR11CreatorFunc"><code class="docutils literal notranslate"><span class="pre">registerConverter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio22ArrowConverterRegistry12getConverterERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getConverter()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry14registerReaderERKNSt6stringERR16BufferReaderFunc"><code class="docutils literal notranslate"><span class="pre">registerReader()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio22ArrowConverterRegistry9getReaderERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getReader()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry11mutInstanceEv"><code class="docutils literal notranslate"><span class="pre">mutInstance()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio22ArrowConverterRegistry8instanceEv"><code class="docutils literal notranslate"><span class="pre">instance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"><code class="docutils literal notranslate"><span class="pre">ArrowFrameData()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio14ArrowFrameData10getIDTableEv"><code class="docutils literal notranslate"><span class="pre">getIDTable()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData20getCollectionBuffersERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getCollectionBuffers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio14ArrowFrameData23getAvailableCollectionsEv"><code class="docutils literal notranslate"><span class="pre">getAvailableCollections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData13getParametersEv"><code class="docutils literal notranslate"><span class="pre">getParameters()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a><ul>
