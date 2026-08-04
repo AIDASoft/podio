@@ -15,6 +15,10 @@ namespace podio {
 /**
  * @brief Global singleton registry mapping PODIO type name strings to their
  * corresponding Apache Arrow DataTypes.
+ *
+ * Registration is expected to happen during shared library loading/startup,
+ * before worker threads query the registry. After registration the registry is
+ * read-only and can be queried concurrently.
  */
 class ArrowTypeRegistry {
 public:
