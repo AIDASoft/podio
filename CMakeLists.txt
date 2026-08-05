@@ -149,6 +149,7 @@ endif()
 
 # optionally build with Arrow -----------------------------------------------
 if(ENABLE_ARROW)
+  set(lz4Alt_FIND_QUIETLY TRUE)
   find_package(Arrow REQUIRED)
   if(TARGET Arrow::arrow_shared)
     set(PODIO_ARROW_TARGET Arrow::arrow_shared)

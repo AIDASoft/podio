@@ -35,6 +35,17 @@ std::shared_ptr<arrow::DataType> objectRefType();
 std::shared_ptr<arrow::Table> convertFrameToTable(const podio::Frame& frame,
                                                   const std::vector<std::string>& collsToWrite);
 
+/**
+ * @brief Convert a 1-row slice of an Arrow Table to a PODIO Frame.
+ *
+ * Reconstructs the frame parameters and all collection buffers using registered BufferReaderFuncs.
+ *
+ * @param table The Arrow Table containing the frame data.
+ * @param rowIndex The index of the row to read.
+ * @return The reconstructed Frame.
+ */
+podio::Frame convertTableToFrame(const std::shared_ptr<arrow::Table>& table, int rowIndex = 0);
+
 } // namespace podio
 
 #endif // PODIO_ARROWFRAMECONVERTER_H

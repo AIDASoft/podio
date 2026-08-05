@@ -307,6 +307,11 @@ endfunction()
 #    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
+if((DEFINED PODIO_ENABLE_SIO AND NOT PODIO_ENABLE_SIO) OR (NOT DEFINED PODIO_ENABLE_SIO AND NOT ENABLE_SIO))
+  message(STATUS "Not adding the SIO Blocks library to the targets because SIO support is not enabled")
+  return()
+endif()
+
   CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})
@@ -315,11 +320,6 @@ function(PODIO_ADD_SIO_IO_BLOCKS CORE_LIB HEADERS SOURCES)
   # Only get the SIOBlock handlers
   LIST(FILTER HEADERS INCLUDE REGEX .*SIOBlock.h)
   LIST(FILTER SOURCES INCLUDE REGEX .*SIOBlock.cc)
-
-  IF(NOT HEADERS)
-    MESSAGE(STATUS "Not adding the SIO Blocks library to the targets because the corresponding c++ sources have not been generated")
-    RETURN()
-  ENDIF()
 
   add_library(${CORE_LIB}SioBlocks SHARED ${SOURCES} ${HEADERS})
   target_link_libraries(${CORE_LIB}SioBlocks PUBLIC ${CORE_LIB} podio::podio podio::podioSioIO SIO::sio)
@@ -348,9 +348,10 @@ endfunction()
 #    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
-  if(NOT ENABLE_ARROW)
-    return()
-  endif()
+if((DEFINED PODIO_ENABLE_ARROW AND NOT PODIO_ENABLE_ARROW) OR (NOT DEFINED PODIO_ENABLE_ARROW AND NOT ENABLE_ARROW))
+  message(STATUS "Not adding the Arrow library to the targets because Arrow support is not enabled")
+  return()
+endif()
 
   cmake_parse_arguments(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
   if(NOT ARG_OUTPUT_FOLDER)
@@ -359,11 +360,6 @@ function(PODIO_ADD_ARROW CORE_LIB HEADERS SOURCES)
 
   # Only get the ArrowMapper handlers
   list(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
-
-  if(NOT SOURCES)
-    message(STATUS "Not adding the Arrow library to the targets because the corresponding c++ sources have not been generated")
-    return()
-  endif()
 
   add_library(${CORE_LIB}Arrow SHARED ${SOURCES})
   target_link_libraries(${CORE_LIB}Arrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})

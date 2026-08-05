@@ -66,8 +66,8 @@ private:
 
   template<typename ValueT>
   struct Model final : Concept {
-    ~Model() = default;
-    Model(ValueT value) : m_value(value) {}
+    ~Model() override = default;
+    Model(const ValueT& value) : m_value(value) {}
 
     std::unique_ptr<Concept> clone() const final {
       return std::make_unique<Model<ValueT>>(m_value);
@@ -107,7 +107,7 @@ public:
   // {{ class.bare_type }} can only be initialized with one of the following types (and their Mutable counter parts): {{ Types | join(", ") }}
   template<typename ValueT>
   requires isInitializableFrom<ValueT>
-  {{ class.bare_type }}(ValueT value) :
+  {{ class.bare_type }}(const ValueT& value) :
     m_self(std::make_unique<Model<podio::detail::GetDefaultHandleType<ValueT>>>(value)) {
   }
 

@@ -22,6 +22,16 @@ void SIOReader::openFile(const std::string& filename) {
 
   // NOTE: reading TOC record first because that jumps back to the start of the file!
   readFileTOCRecord();
+  // Filter the available records from the TOC to remove records that are
+  // stored, but use reserved record names for podio meta data
+  const auto recordNames = m_tocRecord.getRecordNames();
+  m_availableCategories.clear();
+  m_availableCategories.reserve(recordNames.size());
+  for (const auto recordName : recordNames) {
+    if (recordName != sio_helpers::SIOEDMDefinitionName) {
+      m_availableCategories.emplace_back(recordName);
+    }
+  }
   readPodioHeader();
   readEDMDefinitions(); // Potentially could do this lazily
 }
@@ -55,16 +65,6 @@ std::unique_ptr<SIOFrameData> SIOReader::readEntry(std::string_view name, const 
   //       All checks are done in the following function
   m_nameCtr[std::string(name)] = entry;
   return readNextEntry(name, collsToRead);
-}
-
-std::vector<std::string_view> SIOReader::getAvailableCategories() const {
-  // Filter the available records from the TOC to remove records that are
-  // stored, but use reserved record names for podio meta data
-  auto recordNames = m_tocRecord.getRecordNames();
-  recordNames.erase(std::remove_if(recordNames.begin(), recordNames.end(),
-                                   [](const auto& elem) { return elem == sio_helpers::SIOEDMDefinitionName; }),
-                    recordNames.end());
-  return recordNames;
 }
 
 unsigned SIOReader::getEntries(std::string_view name) const {

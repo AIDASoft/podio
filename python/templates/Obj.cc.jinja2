@@ -43,17 +43,19 @@
 }
 
 {% if not is_trivial_type -%}
-{{ obj_type }}::~{{ obj_type }}() {
 {% with multi_relations = OneToManyRelations + VectorMembers %}
 {%- if multi_relations %}
+{{ obj_type }}::~{{ obj_type }}() {
   if (id.index == podio::ObjectID::untracked) {
 {% for relation in multi_relations %}
     delete m_{{ relation.name }};
 {% endfor %}
   }
-{% endif %}
-{%- endwith %}
 }
+{%- else %}
+{{ obj_type }}::~{{ obj_type }}() = default;
+{%- endif %}
+{%- endwith %}
 {%- endif %}
 
 {% endwith %}

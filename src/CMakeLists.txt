@@ -156,6 +156,7 @@ if(ENABLE_ARROW)
     ArrowUtils.cc
     ArrowTypeRegistry.cc
     ArrowConverterRegistry.cc
+    ArrowFrameData.cc
     )
 
   add_library(podioArrow SHARED ${arrow_sources})
