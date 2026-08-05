@@ -261,12 +261,6 @@ public:
         getID() != static_cast<uint32_t>(podio::ObjectID::invalid);
   }
 
-  [[deprecated("isValid will be removed, use hasID() if you want to check if it has an ID, otherwise assume the "
-               "collection is valid")]]
-  bool isValid() const override {
-    return hasID();
-  }
-
   podio::CollectionWriteBuffers getBuffers() override {
     return m_storage.getCollectionBuffers(m_isSubsetColl);
   }
