@@ -50,20 +50,6 @@ options:
   --version             Show the program's version number and exit
 )";
 
-void printUsageAndExit() {
-  fmt::println(stderr, "{}", usageMsg);
-  std::exit(1);
-}
-
-auto getArgumentValueOrExit(const std::vector<std::string>& argv, std::vector<std::string>::const_iterator it) {
-  const int argc = argv.size();
-  const auto index = std::distance(argv.begin(), it);
-  if (index > argc - 2) {
-    printUsageAndExit();
-  }
-  return argv[index + 1];
-}
-
 std::vector<size_t> parseEventRange(const std::string_view evtRange) {
   auto parseError = [evtRange]() {
     fmt::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
@@ -120,12 +106,9 @@ std::vector<size_t> fullEntryList(const ParsedArgs& args, const podio::Reader& r
 
 ParsedArgs parseArgs(std::vector<std::string> argv) {
   // find help or version
-  if (const auto it = findFlags(argv, "-h", "--help", "--version"); it != argv.end()) {
-    if (*it == "--version") {
-      fmt::println("podio {}", podio::version::build_version);
-    } else {
-      fmt::print("{}\n{}", usageMsg, helpMsg);
-    }
+  printHelpAndExit(argv, usageMsg, helpMsg);
+  if (const auto it = findFlags(argv, "--version"); it != argv.end()) {
+    fmt::println("podio {}", podio::version::build_version);
     std::exit(0);
   }
 
@@ -137,7 +120,7 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
   }
   // category
   if (const auto it = findFlags(argv, "-c", "--category"); it != argv.end()) {
-    args.category = getArgumentValueOrExit(argv, it);
+    args.category = getArgumentValueOrExit(argv, it, usageMsg);
     argv.erase(it, it + 2);
   }
   // event range
@@ -147,7 +130,7 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
   }
   // dump-edm
   if (const auto it = findFlags(argv, "--dump-edm"); it != argv.end()) {
-    args.dumpEDM = getArgumentValueOrExit(argv, it);
+    args.dumpEDM = getArgumentValueOrExit(argv, it, usageMsg);
     argv.erase(it, it + 2);
   }
   if (const auto it = findFlags(argv, "-s", "--size-stats"); it != argv.end()) {
@@ -156,7 +139,7 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
   }
 
   if (argv.size() != 1) {
-    printUsageAndExit();
+    printUsageAndExit(usageMsg);
   }
   args.inputFile = argv[0];
 
