@@ -1,4 +1,5 @@
 #include "podio/DatamodelRegistry.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <algorithm>
 #include <iostream>
@@ -21,6 +22,7 @@ size_t DatamodelRegistry::registerDatamodel(std::string name, std::string_view d
 
   if (it == m_definitions.cend()) {
     int index = m_definitions.size();
+    m_schemaVersions.emplace(name, detail::extractSchemaVersion(definition));
     m_definitions.emplace_back(std::move(name), definition);
 
     for (const auto& [typeName, relations, vectorMembers] : relationNames) {
@@ -99,6 +101,13 @@ RelationNames DatamodelRegistry::getRelationNames(std::string_view typeName) con
 
 std::optional<podio::version::Version> DatamodelRegistry::getDatamodelVersion(const std::string& name) const {
   if (const auto it = m_datamodelVersions.find(name); it != m_datamodelVersions.end()) {
+    return it->second;
+  }
+  return std::nullopt;
+}
+
+std::optional<podio::SchemaVersionT> DatamodelRegistry::getSchemaVersion(const std::string& name) const {
+  if (const auto it = m_schemaVersions.find(name); it != m_schemaVersions.end()) {
     return it->second;
   }
   return std::nullopt;
