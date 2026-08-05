@@ -39,6 +39,19 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   nEventsInFiles = podioReader.getEntries(podio::Category::Event);
   frame = podioReader.readFrame(podio::Category::Event, 0, collsToRead);
 
+  // Store event-weight labels from the file metadata for use during the analysis.
+  auto nMetadataFrames = podioReader.getEntries(podio::Category::Metadata);
+
+  if (nMetadataFrames > 0) {
+    auto metadataFrame = podioReader.readFrame(podio::Category::Metadata, 0);
+
+    auto weightNames = metadataFrame.getParameter<std::vector<std::string>>("EventWeightNames");
+
+    if (weightNames) {
+      m_eventWeightNames = *weightNames;
+    }
+  }
+
   // Determine over how many events to run
   if (nEventsInFiles == 0) {
     throw std::runtime_error("podio::DataSource: No events found!");
@@ -60,14 +73,23 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
   for (auto&& collName : collNames) {
     const podio::CollectionBase* coll = frame.get(collName);
     if (coll) {
+      // Keep event-frame columns separate from additional columns exposed to RDataFrame.
+      m_eventColumnNames.emplace_back(collName);
       m_columnNames.emplace_back(std::move(collName));
       m_columnTypes.emplace_back(coll->getTypeName());
     }
+  }
+  // Expose the stored event-weight labels to RDataFrame.
+  if (!m_eventWeightNames.empty()) {
+    m_columnNames.emplace_back("_EventWeightNames");
+    m_columnTypes.emplace_back("std::vector<std::string>");
   }
 }
 
 void DataSource::SetNSlots(unsigned int nSlots) {
   m_nSlots = nSlots;
+  // Provide each processing slot with access to the stored metadata labels.
+  m_eventWeightNameReaders.assign(m_nSlots, &m_eventWeightNames);
 
   if (m_nSlots > m_nEvents) {
     throw std::runtime_error("podio::DataSource: Number of events too small!");
@@ -118,8 +140,8 @@ void DataSource::InitSlot(unsigned int, ULong64_t) {
 }
 
 bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
-  m_frames[slot] =
-      std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_columnNames));
+  m_frames[slot] = std::make_unique<podio::Frame>(
+      m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_eventColumnNames));
 
   for (auto& collectionIndex : m_activeCollections) {
     m_Collections[collectionIndex][slot] = m_frames[slot]->get(m_columnNames.at(collectionIndex));
@@ -142,6 +164,18 @@ std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName,
     errMsg += "\"!";
     throw std::runtime_error(errMsg);
   }
+
+  // Make the stored event-weight labels available to RDataFrame.
+  if (columnName == "_EventWeightNames") {
+    std::vector<void*> columnReaders(m_nSlots);
+
+    for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
+      columnReaders[slotIndex] = static_cast<void*>(&m_eventWeightNameReaders[slotIndex]);
+    }
+
+    return columnReaders;
+  }
+
   auto columnIndex = std::distance(m_columnNames.begin(), itr);
   m_activeCollections.emplace_back(columnIndex);
 
