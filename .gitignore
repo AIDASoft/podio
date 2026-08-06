@@ -87,6 +87,3 @@ cmake-build*/
 
 # Created by tests
 /tools/Digraph.gv
-
-# Benchmark outputs
-/perf/
