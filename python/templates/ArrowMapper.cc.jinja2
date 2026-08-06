@@ -251,6 +251,7 @@ bool registerBufferReaders() {
       {%- for member in datatype.arrow_metadata.vector_members %}
       {
         auto* vecMemberBuffer = podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(buffers->vectorMembers->at({{ loop.index0 }}).second);
+        vecMemberBuffer->reserve(arr_{{ member.name }}->values()->length());
         size_t count_begin = vecMemberBuffer->size();
         // Get start and end offsets of the vector/list element in the flat values array
         int32_t start_offset = arr_{{ member.name }}->value_offset(i);
@@ -282,6 +283,7 @@ bool registerBufferReaders() {
         auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
 
         auto* refVec = buffers->references->at({{ loop.index0 }}).get();
+        refVec->reserve(rel_arr->values()->length());
         size_t count_begin = refVec->size();
         // Get start and end offsets of the relation list in the flat values array
         int32_t start_offset = rel_arr->value_offset(i);
