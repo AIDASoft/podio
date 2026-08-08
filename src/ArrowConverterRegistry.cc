@@ -47,12 +47,17 @@ ArrowConverterLibraryLoader::ArrowConverterLibraryLoader() {
     const auto status = loadLib(lib, dir);
     switch (status) {
     case LoadStatus::Success:
+      std::cerr << "Loaded Arrow library \'" << lib << "\' (from " << dir << ")" << std::endl;
       break;
     case LoadStatus::AlreadyLoaded:
+      std::cerr << "Arrow library \'" << lib << "\' already loaded. Not loading again from " << dir << std::endl;
       break;
-    case LoadStatus::Error:
-      std::cerr << "ERROR while loading Arrow library \'" << lib << "\' (from " << dir << ")" << std::endl;
+    case LoadStatus::Error: {
+      const char* err = dlerror();
+      std::cerr << "ERROR while loading Arrow library \'" << lib << "\' (from " << dir
+                << "): " << (err ? err : "Unknown error") << std::endl;
       break;
+    }
     }
   }
 }
@@ -95,7 +100,7 @@ std::vector<std::tuple<std::string, std::string>> ArrowConverterLibraryLoader::g
 
     for (auto& lib : fs::directory_iterator(dir)) {
       const auto filename = lib.path().filename().string();
-      if (filename.find("Arrow") != std::string::npos && filename.find("libarrow") == std::string::npos) {
+      if (filename.find("Arrow") != std::string::npos) {
         libs.emplace_back(std::move(filename), dir);
       }
     }
