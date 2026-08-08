@@ -53,21 +53,11 @@ endif()
 if (ENABLE_ARROW)
   target_sources(unittest_podio PRIVATE test_arrow_converter.cpp)
   target_link_libraries(unittest_podio PRIVATE podio::podioArrow ${PODIO_ARROW_TARGET})
-  if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    target_link_libraries(unittest_podio PRIVATE
-      -Wl,--push-state,--no-as-needed
-      TestDataModelArrow
-      ExtensionDataModelArrow
-      InterfaceExtensionDataModelArrow
-      -Wl,--pop-state
-    )
-  else()
-    target_link_libraries(unittest_podio PRIVATE
-      TestDataModelArrow
-      ExtensionDataModelArrow
-      InterfaceExtensionDataModelArrow
-    )
-  endif()
+  add_dependencies(unittest_podio
+    TestDataModelArrow
+    ExtensionDataModelArrow
+    InterfaceExtensionDataModelArrow
+  )
   target_compile_definitions(unittest_podio PRIVATE PODIO_ENABLE_ARROW=1)
 endif()
 
@@ -108,6 +98,8 @@ else()
         PROPERTIES
         ENVIRONMENT
         PODIO_SIOBLOCK_PATH=${PROJECT_BINARY_DIR}/tests
+        ENVIRONMENT
+        PODIO_ARROW_PATH=${PROJECT_BINARY_DIR}/tests
         ENVIRONMENT
         ROOT_LIBRARY_PATH=${PROJECT_BINARY_DIR}/tests
         ENVIRONMENT

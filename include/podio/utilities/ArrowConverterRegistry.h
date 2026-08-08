@@ -20,6 +20,12 @@ class CollectionBase;
 /**
  * @brief Global singleton registry mapping PODIO type name strings to their
  * corresponding Apache Arrow array converter callbacks.
+ *
+ * Registration happens lazily on the first call to getConverter or getReader,
+ * when the necessary datamodel-specific Arrow converter libraries (e.g.,
+ * libpodioArrow.so, libedm4hepArrow.so) are loaded. It is expected that this
+ * happens before worker threads query the registry. Once populated, the registry
+ * is read-only and can be safely accessed from multiple threads concurrently.
  */
 class ArrowConverterRegistry {
 public:
@@ -67,6 +73,25 @@ private:
 
   std::map<std::string, CreatorFunc> m_registry;
   std::map<std::string, BufferReaderFunc> m_readerRegistry;
+};
+
+class ArrowConverterLibraryLoader {
+private:
+  ArrowConverterLibraryLoader();
+
+  enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
+
+  LoadStatus loadLib(const std::string& libname, const std::string& directory);
+
+  static std::vector<std::tuple<std::string, std::string>> getLibNames();
+
+  std::map<std::string, void*> m_loadedLibs{};
+
+public:
+  static ArrowConverterLibraryLoader& instance() {
+    static ArrowConverterLibraryLoader me;
+    return me;
+  }
 };
 
 } // namespace podio
