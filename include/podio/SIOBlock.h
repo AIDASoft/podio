@@ -255,28 +255,7 @@ public:
   }
 };
 
-class SIOBlockLibraryLoader {
-private:
-  SIOBlockLibraryLoader();
-
-  /// Status code for loading shared SIOBlocks libraries
-  enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
-
-  /// Load a library with the given name via dlopen
-  LoadStatus loadLib(const std::string& libname, const std::string& directory);
-
-  /// Get all files that are found on LD_LIBRARY_PATH and that have "SioBlocks"
-  /// in their name together with the directory they are in
-  static std::vector<std::tuple<std::string, std::string>> getLibNames();
-
-  std::map<std::string, void*> _loadedLibs{};
-
-public:
-  static SIOBlockLibraryLoader& instance() {
-    static SIOBlockLibraryLoader instance;
-    return instance;
-  }
-};
+void loadSIOBlocksLibraries();
 
 namespace sio_helpers {
   /// marker for showing that a TOC has been stored in the file

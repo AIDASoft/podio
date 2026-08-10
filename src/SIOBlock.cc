@@ -1,9 +1,11 @@
 #include "podio/SIOBlock.h"
 
+#include "podio/utilities/LibraryLoader.h"
 #include <algorithm>
 #include <cstdlib>
 #include <dlfcn.h>
 #include <filesystem>
+#include <iostream>
 #include <map>
 #include <sstream>
 
@@ -97,75 +99,8 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBa
     return nullptr;
   }
 }
-
-SIOBlockLibraryLoader::SIOBlockLibraryLoader() {
-  for (const auto& [lib, dir] : getLibNames()) {
-    const auto status = loadLib(lib, dir);
-    switch (status) {
-    case LoadStatus::Success:
-      std::cerr << "Loaded SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
-      break;
-    case LoadStatus::AlreadyLoaded:
-      std::cerr << "SIOBlocks library \'" << lib << "\' already loaded. Not loading again from " << dir << std::endl;
-      break;
-    case LoadStatus::Error:
-      std::cerr << "ERROR while loading SIOBlocks library \'" << lib << "\' (from " << dir << ")" << std::endl;
-      break;
-    }
-  }
-}
-
-SIOBlockLibraryLoader::LoadStatus SIOBlockLibraryLoader::loadLib(const std::string& libname,
-                                                                 const std::string& directory) {
-  if (_loadedLibs.find(libname) != _loadedLibs.end()) {
-    return LoadStatus::AlreadyLoaded;
-  }
-  void* libhandle = dlopen((directory + "/" + libname).c_str(), RTLD_LAZY | RTLD_GLOBAL);
-  if (libhandle) {
-    _loadedLibs.insert({libname, libhandle});
-    return LoadStatus::Success;
-  }
-
-  return LoadStatus::Error;
-}
-
-std::vector<std::tuple<std::string, std::string>> SIOBlockLibraryLoader::getLibNames() {
-  namespace fs = std::filesystem;
-  std::vector<std::tuple<std::string, std::string>> libs;
-
-  const auto ldLibPath = []() {
-    // Check PODIO_SIOBLOCK_PATH first and fall back to LD_LIBRARY_PATH
-    auto pathVar = std::getenv("PODIO_SIOBLOCK_PATH");
-    if (!pathVar) {
-      pathVar = std::getenv("LD_LIBRARY_PATH");
-    }
-    return pathVar;
-  }();
-  if (!ldLibPath) {
-    return libs;
-  }
-
-  std::string dir;
-  std::istringstream stream(ldLibPath);
-  while (std::getline(stream, dir, ':')) {
-    if (not fs::exists(dir)) {
-      continue;
-    }
-
-    for (auto& lib : fs::directory_iterator(dir)) {
-      const auto filename = lib.path().filename().string();
-      if (filename.find("SioBlocks") != std::string::npos) {
-        libs.emplace_back(std::move(filename), dir);
-      }
-    }
-    if (std::getenv("PODIO_SIOBLOCK_PATH") && libs.empty()) {
-      throw std::runtime_error(
-          "No SIOBlocks libraries found in PODIO_SIOBLOCK_PATH. Please set PODIO_SIOBLOCK_PATH to the directory "
-          "containing the SIOBlocks libraries or unset it to fallback to LD_LIBRARY_PATH.");
-    }
-  }
-
-  return libs;
+void loadSIOBlocksLibraries() {
+  static podio::utilities::LibraryLoader me("PODIO_SIOBLOCK_PATH", "SioBlocks", "SIOBlocks");
 }
 
 void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos) {

@@ -75,24 +75,7 @@ private:
   std::map<std::string, BufferReaderFunc> m_readerRegistry;
 };
 
-class ArrowConverterLibraryLoader {
-private:
-  ArrowConverterLibraryLoader();
-
-  enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
-
-  LoadStatus loadLib(const std::string& libname, const std::string& directory);
-
-  static std::vector<std::tuple<std::string, std::string>> getLibNames();
-
-  std::map<std::string, void*> m_loadedLibs{};
-
-public:
-  static ArrowConverterLibraryLoader& instance() {
-    static ArrowConverterLibraryLoader me;
-    return me;
-  }
-};
+void loadArrowLibraries();
 
 } // namespace podio
 
