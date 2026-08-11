@@ -1,5 +1,5 @@
-#ifndef PODIO_UTILITIES_LIBRARYLOADER_H
-#define PODIO_UTILITIES_LIBRARYLOADER_H
+#ifndef PODIO_UTILITIES_BACKENDLIBRARYLOADER_H
+#define PODIO_UTILITIES_BACKENDLIBRARYLOADER_H
 
 #include <map>
 #include <string>
@@ -9,12 +9,12 @@
 namespace podio {
 namespace utilities {
 
-  class LibraryLoader {
+  class BackendLibraryLoader {
   public:
     enum class LoadStatus : short { Success = 0, AlreadyLoaded = 1, Error = 2 };
 
-    LibraryLoader(std::string envVarName, std::string libraryPattern, std::string logDesignator);
-    ~LibraryLoader() = default;
+    BackendLibraryLoader(std::string envVarName, std::string libraryPattern, std::string logDesignator);
+    ~BackendLibraryLoader() = default;
 
   private:
     LoadStatus loadLib(const std::string& libname, const std::string& directory);
@@ -29,4 +29,4 @@ namespace utilities {
 } // namespace utilities
 } // namespace podio
 
-#endif // PODIO_UTILITIES_LIBRARYLOADER_H
+#endif // PODIO_UTILITIES_BACKENDLIBRARYLOADER_H

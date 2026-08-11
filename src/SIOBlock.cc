@@ -1,13 +1,7 @@
 #include "podio/SIOBlock.h"
 
-#include "podio/utilities/LibraryLoader.h"
+#include "podio/utilities/BackendLibraryLoader.h"
 #include <algorithm>
-#include <cstdlib>
-#include <dlfcn.h>
-#include <filesystem>
-#include <iostream>
-#include <map>
-#include <sstream>
 
 namespace podio {
 
@@ -100,7 +94,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBa
   }
 }
 void loadSIOBlocksLibraries() {
-  static podio::utilities::LibraryLoader me("PODIO_SIOBLOCK_PATH", "SioBlocks", "SIOBlocks");
+  static podio::utilities::BackendLibraryLoader me("PODIO_SIOBLOCK_PATH", "SioBlocks", "SIOBlocks");
 }
 
 void SIOFileTOCRecord::addRecord(const std::string& name, PositionType startPos) {

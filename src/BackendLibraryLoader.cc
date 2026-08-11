@@ -1,4 +1,4 @@
-#include "podio/utilities/LibraryLoader.h"
+#include "podio/utilities/BackendLibraryLoader.h"
 #include <cstdlib>
 #include <dlfcn.h>
 #include <filesystem>
@@ -9,7 +9,8 @@
 namespace podio {
 namespace utilities {
 
-  LibraryLoader::LibraryLoader(std::string envVarName, std::string libraryPattern, std::string logDesignator) :
+  BackendLibraryLoader::BackendLibraryLoader(std::string envVarName, std::string libraryPattern,
+                                             std::string logDesignator) :
       m_envVarName(std::move(envVarName)),
       m_libraryPattern(std::move(libraryPattern)),
       m_logDesignator(std::move(logDesignator)) {
@@ -34,7 +35,8 @@ namespace utilities {
     }
   }
 
-  LibraryLoader::LoadStatus LibraryLoader::loadLib(const std::string& libname, const std::string& directory) {
+  BackendLibraryLoader::LoadStatus BackendLibraryLoader::loadLib(const std::string& libname,
+                                                                 const std::string& directory) {
     if (m_loadedLibs.find(libname) != m_loadedLibs.end()) {
       return LoadStatus::AlreadyLoaded;
     }
@@ -48,7 +50,7 @@ namespace utilities {
     return LoadStatus::Error;
   }
 
-  std::vector<std::tuple<std::string, std::string>> LibraryLoader::getLibNames() const {
+  std::vector<std::tuple<std::string, std::string>> BackendLibraryLoader::getLibNames() const {
     namespace fs = std::filesystem;
     std::vector<std::tuple<std::string, std::string>> libs;
 

@@ -1,10 +1,5 @@
 #include "podio/utilities/ArrowConverterRegistry.h"
-#include "podio/utilities/LibraryLoader.h"
-#include <cstdlib>
-#include <dlfcn.h>
-#include <filesystem>
-#include <iostream>
-#include <sstream>
+#include "podio/utilities/BackendLibraryLoader.h"
 
 namespace podio {
 
@@ -44,7 +39,7 @@ ArrowConverterRegistry::BufferReaderFunc ArrowConverterRegistry::getReader(const
 }
 
 void loadArrowLibraries() {
-  static podio::utilities::LibraryLoader me("PODIO_ARROW_PATH", "Arrow", "Arrow");
+  static podio::utilities::BackendLibraryLoader me("PODIO_ARROW_PATH", "Arrow", "Arrow");
 }
 
 } // namespace podio
