@@ -54,9 +54,9 @@ if (ENABLE_ARROW)
   target_sources(unittest_podio PRIVATE test_arrow_converter.cpp)
   target_link_libraries(unittest_podio PRIVATE podio::podioArrow ${PODIO_ARROW_TARGET})
   add_dependencies(unittest_podio
-    TestDataModelArrow
-    ExtensionDataModelArrow
-    InterfaceExtensionDataModelArrow
+    TestDataModelPodioArrow
+    ExtensionDataModelPodioArrow
+    InterfaceExtensionDataModelPodioArrow
   )
   target_compile_definitions(unittest_podio PRIVATE PODIO_ENABLE_ARROW=1)
 endif()

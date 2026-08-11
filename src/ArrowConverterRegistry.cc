@@ -39,7 +39,7 @@ ArrowConverterRegistry::BufferReaderFunc ArrowConverterRegistry::getReader(const
 }
 
 void loadArrowLibraries() {
-  static podio::utilities::BackendLibraryLoader me("PODIO_ARROW_PATH", "Arrow", "Arrow");
+  static podio::utilities::BackendLibraryLoader me("PODIO_ARROW_PATH", "PodioArrow", "Arrow");
 }
 
 } // namespace podio
