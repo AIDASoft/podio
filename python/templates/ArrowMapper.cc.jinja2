@@ -242,6 +242,25 @@ bool registerBufferReaders() {
     {{ declare_arrays(child, 'arr_' + member.name + '_val', member.name + '_val_') | indent(4) }}
     {%- endfor %}
     {%- endif %}
+    auto* vecMemberBuffer_{{ member.name }} = podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(buffers->vectorMembers->at({{ loop.index0 }}).second);
+    vecMemberBuffer_{{ member.name }}->reserve(arr_{{ member.name }}->values()->length());
+    {%- endfor %}
+
+    {%- for relation in datatype.arrow_metadata.one_to_many_relations %}
+    auto rel_arr_{{ relation.name }} = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
+    auto rel_struct_arr_{{ relation.name }} = std::static_pointer_cast<arrow::StructArray>(rel_arr_{{ relation.name }}->values());
+    auto rel_collId_arr_{{ relation.name }} = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr_{{ relation.name }}->field(0));
+    auto rel_index_arr_{{ relation.name }} = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr_{{ relation.name }}->field(1));
+    auto* refVec_{{ relation.name }} = buffers->references->at({{ loop.index0 }}).get();
+    refVec_{{ relation.name }}->reserve(rel_arr_{{ relation.name }}->values()->length());
+    {%- endfor %}
+
+    {%- for relation in datatype.arrow_metadata.one_to_one_relations %}
+    auto rel_struct_arr_{{ relation.name }} = std::static_pointer_cast<arrow::StructArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
+    auto rel_collId_arr_{{ relation.name }} = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr_{{ relation.name }}->field(0));
+    auto rel_index_arr_{{ relation.name }} = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr_{{ relation.name }}->field(1));
+    auto* refVec_{{ relation.name }} = buffers->references->at({{ loop.index0 + datatype.arrow_metadata.one_to_many_relations|length }}).get();
+    refVec_{{ relation.name }}->reserve(collection_size);
     {%- endfor %}
 
     for (size_t i = 0; i < collection_size; ++i) {
@@ -250,57 +269,45 @@ bool registerBufferReaders() {
       {%- endfor %}
       {%- for member in datatype.arrow_metadata.vector_members %}
       {
-        auto* vecMemberBuffer = podio::CollectionReadBuffers::asVector<{{ member.full_type }}>(buffers->vectorMembers->at({{ loop.index0 }}).second);
-        size_t count_begin = vecMemberBuffer->size();
+        size_t count_begin = vecMemberBuffer_{{ member.name }}->size();
         // Get start and end offsets of the vector/list element in the flat values array
         int32_t start_offset = arr_{{ member.name }}->value_offset(i);
         int32_t end_offset = arr_{{ member.name }}->value_offset(i + 1);
         for (int32_t j = start_offset; j < end_offset; ++j) {
         {% if member.value_builder.is_primitive -%}
         {% if member.value_builder.full_type == 'std::string' -%}
-          vecMemberBuffer->push_back(arr_{{ member.name }}_val->GetString(j));
+          vecMemberBuffer_{{ member.name }}->push_back(arr_{{ member.name }}_val->GetString(j));
         {% else -%}
-          vecMemberBuffer->push_back(arr_{{ member.name }}_val->Value(j));
+          vecMemberBuffer_{{ member.name }}->push_back(arr_{{ member.name }}_val->Value(j));
         {% endif -%}
         {% else -%}
           {{ member.full_type }} val;
         {% for child in member.value_builder.children -%}
           {{ read_member(child, 'val', member.name + '_val_', 'j') | indent(10) }}
         {% endfor -%}
-          vecMemberBuffer->push_back(val);
+          vecMemberBuffer_{{ member.name }}->push_back(val);
         {% endif -%}
         }
         (*dataVec)[i].{{ member.name }}_begin = count_begin;
-        (*dataVec)[i].{{ member.name }}_end = vecMemberBuffer->size();
+        (*dataVec)[i].{{ member.name }}_end = vecMemberBuffer_{{ member.name }}->size();
       }
       {%- endfor %}
       {%- for relation in datatype.arrow_metadata.one_to_many_relations %}
       {
-        auto rel_arr = std::static_pointer_cast<arrow::ListArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
-        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(rel_arr->values());
-        auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
-        auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
-
-        auto* refVec = buffers->references->at({{ loop.index0 }}).get();
-        size_t count_begin = refVec->size();
+        size_t count_begin = refVec_{{ relation.name }}->size();
         // Get start and end offsets of the relation list in the flat values array
-        int32_t start_offset = rel_arr->value_offset(i);
-        int32_t end_offset = rel_arr->value_offset(i + 1);
+        int32_t start_offset = rel_arr_{{ relation.name }}->value_offset(i);
+        int32_t end_offset = rel_arr_{{ relation.name }}->value_offset(i + 1);
         for (int32_t j = start_offset; j < end_offset; ++j) {
-          refVec->push_back(podio::ObjectID{rel_index_arr->Value(j), rel_collId_arr->Value(j)});
+          refVec_{{ relation.name }}->push_back(podio::ObjectID{rel_index_arr_{{ relation.name }}->Value(j), rel_collId_arr_{{ relation.name }}->Value(j)});
         }
         (*dataVec)[i].{{ relation.name }}_begin = count_begin;
-        (*dataVec)[i].{{ relation.name }}_end = refVec->size();
+        (*dataVec)[i].{{ relation.name }}_end = refVec_{{ relation.name }}->size();
       }
       {%- endfor %}
       {%- for relation in datatype.arrow_metadata.one_to_one_relations %}
       {
-        auto rel_struct_arr = std::static_pointer_cast<arrow::StructArray>(raw_data_struct_array->GetFieldByName("{{ relation.name }}"));
-        auto rel_collId_arr = std::static_pointer_cast<arrow::UInt32Array>(rel_struct_arr->field(0));
-        auto rel_index_arr = std::static_pointer_cast<arrow::Int32Array>(rel_struct_arr->field(1));
-
-        auto* refVec = buffers->references->at({{ loop.index0 + datatype.arrow_metadata.one_to_many_relations|length }}).get();
-        refVec->push_back(podio::ObjectID{rel_index_arr->Value(i), rel_collId_arr->Value(i)});
+        refVec_{{ relation.name }}->push_back(podio::ObjectID{rel_index_arr_{{ relation.name }}->Value(i), rel_collId_arr_{{ relation.name }}->Value(i)});
       }
       {%- endfor %}
     }
