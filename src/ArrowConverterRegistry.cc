@@ -1,4 +1,5 @@
 #include "podio/utilities/ArrowConverterRegistry.h"
+#include "podio/utilities/BackendLibraryLoader.h"
 
 namespace podio {
 
@@ -16,6 +17,7 @@ void ArrowConverterRegistry::registerConverter(const std::string& typeName, Crea
 }
 
 ArrowConverterRegistry::CreatorFunc ArrowConverterRegistry::getConverter(const std::string& typeName) const {
+  loadArrowLibraries();
   auto it = m_registry.find(typeName);
   if (it != m_registry.end()) {
     return it->second;
@@ -28,11 +30,16 @@ void ArrowConverterRegistry::registerReader(const std::string& typeName, BufferR
 }
 
 ArrowConverterRegistry::BufferReaderFunc ArrowConverterRegistry::getReader(const std::string& typeName) const {
+  loadArrowLibraries();
   auto it = m_readerRegistry.find(typeName);
   if (it != m_readerRegistry.end()) {
     return it->second;
   }
   return nullptr;
+}
+
+void loadArrowLibraries() {
+  static podio::utilities::BackendLibraryLoader me("PODIO_ARROW_PATH", "PodioArrow", "Arrow");
 }
 
 } // namespace podio

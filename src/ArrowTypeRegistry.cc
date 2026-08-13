@@ -1,4 +1,5 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
+#include "podio/utilities/ArrowConverterRegistry.h"
 
 namespace podio {
 
@@ -16,6 +17,7 @@ void ArrowTypeRegistry::registerType(const std::string& typeName, std::shared_pt
 }
 
 std::shared_ptr<arrow::DataType> ArrowTypeRegistry::getType(const std::string& typeName) const {
+  loadArrowLibraries();
   auto it = m_registry.find(typeName);
   if (it != m_registry.end()) {
     return it->second;

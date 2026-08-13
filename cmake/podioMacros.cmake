@@ -340,7 +340,7 @@ endfunction()
 # ArrowMapper code has been generated.
 #
 # Arguments:
-#    CORE_LIB             The name of the core datamodel library. The name of the Arrow library target will be ${CORE_LIB}Arrow
+#    CORE_LIB             The name of the core datamodel library. The name of the Arrow library target will be ${CORE_LIB}PodioArrow
 #    HEADERS              The list of all header files created by PODIO_GENERATE_DATAMODEL
 #    SOURCES              The list of all source files created by PODIO_GENERATE_DATAMODEL
 #
@@ -361,12 +361,10 @@ endif()
   # Only get the ArrowMapper handlers
   list(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
 
-  add_library(${CORE_LIB}Arrow SHARED ${SOURCES})
-  target_link_libraries(${CORE_LIB}Arrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
-  target_include_directories(${CORE_LIB}Arrow PUBLIC
+  add_library(${CORE_LIB}PodioArrow SHARED ${SOURCES})
+  target_link_libraries(${CORE_LIB}PodioArrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
+  target_include_directories(${CORE_LIB}PodioArrow PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-
-  # Disable clang-tidy on generated sources
-  set_target_properties(${CORE_LIB}Arrow PROPERTIES CXX_CLANG_TIDY "")
+  set_target_properties(${CORE_LIB}PodioArrow PROPERTIES CXX_CLANG_TIDY "")
 endfunction()

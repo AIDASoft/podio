@@ -58,6 +58,7 @@ SET(core_sources
   MurmurHash3.cpp
   SchemaEvolution.cc
   Glob.cc
+  BackendLibraryLoader.cc
   Pythonizations.cc
   )
 
