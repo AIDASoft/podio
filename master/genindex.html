@@ -396,10 +396,6 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactoryE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockFactory</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html">Class podio::SIOBlockLibraryLoader</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockLibraryLoader</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockUserData</span></code></a></li>
 </ul>
@@ -446,6 +442,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_writer.html">Class podio::Writer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1utils_1_1_maybe_shared_ptr.html">Class podio::utils::MaybeSharedPtr</a><ul>
@@ -600,6 +600,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1sio__helpers.html">Namespace podio::sio_helpers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1sio__helpers.html#_CPPv4N5podio11sio_helpersE"><code class="docutils literal notranslate"><span class="pre">podio::sio_helpers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1utilities.html">Namespace podio::utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilitiesE"><code class="docutils literal notranslate"><span class="pre">podio::utilities</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/namespace/namespacepodio_1_1utils.html">Namespace podio::utils</a><ul>
@@ -2112,6 +2116,10 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_link_t.html#_CPPv4N5podio5LinkTD0Ev">podio::LinkT::~LinkT (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio5LinkTD0Ev">[1]</a>
 </li>
+      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18loadArrowLibrariesEv">podio::loadArrowLibraries (C++ function)</a>
+</li>
+      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio22loadSIOBlocksLibrariesEv">podio::loadSIOBlocksLibraries (C++ function)</a>
+</li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10makeReaderERKNSt6stringE">podio::makeReader (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10makeReaderERKNSt6vectorINSt6stringEEE">[1]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE">podio::makeWriter (C++ function)</a>
@@ -2190,12 +2198,12 @@
 </li>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel11ReaderModelENSt10unique_ptrI1TEE">podio::Reader::ReaderModel::ReaderModel (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel11ReaderModelERK11ReaderModel">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel11ReaderModelERR11ReaderModel">[2]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel9readFrameENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE">podio::Reader::ReaderModel::readFrame (C++ function)</a>
 </li>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel13readNextFrameENSt11string_viewERKNSt6vectorINSt6stringEEE">podio::Reader::ReaderModel::readNextFrame (C++ function)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModelD0Ev">podio::Reader::ReaderModel::~ReaderModel (C++ function)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader9readEventE6size_tRKNSt6vectorINSt6stringEEE">podio::Reader::readEvent (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader9readEventE6size_tRKNSt6vectorINSt6stringEEE">[1]</a>
@@ -2564,10 +2572,6 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactory26registerBlockForCollectionERKNSt6stringEP8SIOBlock">podio::SIOBlockFactory::registerBlockForCollection (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio15SIOBlockFactory26registerBlockForCollectionERKNSt6stringEP8SIOBlock">[1]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE">podio::SIOBlockLibraryLoader (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio21SIOBlockLibraryLoaderE">[1]</a>
-</li>
-      <li><a href="cpp_api/class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoader8instanceEv">podio::SIOBlockLibraryLoader::instance (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio21SIOBlockLibraryLoader8instanceEv">[1]</a>
-</li>
       <li><a href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE">podio::SIOBlockUserData (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4NK5podio16SIOBlockUserData6createERKNSt6stringE">podio::SIOBlockUserData::create (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio16SIOBlockUserData6createERKNSt6stringE">[1]</a>
@@ -2859,6 +2863,22 @@
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4I_21SupportedUserDataTypeEN5podio20userDataCollTypeNameEPKcv">podio::userDataCollTypeName (C++ function)</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4I_21SupportedUserDataTypeEN5podio16userDataTypeNameEPKcv">podio::userDataTypeName (C++ function)</a>
+</li>
+      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilitiesE">podio::utilities (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilitiesE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE">podio::utilities::BackendLibraryLoader (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE">podio::utilities::BackendLibraryLoader::BackendLibraryLoader (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatusE">podio::utilities::BackendLibraryLoader::LoadStatus (C++ enum)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatusE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatusE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE">podio::utilities::BackendLibraryLoader::LoadStatus::AlreadyLoaded (C++ enumerator)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE">podio::utilities::BackendLibraryLoader::LoadStatus::Error (C++ enumerator)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE">podio::utilities::BackendLibraryLoader::LoadStatus::Success (C++ enumerator)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderD0Ev">podio::utilities::BackendLibraryLoader::~BackendLibraryLoader (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio9utilities20BackendLibraryLoaderD0Ev">[1]</a>, <a href="cpp_api/namespace/namespacepodio_1_1utilities.html#_CPPv4N5podio9utilities20BackendLibraryLoaderD0Ev">[2]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio5utilsE">podio::utils (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio_1_1utils.html#_CPPv4N5podio5utilsE">[1]</a>
 </li>

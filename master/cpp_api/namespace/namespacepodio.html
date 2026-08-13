@@ -399,10 +399,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_factory.html#_CPPv4N5podio15SIOBlockFactoryE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockFactory</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html">Class podio::SIOBlockLibraryLoader</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockLibraryLoader</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_user_data.html">Class podio::SIOBlockUserData</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_user_data.html#_CPPv4I_21SupportedUserDataTypeEN5podio16SIOBlockUserDataE"><code class="docutils literal notranslate"><span class="pre">podio::SIOBlockUserData</span></code></a></li>
 </ul>
@@ -449,6 +445,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_writer.html">Class podio::Writer</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1utils_1_1_maybe_shared_ptr.html">Class podio::utils::MaybeSharedPtr</a><ul>
@@ -603,6 +603,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespacepodio_1_1sio__helpers.html">Namespace podio::sio_helpers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="namespacepodio_1_1sio__helpers.html#_CPPv4N5podio11sio_helpersE"><code class="docutils literal notranslate"><span class="pre">podio::sio_helpers</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="namespacepodio_1_1utilities.html">Namespace podio::utilities</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespacepodio_1_1utilities.html#_CPPv4N5podio9utilitiesE"><code class="docutils literal notranslate"><span class="pre">podio::utilities</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespacepodio_1_1utils.html">Namespace podio::utils</a><ul>
@@ -1069,6 +1073,11 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio22loadSIOBlocksLibrariesEv">
+<span id="_CPPv3N5podio22loadSIOBlocksLibrariesEv"></span><span id="_CPPv2N5podio22loadSIOBlocksLibrariesEv"></span><span id="podio::loadSIOBlocksLibraries"></span><span class="target" id="namespacepodio_1a28e1c471332ae3003acf99d007032f10"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadSIOBlocksLibraries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio22loadSIOBlocksLibrariesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_21SupportedUserDataTypeEN5podio16userDataTypeNameEPKcv">
 <span id="_CPPv3I_21SupportedUserDataTypeEN5podio16userDataTypeNameEv"></span><span id="_CPPv2I_21SupportedUserDataTypeEN5podio16userDataTypeNameEv"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">SupportedUserDataType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BasicType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a019cd321c7debf102b617c0e93d20992"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">char</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">userDataTypeName</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_21SupportedUserDataTypeEN5podio16userDataTypeNameEPKcv" title="Link to this definition"></a><br /></dt>
 <dd><p>helper template to provide readable type names for basic types with macro PODIO_ADD_USER_TYPE(type) </p>
@@ -1084,6 +1093,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE">
 <span id="_CPPv3I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE"></span><span id="_CPPv2I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">SupportedUserDataType</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BasicType</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a4c1e14aa732fba6865248ecc851641d1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">&lt;&lt;</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ostream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">o</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_user_data_collection.html#_CPPv4I00EN5podio18UserDataCollectionE" title="podio::UserDataCollection"><span class="n"><span class="pre">UserDataCollection</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE" title="podio::operator&lt;&lt;::BasicType"><span class="n"><span class="pre">BasicType</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">coll</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I_21SupportedUserDataTypeEN5podiolsERNSt7ostreamERNSt7ostreamERKN5podio18UserDataCollectionI9BasicTypeEE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18loadArrowLibrariesEv">
+<span id="_CPPv3N5podio18loadArrowLibrariesEv"></span><span id="_CPPv2N5podio18loadArrowLibrariesEv"></span><span id="podio::loadArrowLibraries"></span><span class="target" id="namespacepodio_1a1f32b08d272ca9e149f3bb10b8bdba4a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">loadArrowLibraries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio18loadArrowLibrariesEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -5285,21 +5299,6 @@
 </dd></dl>
 
 <dl class="cpp class">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoaderE">
-<span id="_CPPv3N5podio21SIOBlockLibraryLoaderE"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoaderE"></span><span id="podio::SIOBlockLibraryLoader"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOBlockLibraryLoader</span></span></span><br /></dt>
-<dd><div class="docutils container">
-<em>#include &lt;podio/SIOBlock.h&gt;</em></div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio21SIOBlockLibraryLoader8instanceEv">
-<span id="_CPPv3N5podio21SIOBlockLibraryLoader8instanceEv"></span><span id="_CPPv2N5podio21SIOBlockLibraryLoader8instanceEv"></span><span id="podio::SIOBlockLibraryLoader::instance"></span><span class="target" id="classpodio_1_1_s_i_o_block_library_loader_1a3a8c53828f81af759e0daf67de473058"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_s_i_o_block_library_loader.html#_CPPv4N5podio21SIOBlockLibraryLoaderE" title="podio::SIOBlockLibraryLoader"><span class="n"><span class="pre">SIOBlockLibraryLoader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">instance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
-<dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio16SIOFileTOCRecordE">
 <span id="_CPPv3N5podio16SIOFileTOCRecordE"></span><span id="_CPPv2N5podio16SIOFileTOCRecordE"></span><span id="podio::SIOFileTOCRecord"></span><span class="target" id="classpodio_1_1_s_i_o_file_t_o_c_record"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIOFileTOCRecord</span></span></span><br /></dt>
 <dd><div class="docutils container">
@@ -6264,6 +6263,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;podio/utilities/ArrowConverterRegistry.h&gt;</em></div>
 <p>Global singleton registry mapping PODIO type name strings to their corresponding Apache Arrow array converter callbacks. </p>
+<p>Registration happens lazily on the first call to getConverter or getReader, when the necessary datamodel-specific Arrow converter libraries (e.g., libedm4hepArrow.so, libTestDataModelArrow.so) are loaded. It is expected that this happens before worker threads query the registry. Once populated, the registry is read-only and can be safely accessed from multiple threads concurrently. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">
@@ -6397,6 +6397,7 @@
 <dd><div class="docutils container">
 <em>#include &lt;podio/utilities/ArrowTypeRegistry.h&gt;</em></div>
 <p>Global singleton registry mapping PODIO type name strings to their corresponding Apache Arrow DataTypes. </p>
+<p>Registration happens lazily on the first call to getType, when the necessary datamodel-specific Arrow converter libraries (e.g., libedm4hepArrow.so, libTestDataModelArrow.so) are loaded. It is expected that this happens before worker threads query the registry. Once populated, the registry is read-only and can be safely accessed from multiple threads concurrently. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -6950,6 +6951,55 @@
 </dd></dl>
 
 </div>
+</dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilitiesE">
+<span id="_CPPv3N5podio9utilitiesE"></span><span id="_CPPv2N5podio9utilitiesE"></span><span id="podio::utilities"></span><span class="target" id="namespacepodio_1_1utilities"></span><span class="k"><span class="pre">namespace</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">utilities</span></span></span><a class="headerlink" href="#_CPPv4N5podio9utilitiesE" title="Link to this definition"></a><br /></dt>
+<dd><dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoaderE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoaderE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoaderE"></span><span id="podio::utilities::BackendLibraryLoader"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BackendLibraryLoader</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/utilities/BackendLibraryLoader.h&gt;</em></div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatusE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoader10LoadStatusE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoader10LoadStatusE"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1ab1d42a48ca82e1a03ac7728cf2b62cb1"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LoadStatus</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="kt"><span class="pre">short</span></span><br /></dt>
+<dd><p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoader10LoadStatus7SuccessE"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1ab1d42a48ca82e1a03ac7728cf2b62cb1a505a83f220c02df2f85c3810cd9ceb38"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Success</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoader10LoadStatus13AlreadyLoadedE"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1ab1d42a48ca82e1a03ac7728cf2b62cb1a3cd0dcca263062e228b48dc510f78334"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AlreadyLoaded</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoader10LoadStatus5ErrorE"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1ab1d42a48ca82e1a03ac7728cf2b62cb1a902b0d55fddef6f8d651fe1035b7d4bd"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Error</span></span></span><br /></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoader20BackendLibraryLoaderENSt6stringENSt6stringENSt6stringE"></span><span id="podio::utilities::BackendLibraryLoader::BackendLibraryLoader__ss.ss.ss"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1a77be991fe2eca2929b06bf21e9880a10"></span><span class="sig-name descname"><span class="n"><span class="pre">BackendLibraryLoader</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">envVarName</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">libraryPattern</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">logDesignator</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9utilities20BackendLibraryLoaderD0Ev">
+<span id="_CPPv3N5podio9utilities20BackendLibraryLoaderD0Ev"></span><span id="_CPPv2N5podio9utilities20BackendLibraryLoaderD0Ev"></span><span id="podio::utilities::BackendLibraryLoader::~BackendLibraryLoader"></span><span class="target" id="classpodio_1_1utilities_1_1_backend_library_loader_1aac31b76f46db2a123c1804a9d3c70dc0"></span><span class="sig-name descname"><span class="n"><span class="pre">~BackendLibraryLoader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="cpp type">
