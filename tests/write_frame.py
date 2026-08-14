@@ -107,8 +107,9 @@ if __name__ == "__main__":
     parser.add_argument("writer", help="The writer type to use")
 
     args = parser.parse_args()
-    if args.outputfile.endswith('.podio_arrow') and os.path.exists(args.outputfile):
+    if args.outputfile.endswith(".podio_arrow") and os.path.exists(args.outputfile):
         import shutil
+
         shutil.rmtree(args.outputfile)
 
     io_format = args.outputfile.split(".")[-1]

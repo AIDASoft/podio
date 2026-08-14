@@ -33,12 +33,13 @@ void registerPrimitiveConverter(ArrowConverterRegistry& registry) {
   });
 
   registry.registerReader(typeName,
-                          [](std::shared_ptr<arrow::Array> array, int64_t rowIndex, bool isSubset,
+                          [](const std::shared_ptr<arrow::Array>& array, int64_t rowIndex, bool isSubset,
                              podio::SchemaVersionT version) -> std::optional<podio::CollectionReadBuffers> {
                             auto buffers = podio::CollectionBufferFactory::instance().createBuffers(
                                 std::string(podio::userDataCollTypeName<T>()), version, isSubset);
-                            if (!buffers)
+                            if (!buffers) {
                               return std::nullopt;
+                            }
 
                             auto list_array = std::static_pointer_cast<arrow::ListArray>(array);
                             auto obj_array = list_array->value_slice(rowIndex);

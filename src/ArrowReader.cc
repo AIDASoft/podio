@@ -2,9 +2,9 @@
 
 #include <arrow/io/file.h>
 #include <arrow/table.h>
+#include <arrow/util/config.h>
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
-#include <arrow/util/config.h>
 
 #include <fstream>
 #include <sstream>
@@ -97,7 +97,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   infile = file_result.ValueOrDie();
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-#if ARROW_VERSION_MAJOR >= 12
+#if ARROW_VERSION_MAJOR >= 19
   auto reader_result = parquet::arrow::OpenFile(infile, arrow::default_memory_pool());
   if (!reader_result.ok()) {
     throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());

@@ -64,7 +64,7 @@ void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view categor
       if (!coll) {
         throw std::runtime_error("Collection " + name + " not found in frame.");
       }
-      catInfo.collTypes.push_back(std::string(coll->getValueTypeName()));
+      catInfo.collTypes.emplace_back(coll->getValueTypeName());
       catInfo.collIsSubset.push_back(coll->isSubsetCollection());
       catInfo.collSchemaVersions.push_back(coll->getSchemaVersion());
       catInfo.collIDs.push_back(coll->getID());
@@ -119,7 +119,7 @@ void ArrowWriter::flushCategory(CategoryInfo& catInfo) {
   if (!result.ok()) {
     throw std::runtime_error("Failed to concatenate arrow tables: " + result.status().ToString());
   }
-  auto table = result.ValueOrDie();
+  const auto& table = result.ValueOrDie();
 
   if (!catInfo.writer) {
     std::shared_ptr<arrow::io::FileOutputStream> outfile;
