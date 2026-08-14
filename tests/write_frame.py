@@ -2,6 +2,7 @@
 """Utilities for python unittests"""
 
 import importlib
+import os
 
 
 import ROOT
@@ -106,7 +107,15 @@ if __name__ == "__main__":
     parser.add_argument("writer", help="The writer type to use")
 
     args = parser.parse_args()
+    if args.outputfile.endswith('.podio_arrow') and os.path.exists(args.outputfile):
+        import shutil
+        shutil.rmtree(args.outputfile)
 
     io_format = args.outputfile.split(".")[-1]
+    if io_format == "podio_arrow":
+        ROOT.gSystem.Load("libpodioArrow")
+        ROOT.gSystem.Load("libTestDataModelArrow")
+        ROOT.gSystem.Load("libExtensionDataModelArrow")
+        ROOT.gSystem.Load("libInterfaceExtensionDataModelArrow")
 
     write_file(args.writer, args.outputfile)

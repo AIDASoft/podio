@@ -57,11 +57,11 @@ auto arr_{{ path_prefix }}{{ member.name }} = std::static_pointer_cast<{{ array_
 for (size_t arr_i = 0; arr_i < {{ member.array_size }}; ++arr_i) {
 {% if member.value_builder.is_primitive -%}
 {% set value = (obj_expr + '.' + member.name + '[arr_i]') -%}
-  {{ value }} = arr_{{ path_prefix }}{{ member.name }}_val->Value({{ index_var }} * {{ member.array_size }} + arr_i);
+  {{ value }} = arr_{{ path_prefix }}{{ member.name }}_val->Value((arr_{{ path_prefix }}{{ member.name }}->offset() + {{ index_var }}) * {{ member.array_size }} + arr_i);
 {% else -%}
 {% set sub_obj = (obj_expr + '.' + member.name + '[arr_i]') -%}
 {% for child in member.value_builder.children -%}
-{{ read_member(child, sub_obj, path_prefix + member.name + '_val_', index_var) | indent(2, first=True) }}
+{{ read_member(child, sub_obj, path_prefix + member.name + '_val_', '(arr_' + path_prefix + member.name + '->offset() + ' ~ index_var ~ ') * ' ~ member.array_size ~ ' + arr_i') | indent(2, first=True) }}
 {% endfor -%}
 {% endif -%}
 }

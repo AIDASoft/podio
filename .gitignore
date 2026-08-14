@@ -22,6 +22,8 @@ tests/unittests/Manifest.toml
 *.root
 *.dat
 *.sio
+*.parquet
+*.podio_arrow
 
 # Spack build folders
 spack*

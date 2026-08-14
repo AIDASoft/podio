@@ -158,15 +158,21 @@ if(ENABLE_ARROW)
     ArrowTypeRegistry.cc
     ArrowConverterRegistry.cc
     ArrowFrameData.cc
+    ArrowWriter.cc
+    ArrowReader.cc
     )
 
-  add_library(podioArrow SHARED ${arrow_sources})
+  set(arrow_headers
+    "${PROJECT_SOURCE_DIR}/include/podio/ArrowReader.h"
+    "${PROJECT_SOURCE_DIR}/include/podio/ArrowWriter.h"
+  )
+  PODIO_ADD_LIB_AND_DICT(podioArrow "${arrow_headers}" "${arrow_sources}" arrow_selection.xml)
   add_library(podio::podioArrow ALIAS podioArrow)
   target_include_directories(podioArrow PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET})
+  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET} Parquet::parquet_shared nlohmann_json::nlohmann_json)
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioArrow)
@@ -192,6 +198,9 @@ target_include_directories(podioIO PUBLIC
 target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
+endif()
+if(ENABLE_ARROW)
+  target_link_libraries(podioIO PUBLIC podio::podioArrow)
 endif()
 
 

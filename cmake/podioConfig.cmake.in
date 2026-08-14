@@ -50,6 +50,8 @@ SET(PODIO_ENABLE_ARROW @ENABLE_ARROW@)
 if(PODIO_ENABLE_ARROW)
   set(lz4Alt_FIND_QUIETLY TRUE)
   find_dependency(Arrow)
+  find_dependency(Parquet)
+  find_dependency(nlohmann_json)
   set(PODIO_ARROW_TARGET @PODIO_ARROW_TARGET@)
 endif()
 
