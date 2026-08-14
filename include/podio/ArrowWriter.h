@@ -34,7 +34,7 @@ public:
   /// Configure the ArrowWriter
   struct Options {
     size_t maxBufferedRows = 1000;
-    std::string compression = "ZSTD"; // ZSTD, SNAPPY, UNCOMPRESSED, etc.
+    std::string compression = "UNCOMPRESSED"; // ZSTD, SNAPPY, UNCOMPRESSED, etc.
   };
 
   /// Create a ArrowWriter to write to a directory.

@@ -4,6 +4,7 @@
 #include <arrow/table.h>
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
+#include <arrow/util/config.h>
 
 #include <fstream>
 #include <sstream>
@@ -96,21 +97,18 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   infile = file_result.ValueOrDie();
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-  auto openFile = [](auto& f, auto& r) {
-    if constexpr (requires { parquet::arrow::OpenFile(f, arrow::default_memory_pool()); }) {
-      auto reader_result = parquet::arrow::OpenFile(f, arrow::default_memory_pool());
-      if (!reader_result.ok()) {
-        throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());
-      }
-      r = std::move(reader_result.ValueOrDie());
-    } else {
-      auto reader_status = parquet::arrow::OpenFile(f, arrow::default_memory_pool(), &r);
-      if (!reader_status.ok()) {
-        throw std::runtime_error("Failed to open parquet reader: " + reader_status.ToString());
-      }
-    }
-  };
-  openFile(infile, reader);
+#if ARROW_VERSION_MAJOR >= 12
+  auto reader_result = parquet::arrow::OpenFile(infile, arrow::default_memory_pool());
+  if (!reader_result.ok()) {
+    throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());
+  }
+  reader = std::move(reader_result.ValueOrDie());
+#else
+  auto reader_status = parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader);
+  if (!reader_status.ok()) {
+    throw std::runtime_error("Failed to open parquet reader: " + reader_status.ToString());
+  }
+#endif
 
   std::shared_ptr<arrow::Table> table;
   auto status = reader->ReadTable(&table);
