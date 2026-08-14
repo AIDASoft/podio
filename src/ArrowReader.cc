@@ -96,10 +96,21 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   infile = file_result.ValueOrDie();
 
   std::unique_ptr<parquet::arrow::FileReader> reader;
-  auto reader_status = parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader);
-  if (!reader_status.ok()) {
-    throw std::runtime_error("Failed to open parquet reader: " + reader_status.ToString());
-  }
+  auto openFile = [](auto& f, auto& r) {
+    if constexpr (requires { parquet::arrow::OpenFile(f, arrow::default_memory_pool()); }) {
+      auto reader_result = parquet::arrow::OpenFile(f, arrow::default_memory_pool());
+      if (!reader_result.ok()) {
+        throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());
+      }
+      r = std::move(reader_result.ValueOrDie());
+    } else {
+      auto reader_status = parquet::arrow::OpenFile(f, arrow::default_memory_pool(), &r);
+      if (!reader_status.ok()) {
+        throw std::runtime_error("Failed to open parquet reader: " + reader_status.ToString());
+      }
+    }
+  };
+  openFile(infile, reader);
 
   std::shared_ptr<arrow::Table> table;
   auto status = reader->ReadTable(&table);
