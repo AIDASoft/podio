@@ -51,7 +51,7 @@ void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view categor
 
   if (it == m_categories.end()) {
     CategoryInfo catInfo;
-    catInfo.filePath = m_directory / (catName + ".parquet");
+    catInfo.filePath = (std::filesystem::path(m_directory) / (catName + ".parquet")).string();
     catInfo.collsToWrite = sortedColls;
 
     for (const auto& name : sortedColls) {
@@ -118,9 +118,9 @@ void ArrowWriter::flushCategory(CategoryInfo& catInfo) {
 
   if (!catInfo.writer) {
     std::shared_ptr<arrow::io::FileOutputStream> outfile;
-    auto file_result = arrow::io::FileOutputStream::Open(catInfo.filePath.string());
+    auto file_result = arrow::io::FileOutputStream::Open(catInfo.filePath);
     if (!file_result.ok()) {
-      throw std::runtime_error("Failed to open file: " + catInfo.filePath.string());
+      throw std::runtime_error("Failed to open file: " + catInfo.filePath);
     }
     outfile = file_result.ValueOrDie();
 
@@ -179,7 +179,7 @@ void ArrowWriter::writeMetadata() {
   nlohmann::json categoriesJson;
   for (const auto& [name, catInfo] : m_categories) {
     nlohmann::json catJson;
-    catJson["file"] = catInfo.filePath.filename().string();
+    catJson["file"] = std::filesystem::path(catInfo.filePath).filename().string();
     catJson["entries"] = catInfo.entries;
 
     nlohmann::json collectionsJson = nlohmann::json::array();
@@ -210,8 +210,8 @@ void ArrowWriter::writeMetadata() {
   metadata["datamodel_definitions"] = edmDefsJson;
   metadata["datamodel_versions"] = edmVersionsJson;
 
-  auto tmpPath = m_directory / "metadata.json.tmp";
-  auto finalPath = m_directory / "metadata.json";
+  auto tmpPath = std::filesystem::path(m_directory) / "metadata.json.tmp";
+  auto finalPath = std::filesystem::path(m_directory) / "metadata.json";
 
   std::ofstream out(tmpPath);
   if (!out) {

@@ -24,7 +24,7 @@ void ArrowReader::openFile(const std::string& directory) {
     throw std::runtime_error("Directory does not exist: " + directory);
   }
 
-  auto metadataPath = m_directory / "metadata.json";
+  auto metadataPath = std::filesystem::path(m_directory) / "metadata.json";
   if (!std::filesystem::exists(metadataPath)) {
     throw std::runtime_error("Missing metadata.json in directory: " + directory);
   }
@@ -52,7 +52,7 @@ void ArrowReader::openFile(const std::string& directory) {
 
   for (auto& [name, catJson] : metadata["categories"].items()) {
     CategoryInfo catInfo;
-    catInfo.filePath = m_directory / catJson["file"].get<std::string>();
+    catInfo.filePath = (std::filesystem::path(m_directory) / catJson["file"].get<std::string>()).string();
     catInfo.entries = catJson["entries"].get<size_t>();
 
     m_categories[name] = std::move(catInfo);
@@ -85,21 +85,21 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   }
 
   if (!std::filesystem::exists(catInfo.filePath)) {
-    throw std::runtime_error("Missing category file: " + catInfo.filePath.string());
+    throw std::runtime_error("Missing category file: " + catInfo.filePath);
   }
 
   std::shared_ptr<arrow::io::ReadableFile> infile;
-  auto file_result = arrow::io::ReadableFile::Open(catInfo.filePath.string());
+  auto file_result = arrow::io::ReadableFile::Open(catInfo.filePath);
   if (!file_result.ok()) {
     throw std::runtime_error("Failed to open file: " + file_result.status().ToString());
   }
   infile = file_result.ValueOrDie();
 
-  auto reader_result = parquet::arrow::OpenFile(infile, arrow::default_memory_pool());
-  if (!reader_result.ok()) {
-    throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());
+  std::unique_ptr<parquet::arrow::FileReader> reader;
+  auto reader_status = parquet::arrow::OpenFile(infile, arrow::default_memory_pool(), &reader);
+  if (!reader_status.ok()) {
+    throw std::runtime_error("Failed to open parquet reader: " + reader_status.ToString());
   }
-  std::unique_ptr<parquet::arrow::FileReader> reader = std::move(reader_result.ValueOrDie());
 
   std::shared_ptr<arrow::Table> table;
   auto status = reader->ReadTable(&table);

@@ -72,24 +72,24 @@ public:
 
 private:
   struct CategoryInfo {
-    std::filesystem::path filePath;
+    std::string filePath{};
     size_t entries = 0;
     size_t currentIndex = 0;
-    std::shared_ptr<arrow::Table> table;
+    std::shared_ptr<arrow::Table> table{nullptr};
   };
 
   void loadCategoryTable(CategoryInfo& catInfo);
 
-  std::filesystem::path m_directory;
-  podio::version::Version m_fileVersion;
+  std::string m_directory{};
+  podio::version::Version m_fileVersion{podio::version::build_version};
 
-  std::map<std::string, CategoryInfo> m_categories;
-  std::vector<std::string> m_categoryNames;
-  std::vector<std::string_view> m_categoryViews;
+  std::map<std::string, CategoryInfo> m_categories{};
+  std::vector<std::string> m_categoryNames{};
+  std::vector<std::string_view> m_categoryViews{};
 
-  std::map<std::string, std::string> m_datamodelDefinitions;
-  std::map<std::string, podio::version::Version> m_datamodelVersions;
-  std::vector<std::string> m_availableDatamodels;
+  std::map<std::string, std::string> m_datamodelDefinitions{};
+  std::map<std::string, podio::version::Version> m_datamodelVersions{};
+  std::vector<std::string> m_availableDatamodels{};
 };
 
 } // namespace podio

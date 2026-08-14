@@ -67,15 +67,15 @@ public:
 private:
   /// Helper struct to manage category state
   struct CategoryInfo {
-    std::filesystem::path filePath;
-    std::shared_ptr<arrow::Schema> schema;
-    std::vector<std::string> collsToWrite;
-    std::vector<std::string> collTypes;
-    std::vector<bool> collIsSubset;
-    std::vector<uint32_t> collSchemaVersions;
-    std::vector<uint32_t> collIDs;
-    std::vector<std::shared_ptr<arrow::Table>> buffer;
-    std::unique_ptr<parquet::arrow::FileWriter> writer;
+    std::string filePath{};
+    std::shared_ptr<arrow::Schema> schema{nullptr};
+    std::vector<std::string> collsToWrite{};
+    std::vector<std::string> collTypes{};
+    std::vector<bool> collIsSubset{};
+    std::vector<uint32_t> collSchemaVersions{};
+    std::vector<uint32_t> collIDs{};
+    std::vector<std::shared_ptr<arrow::Table>> buffer{};
+    std::unique_ptr<parquet::arrow::FileWriter> writer{nullptr};
     size_t entries = 0;
   };
 
@@ -84,10 +84,10 @@ private:
   void validateSchema(const CategoryInfo& catInfo, const podio::Frame& frame,
                       const std::vector<std::string>& collsToWrite);
 
-  std::filesystem::path m_directory;
-  Options m_options;
-  std::map<std::string, CategoryInfo> m_categories;
-  DatamodelDefinitionCollector m_datamodelCollector;
+  std::string m_directory{};
+  Options m_options{};
+  std::map<std::string, CategoryInfo> m_categories{};
+  DatamodelDefinitionCollector m_datamodelCollector{};
   bool m_finished = false;
 };
 
