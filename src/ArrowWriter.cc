@@ -19,6 +19,11 @@
 
 namespace podio {
 
+ArrowWriter::CategoryInfo::CategoryInfo() = default;
+ArrowWriter::CategoryInfo::~CategoryInfo() = default;
+ArrowWriter::CategoryInfo::CategoryInfo(CategoryInfo&&) = default;
+ArrowWriter::CategoryInfo& ArrowWriter::CategoryInfo::operator=(CategoryInfo&&) = default;
+
 ArrowWriter::ArrowWriter(const std::string& directory, const Options& options) :
     m_directory(directory), m_options(options) {
   if (std::filesystem::exists(m_directory) && !std::filesystem::is_empty(m_directory)) {
