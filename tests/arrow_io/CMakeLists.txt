@@ -9,7 +9,7 @@ set(arrow_dependent_tests
   write_frame_arrow_multithreaded.cpp
   read_frame_arrow_multithreaded.cpp
 )
-set(arrow_libs podio::podioArrow podio::podioIO TestDataModelArrow ExtensionDataModelArrow InterfaceExtensionDataModelArrow)
+set(arrow_libs podio::podioArrow podio::podioIO TestDataModelPodioArrow ExtensionDataModelPodioArrow InterfaceExtensionDataModelPodioArrow)
 foreach( sourcefile ${arrow_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${arrow_libs}")
 endforeach()
