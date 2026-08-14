@@ -1,13 +1,13 @@
 #include "podio/ArrowReader.h"
 
-#include <nlohmann/json.hpp>
-#include <arrow/table.h>
 #include <arrow/io/file.h>
+#include <arrow/table.h>
+#include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
 
 #include <fstream>
-#include <stdexcept>
 #include <sstream>
+#include <stdexcept>
 
 namespace podio {
 
@@ -19,7 +19,7 @@ ArrowReader::ArrowReader(const std::string& directory) {
 
 void ArrowReader::openFile(const std::string& directory) {
   m_directory = directory;
-  
+
   if (!std::filesystem::exists(m_directory) || !std::filesystem::is_directory(m_directory)) {
     throw std::runtime_error("Directory does not exist: " + directory);
   }
@@ -39,7 +39,7 @@ void ArrowReader::openFile(const std::string& directory) {
   if (metadata.value("format_version", 0) != 1) {
     throw std::runtime_error("Unsupported format_version in metadata.json");
   }
-  
+
   auto versionStr = metadata.value("podio_version", "");
   uint16_t major = 0, minor = 0, patch = 0;
   char dot1, dot2;
@@ -54,11 +54,11 @@ void ArrowReader::openFile(const std::string& directory) {
     CategoryInfo catInfo;
     catInfo.filePath = m_directory / catJson["file"].get<std::string>();
     catInfo.entries = catJson["entries"].get<size_t>();
-    
+
     m_categories[name] = std::move(catInfo);
     m_categoryNames.push_back(name);
   }
-  
+
   for (const auto& name : m_categoryNames) {
     m_categoryViews.push_back(name);
   }
@@ -72,11 +72,9 @@ void ArrowReader::openFile(const std::string& directory) {
 
   if (metadata.contains("datamodel_versions")) {
     for (auto& [name, versionJson] : metadata["datamodel_versions"].items()) {
-      m_datamodelVersions[name] = podio::version::Version{
-          versionJson["major"].get<uint16_t>(),
-          versionJson["minor"].get<uint16_t>(),
-          versionJson["patch"].get<uint16_t>()
-      };
+      m_datamodelVersions[name] =
+          podio::version::Version{versionJson["major"].get<uint16_t>(), versionJson["minor"].get<uint16_t>(),
+                                  versionJson["patch"].get<uint16_t>()};
     }
   }
 }
@@ -85,7 +83,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   if (catInfo.table) {
     return;
   }
-  
+
   if (!std::filesystem::exists(catInfo.filePath)) {
     throw std::runtime_error("Missing category file: " + catInfo.filePath.string());
   }
@@ -102,7 +100,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
     throw std::runtime_error("Failed to open parquet reader: " + reader_result.status().ToString());
   }
   std::unique_ptr<parquet::arrow::FileReader> reader = std::move(reader_result.ValueOrDie());
-  
+
   std::shared_ptr<arrow::Table> table;
   auto status = reader->ReadTable(&table);
   if (!status.ok()) {
@@ -111,32 +109,34 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   catInfo.table = std::move(table);
 }
 
-std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_view name, const std::vector<std::string>& collsToRead) {
+std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_view name,
+                                                                  const std::vector<std::string>& collsToRead) {
   auto it = m_categories.find(std::string(name));
   if (it == m_categories.end()) {
     return nullptr;
   }
-  
+
   if (it->second.currentIndex >= it->second.entries) {
     return nullptr;
   }
-  
+
   return readEntry(name, it->second.currentIndex++, collsToRead);
 }
 
-std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index, const std::vector<std::string>& collsToRead) {
+std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index,
+                                                              const std::vector<std::string>& collsToRead) {
   auto it = m_categories.find(std::string(name));
   if (it == m_categories.end()) {
     return nullptr;
   }
-  
+
   if (index >= it->second.entries) {
     return nullptr;
   }
-  
+
   it->second.currentIndex = index + 1;
   loadCategoryTable(it->second);
-  
+
   if (!collsToRead.empty()) {
     for (const auto& collName : collsToRead) {
       if (it->second.table->schema()->GetFieldIndex(collName) == -1) {
@@ -144,7 +144,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
       }
     }
   }
-  
+
   return std::make_unique<podio::ArrowFrameData>(it->second.table, index, collsToRead);
 }
 
@@ -168,7 +168,7 @@ std::optional<podio::version::Version> ArrowReader::currentFileVersion(std::stri
   return std::nullopt;
 }
 
-std::vector<std::string_view> ArrowReader::getAvailableCategories() const {
+const std::vector<std::string_view>& ArrowReader::getAvailableCategories() const {
   return m_categoryViews;
 }
 
@@ -180,7 +180,7 @@ const std::string_view ArrowReader::getDatamodelDefinition(std::string_view name
   return "";
 }
 
-std::vector<std::string> ArrowReader::getAvailableDatamodels() const {
+const std::vector<std::string>& ArrowReader::getAvailableDatamodels() const {
   return m_availableDatamodels;
 }
 

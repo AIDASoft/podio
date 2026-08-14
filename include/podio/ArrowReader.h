@@ -4,13 +4,13 @@
 #include "podio/podioVersion.h"
 #include "podio/utilities/ArrowFrameData.h"
 
-#include <string>
-#include <vector>
-#include <memory>
+#include <cstddef>
 #include <filesystem>
 #include <map>
-#include <cstddef>
+#include <memory>
 #include <optional>
+#include <string>
+#include <vector>
 
 namespace arrow {
 class Table;
@@ -45,10 +45,12 @@ public:
   ArrowReader& operator=(ArrowReader&&) = delete;
 
   /// Read the next entry for the given category
-  std::unique_ptr<podio::ArrowFrameData> readNextEntry(std::string_view name, const std::vector<std::string>& collsToRead = {});
+  std::unique_ptr<podio::ArrowFrameData> readNextEntry(std::string_view name,
+                                                       const std::vector<std::string>& collsToRead = {});
 
   /// Read the specific entry for the given category
-  std::unique_ptr<podio::ArrowFrameData> readEntry(std::string_view name, size_t index, const std::vector<std::string>& collsToRead = {});
+  std::unique_ptr<podio::ArrowFrameData> readEntry(std::string_view name, size_t index,
+                                                   const std::vector<std::string>& collsToRead = {});
 
   /// Get the number of entries for a category
   size_t getEntries(std::string_view name) const;
@@ -60,13 +62,13 @@ public:
   std::optional<podio::version::Version> currentFileVersion(std::string_view name) const;
 
   /// Get available categories
-  std::vector<std::string_view> getAvailableCategories() const;
+  const std::vector<std::string_view>& getAvailableCategories() const;
 
   /// Get datamodel definition
   const std::string_view getDatamodelDefinition(std::string_view name) const;
 
   /// Get available datamodels
-  std::vector<std::string> getAvailableDatamodels() const;
+  const std::vector<std::string>& getAvailableDatamodels() const;
 
 private:
   struct CategoryInfo {
@@ -80,11 +82,11 @@ private:
 
   std::filesystem::path m_directory;
   podio::version::Version m_fileVersion;
-  
+
   std::map<std::string, CategoryInfo> m_categories;
   std::vector<std::string> m_categoryNames;
   std::vector<std::string_view> m_categoryViews;
-  
+
   std::map<std::string, std::string> m_datamodelDefinitions;
   std::map<std::string, podio::version::Version> m_datamodelVersions;
   std::vector<std::string> m_availableDatamodels;

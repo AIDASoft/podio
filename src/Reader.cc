@@ -16,8 +16,8 @@
 
 #include "TFile.h"
 #include "TKey.h"
-#include <memory>
 #include <filesystem>
+#include <memory>
 
 namespace podio {
 
@@ -88,7 +88,9 @@ Reader makeReader(const std::vector<std::string>& filenames) {
 #else
     throw std::runtime_error("SIO reader not available. Please recompile with SIO support.");
 #endif
-  } else if (suffix == "podio_arrow" || (std::filesystem::is_directory(filenames[0]) && std::filesystem::exists(std::filesystem::path(filenames[0]) / "metadata.json"))) {
+  } else if (suffix == "podio_arrow" ||
+             (std::filesystem::is_directory(filenames[0]) &&
+              std::filesystem::exists(std::filesystem::path(filenames[0]) / "metadata.json"))) {
 #if PODIO_ENABLE_ARROW
     if (filenames.size() > 1) {
       throw std::runtime_error("The Arrow reader does currently not support reading multiple directories");

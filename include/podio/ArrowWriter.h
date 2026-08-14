@@ -3,13 +3,13 @@
 
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
-#include <string>
-#include <vector>
-#include <memory>
+#include <cstddef>
+#include <cstdint>
 #include <filesystem>
 #include <map>
-#include <cstdint>
-#include <cstddef>
+#include <memory>
+#include <string>
+#include <vector>
 
 // Forward declarations for Arrow and Parquet
 namespace arrow {
@@ -44,7 +44,7 @@ public:
   ///
   /// @param directory The path to the output directory.
   /// @param options   Configuration options for buffering and compression.
-  ArrowWriter(const std::string& directory, Options options);
+  ArrowWriter(const std::string& directory, const Options& options);
   explicit ArrowWriter(const std::string& directory);
 
   /// Destructor writes metadata and closes files.
@@ -81,7 +81,8 @@ private:
 
   void flushCategory(CategoryInfo& catInfo);
   void writeMetadata();
-  void validateSchema(CategoryInfo& catInfo, const podio::Frame& frame, const std::vector<std::string>& collsToWrite);
+  void validateSchema(const CategoryInfo& catInfo, const podio::Frame& frame,
+                      const std::vector<std::string>& collsToWrite);
 
   std::filesystem::path m_directory;
   Options m_options;

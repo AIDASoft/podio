@@ -59,7 +59,8 @@ namespace {
 
 } // namespace
 
-ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex, const std::vector<std::string>& collsToRead) :
+ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex,
+                               const std::vector<std::string>& collsToRead) :
     m_table(std::move(table)), m_rowIndex(rowIndex), m_availableCollections(), m_idTable() {
   if (!m_table) {
     throw std::runtime_error("ArrowTable is null");

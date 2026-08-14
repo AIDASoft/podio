@@ -18,7 +18,8 @@ namespace podio {
 
 class ArrowFrameData {
 public:
-  ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex, const std::vector<std::string>& collsToRead = {});
+  ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex,
+                 const std::vector<std::string>& collsToRead = {});
 
   podio::CollectionIDTable getIDTable() const;
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
