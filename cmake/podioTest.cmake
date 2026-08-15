@@ -65,8 +65,8 @@ function(PODIO_SET_TEST_ENV test)
       "TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt:$ENV{TSAN_OPTIONS}"
     )
   endif()
-  # Preload the sanitizer runtime so tests that dlopen shared libs (e.g. cling) can load instrumented libraries
-  if(PODIO_SANITIZER_LIBRARY)
+  # Preload the sanitizer runtime so cling can dlopen instrumented libraries
+  if((ARG_PYTHON OR ARG_CLING) AND PODIO_SANITIZER_LIBRARY)
     list(APPEND test_environment "LD_PRELOAD=${PODIO_SANITIZER_LIBRARY}:$ENV{LD_PRELOAD}")
   endif()
   set_property(TEST ${test}

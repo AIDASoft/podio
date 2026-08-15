@@ -167,16 +167,16 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   const auto availableCategories = reader.getAvailableCategories();
-  if (availableCategories.size() != 2) {
-    std::cerr << "More categories than expected!" << std::endl;
+  if (availableCategories.size() != 3) {
+    std::cerr << "Unexpected number of categories! (expected: 3, actual: " << availableCategories.size() << ")"
+              << std::endl;
     return 1;
   }
-  if (std::find(availableCategories.begin(), availableCategories.end(), "events") == availableCategories.end() ||
-      std::find(availableCategories.begin(), availableCategories.end(), "other_events") == availableCategories.end()) {
-    std::cerr << "Could not read back the available categories as expected! (expected: ['events', 'other_events']), "
-                 "actual: ['"
-              << availableCategories[0] << "', '" << availableCategories[1] << "']" << std::endl;
-    return 1;
+  for (const auto& expected : {"events", "other_events", "events_extended"}) {
+    if (std::find(availableCategories.begin(), availableCategories.end(), expected) == availableCategories.end()) {
+      std::cerr << "Could not find expected category '" << expected << "' in available categories" << std::endl;
+      return 1;
+    }
   }
 
   if (reader.getEntries(podio::Category::Event) != 10) {
