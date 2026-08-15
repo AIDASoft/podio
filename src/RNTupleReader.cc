@@ -133,11 +133,13 @@ unsigned RNTupleReader::getEntries(std::string_view name) const {
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view category,
                                                             const std::vector<std::string>& collsToRead) {
-  const auto it = std::ranges::find(m_availableCategories, category);
-  if (it == m_availableCategories.end()) {
+  // m_totalEntries is keyed by stable string_views (into m_availableCategories),
+  // so a single O(1) lookup both validates the category and yields the stable key.
+  const auto it = m_totalEntries.find(category);
+  if (it == m_totalEntries.end()) {
     return nullptr;
   }
-  const std::string_view stableCategory = *it;
+  const std::string_view stableCategory = it->first;
   return readEntry(stableCategory, m_entries[stableCategory], collsToRead);
 }
 
