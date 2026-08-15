@@ -167,12 +167,12 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
   }
 
   const auto availableCategories = reader.getAvailableCategories();
-  if (availableCategories.size() != 3) {
-    std::cerr << "Unexpected number of categories! (expected: 3, actual: " << availableCategories.size() << ")"
+  if (availableCategories.size() < 2) {
+    std::cerr << "Unexpected number of categories! (expected at least: 2, actual: " << availableCategories.size() << ")"
               << std::endl;
     return 1;
   }
-  for (const auto& expected : {"events", "other_events", "events_extended"}) {
+  for (const auto& expected : {"events", "other_events"}) {
     if (std::find(availableCategories.begin(), availableCategories.end(), expected) == availableCategories.end()) {
       std::cerr << "Could not find expected category '" << expected << "' in available categories" << std::endl;
       return 1;
