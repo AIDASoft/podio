@@ -16,6 +16,10 @@ void write_frames(podio::Writer& frameWriter) {
     auto frame = makeFrame(i);
     frameWriter.writeFrame(frame, "other_events");
   }
+
+  // Two entries for a >15-char category name used in test_transient_category_strings.
+  frameWriter.writeFrame(makeFrame(0), "events_extended");
+  frameWriter.writeFrame(makeFrame(1), "events_extended");
 }
 
 #endif // PODIO_TESTS_WRITE_INTERFACE_H

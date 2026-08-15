@@ -5,5 +5,5 @@
 
 int main(int, char**) {
   auto reader = podio::makeReader("example_frame_interface.root");
-  return read_frames(reader) + test_read_frame_limited(reader);
+  return read_frames(reader) + test_read_frame_limited(reader) + test_transient_category_strings(reader);
 }
