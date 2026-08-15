@@ -161,7 +161,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
     return nullptr;
   }
 
-  const auto& collInfo = collInfoIt->second;
+  const auto& collInfo = m_collectionInfo[stableCategory];
   // Make sure to not silently ignore non-existant but requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
