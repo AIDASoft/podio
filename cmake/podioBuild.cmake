@@ -99,7 +99,7 @@ endmacro(podio_set_compiler_flags)
 #--- availability of the different sanitizers
 macro(ADD_SANITIZER_FLAGS)
   if(USE_SANITIZER)
-    if(USE_SANITIZER MATCHES "Address;Undefined" OR USE_SANITIZE MATCHES "Undefined;Address")
+    if(USE_SANITIZER MATCHES "Address;Undefined" OR USE_SANITIZER MATCHES "Undefined;Address")
       message(STATUS "Building with Address and Undefined behavior sanitizers")
       add_compile_options("-fsanitize=address,undefined")
       add_link_options("-fsanitize=address,undefined")
