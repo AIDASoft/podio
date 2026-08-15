@@ -58,6 +58,7 @@ function(PODIO_SET_TEST_ENV test)
   if(USE_SANITIZER MATCHES "Address")
     list(APPEND test_environment
       "LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt:$ENV{LSAN_OPTIONS}"
+      "ASAN_OPTIONS=detect_stack_use_after_return=1:$ENV{ASAN_OPTIONS}"
     )
   elseif(USE_SANITIZER MATCHES "Thread")
     list(APPEND test_environment
@@ -65,7 +66,7 @@ function(PODIO_SET_TEST_ENV test)
     )
   endif()
   # Preload the sanitizer runtime so cling can dlopen instrumented libraries
-  if((ARG_PYTHON OR ARG_CLING) AND PODIO_SANITIZER_LIBRARY)
+  if(PODIO_SANITIZER_LIBRARY)
     list(APPEND test_environment "LD_PRELOAD=${PODIO_SANITIZER_LIBRARY}:$ENV{LD_PRELOAD}")
   endif()
   set_property(TEST ${test}

@@ -84,4 +84,28 @@ int read_frames(podio::Reader& reader) {
   return 0;
 }
 
+/// Regression test for dangling string_view map keys in readers.
+/// Uses a >15-char category (heap-allocated string) so ASAN quarantines
+/// the freed buffer and detects the heap-use-after-free on the second
+/// readFrame call that triggers find() on the stored dangling key.
+int test_transient_category_strings(podio::Reader& reader) {
+  if (reader.getEntries("events_extended") >= 2) {
+    [&]() __attribute__((noinline)) {
+      std::string category{"events_extended"};
+      auto frame = reader.readFrame(category, 0);
+      if (frame.getAvailableCollections().empty()) {
+        std::cerr << "Expected non-empty collections for category 'events_extended'" << std::endl;
+      }
+    }();
+    // String is now destroyed; heap buffer is in ASAN quarantine.
+    // find() in readEntry reads the stored dangling key — ASAN flags this.
+    auto frame = reader.readFrame(std::string{"events_extended"}, 1);
+    if (frame.getAvailableCollections().empty()) {
+      std::cerr << "Expected non-empty collections for category 'events_extended' entry 1" << std::endl;
+      return 1;
+    }
+  }
+  return 0;
+}
+
 #endif // PODIO_TESTS_READ_INTERFACE_H
