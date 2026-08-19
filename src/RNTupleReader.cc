@@ -46,17 +46,19 @@ GenericParameters RNTupleReader::readEventMetaData(root_compat::RNTupleReader* r
 }
 
 bool RNTupleReader::initCategory(std::string_view category) {
-  if (std::ranges::find(m_availableCategories, category) == m_availableCategories.end()) {
+  const auto it = std::ranges::find(m_availableCategories, category);
+  if (it == m_availableCategories.end()) {
     return false;
   }
+  const std::string_view stableCategory = *it; // points into m_availableCategories
   // Assume that the metadata is the same in all files
   const auto& filename = m_filenames[0];
 
   auto collInfo = m_metadata_readers[filename]->GetView<std::vector<root_utils::CollectionWriteInfo>>(
-      {root_utils::collInfoName(category)});
+      {root_utils::collInfoName(stableCategory)});
 
-  m_collectionInfo[category] = collInfo(0);
-  m_idTables[category] = root_utils::makeCollIdTable(collInfo(0));
+  m_collectionInfo[stableCategory] = collInfo(0);
+  m_idTables[stableCategory] = root_utils::makeCollIdTable(collInfo(0));
 
   return true;
 }
@@ -131,22 +133,35 @@ unsigned RNTupleReader::getEntries(std::string_view name) const {
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view category,
                                                             const std::vector<std::string>& collsToRead) {
-  return readEntry(category, m_entries[category], collsToRead);
+  // m_totalEntries is keyed by stable string_views (into m_availableCategories),
+  // so a single O(1) lookup both validates the category and yields the stable key.
+  const auto it = m_totalEntries.find(category);
+  if (it == m_totalEntries.end()) {
+    return nullptr;
+  }
+  const std::string_view stableCategory = it->first;
+  return readEntry(stableCategory, m_entries[stableCategory], collsToRead);
 }
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
-  if (m_collectionInfo.find(category) == m_collectionInfo.end()) {
+  auto collInfoIt = m_collectionInfo.find(category);
+  if (collInfoIt == m_collectionInfo.end()) {
     if (!initCategory(category)) {
       return nullptr;
     }
+    collInfoIt = m_collectionInfo.find(category);
   }
-  const auto maxCatEvents = getEntries(category);
+  // Use the map key (which points into m_availableCategories) as the stable
+  // string_view to avoid dangling keys when the caller's backing string is gone.
+  const std::string_view stableCategory = collInfoIt->first;
+
+  const auto maxCatEvents = getEntries(stableCategory);
   if (entNum >= maxCatEvents) {
     return nullptr;
   }
 
-  const auto& collInfo = m_collectionInfo[category];
+  const auto& collInfo = m_collectionInfo[stableCategory];
   // Make sure to not silently ignore non-existant but requested collections
   if (!collsToRead.empty()) {
     for (const auto& name : collsToRead) {
@@ -156,16 +171,16 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
     }
   }
 
-  m_entries[category] = entNum + 1;
+  m_entries[stableCategory] = entNum + 1;
 
   // m_readerEntries contains the accumulated entries for all the readers
   // therefore, the first number that is lower or equal to the entry number
   // is at the index of the reader that contains the entry
-  const auto& readerEntries = m_readerEntries[category];
+  const auto& readerEntries = m_readerEntries[stableCategory];
   const auto upper = std::ranges::upper_bound(readerEntries, entNum);
   const auto localEntry = entNum - *(upper - 1);
   const auto readerIndex = upper - 1 - readerEntries.begin();
-  const auto& reader = m_readers[category][readerIndex];
+  const auto& reader = m_readers[stableCategory][readerIndex];
 
   ROOTFrameData::BufferMap buffers;
   // We need to create a non-bare entry here, because the entries for the

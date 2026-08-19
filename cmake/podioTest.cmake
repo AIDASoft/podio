@@ -58,6 +58,7 @@ function(PODIO_SET_TEST_ENV test)
   if(USE_SANITIZER MATCHES "Address")
     list(APPEND test_environment
       "LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt:$ENV{LSAN_OPTIONS}"
+      "ASAN_OPTIONS=detect_stack_use_after_return=1:$ENV{ASAN_OPTIONS}"
     )
   elseif(USE_SANITIZER MATCHES "Thread")
     list(APPEND test_environment
