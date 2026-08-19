@@ -72,6 +72,14 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
   std::vector<uint32_t> ids;
   std::vector<std::string> names;
 
+  if (!collsToRead.empty()) {
+    for (const auto& coll : collsToRead) {
+      if (m_table->GetColumnByName(coll) == nullptr) {
+        throw std::runtime_error("Collection '" + coll + "' not found in category.");
+      }
+    }
+  }
+
   auto schema = m_table->schema();
   for (int i = 0; i < schema->num_fields(); ++i) {
     auto field = schema->field(i);

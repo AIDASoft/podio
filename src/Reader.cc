@@ -95,7 +95,8 @@ Reader makeReader(const std::vector<std::string>& filenames) {
     if (filenames.size() > 1) {
       throw std::runtime_error("The Arrow reader does currently not support reading multiple directories");
     }
-    auto actualReader = std::make_unique<ArrowReader>(filenames[0]);
+    auto actualReader = std::make_unique<ArrowReader>();
+    actualReader->openFile(filenames[0]);
     Reader reader{std::move(actualReader)};
     return reader;
 #else

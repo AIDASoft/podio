@@ -56,9 +56,17 @@ public:
   ArrowWriter& operator=(ArrowWriter&&) = delete;
 
   /// Store the given frame with the given category.
+  ///
+  /// @note All frames of the same category must have the same collection
+  ///       names and schemas. Trying to write a frame with different
+  ///       collections to an existing category will result in an exception.
   void writeFrame(const podio::Frame& frame, std::string_view category);
 
   /// Store the given Frame with the given category, specifying collections.
+  ///
+  /// @note All frames of the same category must have the same collection
+  ///       names and schemas. Trying to write a frame with different
+  ///       collections to an existing category will result in an exception.
   void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collsToWrite);
 
   /// Write the current directory including metadata.json and close files.

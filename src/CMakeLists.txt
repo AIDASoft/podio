@@ -172,7 +172,7 @@ if(ENABLE_ARROW)
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
-  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET} Parquet::parquet_shared nlohmann_json::nlohmann_json)
+  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET} ${PODIO_PARQUET_TARGET} nlohmann_json::nlohmann_json)
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioArrow)

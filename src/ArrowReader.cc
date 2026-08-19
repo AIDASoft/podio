@@ -14,10 +14,6 @@ namespace podio {
 
 ArrowReader::ArrowReader() = default;
 
-ArrowReader::ArrowReader(const std::string& directory) {
-  openFile(directory);
-}
-
 void ArrowReader::openFile(const std::string& directory) {
   m_directory = directory;
 
@@ -35,20 +31,19 @@ void ArrowReader::openFile(const std::string& directory) {
   in >> metadata;
 
   if (metadata.value("format", "") != "podio-arrow") {
-    throw std::runtime_error("Unsupported format in metadata.json");
+    throw std::runtime_error("Unsupported format in metadata.json: " + metadata.value("format", ""));
   }
   if (metadata.value("format_version", 0) != 1) {
-    throw std::runtime_error("Unsupported format_version in metadata.json");
+    throw std::runtime_error("Unsupported format_version in metadata.json: " +
+                             std::to_string(metadata.value("format_version", 0)));
   }
 
   auto versionStr = metadata.value("podio_version", "");
-  uint16_t major = 0, minor = 0, patch = 0;
-  char dot1, dot2;
-  std::stringstream ss(versionStr);
-  if (ss >> major >> dot1 >> minor >> dot2 >> patch && dot1 == '.' && dot2 == '.') {
-    m_fileVersion = podio::version::Version{major, minor, patch};
+  auto parsedVersion = podio::version::Version::fromString(versionStr);
+  if (parsedVersion) {
+    m_fileVersion = parsedVersion.value();
   } else {
-    throw std::runtime_error("Invalid or missing podio_version in metadata.json");
+    throw std::runtime_error("Invalid or missing podio_version in metadata.json: " + versionStr);
   }
 
   for (auto& [name, catJson] : metadata["categories"].items()) {

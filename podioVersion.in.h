@@ -2,8 +2,10 @@
 #define PODIO_PODIOVERSION_H
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <tuple>
 
 // Some preprocessor constants and macros for the use cases where they might be
@@ -59,6 +61,16 @@ struct Version {
     std::stringstream ss;
     ss << *this;
     return ss.str();
+  }
+
+  static std::optional<Version> fromString(const std::string& versionStr) {
+    uint16_t major = 0, minor = 0, patch = 0;
+    char dot1, dot2;
+    std::stringstream ss(versionStr);
+    if (ss >> major >> dot1 >> minor >> dot2 >> patch && dot1 == '.' && dot2 == '.') {
+      return Version{major, minor, patch};
+    }
+    return std::nullopt;
   }
 
   friend std::ostream& operator<<(std::ostream&, const Version& v);

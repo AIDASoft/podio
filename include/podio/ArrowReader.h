@@ -27,11 +27,6 @@ public:
   /// Create an ArrowReader
   ArrowReader();
 
-  /// Create a ArrowReader to read from a directory.
-  ///
-  /// @param directory The path to the dataset directory.
-  ArrowReader(const std::string& directory);
-
   /// Open the passed directory for reading.
   ///
   /// @param directory The path to the directory to read from

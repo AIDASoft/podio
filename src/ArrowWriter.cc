@@ -29,6 +29,9 @@ ArrowWriter::ArrowWriter(const std::string& directory, const Options& options) :
   if (std::filesystem::exists(m_directory) && !std::filesystem::is_empty(m_directory)) {
     throw std::runtime_error("Output directory " + directory + " exists and is not empty.");
   }
+  if (m_options.compression != "ZSTD" && m_options.compression != "SNAPPY" && m_options.compression != "UNCOMPRESSED") {
+    throw std::invalid_argument("Unknown compression: " + m_options.compression);
+  }
   std::filesystem::create_directories(m_directory);
 }
 
@@ -81,7 +84,8 @@ void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view categor
   if (!it->second.schema) {
     it->second.schema = table->schema();
   } else if (!it->second.schema->Equals(*table->schema())) {
-    throw std::runtime_error("Schema drift detected: Arrow schema differs for subsequent frames.");
+    throw std::runtime_error(
+        "Arrow schema drift detected: The internal Arrow schema differs for subsequent frames in the same category.");
   }
 
   it->second.buffer.push_back(table);
@@ -103,9 +107,21 @@ void ArrowWriter::validateSchema(const CategoryInfo& catInfo, const podio::Frame
     if (!coll) {
       throw std::runtime_error("Collection " + collsToWrite[i] + " not found in frame.");
     }
-    if (catInfo.collTypes[i] != coll->getValueTypeName() || catInfo.collIsSubset[i] != coll->isSubsetCollection() ||
-        catInfo.collSchemaVersions[i] != coll->getSchemaVersion() || catInfo.collIDs[i] != coll->getID()) {
-      throw std::runtime_error("Schema drift detected for collection: " + collsToWrite[i]);
+    if (catInfo.collTypes[i] != coll->getValueTypeName()) {
+      throw std::runtime_error("Type drift detected for collection " + collsToWrite[i] + ": expected " +
+                               catInfo.collTypes[i] + ", got " + std::string(coll->getValueTypeName()));
+    }
+    if (catInfo.collIsSubset[i] != coll->isSubsetCollection()) {
+      throw std::runtime_error("Subset drift detected for collection " + collsToWrite[i]);
+    }
+    if (catInfo.collSchemaVersions[i] != coll->getSchemaVersion()) {
+      throw std::runtime_error("Schema version drift detected for collection " + collsToWrite[i] + ": expected " +
+                               std::to_string(catInfo.collSchemaVersions[i]) + ", got " +
+                               std::to_string(coll->getSchemaVersion()));
+    }
+    if (catInfo.collIDs[i] != coll->getID()) {
+      throw std::runtime_error("Collection ID drift detected for collection " + collsToWrite[i] + ": expected " +
+                               std::to_string(catInfo.collIDs[i]) + ", got " + std::to_string(coll->getID()));
     }
   }
 }
@@ -134,10 +150,8 @@ void ArrowWriter::flushCategory(CategoryInfo& catInfo) {
       builder.compression(parquet::Compression::ZSTD);
     } else if (m_options.compression == "SNAPPY") {
       builder.compression(parquet::Compression::SNAPPY);
-    } else if (m_options.compression == "UNCOMPRESSED") {
-      builder.compression(parquet::Compression::UNCOMPRESSED);
     } else {
-      throw std::invalid_argument("Unknown compression: " + m_options.compression);
+      builder.compression(parquet::Compression::UNCOMPRESSED);
     }
 
     auto arrow_props = parquet::ArrowWriterProperties::Builder().store_schema()->build();
@@ -215,17 +229,14 @@ void ArrowWriter::writeMetadata() {
   metadata["datamodel_definitions"] = edmDefsJson;
   metadata["datamodel_versions"] = edmVersionsJson;
 
-  auto tmpPath = std::filesystem::path(m_directory) / "metadata.json.tmp";
   auto finalPath = std::filesystem::path(m_directory) / "metadata.json";
 
-  std::ofstream out(tmpPath);
+  std::ofstream out(finalPath);
   if (!out) {
-    throw std::runtime_error("Failed to open metadata.json.tmp for writing");
+    throw std::runtime_error("Failed to open metadata.json for writing");
   }
   out << metadata.dump(2);
   out.close();
-
-  std::filesystem::rename(tmpPath, finalPath);
 }
 
 } // namespace podio

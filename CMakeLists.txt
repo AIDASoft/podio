@@ -161,6 +161,12 @@ if(ENABLE_ARROW)
     message(FATAL_ERROR "Found Arrow, but no usable Arrow CMake target was exported")
   endif()
 
+  if(TARGET Parquet::parquet_shared)
+    set(PODIO_PARQUET_TARGET Parquet::parquet_shared)
+  else()
+    set(PODIO_PARQUET_TARGET Parquet::parquet_static)
+  endif()
+
   message(STATUS "Found Arrow and Parquet libraries - will build Arrow I/O support")
   list(APPEND PODIO_IO_HANDLERS ARROW)
 endif()
