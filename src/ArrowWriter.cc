@@ -15,14 +15,10 @@
 
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 #include <stdexcept>
 
 namespace podio {
-
-ArrowWriter::CategoryInfo::CategoryInfo() = default;
-ArrowWriter::CategoryInfo::~CategoryInfo() = default;
-ArrowWriter::CategoryInfo::CategoryInfo(CategoryInfo&&) = default;
-ArrowWriter::CategoryInfo& ArrowWriter::CategoryInfo::operator=(CategoryInfo&&) = default;
 
 ArrowWriter::ArrowWriter(const std::string& directory, const Options& options) :
     m_directory(directory), m_options(options) {
@@ -41,7 +37,8 @@ ArrowWriter::ArrowWriter(const std::string& directory) : ArrowWriter(directory, 
 ArrowWriter::~ArrowWriter() {
   try {
     finish();
-  } catch (...) {
+  } catch (const std::exception& e) {
+    std::cerr << "Exception caught in ArrowWriter destructor: " << e.what() << "\n";
   }
 }
 

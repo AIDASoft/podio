@@ -52,27 +52,28 @@ void ArrowReader::openFile(const std::string& directory) {
     catInfo.entries = catJson["entries"].get<size_t>();
 
     m_categories[name] = std::move(catInfo);
-    m_categoryNames.push_back(name);
+    m_availableCategories.push_back(name);
   }
 
-  for (const auto& name : m_categoryNames) {
-    m_categoryViews.push_back(name);
-  }
+  std::vector<std::tuple<std::string, std::string>> defs;
+  std::vector<std::tuple<std::string, podio::version::Version>> versions;
 
   if (metadata.contains("datamodel_definitions")) {
     for (auto& [name, def] : metadata["datamodel_definitions"].items()) {
-      m_datamodelDefinitions[name] = def.get<std::string>();
-      m_availableDatamodels.push_back(name);
+      defs.emplace_back(name, def.get<std::string>());
     }
   }
 
   if (metadata.contains("datamodel_versions")) {
     for (auto& [name, versionJson] : metadata["datamodel_versions"].items()) {
-      m_datamodelVersions[name] =
-          podio::version::Version{versionJson["major"].get<uint16_t>(), versionJson["minor"].get<uint16_t>(),
-                                  versionJson["patch"].get<uint16_t>()};
+      versions.emplace_back(name,
+                            podio::version::Version{versionJson["major"].get<uint16_t>(),
+                                                    versionJson["minor"].get<uint16_t>(),
+                                                    versionJson["patch"].get<uint16_t>()});
     }
   }
+
+  m_datamodelHolder = DatamodelDefinitionHolder(std::move(defs), std::move(versions));
 }
 
 void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
@@ -158,34 +159,6 @@ size_t ArrowReader::getEntries(std::string_view name) const {
     return it->second.entries;
   }
   return 0;
-}
-
-podio::version::Version ArrowReader::currentFileVersion() const {
-  return m_fileVersion;
-}
-
-std::optional<podio::version::Version> ArrowReader::currentFileVersion(std::string_view name) const {
-  auto it = m_datamodelVersions.find(std::string(name));
-  if (it != m_datamodelVersions.end()) {
-    return it->second;
-  }
-  return std::nullopt;
-}
-
-const std::vector<std::string_view>& ArrowReader::getAvailableCategories() const {
-  return m_categoryViews;
-}
-
-const std::string_view ArrowReader::getDatamodelDefinition(std::string_view name) const {
-  auto it = m_datamodelDefinitions.find(std::string(name));
-  if (it != m_datamodelDefinitions.end()) {
-    return it->second;
-  }
-  return "";
-}
-
-const std::vector<std::string>& ArrowReader::getAvailableDatamodels() const {
-  return m_availableDatamodels;
 }
 
 } // namespace podio

@@ -17,15 +17,15 @@ from podio.utils import convert_to_str_paths  # pylint: disable=wrong-import-pos
 class Reader(BaseReaderMixin):
     """Reader class for reading podio Arrow files."""
 
-    def __init__(self, filename):
+    def __init__(self, directory):
         """Create a reader that reads from the passed directory.
 
         Args:
-            filename (str or Path): Directory to open and read data from.
+            directory (str or Path): Directory to open and read data from.
         """
-        filename = convert_to_str_paths(filename)[0]
+        directory = convert_to_str_paths(directory)[0]
         self._reader = podio.ArrowReader()
-        self._reader.openFile(filename)
+        self._reader.openFile(directory)
 
         super().__init__()
 
@@ -33,13 +33,13 @@ class Reader(BaseReaderMixin):
 class Writer(BaseWriterMixin):
     """Writer class for writing podio arrow files."""
 
-    def __init__(self, filename):
+    def __init__(self, directory):
         """Create a writer for writing files.
 
         Args:
-            filename (str or Path): The name of the output directory.
+            directory (str or Path): The name of the output directory.
         """
-        filename = convert_to_str_paths(filename)[0]
-        self._writer = podio.ArrowWriter(filename)
+        directory = convert_to_str_paths(directory)[0]
+        self._writer = podio.ArrowWriter(directory)
 
         super().__init__()

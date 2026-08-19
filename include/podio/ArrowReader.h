@@ -3,6 +3,7 @@
 
 #include "podio/podioVersion.h"
 #include "podio/utilities/ArrowFrameData.h"
+#include "podio/utilities/ReaderCommon.h"
 
 #include <cstddef>
 #include <filesystem>
@@ -22,7 +23,7 @@ namespace podio {
 ///
 /// Reads data from a directory structure containing one Parquet file per category
 /// and a metadata.json file containing metadata for reading.
-class ArrowReader {
+class ArrowReader : public ReaderCommon {
 public:
   /// Create an ArrowReader
   ArrowReader();
@@ -50,21 +51,6 @@ public:
   /// Get the number of entries for a category
   size_t getEntries(std::string_view name) const;
 
-  /// Get the podio build version
-  podio::version::Version currentFileVersion() const;
-
-  /// Get the datamodel build version
-  std::optional<podio::version::Version> currentFileVersion(std::string_view name) const;
-
-  /// Get available categories
-  const std::vector<std::string_view>& getAvailableCategories() const;
-
-  /// Get datamodel definition
-  const std::string_view getDatamodelDefinition(std::string_view name) const;
-
-  /// Get available datamodels
-  const std::vector<std::string>& getAvailableDatamodels() const;
-
 private:
   struct CategoryInfo {
     std::string filePath{};
@@ -76,15 +62,7 @@ private:
   void loadCategoryTable(CategoryInfo& catInfo);
 
   std::string m_directory{};
-  podio::version::Version m_fileVersion{podio::version::build_version};
-
   std::map<std::string, CategoryInfo> m_categories{};
-  std::vector<std::string> m_categoryNames{};
-  std::vector<std::string_view> m_categoryViews{};
-
-  std::map<std::string, std::string> m_datamodelDefinitions{};
-  std::map<std::string, podio::version::Version> m_datamodelVersions{};
-  std::vector<std::string> m_availableDatamodels{};
 };
 
 } // namespace podio
