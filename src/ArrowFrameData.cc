@@ -88,7 +88,7 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
     if (field->name() == "frame_parameters") {
       continue;
     }
-    
+
     if (collsToRead.empty()) {
       m_availableCollections.push_back(field->name());
     }
