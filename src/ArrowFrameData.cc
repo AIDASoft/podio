@@ -79,6 +79,7 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
     if (missing_coll != collsToRead.end()) {
       throw std::runtime_error("Collection '" + *missing_coll + "' not found in category.");
     }
+    m_availableCollections = collsToRead;
   }
 
   auto schema = m_table->schema();
@@ -87,7 +88,8 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
     if (field->name() == "frame_parameters") {
       continue;
     }
-    if (collsToRead.empty() || std::find(collsToRead.begin(), collsToRead.end(), field->name()) != collsToRead.end()) {
+    
+    if (collsToRead.empty()) {
       m_availableCollections.push_back(field->name());
     }
 
