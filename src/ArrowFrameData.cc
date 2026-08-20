@@ -73,10 +73,12 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
   std::vector<std::string> names;
 
   if (!collsToRead.empty()) {
-    for (const auto& coll : collsToRead) {
-      if (m_table->GetColumnByName(coll) == nullptr) {
-        throw std::runtime_error("Collection '" + coll + "' not found in category.");
-      }
+    auto missing_coll = std::find_if(collsToRead.begin(), collsToRead.end(),
+                                     [this](const std::string& coll) {
+                                       return m_table->GetColumnByName(coll) == nullptr;
+                                     });
+    if (missing_coll != collsToRead.end()) {
+      throw std::runtime_error("Collection '" + *missing_coll + "' not found in category.");
     }
   }
 

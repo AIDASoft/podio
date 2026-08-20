@@ -85,6 +85,11 @@ private:
     std::vector<std::shared_ptr<arrow::Table>> buffer{};
     std::unique_ptr<parquet::arrow::FileWriter> writer{nullptr};
     size_t entries = 0;
+
+    CategoryInfo();
+    ~CategoryInfo();
+    CategoryInfo(CategoryInfo&&);
+    CategoryInfo& operator=(CategoryInfo&&);
   };
 
   void flushCategory(CategoryInfo& catInfo);
