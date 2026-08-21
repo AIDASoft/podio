@@ -1,6 +1,7 @@
 #ifndef PODIO_OBJECTID_H
 #define PODIO_OBJECTID_H
 
+#include <compare>
 #include <cstdint>
 #include <functional>
 #include <iomanip>
@@ -28,6 +29,14 @@ public:
   /// index and collectionID uniquely defines the object.
   /// this operator is necessary for meaningful comparisons in python
   constexpr bool operator==(const ObjectID&) const noexcept = default;
+
+  /// Order ObjectIDs by collection first and then by their index within the collection.
+  constexpr std::strong_ordering operator<=>(const ObjectID& other) const noexcept {
+    if (const auto comparison = collectionID <=> other.collectionID; comparison != 0) {
+      return comparison;
+    }
+    return index <=> other.index;
+  }
 };
 
 inline std::ostream& operator<<(std::ostream& os, const podio::ObjectID& id) {

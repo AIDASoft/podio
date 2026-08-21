@@ -127,6 +127,29 @@ TEST_CASE("InterfaceTypes hash and containers", "[interface-types][hash]") {
   }
 }
 
+TEST_CASE("ObjectID ordering", "[object-id][containers]") {
+  constexpr auto firstInCollection = podio::ObjectID{1, 42};
+  constexpr auto secondInCollection = podio::ObjectID{2, 42};
+  constexpr auto firstInNextCollection = podio::ObjectID{0, 43};
+
+  STATIC_REQUIRE(firstInCollection < secondInCollection);
+  STATIC_REQUIRE(secondInCollection < firstInNextCollection);
+
+  std::map<podio::ObjectID, int> counterMap{};
+  counterMap[secondInCollection]++;
+  counterMap[firstInNextCollection]++;
+  counterMap[firstInCollection]++;
+  counterMap[firstInCollection]++;
+
+  REQUIRE(counterMap.size() == 3);
+  REQUIRE(counterMap[firstInCollection] == 2);
+
+  auto it = counterMap.begin();
+  REQUIRE(it++->first == firstInCollection);
+  REQUIRE(it++->first == secondInCollection);
+  REQUIRE(it->first == firstInNextCollection);
+}
+
 TEST_CASE("InterfaceType construction and type checking", "[interface-types][basics]") {
   using WrapperT = TypeWithEnergy;
 
