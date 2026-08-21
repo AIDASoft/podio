@@ -95,7 +95,7 @@ if (ENABLE_SIO)
   add_subdirectory(sio_io)
 endif()
 
-if (ENABLE_ARROW)
+if (ENABLE_ARROW AND ENABLE_PARQUET)
   add_subdirectory(arrow_io)
 endif()
 

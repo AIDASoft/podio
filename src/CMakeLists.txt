@@ -158,21 +158,35 @@ if(ENABLE_ARROW)
     ArrowTypeRegistry.cc
     ArrowConverterRegistry.cc
     ArrowFrameData.cc
-    ArrowWriter.cc
-    ArrowReader.cc
     )
 
-  set(arrow_headers
-    "${PROJECT_SOURCE_DIR}/include/podio/ArrowReader.h"
-    "${PROJECT_SOURCE_DIR}/include/podio/ArrowWriter.h"
-  )
-  PODIO_ADD_LIB_AND_DICT(podioArrow "${arrow_headers}" "${arrow_sources}" arrow_selection.xml)
-  add_library(podio::podioArrow ALIAS podioArrow)
-  target_include_directories(podioArrow PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  )
-  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET} ${PODIO_PARQUET_TARGET} nlohmann_json::nlohmann_json)
+  set(arrow_headers)
+  if(ENABLE_PARQUET)
+    LIST(APPEND arrow_sources
+      ArrowWriter.cc
+      ArrowReader.cc
+      )
+    LIST(APPEND arrow_headers
+      "${PROJECT_SOURCE_DIR}/include/podio/ArrowReader.h"
+      "${PROJECT_SOURCE_DIR}/include/podio/ArrowWriter.h"
+      )
+    set(arrow_selection "arrow_selection.xml")
+    PODIO_ADD_LIB_AND_DICT(podioArrow "${arrow_headers}" "${arrow_sources}" ${arrow_selection})
+  else()
+    add_library(podioArrow SHARED ${arrow_sources})
+    add_library(podio::podioArrow ALIAS podioArrow)
+    target_include_directories(podioArrow PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+  endif()
+
+  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET} nlohmann_json::nlohmann_json)
+  if(ENABLE_PARQUET)
+    target_link_libraries(podioArrow PUBLIC ${PODIO_PARQUET_TARGET})
+    target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_PARQUET=1)
+  endif()
+
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioArrow)

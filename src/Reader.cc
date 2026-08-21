@@ -7,7 +7,7 @@
 #if PODIO_ENABLE_SIO
   #include "podio/SIOReader.h"
 #endif
-#if PODIO_ENABLE_ARROW
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
   #include "podio/ArrowReader.h"
 #endif
 
@@ -91,7 +91,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   } else if (suffix == "podio_arrow" ||
              (std::filesystem::is_directory(filenames[0]) &&
               std::filesystem::exists(std::filesystem::path(filenames[0]) / "metadata.json"))) {
-#if PODIO_ENABLE_ARROW
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
     if (filenames.size() > 1) {
       throw std::runtime_error("The Arrow reader does currently not support reading multiple directories");
     }
@@ -100,7 +100,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
     Reader reader{std::move(actualReader)};
     return reader;
 #else
-    throw std::runtime_error("Arrow reader not available. Please recompile with Arrow support.");
+    throw std::runtime_error("Arrow reader not available. Please recompile with Arrow and Parquet support.");
 #endif
   }
 

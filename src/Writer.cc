@@ -7,7 +7,7 @@
 #if PODIO_ENABLE_SIO
   #include "podio/SIOWriter.h"
 #endif
-#if PODIO_ENABLE_ARROW
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
   #include "podio/ArrowWriter.h"
 #endif
 
@@ -50,10 +50,10 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
     throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
   } else if (endsWith(filename, ".podio_arrow") || lower(type) == "arrow" || lower(type) == "podio_arrow") {
-#if PODIO_ENABLE_ARROW
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
     return Writer{std::make_unique<ArrowWriter>(filename)};
 #else
-    throw std::runtime_error("Arrow writer not available. Please recompile with Arrow support.");
+    throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
 #endif
   }
   throw std::runtime_error("Unknown file type for file " + filename + " with type " + type);
