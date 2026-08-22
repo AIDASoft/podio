@@ -190,6 +190,9 @@ if(ENABLE_ARROW)
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
   LIST(APPEND INSTALL_LIBRARIES podioArrow)
+  if(ENABLE_PARQUET)
+    LIST(APPEND INSTALL_LIBRARIES podioArrowDict)
+  endif()
 endif()
 
 
@@ -297,6 +300,14 @@ if (ENABLE_DATASOURCE)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioDataSourceDictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioDataSourceDict_rdict.pcm
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    )
+endif()
+
+if (ENABLE_PARQUET)
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/podioArrowDictDict.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioArrowDict_rdict.pcm
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 endif()
