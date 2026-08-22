@@ -38,6 +38,7 @@ jobs:
           cmake --preset ci-build \
             -DENABLE_JULIA=ON \
             -DENABLE_ARROW=ON \
+            -DENABLE_PARQUET=$([[ ${{ matrix.LCG }} == dev* ]] && echo "ON" || echo "OFF") \
             -DENABLE_RNTUPLE=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == LCG_104/* ]] && echo "OFF" || echo "ON") \
             -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
