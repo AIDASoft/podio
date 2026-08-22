@@ -189,6 +189,14 @@ if(ENABLE_ARROW)
 
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
+  if (ARROW_WITH_ZSTD)
+    target_compile_definitions(podioArrow PUBLIC PODIO_ARROW_DEFAULT_COMPRESSION=ZSTD)
+  elseif(ARROW_WITH_SNAPPY)
+    target_compile_definitions(podioArrow PUBLIC PODIO_ARROW_DEFAULT_COMPRESSION=SNAPPY)
+  else()
+    target_compile_definitions(podioArrow PUBLIC PODIO_ARROW_DEFAULT_COMPRESSION=UNCOMPRESSED)
+  endif()
+
   LIST(APPEND INSTALL_LIBRARIES podioArrow)
   if(ENABLE_PARQUET)
     LIST(APPEND INSTALL_LIBRARIES podioArrowDict)
