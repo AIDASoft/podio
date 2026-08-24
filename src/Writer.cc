@@ -49,7 +49,7 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
 #else
     throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
 #endif
-  } else if (endsWith(filename, ".podio_arrow") || lower(type) == "arrow" || lower(type) == "podio_arrow") {
+  } else if (endsWith(filename, ".arrow") || lower(type) == "arrow") {
 #if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
     return Writer{std::make_unique<ArrowWriter>(filename)};
 #else

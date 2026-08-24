@@ -106,12 +106,20 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   }
 #endif
 
+#if ARROW_VERSION_MAJOR >= 24
+  auto result = reader->ReadTable();
+  if (!result.ok()) {
+    throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
+  }
+  catInfo.table = std::move(result.ValueOrDie());
+#else
   std::shared_ptr<arrow::Table> table;
   auto status = reader->ReadTable(&table);
   if (!status.ok()) {
     throw std::runtime_error("Failed to read arrow table: " + status.ToString());
   }
   catInfo.table = std::move(table);
+#endif
 }
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_view name,

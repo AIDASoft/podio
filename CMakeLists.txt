@@ -148,11 +148,14 @@ if(ENABLE_SIO)
   endif()
 endif()
 
+if(ENABLE_PARQUET AND NOT ENABLE_ARROW)
+  message(FATAL_ERROR "ENABLE_PARQUET requires ENABLE_ARROW to be ON")
+endif()
+
 # optionally build with Arrow -----------------------------------------------
 if(ENABLE_ARROW)
   set(lz4Alt_FIND_QUIETLY TRUE)
   find_package(Arrow REQUIRED)
-  find_package(nlohmann_json 3.10 REQUIRED)
   if(TARGET Arrow::arrow_shared)
     set(PODIO_ARROW_TARGET Arrow::arrow_shared)
   elseif(TARGET Arrow::arrow_static)
@@ -162,6 +165,7 @@ if(ENABLE_ARROW)
   endif()
 
   if(ENABLE_PARQUET)
+    find_package(nlohmann_json 3.10 REQUIRED)
     find_package(Parquet REQUIRED)
     if(TARGET Parquet::parquet_shared)
       set(PODIO_PARQUET_TARGET Parquet::parquet_shared)

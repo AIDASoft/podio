@@ -21,13 +21,6 @@ namespace parquet::arrow {
 class FileWriter;
 } // namespace parquet::arrow
 
-#define PODIO_STRINGIFY2(x) #x
-#define PODIO_STRINGIFY(x) PODIO_STRINGIFY2(x)
-
-#ifndef PODIO_ARROW_DEFAULT_COMPRESSION
-  #define PODIO_ARROW_DEFAULT_COMPRESSION UNCOMPRESSED
-#endif
-
 namespace podio {
 
 class Frame;
@@ -41,7 +34,7 @@ public:
   /// Configure the ArrowWriter
   struct Options {
     size_t maxBufferedRows = 1000;
-    std::string compression = PODIO_STRINGIFY(PODIO_ARROW_DEFAULT_COMPRESSION);
+    std::string compression = "";
   };
 
   /// Create a ArrowWriter to write to a directory.

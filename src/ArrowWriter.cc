@@ -18,7 +18,13 @@
 #include <iostream>
 #include <stdexcept>
 
+#ifndef PODIO_ARROW_DEFAULT_COMPRESSION
+  #define PODIO_ARROW_DEFAULT_COMPRESSION "UNCOMPRESSED"
+#endif
+
 namespace podio {
+
+static constexpr std::string_view defaultArrowCompression = PODIO_ARROW_DEFAULT_COMPRESSION;
 
 ArrowWriter::CategoryInfo::CategoryInfo() = default;
 ArrowWriter::CategoryInfo::~CategoryInfo() = default;
@@ -27,8 +33,11 @@ ArrowWriter::CategoryInfo& ArrowWriter::CategoryInfo::operator=(CategoryInfo&&) 
 
 ArrowWriter::ArrowWriter(const std::string& directory, const Options& options) :
     m_directory(directory), m_options(options) {
-  if (std::filesystem::exists(m_directory) && !std::filesystem::is_empty(m_directory)) {
-    throw std::runtime_error("Output directory " + directory + " exists and is not empty.");
+  if (m_options.compression.empty()) {
+    m_options.compression = std::string(defaultArrowCompression);
+  }
+  if (std::filesystem::exists(m_directory)) {
+    std::filesystem::remove_all(m_directory);
   }
   if (m_options.compression != "ZSTD" && m_options.compression != "SNAPPY" && m_options.compression != "UNCOMPRESSED") {
     throw std::invalid_argument("Unknown compression: " + m_options.compression);
