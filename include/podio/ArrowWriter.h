@@ -3,6 +3,8 @@
 
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
+#include <parquet/arrow/writer.h>
+
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -16,10 +18,6 @@ namespace arrow {
 class Schema;
 class Table;
 } // namespace arrow
-
-namespace parquet::arrow {
-class FileWriter;
-} // namespace parquet::arrow
 
 namespace podio {
 
@@ -86,10 +84,10 @@ private:
     std::unique_ptr<parquet::arrow::FileWriter> writer{nullptr};
     size_t entries = 0;
 
-    CategoryInfo();
-    ~CategoryInfo();
-    CategoryInfo(CategoryInfo&&);
-    CategoryInfo& operator=(CategoryInfo&&);
+    CategoryInfo() = default;
+    ~CategoryInfo() = default;
+    CategoryInfo(CategoryInfo&&) = default;
+    CategoryInfo& operator=(CategoryInfo&&) = default;
   };
 
   void flushCategory(CategoryInfo& catInfo);

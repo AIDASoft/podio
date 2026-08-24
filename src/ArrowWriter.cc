@@ -26,11 +26,6 @@ namespace podio {
 
 static constexpr std::string_view defaultArrowCompression = PODIO_ARROW_DEFAULT_COMPRESSION;
 
-ArrowWriter::CategoryInfo::CategoryInfo() = default;
-ArrowWriter::CategoryInfo::~CategoryInfo() = default;
-ArrowWriter::CategoryInfo::CategoryInfo(CategoryInfo&&) = default;
-ArrowWriter::CategoryInfo& ArrowWriter::CategoryInfo::operator=(CategoryInfo&&) = default;
-
 ArrowWriter::ArrowWriter(const std::string& directory, const Options& options) :
     m_directory(directory), m_options(options) {
   if (m_options.compression.empty()) {
