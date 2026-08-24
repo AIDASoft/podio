@@ -27,7 +27,6 @@ public:
   uint32_t collectionID{static_cast<uint32_t>(untracked)};
 
   /// index and collectionID uniquely defines the object.
-  /// this operator is necessary for meaningful comparisons in python
   constexpr bool operator==(const ObjectID&) const noexcept = default;
 
   /// Provide an order solely for use in ordered containers.
