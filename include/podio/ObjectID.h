@@ -31,8 +31,7 @@ public:
   constexpr bool operator==(const ObjectID&) const noexcept = default;
 
   /// Provide an order solely for use in ordered containers.
-  /// Order ObjectIDs by collection first and then by their index within the collection.
-  /// Only comparisons between ObjectIDs from the same collection make sense.
+  /// Order ObjectIDs by collectionID first and then by their index within the collection.
   constexpr std::strong_ordering operator<=>(const ObjectID& other) const noexcept {
     if (const auto comparison = collectionID <=> other.collectionID; comparison != 0) {
       return comparison;
