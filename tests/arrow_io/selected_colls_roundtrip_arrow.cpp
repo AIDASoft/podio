@@ -5,7 +5,7 @@
 #include <filesystem>
 
 int main() {
-  std::filesystem::remove_all("selected_example_frame.podio_arrow");
-  return do_roundtrip<podio::ArrowReader, podio::ArrowWriter>("example_frame.podio_arrow",
-                                                              "selected_example_frame.podio_arrow");
+  std::filesystem::remove_all("selected_example_frame.podio_parquet");
+  return do_roundtrip<podio::ArrowReader, podio::ArrowWriter>("example_frame.podio_parquet",
+                                                              "selected_example_frame.podio_parquet");
 }

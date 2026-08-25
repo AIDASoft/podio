@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
     framesPerThread = std::atoi(argv[2]);
   }
 
-  std::string filename = "example_frame_arrow_multithreaded.podio_arrow";
+  std::string filename = "example_frame_arrow_multithreaded.podio_parquet";
   std::filesystem::remove_all(filename);
   return write_frames_multithreaded<podio::ArrowWriter>(filename, nThreads, framesPerThread);
 }

@@ -4,7 +4,7 @@
 #include "podio/ArrowReader.h"
 
 int main(int argc, char* argv[]) {
-  std::string inputFile = "example_frame.podio_arrow";
+  std::string inputFile = "example_frame.podio_parquet";
   bool assertBuildVersion = true;
   if (argc == 2) {
     inputFile = argv[1];

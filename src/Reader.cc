@@ -88,7 +88,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
 #else
     throw std::runtime_error("SIO reader not available. Please recompile with SIO support.");
 #endif
-  } else if (suffix == "arrow" ||
+  } else if (suffix == "podio_parquet" ||
              (std::filesystem::is_directory(filenames[0]) &&
               std::filesystem::exists(std::filesystem::path(filenames[0]) / "metadata.json"))) {
 #if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET

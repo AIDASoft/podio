@@ -32,7 +32,7 @@ set_tests_properties(read_frame_arrow_multithreaded PROPERTIES FIXTURES_REQUIRED
 
 #--- Write via python and the Arrow backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_python_frame_arrow COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.podio_arrow arrow_io.Writer)
+add_test(NAME write_python_frame_arrow COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.podio_parquet arrow_io.Writer)
 PODIO_SET_TEST_ENV(write_python_frame_arrow PYTHON)
 set_tests_properties(write_python_frame_arrow PROPERTIES FIXTURES_SETUP podio_write_python_arrow_fixture)
 set_tests_properties(read_python_frame_arrow PROPERTIES FIXTURES_REQUIRED podio_write_python_arrow_fixture)

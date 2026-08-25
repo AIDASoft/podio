@@ -15,6 +15,6 @@ int main(int argc, char* argv[]) {
   }
 
   const unsigned expectedEntries = nThreads * framesPerThread;
-  return read_frames_multithreaded<podio::ArrowReader>("example_frame_arrow_multithreaded.podio_arrow", nThreads,
+  return read_frames_multithreaded<podio::ArrowReader>("example_frame_arrow_multithreaded.podio_parquet", nThreads,
                                                        expectedEntries);
 }
