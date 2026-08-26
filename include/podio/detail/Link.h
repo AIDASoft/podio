@@ -12,7 +12,11 @@
   #include "nlohmann/json.hpp"
 #endif
 
-#include <fmt/ostream.h>
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+  #include <fmt/ostream.h>
+#endif
 
 #include <functional>
 #include <ostream>
@@ -384,7 +388,9 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
   }
 };
 
+#if !defined(__CLING__)
 template <typename FromT, typename ToT, bool Mutable>
 struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> : fmt::ostream_formatter {};
+#endif
 
 #endif // PODIO_DETAIL_LINK_H

@@ -8,7 +8,11 @@
 #include "podio/detail/Pythonizations.h"
 #include "podio/utilities/TypeHelpers.h"
 
-#include <fmt/ostream.h>
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+  #include <fmt/ostream.h>
+#endif
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \
@@ -356,7 +360,9 @@ constexpr std::string_view UserDataCollection<BasicType, U>::dataTypeName;
 
 } // namespace podio
 
+#if !defined(__CLING__)
 template <typename BasicType>
 struct fmt::formatter<podio::UserDataCollection<BasicType>> : fmt::ostream_formatter {};
+#endif
 
 #endif
