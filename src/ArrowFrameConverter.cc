@@ -5,8 +5,18 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowUtils.h"
 
-#include <algorithm>
-#include <arrow/api.h>
+#include <arrow/array/array_base.h>
+#include <arrow/array/array_nested.h>
+#include <arrow/array/builder_base.h>
+#include <arrow/array/builder_binary.h>
+#include <arrow/array/builder_nested.h>
+#include <arrow/array/builder_primitive.h>
+#include <arrow/memory_pool.h>
+#include <arrow/record_batch.h>
+#include <arrow/table.h>
+#include <arrow/type.h>
+#include <arrow/util/key_value_metadata.h>
+
 #include <stdexcept>
 
 namespace podio {
