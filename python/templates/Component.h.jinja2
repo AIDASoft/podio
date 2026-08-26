@@ -11,6 +11,8 @@
 {% if generate_current_version %}
 #include <ostream>
 
+#include <fmt/ostream.h>
+
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
 #endif
@@ -57,5 +59,10 @@ public:
 {% endfor %}
 
 {{ utils.namespace_close(class.namespace) }}
+
+{% if generate_current_version %}
+template <>
+struct fmt::formatter<{{ class.full_type }}> : fmt::ostream_formatter {};
+{% endif %}
 
 #endif

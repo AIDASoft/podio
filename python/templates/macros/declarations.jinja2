@@ -153,3 +153,14 @@ struct std::hash<{{ namespace }}{{ prefix }}{{ class.bare_type }}> {
   }
 };
 {% endmacro %}
+
+{% macro formatter(class, prefix='') %}
+{% set namespace = class.namespace + '::' if class.namespace else '' %}
+{% set fulltype = namespace + prefix + class.bare_type %}
+template <>
+struct fmt::formatter<{{ fulltype }}>
+    : podio::ADLFormatter<{{ fulltype }}, fmt::formatter<{{ fulltype }}>> {
+  fmt::format_context::iterator formatImpl(const {{ fulltype }}& value, fmt::format_context& ctx) const;
+};
+
+{% endmacro %}

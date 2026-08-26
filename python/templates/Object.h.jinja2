@@ -15,6 +15,9 @@
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/detail/OrderKey.h"
 
+#include <fmt/core.h>
+#include "podio/utilities/FormatHelpers.h"
+
 #include <ostream>
 #include <cstdint>
 
@@ -78,6 +81,8 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 {{ utils.namespace_close(class.namespace) }}
 
 {{ macros.std_hash(class) }}
+
+{{ macros.formatter(class) }}
 
 {{ workarounds.ld_library_path(class) }}
 

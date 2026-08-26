@@ -391,3 +391,130 @@ their objects. For more information or to follow future developments, see [podio
 issue
 #655](https://github.com/AIDASoft/podio/issues/655).
 
+(formatting)=
+## Formatting Objects and Collections
+
+All generated datatypes and collections come with built-in `fmt::formatter`
+specializations that allow them to be used directly with `fmt::format` . The
+formatters support several format specifiers and a customization point that lets
+users define their own formatting for any generated type.
+
+### Format Specifiers
+
+Generated objects and collections support the following format specifiers:
+
+| Specifier | Description |
+|-----------|-------------|
+| `d` (default or detailed) | Detailed format showing all data members and relations |
+| `u` (user defined) | User-defined format via the `customPodioFormat` ADL customization point |
+
+When no specifier is given, `d` is used.
+
+```cpp
+#include <fmt/core.h>
+
+edm::Hit hit = hits.create(1.0, 2.0, 3.0, 42.0);
+
+// Detailed format (default) - shows all members, relations, etc.
+fmt::format("{}", hit);
+fmt::format("{:d}", hit);   // equivalent
+
+// Collections work the same way, with a tabular default format
+fmt::format("{}", hits);
+```
+
+The detailed format for individual objects prints each data member, single
+relation and multi relation on its own line. For collections it produces a
+tabular layout with one row per element.
+
+Objects that are not available (e.g. created via `makeEmpty()`) format as
+`[not available]`.
+
+### Custom Formatting with `customPodioFormat`
+
+The `u` format specifier invokes a user-defined `customPodioFormat` function that is
+found via [Argument-Dependent
+Lookup](https://en.cppreference.com/w/cpp/language/adl) (ADL). This follows the
+same pattern as `std::swap`: you define a free function named `customPodioFormat` in
+the **same namespace as your type**, and the formatter will find it
+automatically.
+
+#### Function signature
+
+The `customPodioFormat` function must have the following signature:
+
+```cpp
+fmt::format_context::iterator customPodioFormat(const YourType& value, fmt::format_context& ctx);
+```
+
+It receives the object to format and an `fmt::format_context`, and must return
+the output iterator (typically by returning the result of `fmt::format_to`).
+
+#### Example
+
+For a generated datatype `edm::Cluster` and its collection:
+
+```cpp
+// These overloads MUST be in the same namespace as the type (here: edm)
+// so that ADL can find them.
+namespace edm {
+
+fmt::format_context::iterator customPodioFormat(const Cluster& cluster,
+                                           fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "Cluster(e={:.2f})", cluster.energy());
+}
+
+fmt::format_context::iterator customPodioFormat(const ClusterCollection& coll,
+                                           fmt::format_context& ctx) {
+  return fmt::format_to(ctx.out(), "Clusters(n={})", coll.size());
+}
+
+} // namespace edm
+```
+
+These overloads are then used when formatting with `:u`:
+
+```cpp
+fmt::format("{:u}", cluster);   // "Cluster(e=42.50)"
+fmt::format("{:u}", clusters);  // "Clusters(n=3)"
+```
+
+#### Mutable objects
+
+The `fmt::formatter` for `MutableT` inherits from the `fmt::formatter` for the
+corresponding immutable type `T`. This means that when formatting a mutable
+object with `:u`, the mutable object is implicitly converted to its immutable
+counterpart, and the `customPodioFormat` overload for the immutable type is called.
+You do not need to provide separate overloads for mutable types.
+
+```cpp
+MutableCluster mut{};
+mut.energy(42.5f);
+fmt::format("{:u}", mut);  // calls customPodioFormat(const Cluster&, ...)
+```
+
+#### Error handling
+
+If you use the `u` specifier on a type that has no `customPodioFormat` overload
+defined, you will get a **compile-time error** when using compile-time format
+strings (the default for `fmt::format`):
+
+```cpp
+fmt::format("{:u}", someHit);  // compile error if no customPodioFormat for Hit exists
+```
+
+The check uses `fmt::throw_format_error` inside the `constexpr` `parse()`
+method. Since `fmt::format` validates format strings at compile time, an
+unsupported `u` specifier is caught before the program runs. For runtime format
+strings (via `fmt::runtime()`), the error manifests as a runtime
+`fmt::format_error` exception instead.
+
+### `operator<<` support
+
+All formatted types also provide an `operator<<` that delegates to
+`fmt::format`, so using objects and collections with output streams produces the
+same result as the default format:
+
+```cpp
+std::cout << hit << std::endl;  // equivalent to fmt::print("{}\n", hit);
+```
