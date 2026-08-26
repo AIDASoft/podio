@@ -1,6 +1,8 @@
 #ifndef PODIO_UTILITIES_FORMATHELPERS_H
 #define PODIO_UTILITIES_FORMATHELPERS_H
 
+#include "podio/utilities/FormatCompat.h"
+
 #include <fmt/format.h>
 
 #include <algorithm>
@@ -27,7 +29,7 @@ namespace detail {
     if constexpr (HasCustomFormat<T>) {
       return customPodioFormat(val, ctx);
     } else {
-      fmt::throw_format_error("Format specifier 'u' requires a customPodioFormat for this type");
+      podio::detail::reportFormatError("Format specifier 'u' requires a customPodioFormat for this type");
       return ctx.out(); // unreachable, silences warnings
     }
   }
@@ -104,16 +106,16 @@ struct ADLFormatter {
         if (detail::HasCustomFormat<T> && valid) {
           return it;
         }
-        fmt::throw_format_error("Format specifier 'u' requires an overload of defineCustomPodioFormat for this type");
+        podio::detail::reportFormatError("Format specifier 'u' requires an overload of defineCustomPodioFormat for this type");
       }
 
       // Now check the rest and emit a corresponding error message depending on
       // whether 'u' is available or not
       if (valid && presentation != 'd' && presentation != 'g' && ((presentation != ExtraSpecifiers) && ...)) {
         if constexpr (detail::HasCustomFormat<T>) {
-          fmt::throw_format_error(detail::specErrorMsg<'d', 'g', 'u', ExtraSpecifiers...>.data());
+          podio::detail::reportFormatError(detail::specErrorMsg<'d', 'g', 'u', ExtraSpecifiers...>.data());
         } else {
-          fmt::throw_format_error(detail::specErrorMsg<'d', 'g', ExtraSpecifiers...>.data());
+          podio::detail::reportFormatError(detail::specErrorMsg<'d', 'g', ExtraSpecifiers...>.data());
         }
       }
     }

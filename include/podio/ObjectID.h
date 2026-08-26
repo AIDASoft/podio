@@ -1,6 +1,8 @@
 #ifndef PODIO_OBJECTID_H
 #define PODIO_OBJECTID_H
 
+#include "podio/utilities/FormatCompat.h"
+
 #include <fmt/core.h>
 
 #include <compare>
@@ -66,7 +68,7 @@ struct fmt::formatter<podio::ObjectID> {
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
     if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. ObjectId does not support specifiers");
+      podio::detail::reportFormatError("Invalid format. ObjectId does not support specifiers");
     }
     return it;
   }

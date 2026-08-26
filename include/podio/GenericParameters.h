@@ -276,6 +276,8 @@ void GenericParameters::loadFrom(VecLike<std::string> keys, VecLike<std::vector<
 
 } // namespace podio
 
+#include "podio/utilities/FormatCompat.h"
+
 #include <fmt/core.h>
 
 template <>
@@ -283,7 +285,7 @@ struct fmt::formatter<podio::GenericParameters> {
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
     if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. GenericParameters does not support specifiers");
+      podio::detail::reportFormatError("Invalid format. GenericParameters does not support specifiers");
     }
     return it;
   }

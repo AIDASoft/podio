@@ -1,7 +1,9 @@
 #ifndef PODIO_PODIOVERSION_H
 #define PODIO_PODIOVERSION_H
 
-#include <fmt/core.h>
+#include "podio/utilities/FormatCompat.h"
+
+#include <fmt/format.h>
 
 #include <cstdint>
 #include <optional>
@@ -78,12 +80,12 @@ struct fmt::formatter<podio::version::Version> {
   constexpr auto parse(fmt::format_parse_context& ctx) {
     auto it = ctx.begin();
     if (it != ctx.end() && *it != '}') {
-      fmt::throw_format_error("Invalid format. Version does not support specifiers");
+      podio::detail::reportFormatError("Invalid format. Version does not support specifiers");
     }
     return it;
   }
 
-  auto format(const podio::version::Version& version, fmt::format_context& ctx) {
+  auto format(const podio::version::Version& version, fmt::format_context& ctx) const {
     return fmt::format_to(ctx.out(), "{}.{}.{}", version.major, version.minor, version.patch);
   }
 };
