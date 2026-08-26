@@ -87,6 +87,21 @@ auto recoP = link.getTo();
 auto weight = link.getWeight();
 ```
 
+The objects that should be linked (and optionally the weight) can also be
+passed directly to `create`
+```cpp
+auto link = mcRecoLinks.create(mcParticle, recoParticle, 1.0);
+```
+
+If `FromT` and `ToT` are different types, the two objects can be passed in any
+order and the direction of the link is deduced at compile time
+```cpp
+// equivalent to the above, the weight defaults to 1
+auto link = mcRecoLinks.create(recoParticle, mcParticle);
+```
+
+In all other cases the *canonical order*, i.e. **_from_ first, _to_ second**, is used.
+
 In the above examples the `From` and `To` in the method names imply a direction,
 but it is also possible to use a templated `get` and `set` method to retrieve
 the linked objects via their type:

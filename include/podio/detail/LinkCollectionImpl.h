@@ -34,6 +34,7 @@
 #include <ostream>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace podio {
 
@@ -133,6 +134,42 @@ public:
     auto obj = m_storage.entries.emplace_back(new LinkObj<FromT, ToT>());
     obj->id = {int(m_storage.entries.size() - 1), m_collectionID};
     return mutable_type(podio::utils::MaybeSharedPtr(obj));
+  }
+
+  /// Append a new link to the collection, linking the two passed objects, and
+  /// return this object
+  ///
+  /// If FromT and ToT are different types, the two objects may be passed in any
+  /// order and the direction of the link is deduced at compile time. If both
+  /// orders are possible (e.g. because interface types are involved) the
+  /// canonical order, i.e. *from first, to second*, takes precedence. If FromT
+  /// and ToT are the same type, the canonical order is the only possible one.
+  ///
+  /// @tparam FromU the type of the first object (**inferred!**)
+  /// @tparam ToU   the type of the second object (**inferred!**)
+  ///
+  /// @param from   the object to link (the *from* object in canonical order)
+  /// @param to     the object to link (the *to* object in canonical order)
+  /// @param weight the weight of the link (defaults to 1)
+  ///
+  /// @returns the newly created (mutable) link
+  ///
+  /// @throws std::logic_error if this is a subset collection
+  template <typename FromU, typename ToU>
+    requires detail::LinkInitializableFrom<FromT, ToT, FromU, ToU> ||
+      detail::LinkInitializableFrom<ToT, FromT, FromU, ToU>
+  mutable_type create(FromU&& from, ToU&& to, float weight = 1.0f) {
+    auto link = create();
+    link.setWeight(weight);
+    // The canonical order takes precedence if both orders are possible
+    if constexpr (detail::LinkInitializableFrom<FromT, ToT, FromU, ToU>) {
+      link.setFrom(std::forward<FromU>(from));
+      link.setTo(std::forward<ToU>(to));
+    } else {
+      link.setTo(std::forward<FromU>(from));
+      link.setFrom(std::forward<ToU>(to));
+    }
+    return link;
   }
 
   /// Returns the immutable object of given index

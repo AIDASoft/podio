@@ -61,3 +61,26 @@ class LinkCollectionImportTest(unittest.TestCase):
         link.setTo(cluster)
 
         self.assertEqual(len(coll), 1)
+
+    def test_link_collection_create_links_with_objects(self):
+        """Test that links can be created from the objects that should be linked"""
+        hits = ExampleHitCollection()
+        hit = hits.create()
+
+        clusters = ExampleClusterCollection()
+        cluster = clusters.create()
+
+        coll = LinkCollection[ExampleHit, ExampleCluster]()
+        link = coll.create(hit, cluster)
+        self.assertEqual(len(coll), 1)
+        self.assertEqual(link.getFrom(), hit)
+        self.assertEqual(link.getTo(), cluster)
+        self.assertEqual(link.getWeight(), 1.0)
+
+        # The objects can be passed in any order and an optional weight can be
+        # passed as well
+        other_link = coll.create(cluster, hit, 3.14)
+        self.assertEqual(len(coll), 2)
+        self.assertEqual(other_link.getFrom(), hit)
+        self.assertEqual(other_link.getTo(), cluster)
+        self.assertAlmostEqual(other_link.getWeight(), 3.14, places=5)
