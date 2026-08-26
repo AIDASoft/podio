@@ -11,6 +11,12 @@
 {% if generate_current_version %}
 #include <ostream>
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+#include <fmt/ostream.h>
+#endif
+
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 #include "nlohmann/json_fwd.hpp"
 #endif
@@ -57,5 +63,12 @@ public:
 {% endfor %}
 
 {{ utils.namespace_close(class.namespace) }}
+
+{% if generate_current_version %}
+#if !defined(__CLING__)
+template <>
+struct fmt::formatter<{{ class.full_type }}> : fmt::ostream_formatter {};
+#endif
+{% endif %}
 
 #endif

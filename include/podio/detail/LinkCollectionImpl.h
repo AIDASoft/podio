@@ -28,6 +28,12 @@
   #include "nlohmann/json.hpp"
 #endif
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+  #include <fmt/ostream.h>
+#endif
+
 #include <iomanip>
 #include <memory>
 #include <mutex>
@@ -462,5 +468,10 @@ void to_json(nlohmann::json& j, const podio::LinkCollection<FromT, ToT>& collect
 #endif
 
 } // namespace podio
+
+#if !defined(__CLING__)
+template <typename FromT, typename ToT>
+struct fmt::formatter<podio::LinkCollection<FromT, ToT>> : fmt::ostream_formatter {};
+#endif
 
 #endif // PODIO_DETAIL_LINKCOLLECTIONIMPL_H

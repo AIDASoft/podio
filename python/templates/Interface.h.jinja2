@@ -14,6 +14,12 @@
 #include "podio/utilities/TypeHelpers.h"
 #include "podio/detail/OrderKey.h"
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+#include <fmt/ostream.h>
+#endif
+
 #include <memory>
 #include <ostream>
 #include <stdexcept>
@@ -189,5 +195,10 @@ struct std::hash<{{ class.full_type }}> {
     return obj.m_self->objHash();
   }
 };
+
+#if !defined(__CLING__)
+template <>
+struct fmt::formatter<{{ class.full_type }}> : fmt::ostream_formatter {};
+#endif
 
 #endif

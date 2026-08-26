@@ -15,6 +15,12 @@
 #include "podio/utilities/MaybeSharedPtr.h"
 #include "podio/detail/OrderKey.h"
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+#include <fmt/ostream.h>
+#endif
+
 #include <ostream>
 #include <cstdint>
 
@@ -78,6 +84,8 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 {{ utils.namespace_close(class.namespace) }}
 
 {{ macros.std_hash(class) }}
+
+{{ macros.ostream_formatter(class) }}
 
 {{ workarounds.ld_library_path(class) }}
 

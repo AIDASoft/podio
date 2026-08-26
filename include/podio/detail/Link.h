@@ -12,6 +12,12 @@
   #include "nlohmann/json.hpp"
 #endif
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+  #include <fmt/ostream.h>
+#endif
+
 #include <functional>
 #include <ostream>
 #include <type_traits>
@@ -348,8 +354,8 @@ private:
   podio::utils::MaybeSharedPtr<LinkObjT> m_obj{nullptr};
 };
 
-template <typename FromT, typename ToT>
-std::ostream& operator<<(std::ostream& os, const Link<FromT, ToT>& link) {
+template <typename FromT, typename ToT, bool Mutable>
+std::ostream& operator<<(std::ostream& os, const LinkT<FromT, ToT, Mutable>& link) {
   if (!link.isAvailable()) {
     return os << "[not available]";
   }
@@ -381,5 +387,10 @@ struct std::hash<podio::LinkT<FromT, ToT, Mutable>> {
     return std::hash<typename podio::LinkT<FromT, ToT, Mutable>::LinkObjT*>{}(obj.m_obj.get());
   }
 };
+
+#if !defined(__CLING__)
+template <typename FromT, typename ToT, bool Mutable>
+struct fmt::formatter<podio::LinkT<FromT, ToT, Mutable>> : fmt::ostream_formatter {};
+#endif
 
 #endif // PODIO_DETAIL_LINK_H

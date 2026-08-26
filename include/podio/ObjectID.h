@@ -1,6 +1,12 @@
 #ifndef PODIO_OBJECTID_H
 #define PODIO_OBJECTID_H
 
+// Hide the fmt dependency from cling, so that ROOT does not need to be able to
+// find the fmt headers when it parses the podio headers at runtime
+#if !defined(__CLING__)
+  #include <fmt/ostream.h>
+#endif
+
 #include <compare>
 #include <cstdint>
 #include <functional>
@@ -65,5 +71,10 @@ struct std::hash<podio::ObjectID> {
     return hash_collectionID ^ hash_index;
   }
 };
+
+#if !defined(__CLING__)
+template <>
+struct fmt::formatter<podio::ObjectID> : fmt::ostream_formatter {};
+#endif
 
 #endif
