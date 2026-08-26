@@ -59,7 +59,8 @@ namespace {
 
 } // namespace
 
-ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex) :
+ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex,
+                               const std::vector<std::string>& collsToRead) :
     m_table(std::move(table)), m_rowIndex(rowIndex), m_availableCollections(), m_idTable() {
   if (!m_table) {
     throw std::runtime_error("ArrowTable is null");
@@ -71,13 +72,26 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
   std::vector<uint32_t> ids;
   std::vector<std::string> names;
 
+  if (!collsToRead.empty()) {
+    auto missing_coll = std::find_if(collsToRead.begin(), collsToRead.end(), [this](const std::string& coll) {
+      return m_table->GetColumnByName(coll) == nullptr;
+    });
+    if (missing_coll != collsToRead.end()) {
+      throw std::runtime_error("Collection '" + *missing_coll + "' not found in category.");
+    }
+    m_availableCollections = collsToRead;
+  }
+
   auto schema = m_table->schema();
   for (int i = 0; i < schema->num_fields(); ++i) {
     auto field = schema->field(i);
     if (field->name() == "frame_parameters") {
       continue;
     }
-    m_availableCollections.push_back(field->name());
+
+    if (collsToRead.empty()) {
+      m_availableCollections.push_back(field->name());
+    }
 
     auto metadata = field->metadata();
     if (!metadata) {
@@ -100,6 +114,10 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
 }
 
 std::optional<podio::CollectionReadBuffers> ArrowFrameData::getCollectionBuffers(const std::string& name) {
+  if (std::find(m_availableCollections.begin(), m_availableCollections.end(), name) == m_availableCollections.end()) {
+    return std::nullopt;
+  }
+
   auto chunked_array = m_table->GetColumnByName(name);
   if (!chunked_array) {
     return std::nullopt;

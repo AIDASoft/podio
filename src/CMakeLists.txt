@@ -160,16 +160,48 @@ if(ENABLE_ARROW)
     ArrowFrameData.cc
     )
 
-  add_library(podioArrow SHARED ${arrow_sources})
-  add_library(podio::podioArrow ALIAS podioArrow)
-  target_include_directories(podioArrow PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  )
-  target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET})
+  set(arrow_headers)
+  if(ENABLE_PARQUET)
+    LIST(APPEND arrow_sources
+      ArrowWriter.cc
+      ArrowReader.cc
+      )
+    LIST(APPEND arrow_headers
+      "${PROJECT_SOURCE_DIR}/include/podio/ArrowReader.h"
+      "${PROJECT_SOURCE_DIR}/include/podio/ArrowWriter.h"
+      )
+    set(arrow_selection "arrow_selection.xml")
+    PODIO_ADD_LIB_AND_DICT(podioArrow "${arrow_headers}" "${arrow_sources}" ${arrow_selection})
+    target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET})
+    target_link_libraries(podioArrow PRIVATE nlohmann_json::nlohmann_json)
+    target_link_libraries(podioArrow PUBLIC ${PODIO_PARQUET_TARGET})
+    target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_PARQUET=1)
+  else()
+    add_library(podioArrow SHARED ${arrow_sources})
+    add_library(podio::podioArrow ALIAS podioArrow)
+    target_include_directories(podioArrow PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+    )
+    target_link_libraries(podioArrow PUBLIC podio::podio ${PODIO_ARROW_TARGET})
+  endif()
+
   target_compile_definitions(podioArrow PUBLIC PODIO_ENABLE_ARROW=1)
 
+  if (ARROW_WITH_ZSTD)
+    set(DEFAULT_COMPRESSION_STR "ZSTD")
+  elseif(ARROW_WITH_SNAPPY)
+    set(DEFAULT_COMPRESSION_STR "SNAPPY")
+  else()
+    set(DEFAULT_COMPRESSION_STR "UNCOMPRESSED")
+  endif()
+  set(PODIO_ARROW_DEFAULT_COMPRESSION "${DEFAULT_COMPRESSION_STR}" CACHE STRING "Default compression for Arrow/Parquet")
+  target_compile_definitions(podioArrow PRIVATE PODIO_ARROW_DEFAULT_COMPRESSION="${PODIO_ARROW_DEFAULT_COMPRESSION}")
+
   LIST(APPEND INSTALL_LIBRARIES podioArrow)
+  if(ENABLE_PARQUET)
+    LIST(APPEND INSTALL_LIBRARIES podioArrowDict)
+  endif()
 endif()
 
 
@@ -192,6 +224,9 @@ target_include_directories(podioIO PUBLIC
 target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
+endif()
+if(ENABLE_ARROW)
+  target_link_libraries(podioIO PUBLIC podio::podioArrow)
 endif()
 
 
@@ -274,6 +309,14 @@ if (ENABLE_DATASOURCE)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioDataSourceDictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioDataSourceDict_rdict.pcm
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    )
+endif()
+
+if (ENABLE_PARQUET)
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/podioArrowDictDict.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioArrowDict_rdict.pcm
     DESTINATION "${CMAKE_INSTALL_LIBDIR}"
     )
 endif()

@@ -104,3 +104,24 @@ this record.
 Schematically an SIO file written by podio looks like this
 
 <img src="figures/file_layout_sio.svg" alt="SIO file layout schematic" width=167.75px align=center>
+
+## Arrow/Parquet
+
+The Arrow/Parquet backend stores a podio dataset as a directory, usually using
+the `.podio_parquet` extension. The directory contains one Parquet file per
+category and one `metadata.json` file with dataset-level metadata.
+
+For a category named `events`, the category data is stored in `events.parquet`.
+Each Frame in that category corresponds to one row in the Parquet file. Each
+collection is stored as one Arrow column, and Frame parameters are stored in a
+special `frame_parameters` column.
+
+The `metadata.json` file records the podio format marker, the podio version,
+the available categories, the category file names, the number of entries, and
+the datamodel definitions needed to read the stored collections.
+
+```{note}
+For Arrow/Parquet output all entries of a category have to have the same
+collection contents. This content is defined by the first entry that is written
+for a category.
+```

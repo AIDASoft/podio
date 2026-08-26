@@ -362,7 +362,7 @@ endif()
   list(FILTER SOURCES INCLUDE REGEX .*ArrowMapper.cc)
 
   add_library(${CORE_LIB}PodioArrow SHARED ${SOURCES})
-  target_link_libraries(${CORE_LIB}PodioArrow PUBLIC ${CORE_LIB} podio::podio ${PODIO_ARROW_TARGET})
+  target_link_libraries(${CORE_LIB}PodioArrow PUBLIC ${CORE_LIB} podio::podio podio::podioArrow)
   target_include_directories(${CORE_LIB}PodioArrow PUBLIC
     $<BUILD_INTERFACE:${ARG_OUTPUT_FOLDER}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)

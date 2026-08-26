@@ -30,9 +30,12 @@ function(GENERATE_DATAMODEL test_case model_version)
   endif()
 
   # Generate the datamodel with appropriate options
+  set(TEST_IO_HANDLERS ${PODIO_IO_HANDLERS})
+  list(REMOVE_ITEM TEST_IO_HANDLERS "ARROW")
+
   if(PARSED_ARGS_WITH_EVOLUTION)
     PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-      IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+      IO_BACKEND_HANDLERS ${TEST_IO_HANDLERS}
       OUTPUT_FOLDER ${output_base}
       OLD_DESCRIPTIONS ${old_descriptions}
       SCHEMA_EVOLUTION ${test_case}/evolution.yaml
@@ -40,13 +43,13 @@ function(GENERATE_DATAMODEL test_case model_version)
   else()
     if(old_descriptions AND NOT PARSED_ARGS_NO_EVOLUTION_CHECKS)
       PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        IO_BACKEND_HANDLERS ${TEST_IO_HANDLERS}
         OUTPUT_FOLDER ${output_base}
         OLD_DESCRIPTIONS ${old_descriptions}
     )
     else()
       PODIO_GENERATE_DATAMODEL(datamodel ${test_case}/${model_version}.yaml headers sources
-        IO_BACKEND_HANDLERS ${PODIO_IO_HANDLERS}
+        IO_BACKEND_HANDLERS ${TEST_IO_HANDLERS}
         OUTPUT_FOLDER ${output_base}
       )
     endif()

@@ -108,5 +108,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     io_format = args.outputfile.split(".")[-1]
+    if io_format == "podio_parquet":
+        ROOT.gSystem.Load("libpodioArrow")
+        ROOT.gSystem.Load("libTestDataModelArrow")
+        ROOT.gSystem.Load("libExtensionDataModelArrow")
+        ROOT.gSystem.Load("libInterfaceExtensionDataModelArrow")
 
     write_file(args.writer, args.outputfile)
