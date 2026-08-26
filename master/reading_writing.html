@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ROOT Support in Podio &mdash; PODIO  documentation</title>
+  <title>Reading and writing podio files &mdash; PODIO  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -104,10 +104,11 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ROOT Support in Podio</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reading">Reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#python">Python</a><ul>
@@ -167,6 +168,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="storage_details.html#arrow-parquet">Arrow/Parquet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools and utilities</a><ul>
@@ -279,8 +281,16 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -462,6 +472,18 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html">Struct podio::ArrowReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html">Struct podio::ArrowWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html">Struct podio::ArrowWriter::Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -632,6 +654,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#podio-arrow-io-module">podio.arrow_io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>
@@ -810,7 +833,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">ROOT Support in Podio</li>
+      <li class="breadcrumb-item active">Reading and writing podio files</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -819,14 +842,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="root-support-in-podio">
-<h1>ROOT Support in Podio<a class="headerlink" href="#root-support-in-podio" title="Link to this heading"></a></h1>
-<p>Podio supports ROOT file I/O through multiple backends in both C++ and Python
-for ROOT TTrees and ROOT RNTuples. Below are the recommended approaches for
-reading and writing these files, as well as additional notes to guide usage.</p>
+  <section id="reading-and-writing-podio-files">
+<h1>Reading and writing podio files<a class="headerlink" href="#reading-and-writing-podio-files" title="Link to this heading"></a></h1>
+<p>Podio supports file I/O through multiple backends in both C++ and Python. Below
+are the recommended approaches for reading and writing these files, as well as
+additional notes to guide usage.</p>
 <section id="c">
 <h2>C++<a class="headerlink" href="#c" title="Link to this heading"></a></h2>
-<p>Podio provides generic and format-specific I/O interfaces for ROOT files.</p>
+<p>Podio provides generic and format-specific I/O interfaces.</p>
 <section id="reading">
 <h3>Reading<a class="headerlink" href="#reading" title="Link to this heading"></a></h3>
 <p>The preferred way to read any ROOT file is with the generic reader factory:</p>
@@ -866,8 +889,9 @@ TTree or RNTuples with the same reader is not supported.</p>
 </div>
 <p>By default, TTrees are written. To explicitly select an output backend, provide
 the type:</p>
-<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">ttreeWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;root&quot;</span><span class="p">);</span><span class="w">       </span><span class="c1">// Use TTree</span>
-<span class="k">auto</span><span class="w"> </span><span class="n">rntupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rntuple&quot;</span><span class="p">);</span><span class="w">  </span><span class="c1">// Use RNTuple</span>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">ttreeWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;root&quot;</span><span class="p">);</span><span class="w">         </span><span class="c1">// Use TTree</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rntupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rntuple&quot;</span><span class="p">);</span><span class="w">    </span><span class="c1">// Use RNTuple</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">parquetWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;parquet&quot;</span><span class="p">);</span><span class="w">    </span><span class="c1">// Use Arrow/Parquet</span>
 </pre></div>
 </div>
 <p>The format can also be set by the environment variable <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code>. If
@@ -877,16 +901,52 @@ the environment variable is set <strong>to a non-empty string</strong>, RNTuples
 <li><p><code class="docutils literal notranslate"><span class="pre">.root</span></code>: Uses the default backend (TTree or RNTuple if <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code>
 is set to a non-empty string), unless specified.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.sio</span></code>: Uses the SIO writer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.podio_parquet</span></code>: Uses the Arrow/Parquet writer.</p></li>
 <li><p>Other extensions are not allowed.</p></li>
 </ul>
 <p>Specific writers for each backend are also available:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ROOTWriter.h&gt;</span><span class="c1">     // For TTree output</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/RNTupleWriter.h&gt;</span><span class="c1">  // For RNTuple output</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ArrowWriter.h&gt;</span><span class="c1">    // For Arrow/Parquet output</span>
 
-<span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriter</span><span class="w"> </span><span class="nf">writer</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w">           </span><span class="c1">// For TTree output</span>
-<span class="n">podio</span><span class="o">::</span><span class="n">RNTupleWriter</span><span class="w"> </span><span class="nf">rntupleWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w"> </span><span class="c1">// For RNTuple output</span>
+<span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriter</span><span class="w"> </span><span class="nf">writer</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w">              </span><span class="c1">// For TTree output</span>
+<span class="n">podio</span><span class="o">::</span><span class="n">RNTupleWriter</span><span class="w"> </span><span class="nf">rntupleWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">);</span><span class="w">    </span><span class="c1">// For RNTuple output</span>
+<span class="n">podio</span><span class="o">::</span><span class="n">ArrowWriter</span><span class="w"> </span><span class="nf">parquetWriter</span><span class="p">(</span><span class="n">directoryName</span><span class="p">);</span><span class="w"> </span><span class="c1">// For Arrow/Parquet output</span>
 </pre></div>
 </div>
+</section>
+<section id="arrow-parquet-i-o">
+<h3>Arrow/Parquet I/O<a class="headerlink" href="#arrow-parquet-i-o" title="Link to this heading"></a></h3>
+<p>The Arrow/Parquet backend writes a directory with the <code class="docutils literal notranslate"><span class="pre">.podio_parquet</span></code>
+extension. The directory contains one Parquet file per category and a
+<code class="docutils literal notranslate"><span class="pre">metadata.json</span></code> file with the podio metadata needed for reading.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Reader.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Writer.h&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="s">&quot;events.podio_parquet&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;parquet&quot;</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="n">writeFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">reader</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeReader</span><span class="p">(</span><span class="s">&quot;events.podio_parquet&quot;</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">reader</span><span class="p">.</span><span class="n">readEvent</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>The backend-specific classes can also be used directly:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ArrowReader.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ArrowWriter.h&gt;</span>
+
+<span class="n">podio</span><span class="o">::</span><span class="n">ArrowWriter</span><span class="w"> </span><span class="n">writer</span><span class="p">(</span><span class="s">&quot;events.podio_parquet&quot;</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="n">writeFrame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">);</span>
+<span class="n">writer</span><span class="p">.</span><span class="n">finish</span><span class="p">();</span>
+
+<span class="n">podio</span><span class="o">::</span><span class="n">ArrowReader</span><span class="w"> </span><span class="n">reader</span><span class="p">;</span>
+<span class="n">reader</span><span class="p">.</span><span class="n">openFile</span><span class="p">(</span><span class="s">&quot;events.podio_parquet&quot;</span><span class="p">);</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">event</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">Frame</span><span class="p">(</span><span class="n">reader</span><span class="p">.</span><span class="n">readEntry</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">Category</span><span class="o">::</span><span class="n">Event</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The default compression for Arrow/Parquet output is controlled at configure
+time with the <code class="docutils literal notranslate"><span class="pre">PODIO_ARROW_DEFAULT_COMPRESSION</span></code> CMake option. Supported values
+are <code class="docutils literal notranslate"><span class="pre">UNCOMPRESSED</span></code>, <code class="docutils literal notranslate"><span class="pre">SNAPPY</span></code>, and <code class="docutils literal notranslate"><span class="pre">ZSTD</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Note that the generic readers and writers have methods that are not available in
@@ -917,9 +977,11 @@ depending on the format of the first file.
 Alternatively, instantiate backend-specific readers explicitly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">podio.root_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reader</span>         <span class="c1"># For TTrees</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">podio.root_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RNTupleReader</span>  <span class="c1"># For RNTuples</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">podio.arrow_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">Reader</span> <span class="k">as</span> <span class="n">ArrowReader</span>
 
 <span class="n">reader</span> <span class="o">=</span> <span class="n">Reader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>                <span class="c1"># For TTree files (.root)</span>
 <span class="n">rntuple_reader</span> <span class="o">=</span> <span class="n">RNTupleReader</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># For RNTuple files (.root)</span>
+<span class="n">arrow_reader</span> <span class="o">=</span> <span class="n">ArrowReader</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>    <span class="c1"># For Arrow/Parquet directories (.podio_parquet)</span>
 </pre></div>
 </div>
 </section>
@@ -928,11 +990,14 @@ Alternatively, instantiate backend-specific readers explicitly:</p>
 <p>Similarly, use the appropriate writer class for the file format:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">podio.root_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">Writer</span>         <span class="c1"># For TTrees</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">podio.root_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">RNTupleWriter</span>  <span class="c1"># For RNTuples</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">podio.arrow_io</span><span class="w"> </span><span class="kn">import</span> <span class="n">Writer</span> <span class="k">as</span> <span class="n">ArrowWriter</span>
 
 <span class="n">writer</span> <span class="o">=</span> <span class="n">Writer</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>                <span class="c1"># For TTree output (.root)</span>
 <span class="n">rntuple_writer</span> <span class="o">=</span> <span class="n">RNTupleWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="c1"># For RNTuple output (.root)</span>
+<span class="n">arrow_writer</span> <span class="o">=</span> <span class="n">ArrowWriter</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>    <span class="c1"># For Arrow/Parquet output (.podio_parquet)</span>
 
 <span class="n">writer</span><span class="o">.</span><span class="n">write_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
+<span class="n">arrow_writer</span><span class="o">.</span><span class="n">write_frame</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">category</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

@@ -104,10 +104,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../../examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../../reading_writing.html">ROOT Support in Podio</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../../reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#reading">Reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../reading_writing.html#python">Python</a><ul>
@@ -167,6 +168,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../storage_details.html#arrow-parquet">Arrow/Parquet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../tools.html">Tools and utilities</a><ul>
@@ -279,8 +281,16 @@
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -462,6 +472,18 @@
 <li class="toctree-l4"><a class="reference internal" href="../struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_arrow_reader_1_1_category_info.html">Struct podio::ArrowReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_arrow_writer_1_1_category_info.html">Struct podio::ArrowWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_arrow_writer_1_1_options.html">Struct podio::ArrowWriter::Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -632,6 +654,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#podio-arrow-io-module">podio.arrow_io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../../py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>
@@ -1186,6 +1209,247 @@
 </dd></dl>
 
 </div>
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReaderE">
+<span id="_CPPv3N5podio11ArrowReaderE"></span><span id="_CPPv2N5podio11ArrowReaderE"></span><span id="podio::ArrowReader"></span><span class="target" id="classpodio_1_1_arrow_reader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrowReader</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_reader_common.html#_CPPv4N5podio12ReaderCommonE" title="podio::ReaderCommon"><span class="n"><span class="pre">ReaderCommon</span></span></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/ArrowReader.h&gt;</em></div>
+<p>Arrow backend reader for PODIO. </p>
+<p>Reads data from a directory structure containing one Parquet file per category and a metadata.json file containing metadata for reading. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader11ArrowReaderEv">
+<span id="_CPPv3N5podio11ArrowReader11ArrowReaderEv"></span><span id="_CPPv2N5podio11ArrowReader11ArrowReaderEv"></span><span id="podio::ArrowReader::ArrowReader"></span><span class="target" id="classpodio_1_1_arrow_reader_1a3311359d5d7bb70e9da06fa21f8dbc7d"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create an ArrowReader. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader8openFileERKNSt6stringE">
+<span id="_CPPv3N5podio11ArrowReader8openFileERKNSt6stringE"></span><span id="_CPPv2N5podio11ArrowReader8openFileERKNSt6stringE"></span><span id="podio::ArrowReader::openFile__ssCR"></span><span class="target" id="classpodio_1_1_arrow_reader_1ac558128b060142167ebe3b1fb4f4e756"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">openFile</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">directory</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Open the passed directory for reading. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> – The path to the directory to read from </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReaderD0Ev">
+<span id="_CPPv3N5podio11ArrowReaderD0Ev"></span><span id="_CPPv2N5podio11ArrowReaderD0Ev"></span><span id="podio::ArrowReader::~ArrowReader"></span><span class="target" id="classpodio_1_1_arrow_reader_1a1f056c513e6f208bf3701bebb0c49ec4"></span><span class="sig-name descname"><span class="n"><span class="pre">~ArrowReader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader11ArrowReaderERK11ArrowReader">
+<span id="_CPPv3N5podio11ArrowReader11ArrowReaderERK11ArrowReader"></span><span id="_CPPv2N5podio11ArrowReader11ArrowReaderERK11ArrowReader"></span><span id="podio::ArrowReader::ArrowReader__ArrowReaderCR"></span><span class="target" id="classpodio_1_1_arrow_reader_1a3c48ed65dfb91e947f56249eff1db82c"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowReader</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERK11ArrowReader" title="podio::ArrowReader::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReaderaSERK11ArrowReader">
+<span id="_CPPv3N5podio11ArrowReaderaSERK11ArrowReader"></span><span id="_CPPv2N5podio11ArrowReaderaSERK11ArrowReader"></span><span id="podio::ArrowReader::assign-operator__ArrowReaderCR"></span><span class="target" id="classpodio_1_1_arrow_reader_1a801aac087c39051d95cea21f86a56c30"></span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE" title="podio::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE" title="podio::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader11ArrowReaderERR11ArrowReader">
+<span id="_CPPv3N5podio11ArrowReader11ArrowReaderERR11ArrowReader"></span><span id="_CPPv2N5podio11ArrowReader11ArrowReaderERR11ArrowReader"></span><span id="podio::ArrowReader::ArrowReader__ArrowReaderRR"></span><span class="target" id="classpodio_1_1_arrow_reader_1ac436b0e1a0bed77e4ad059ed94bd33ce"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowReader</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERR11ArrowReader" title="podio::ArrowReader::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReaderaSERR11ArrowReader">
+<span id="_CPPv3N5podio11ArrowReaderaSERR11ArrowReader"></span><span id="_CPPv2N5podio11ArrowReaderaSERR11ArrowReader"></span><span id="podio::ArrowReader::assign-operator__ArrowReaderRR"></span><span class="target" id="classpodio_1_1_arrow_reader_1af8f57939bf4c03323b009c9b8119d59c"></span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE" title="podio::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE" title="podio::ArrowReader"><span class="n"><span class="pre">ArrowReader</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE"></span><span id="podio::ArrowReader::readNextEntry__std::string_view.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_arrow_reader_1a360674ed595586fe611a7c9e046c534e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE" title="podio::ArrowFrameData"><span class="n"><span class="pre">ArrowFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readNextEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToRead</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Read the next entry for the given category. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE"></span><span id="podio::ArrowReader::readEntry__std::string_view.s.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_arrow_reader_1a9d2dc3b6cfd1edf39381bbd5ccee6a2b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE" title="podio::ArrowFrameData"><span class="n"><span class="pre">ArrowFrameData</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">readEntry</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToRead</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Read the specific entry for the given category. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader10getEntriesENSt11string_viewE">
+<span id="_CPPv3NK5podio11ArrowReader10getEntriesENSt11string_viewE"></span><span id="_CPPv2NK5podio11ArrowReader10getEntriesENSt11string_viewE"></span><span id="podio::ArrowReader::getEntries__std::string_viewC"></span><span class="target" id="classpodio_1_1_arrow_reader_1ab19c4e0a64f050c8a7c2c046bb28f80c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getEntries</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the number of entries for a category. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader18currentFileVersionEv">
+<span id="_CPPv3NK5podio11ArrowReader18currentFileVersionEv"></span><span id="_CPPv2NK5podio11ArrowReader18currentFileVersionEv"></span><span id="podio::ArrowReader::currentFileVersionC"></span><span class="target" id="classpodio_1_1_reader_common_1a1ea1f1ff84ab0bf2132e210ae4caf451"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">currentFileVersion</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the build version of podio that has been used to write the current file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The podio build version </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader18currentFileVersionENSt11string_viewE">
+<span id="_CPPv3NK5podio11ArrowReader18currentFileVersionENSt11string_viewE"></span><span id="_CPPv2NK5podio11ArrowReader18currentFileVersionENSt11string_viewE"></span><span id="podio::ArrowReader::currentFileVersion__std::string_viewC"></span><span class="target" id="classpodio_1_1_reader_common_1a494e075827098400e3750df99ab6ae72"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio7versionE" title="podio::version"><span class="n"><span class="pre">version</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">currentFileVersion</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the (build) version of a datamodel that has been used to write the current file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the datamodel</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The (build) version of the datamodel if available or an empty optional </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE">
+<span id="_CPPv3NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE"></span><span id="_CPPv2NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE"></span><span id="podio::ArrowReader::getDatamodelDefinition__std::string_viewC"></span><span class="target" id="classpodio_1_1_reader_common_1a7386510c4bd7e9a04b600758df5b1df5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getDatamodelDefinition</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the datamodel definition for the given name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> – The name of the datamodel</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The high level definition of the datamodel in JSON format </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader22getAvailableDatamodelsEv">
+<span id="_CPPv3NK5podio11ArrowReader22getAvailableDatamodelsEv"></span><span id="_CPPv2NK5podio11ArrowReader22getAvailableDatamodelsEv"></span><span id="podio::ArrowReader::getAvailableDatamodelsC"></span><span class="target" id="classpodio_1_1_reader_common_1a955db7e9d438eb3c7acb74f40caa2d40"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableDatamodels</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get all names of the datamodels that are available from this reader. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of the datamodels </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio11ArrowReader22getAvailableCategoriesEv">
+<span id="_CPPv3NK5podio11ArrowReader22getAvailableCategoriesEv"></span><span id="_CPPv2NK5podio11ArrowReader22getAvailableCategoriesEv"></span><span id="podio::ArrowReader::getAvailableCategoriesC"></span><span class="target" id="classpodio_1_1_reader_common_1aa17d405423526131663fc0fbeef5690f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">getAvailableCategories</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Get the names of all the available Frame categories in the current file(s). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The names of the available categories from the file </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriterE">
+<span id="_CPPv3N5podio11ArrowWriterE"></span><span id="_CPPv2N5podio11ArrowWriterE"></span><span id="podio::ArrowWriter"></span><span class="target" id="classpodio_1_1_arrow_writer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrowWriter</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/ArrowWriter.h&gt;</em></div>
+<p>Arrow backend writer for PODIO. </p>
+<p>Writes data to a directory structure containing one Parquet file per category and a metadata.json file containing metadata for reading. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options">
+<span id="_CPPv3N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options"></span><span id="_CPPv2N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options"></span><span id="podio::ArrowWriter::ArrowWriter__ssCR.OptionsCR"></span><span class="target" id="classpodio_1_1_arrow_writer_1ad2c7a62425ada7f3c64b324358f3cc12"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">directory</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7OptionsE" title="podio::ArrowWriter::Options"><span class="n"><span class="pre">Options</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a ArrowWriter to write to a directory. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Will create the directory if it doesn’t exist. Will throw if it exists and is not empty.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>directory</strong> – The path to the output directory. </p></li>
+<li><p><strong>options</strong> – Configuration options for buffering and compression. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringE">
+<span id="_CPPv3N5podio11ArrowWriter11ArrowWriterERKNSt6stringE"></span><span id="_CPPv2N5podio11ArrowWriter11ArrowWriterERKNSt6stringE"></span><span id="podio::ArrowWriter::ArrowWriter__ssCR"></span><span class="target" id="classpodio_1_1_arrow_writer_1ab1c2a554970da5403f954c7a12a5e5e7"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ArrowWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">directory</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriterD0Ev">
+<span id="_CPPv3N5podio11ArrowWriterD0Ev"></span><span id="_CPPv2N5podio11ArrowWriterD0Ev"></span><span id="podio::ArrowWriter::~ArrowWriter"></span><span class="target" id="classpodio_1_1_arrow_writer_1a5a3471d6150a1e7c4ccb78a18863a458"></span><span class="sig-name descname"><span class="n"><span class="pre">~ArrowWriter</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Destructor writes metadata and closes files. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter">
+<span id="_CPPv3N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter"></span><span id="_CPPv2N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter"></span><span id="podio::ArrowWriter::ArrowWriter__ArrowWriterCR"></span><span class="target" id="classpodio_1_1_arrow_writer_1aa9eb34bd5b14bcb0f3ad43cd2da5a496"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter" title="podio::ArrowWriter::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriteraSERK11ArrowWriter">
+<span id="_CPPv3N5podio11ArrowWriteraSERK11ArrowWriter"></span><span id="_CPPv2N5podio11ArrowWriteraSERK11ArrowWriter"></span><span id="podio::ArrowWriter::assign-operator__ArrowWriterCR"></span><span class="target" id="classpodio_1_1_arrow_writer_1a01e9ed8c7b713659e1872794a8df710a"></span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE" title="podio::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE" title="podio::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter">
+<span id="_CPPv3N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter"></span><span id="_CPPv2N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter"></span><span id="podio::ArrowWriter::ArrowWriter__ArrowWriterRR"></span><span class="target" id="classpodio_1_1_arrow_writer_1ac50d2b40dc1a8dcb7621dc169de618df"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowWriter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter" title="podio::ArrowWriter::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriteraSERR11ArrowWriter">
+<span id="_CPPv3N5podio11ArrowWriteraSERR11ArrowWriter"></span><span id="_CPPv2N5podio11ArrowWriteraSERR11ArrowWriter"></span><span id="podio::ArrowWriter::assign-operator__ArrowWriterRR"></span><span class="target" id="classpodio_1_1_arrow_writer_1a9dba082a7e05753600deb375f479a219"></span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE" title="podio::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE" title="podio::ArrowWriter"><span class="n"><span class="pre">ArrowWriter</span></span></a><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">delete</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE">
+<span id="_CPPv3N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE"></span><span id="_CPPv2N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE"></span><span id="podio::ArrowWriter::writeFrame__podio::FrameCR.std::string_view"></span><span class="target" id="classpodio_1_1_arrow_writer_1a25d706418135872770d80fa9e9d3d6d1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">category</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Store the given frame with the given category. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All frames of the same category must have the same collection names and schemas. Trying to write a frame with different collections to an existing category will result in an exception. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE"></span><span id="podio::ArrowWriter::writeFrame__podio::FrameCR.std::string_view.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_arrow_writer_1a119d118ea457cf31ac7bb4c8f81eb91e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">writeFrame</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="../class/classpodio_1_1_frame.html#_CPPv4N5podio5FrameE" title="podio::Frame"><span class="n"><span class="pre">Frame</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">frame</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">category</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToWrite</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Store the given Frame with the given category, specifying collections. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All frames of the same category must have the same collection names and schemas. Trying to write a frame with different collections to an existing category will result in an exception. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter6finishEv">
+<span id="_CPPv3N5podio11ArrowWriter6finishEv"></span><span id="_CPPv2N5podio11ArrowWriter6finishEv"></span><span id="podio::ArrowWriter::finish"></span><span class="target" id="classpodio_1_1_arrow_writer_1ac4de0070c37287aefa3a133d1fe181d5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">finish</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Write the current directory including metadata.json and close files. </p>
+</dd></dl>
+
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter7OptionsE">
+<span id="_CPPv3N5podio11ArrowWriter7OptionsE"></span><span id="_CPPv2N5podio11ArrowWriter7OptionsE"></span><span id="podio::ArrowWriter::Options"></span><span class="target" id="structpodio_1_1_arrow_writer_1_1_options"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Options</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/ArrowWriter.h&gt;</em></div>
+<p>Configure the ArrowWriter. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter7Options15maxBufferedRowsE">
+<span id="_CPPv3N5podio11ArrowWriter7Options15maxBufferedRowsE"></span><span id="_CPPv2N5podio11ArrowWriter7Options15maxBufferedRowsE"></span><span id="podio::ArrowWriter::Options::maxBufferedRows__s"></span><span class="target" id="structpodio_1_1_arrow_writer_1_1_options_1a224d30006a061c1cba265dd73cda663c"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">maxBufferedRows</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1000</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11ArrowWriter7Options11compressionE">
+<span id="_CPPv3N5podio11ArrowWriter7Options11compressionE"></span><span id="_CPPv2N5podio11ArrowWriter7Options11compressionE"></span><span id="podio::ArrowWriter::Options::compression__ss"></span><span class="target" id="structpodio_1_1_arrow_writer_1_1_options_1a575166f44fcfb2144a6aa63aa4b8ea9b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compression</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio14CollectionBaseE">
 <span id="_CPPv3N5podio14CollectionBaseE"></span><span id="_CPPv2N5podio14CollectionBaseE"></span><span id="podio::CollectionBase"></span><span class="target" id="classpodio_1_1_collection_base"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CollectionBase</span></span></span><br /></dt>
@@ -6370,8 +6634,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t">
-<span id="_CPPv3N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"></span><span id="_CPPv2N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"></span><span id="podio::ArrowFrameData::ArrowFrameData__std::shared_ptr:arrow::Table:.int64_t"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1a42b876fe826975d258cc168d687e505c"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowFrameData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Table</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">table</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowIndex</span></span><span class="sig-paren">)</span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE">
+<span id="_CPPv3N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE"></span><span id="podio::ArrowFrameData::ArrowFrameData__std::shared_ptr:arrow::Table:.int64_t.std::vector:ss:CR"></span><span class="target" id="classpodio_1_1_arrow_frame_data_1abf481256fa72c3769625c63cadf36a1f"></span><span class="sig-name descname"><span class="n"><span class="pre">ArrowFrameData</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="namespacearrow.html#_CPPv45arrow" title="arrow"><span class="n"><span class="pre">arrow</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Table</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">table</span></span>, <span class="n"><span class="pre">int64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">rowIndex</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collsToRead</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><span class="sig-paren">)</span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -6589,7 +6853,7 @@
 <em>#include &lt;podio/utilities/ReaderCommon.h&gt;</em></div>
 <p>Common base class for podio reader classes providing the shared members and functionality related to the file version and the datamodel definitions. </p>
 <p>The population of the members is left to the derived reader classes. </p>
-<p>Subclassed by <a class="reference internal" href="#classpodio_1_1_r_n_tuple_reader"><span class="std std-ref">podio::RNTupleReader</span></a>, <a class="reference internal" href="#classpodio_1_1_r_o_o_t_reader"><span class="std std-ref">podio::ROOTReader</span></a>, <a class="reference internal" href="#classpodio_1_1_s_i_o_reader"><span class="std std-ref">podio::SIOReader</span></a></p>
+<p>Subclassed by <a class="reference internal" href="#classpodio_1_1_arrow_reader"><span class="std std-ref">podio::ArrowReader</span></a>, <a class="reference internal" href="#classpodio_1_1_r_n_tuple_reader"><span class="std std-ref">podio::RNTupleReader</span></a>, <a class="reference internal" href="#classpodio_1_1_r_o_o_t_reader"><span class="std std-ref">podio::ROOTReader</span></a>, <a class="reference internal" href="#classpodio_1_1_s_i_o_reader"><span class="std std-ref">podio::SIOReader</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -6860,6 +7124,14 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio7version7Version5patchE">
 <span id="_CPPv3N5podio7version7Version5patchE"></span><span id="_CPPv2N5podio7version7Version5patchE"></span><span id="podio::version::Version::patch__uint16_t"></span><span class="target" id="structpodio_1_1version_1_1_version_1a0cc79a37d6f936a4c912fb593f8c253d"></span><span class="n"><span class="pre">uint16_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">patch</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio7version7Version5patchE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio7version7Version10fromStringERKNSt6stringE">
+<span id="_CPPv3N5podio7version7Version10fromStringERKNSt6stringE"></span><span id="_CPPv2N5podio7version7Version10fromStringERKNSt6stringE"></span><span id="podio::version::Version::fromString__ssCR"></span><span class="target" id="structpodio_1_1version_1_1_version_1ac842efd53d725614f2e3a848432e3030"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio7version7VersionE" title="podio::version::Version"><span class="n"><span class="pre">Version</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fromString</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">versionStr</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio7version7Version10fromStringERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

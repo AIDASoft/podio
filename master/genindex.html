@@ -101,10 +101,11 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reading_writing.html">ROOT Support in Podio</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reading_writing.html#reading">Reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reading_writing.html#python">Python</a><ul>
@@ -164,6 +165,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="storage_details.html#arrow-parquet">Arrow/Parquet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools and utilities</a><ul>
@@ -276,8 +278,16 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -459,6 +469,18 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html">Struct podio::ArrowReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html">Struct podio::ArrowWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html">Struct podio::ArrowWriter::Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -629,6 +651,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#podio-arrow-io-module">podio.arrow_io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>
@@ -1462,7 +1485,7 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE">podio::ArrowFrameData (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameDataE">[1]</a>
 </li>
-      <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t">podio::ArrowFrameData::ArrowFrameData (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t">[1]</a>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE">podio::ArrowFrameData::ArrowFrameData (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4NK5podio14ArrowFrameData23getAvailableCollectionsEv">podio::ArrowFrameData::getAvailableCollections (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio14ArrowFrameData23getAvailableCollectionsEv">[1]</a>
 </li>
@@ -1471,6 +1494,40 @@
       <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4NK5podio14ArrowFrameData10getIDTableEv">podio::ArrowFrameData::getIDTable (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio14ArrowFrameData10getIDTableEv">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData13getParametersEv">podio::ArrowFrameData::getParameters (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio14ArrowFrameData13getParametersEv">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE">podio::ArrowReader (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReaderE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERK11ArrowReader">podio::ArrowReader::ArrowReader (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERR11ArrowReader">[1]</a>, <a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderEv">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader11ArrowReaderERK11ArrowReader">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader11ArrowReaderERR11ArrowReader">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader11ArrowReaderEv">[5]</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE">podio::ArrowReader::CategoryInfo (C++ struct)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfo12currentIndexE">podio::ArrowReader::CategoryInfo::currentIndex (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfo7entriesE">podio::ArrowReader::CategoryInfo::entries (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfo8filePathE">podio::ArrowReader::CategoryInfo::filePath (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfo5tableE">podio::ArrowReader::CategoryInfo::table (C++ member)</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader18currentFileVersionENSt11string_viewE">podio::ArrowReader::currentFileVersion (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader18currentFileVersionEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader18currentFileVersionENSt11string_viewE">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader18currentFileVersionEv">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getAvailableCategoriesEv">podio::ArrowReader::getAvailableCategories (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader22getAvailableCategoriesEv">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getAvailableDatamodelsEv">podio::ArrowReader::getAvailableDatamodels (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader22getAvailableDatamodelsEv">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE">podio::ArrowReader::getDatamodelDefinition (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader10getEntriesENSt11string_viewE">podio::ArrowReader::getEntries (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio11ArrowReader10getEntriesENSt11string_viewE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader8openFileERKNSt6stringE">podio::ArrowReader::openFile (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader8openFileERKNSt6stringE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderaSERK11ArrowReader">podio::ArrowReader::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderaSERR11ArrowReader">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReaderaSERK11ArrowReader">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReaderaSERR11ArrowReader">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE">podio::ArrowReader::readEntry (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE">podio::ArrowReader::readNextEntry (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderD0Ev">podio::ArrowReader::~ArrowReader (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowReaderD0Ev">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE">podio::ArrowTypeRegistry (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17ArrowTypeRegistryE">[1]</a>
 </li>
@@ -1487,6 +1544,52 @@
       <li><a href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE">podio::ArrowTypeRegistry::registerType (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17ArrowTypeRegistry12registerTypeERKNSt6stringENSt10shared_ptrIN5arrow8DataTypeEEE">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryD0Ev">podio::ArrowTypeRegistry::~ArrowTypeRegistry (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio17ArrowTypeRegistryD0Ev">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE">podio::ArrowWriter (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriterE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter">podio::ArrowWriter::ArrowWriter (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringE">[1]</a>, <a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options">[2]</a>, <a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringE">[5]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options">[6]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter">[7]</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE">podio::ArrowWriter::CategoryInfo (C++ struct)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo6bufferE">podio::ArrowWriter::CategoryInfo::buffer (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo12CategoryInfoERR12CategoryInfo">podio::ArrowWriter::CategoryInfo::CategoryInfo (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo12CategoryInfoEv">[1]</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo7collIDsE">podio::ArrowWriter::CategoryInfo::collIDs (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo12collIsSubsetE">podio::ArrowWriter::CategoryInfo::collIsSubset (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo18collSchemaVersionsE">podio::ArrowWriter::CategoryInfo::collSchemaVersions (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo12collsToWriteE">podio::ArrowWriter::CategoryInfo::collsToWrite (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo9collTypesE">podio::ArrowWriter::CategoryInfo::collTypes (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo7entriesE">podio::ArrowWriter::CategoryInfo::entries (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo8filePathE">podio::ArrowWriter::CategoryInfo::filePath (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoaSERR12CategoryInfo">podio::ArrowWriter::CategoryInfo::operator= (C++ function)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo6schemaE">podio::ArrowWriter::CategoryInfo::schema (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfo6writerE">podio::ArrowWriter::CategoryInfo::writer (C++ member)</a>
+</li>
+      <li><a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoD0Ev">podio::ArrowWriter::CategoryInfo::~CategoryInfo (C++ function)</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter6finishEv">podio::ArrowWriter::finish (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter6finishEv">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriteraSERK11ArrowWriter">podio::ArrowWriter::operator= (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriteraSERR11ArrowWriter">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriteraSERK11ArrowWriter">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriteraSERR11ArrowWriter">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7OptionsE">podio::ArrowWriter::Options (C++ struct)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter7OptionsE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7Options11compressionE">podio::ArrowWriter::Options::compression (C++ member)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter7Options11compressionE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7Options11compressionE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7Options15maxBufferedRowsE">podio::ArrowWriter::Options::maxBufferedRows (C++ member)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter7Options15maxBufferedRowsE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7Options15maxBufferedRowsE">[2]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE">podio::ArrowWriter::writeFrame (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterD0Ev">podio::ArrowWriter::~ArrowWriter (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriterD0Ev">[1]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7BackendE">podio::Backend (C++ enum)</a>
 </li>
@@ -2164,6 +2267,8 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4I0EN5podio6Reader6ReaderENSt10unique_ptrI1TEE">podio::Reader::Reader (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader6ReaderERK6Reader">[1]</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader6ReaderERR6Reader">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio6Reader6ReaderENSt10unique_ptrI1TEE">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader6ReaderERK6Reader">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader6ReaderERR6Reader">[5]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4N5podio6Reader13ReaderConceptE">podio::Reader::ReaderConcept (C++ struct)</a>
 </li>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionENSt11string_viewE">podio::Reader::ReaderConcept::currentFileVersion (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">[1]</a>
@@ -2204,8 +2309,6 @@
 </li>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModel13readNextFrameENSt11string_viewERKNSt6vectorINSt6stringEEE">podio::Reader::ReaderModel::readNextFrame (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_model.html#_CPPv4N5podio6Reader11ReaderModelD0Ev">podio::Reader::ReaderModel::~ReaderModel (C++ function)</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader9readEventE6size_tRKNSt6vectorINSt6stringEEE">podio::Reader::readEvent (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader9readEventE6size_tRKNSt6vectorINSt6stringEEE">[1]</a>
@@ -2947,6 +3050,8 @@
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7versionlsERNSt7ostreamERK7Version">podio::version::operator&lt;&lt; (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7versionlsERNSt7ostreamERK7Version">[1]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7version7VersionE">podio::version::Version (C++ struct)</a>, <a href="cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7version7VersionE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1version_1_1_version.html#_CPPv4N5podio7version7VersionE">[2]</a>
+</li>
+      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7version7Version10fromStringERKNSt6stringE">podio::version::Version::fromString (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7version7Version10fromStringERKNSt6stringE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1version_1_1_version.html#_CPPv4N5podio7version7Version10fromStringERKNSt6stringE">[2]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7version7Version5majorE">podio::version::Version::major (C++ member)</a>, <a href="cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7version7Version5majorE">[1]</a>, <a href="cpp_api/struct/structpodio_1_1version_1_1_version.html#_CPPv4N5podio7version7Version5majorE">[2]</a>
 </li>

@@ -104,10 +104,11 @@
 <li class="toctree-l2"><a class="reference internal" href="examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="reading_writing.html">ROOT Support in Podio</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="reading_writing.html#reading">Reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="reading_writing.html#python">Python</a><ul>
@@ -167,6 +168,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="storage_details.html#arrow-parquet">Arrow/Parquet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tools.html">Tools and utilities</a><ul>
@@ -279,8 +281,16 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -462,6 +472,18 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html">Struct podio::ArrowReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html">Struct podio::ArrowWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html">Struct podio::ArrowWriter::Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -632,6 +654,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#podio-arrow-io-module">podio.arrow_io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>

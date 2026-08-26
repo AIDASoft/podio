@@ -104,10 +104,11 @@
 <li class="toctree-l2"><a class="reference internal" href="../examples.html#python-interface">Python Interface</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../reading_writing.html">ROOT Support in Podio</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="../reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#reading">Reading</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../reading_writing.html#python">Python</a><ul>
@@ -167,6 +168,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../storage_details.html#sio">SIO</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../storage_details.html#arrow-parquet">Arrow/Parquet</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tools.html">Tools and utilities</a><ul>
@@ -279,8 +281,16 @@
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html">Class podio::ArrowTypeRegistry</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistryE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowTypeRegistry</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -462,6 +472,18 @@
 <li class="toctree-l4"><a class="reference internal" href="struct/struct_size_stats.html#_CPPv49SizeStats"><code class="docutils literal notranslate"><span class="pre">SizeStats</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_arrow_reader_1_1_category_info.html">Struct podio::ArrowReader::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_arrow_reader_1_1_category_info.html#_CPPv4N5podio11ArrowReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_arrow_writer_1_1_category_info.html">Struct podio::ArrowWriter::CategoryInfo</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_arrow_writer_1_1_category_info.html#_CPPv4N5podio11ArrowWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::CategoryInfo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_arrow_writer_1_1_options.html">Struct podio::ArrowWriter::Options</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_arrow_writer_1_1_options.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_collection_read_buffers.html">Struct podio::CollectionReadBuffers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_collection_read_buffers.html#_CPPv4N5podio21CollectionReadBuffersE"><code class="docutils literal notranslate"><span class="pre">podio::CollectionReadBuffers</span></code></a></li>
 </ul>
@@ -632,6 +654,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#podio-arrow-io-module">podio.arrow_io module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../py_api/podio.html#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../py_api/podio.html#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>
@@ -845,11 +868,32 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html">Class podio::ArrowFrameData</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameDataE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowFrameData</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_t"><code class="docutils literal notranslate"><span class="pre">ArrowFrameData()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData14ArrowFrameDataENSt10shared_ptrIN5arrow5TableEEE7int64_tRKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">ArrowFrameData()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4NK5podio14ArrowFrameData10getIDTableEv"><code class="docutils literal notranslate"><span class="pre">getIDTable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData20getCollectionBuffersERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getCollectionBuffers()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4NK5podio14ArrowFrameData23getAvailableCollectionsEv"><code class="docutils literal notranslate"><span class="pre">getAvailableCollections()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_frame_data.html#_CPPv4N5podio14ArrowFrameData13getParametersEv"><code class="docutils literal notranslate"><span class="pre">getParameters()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html">Class podio::ArrowReader</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowReader</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderEv"><code class="docutils literal notranslate"><span class="pre">ArrowReader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader8openFileERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">openFile()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderD0Ev"><code class="docutils literal notranslate"><span class="pre">~ArrowReader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERK11ArrowReader"><code class="docutils literal notranslate"><span class="pre">ArrowReader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderaSERK11ArrowReader"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader11ArrowReaderERR11ArrowReader"><code class="docutils literal notranslate"><span class="pre">ArrowReader()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReaderaSERR11ArrowReader"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader13readNextEntryENSt11string_viewERKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">readNextEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4N5podio11ArrowReader9readEntryENSt11string_viewE6size_tRKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">readEntry()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader10getEntriesENSt11string_viewE"><code class="docutils literal notranslate"><span class="pre">getEntries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader18currentFileVersionEv"><code class="docutils literal notranslate"><span class="pre">currentFileVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader18currentFileVersionENSt11string_viewE"><code class="docutils literal notranslate"><span class="pre">currentFileVersion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getDatamodelDefinitionENSt11string_viewE"><code class="docutils literal notranslate"><span class="pre">getDatamodelDefinition()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getAvailableDatamodelsEv"><code class="docutils literal notranslate"><span class="pre">getAvailableDatamodels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_reader.html#_CPPv4NK5podio11ArrowReader22getAvailableCategoriesEv"><code class="docutils literal notranslate"><span class="pre">getAvailableCategories()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -865,6 +909,27 @@
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html#_CPPv4NK5podio17ArrowTypeRegistry7getTypeERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">getType()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistry11mutInstanceEv"><code class="docutils literal notranslate"><span class="pre">mutInstance()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_type_registry.html#_CPPv4N5podio17ArrowTypeRegistry8instanceEv"><code class="docutils literal notranslate"><span class="pre">instance()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringERK7Options"><code class="docutils literal notranslate"><span class="pre">ArrowWriter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">ArrowWriter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterD0Ev"><code class="docutils literal notranslate"><span class="pre">~ArrowWriter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERK11ArrowWriter"><code class="docutils literal notranslate"><span class="pre">ArrowWriter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriteraSERK11ArrowWriter"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter11ArrowWriterERR11ArrowWriter"><code class="docutils literal notranslate"><span class="pre">ArrowWriter()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriteraSERR11ArrowWriter"><code class="docutils literal notranslate"><span class="pre">operator=()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewE"><code class="docutils literal notranslate"><span class="pre">writeFrame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter10writeFrameERKN5podio5FrameENSt11string_viewERKNSt6vectorINSt6stringEEE"><code class="docutils literal notranslate"><span class="pre">writeFrame()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter6finishEv"><code class="docutils literal notranslate"><span class="pre">finish()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7OptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter::Options</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7Options15maxBufferedRowsE"><code class="docutils literal notranslate"><span class="pre">maxBufferedRows</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriter7Options11compressionE"><code class="docutils literal notranslate"><span class="pre">compression</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
