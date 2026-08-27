@@ -19,6 +19,18 @@
 
 namespace podio {
 
+namespace detail {
+  /// Check whether a Link<FromT, ToT> can be initialized from values of types
+  /// FromU and ToU in exactly this order, i.e. whether its From element can be
+  /// set from a FromU and its To element from a ToU. Passing FromT and ToT in
+  /// swapped order checks the reversed order.
+  template <typename FromT, typename ToT, typename FromU, typename ToU>
+  concept LinkInitializableFrom = requires(podio::MutableLink<FromT, ToT> link, FromU from, ToU to) {
+    link.setFrom(from);
+    link.setTo(to);
+  };
+} // namespace detail
+
 /// Generalized Link type for both Mutable and immutable (default)
 /// versions. User facing classes with the expected naming scheme are defined via
 /// template aliases in LinkFwd.h

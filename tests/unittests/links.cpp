@@ -449,6 +449,84 @@ TEST_CASE("LinkCollection basics", "[links]") {
   }
 }
 
+TEST_CASE("LinkCollection create with linked objects", "[links][basics]") {
+  // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
+  // false positives here from clang-tidy that we are confident are false
+  // positives, because we don't see issues in our builds with sanitizers
+  auto hits = ExampleHitCollection();
+  auto clusters = ExampleClusterCollection();
+  auto hit = hits.create();
+  auto cluster = clusters.create();
+
+  auto links = TestLColl();
+
+  SECTION("Canonical order") {
+    auto link = links.create(hit, cluster);
+    REQUIRE(links.size() == 1);
+    REQUIRE(link.getFrom() == hit);
+    REQUIRE(link.getTo() == cluster);
+    // The weight defaults to the same value as for a default constructed link
+    REQUIRE(link.getWeight() == 1.f);
+    REQUIRE(link.getWeight() == links.create().getWeight());
+  }
+
+  SECTION("Reversed order") {
+    auto link = links.create(cluster, hit);
+    REQUIRE(links.size() == 1);
+    REQUIRE(link.getFrom() == hit);
+    REQUIRE(link.getTo() == cluster);
+    REQUIRE(link.getWeight() == 1.f);
+  }
+
+  SECTION("With a weight") {
+    auto link = links.create(hit, cluster, 3.14f);
+    REQUIRE(link.getFrom() == hit);
+    REQUIRE(link.getTo() == cluster);
+    REQUIRE(link.getWeight() == 3.14f);
+
+    auto reversed = links.create(cluster, hit, 42.f);
+    REQUIRE(reversed.getFrom() == hit);
+    REQUIRE(reversed.getTo() == cluster);
+    REQUIRE(reversed.getWeight() == 42.f);
+  }
+
+  SECTION("Immutable handles") {
+    auto link = links.create(std::as_const(hits)[0], std::as_const(clusters)[0]);
+    REQUIRE(link.getFrom() == hit);
+    REQUIRE(link.getTo() == cluster);
+  }
+
+  SECTION("Links are appended to the collection") {
+    links.create(hit, cluster, 1.f);
+    links.create(cluster, hit, 2.f);
+    REQUIRE(links.size() == 2);
+    REQUIRE(links[0].getWeight() == 1.f);
+    REQUIRE(links[1].getWeight() == 2.f);
+    for (auto link : links) {
+      REQUIRE(link.getFrom() == hit);
+      REQUIRE(link.getTo() == cluster);
+    }
+  }
+
+  SECTION("Subset collections cannot create links") {
+    auto subsetColl = TestLColl();
+    subsetColl.setSubsetCollection();
+    REQUIRE_THROWS_AS(subsetColl.create(hit, cluster), std::logic_error);
+  }
+
+  SECTION("Links with the same From and To type") {
+    using SameTypeLColl = podio::LinkCollection<ExampleHit, ExampleHit>;
+    auto otherHit = hits.create();
+    auto sameTypeLinks = SameTypeLColl();
+    // Only the canonical order is possible here
+    auto link = sameTypeLinks.create(hit, otherHit, 1.23f);
+    REQUIRE(link.getFrom() == hit);
+    REQUIRE(link.getTo() == otherHit);
+    REQUIRE(link.getWeight() == 1.23f);
+  }
+}
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
+
 auto createLinkCollections(const size_t nElements = 3u) {
   auto colls = std::make_tuple(TestLColl(), ExampleHitCollection(), ExampleClusterCollection());
 
@@ -609,6 +687,34 @@ TEST_CASE("Links with interfaces", "[links][interface-types]") {
   rLink.set(hit);
   REQUIRE(rLink.get<TypeWithEnergy>() == hit);
   REQUIRE(rLink.get<ExampleCluster>() == cluster);
+
+  SECTION("Creating links with interfaces") {
+    // Interface types can be passed directly
+    auto ifaceLink = coll.create(cluster, iface, 1.f);
+    REQUIRE(ifaceLink.getFrom() == cluster);
+    REQUIRE(ifaceLink.getTo() == iface);
+    REQUIRE(ifaceLink.getWeight() == 1.f);
+
+    // As can types that implicitly convert to an interface, in any order
+    auto convLink = coll.create(cluster, hit);
+    REQUIRE(convLink.getFrom() == cluster);
+    REQUIRE(convLink.getTo() == hit);
+
+    auto reversedLink = coll.create(hit, cluster);
+    REQUIRE(reversedLink.getFrom() == cluster);
+    REQUIRE(reversedLink.getTo() == hit);
+
+    // If both orders are possible the canonical one (from, to) wins
+    auto otherCluster = ExampleCluster();
+    auto ambiguousLink = coll.create(cluster, otherCluster);
+    REQUIRE(ambiguousLink.getFrom() == cluster);
+    REQUIRE(ambiguousLink.get<TypeWithEnergy>() == otherCluster);
+
+    // Also works for links that go in the other direction
+    auto rIfaceLink = rColl.create(cluster, hit);
+    REQUIRE(rIfaceLink.getFrom() == hit);
+    REQUIRE(rIfaceLink.getTo() == cluster);
+  }
 }
 
 TEST_CASE("Links reverse iterators", "[links][iterator]") {
