@@ -202,6 +202,7 @@ void ROOTWriter::finish() {
   metaTree.Fill();
 
   m_file.Write();
+  metaTree.SetDirectory(nullptr);
   m_file.Close();
 }
 
