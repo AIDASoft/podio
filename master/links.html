@@ -925,6 +925,18 @@ instantiate them with <code class="docutils literal notranslate"><span class="pr
 <span class="k">auto</span><span class="w"> </span><span class="n">weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">link</span><span class="p">.</span><span class="n">getWeight</span><span class="p">();</span>
 </pre></div>
 </div>
+<p>The objects that should be linked (and optionally the weight) can also be
+passed directly to <code class="docutils literal notranslate"><span class="pre">create</span></code></p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mcRecoLinks</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">mcParticle</span><span class="p">,</span><span class="w"> </span><span class="n">recoParticle</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal notranslate"><span class="pre">FromT</span></code> and <code class="docutils literal notranslate"><span class="pre">ToT</span></code> are different types, the two objects can be passed in any
+order and the direction of the link is deduced at compile time</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// equivalent to the above, the weight defaults to 1</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">link</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">mcRecoLinks</span><span class="p">.</span><span class="n">create</span><span class="p">(</span><span class="n">recoParticle</span><span class="p">,</span><span class="w"> </span><span class="n">mcParticle</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>In all other cases the <em>canonical order</em>, i.e. <strong><em>from</em> first, <em>to</em> second</strong>, is used.</p>
 <p>In the above examples the <code class="docutils literal notranslate"><span class="pre">From</span></code> and <code class="docutils literal notranslate"><span class="pre">To</span></code> in the method names imply a direction,
 but it is also possible to use a templated <code class="docutils literal notranslate"><span class="pre">get</span></code> and <code class="docutils literal notranslate"><span class="pre">set</span></code> method to retrieve
 the linked objects via their type:</p>

@@ -946,6 +946,34 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I00EN5podio14LinkCollection6createE12mutable_typeRR5FromURR3ToUf">
+<span id="_CPPv3I00EN5podio14LinkCollection6createERR5FromURR3ToUf"></span><span id="_CPPv2I00EN5podio14LinkCollection6createERR5FromURR3ToUf"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FromU</span></span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ToU</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_link_collection_1a99135a50f18e41d26fc4b57d76a4abac"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection12mutable_typeE" title="podio::LinkCollection::mutable_type"><span class="n"><span class="pre">mutable_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I00EN5podio14LinkCollection6createE12mutable_typeRR5FromURR3ToUf" title="podio::LinkCollection::create::FromU"><span class="n"><span class="pre">FromU</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">from</span></span>, <a class="reference internal" href="#_CPPv4I00EN5podio14LinkCollection6createE12mutable_typeRR5FromURR3ToUf" title="podio::LinkCollection::create::ToU"><span class="n"><span class="pre">ToU</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">to</span></span>, <span class="kt"><span class="pre">float</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weight</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0f</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I00EN5podio14LinkCollection6createE12mutable_typeRR5FromURR3ToUf" title="Link to this definition"></a><br /></dt>
+<dd><p>Append a new link to the collection, linking the two passed objects, and return this object. </p>
+<p>If FromT and ToT are different types, the two objects may be passed in any order and the direction of the link is deduced at compile time. If both orders are possible (e.g. because interface types are involved) the canonical order, i.e. <em>from first, to second</em>, takes precedence. If FromT and ToT are the same type, the canonical order is the only possible one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FromU</strong> – the type of the first object (<strong>inferred!</strong>) </p></li>
+<li><p><strong>ToU</strong> – the type of the second object (<strong>inferred!</strong>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>from</strong> – the object to link (the <em>from</em> object in canonical order) </p></li>
+<li><p><strong>to</strong> – the object to link (the <em>to</em> object in canonical order) </p></li>
+<li><p><strong>weight</strong> – the weight of the link (defaults to 1)</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">logic_error</span></span></span> – if this is a subset collection </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>the newly created (mutable) link</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK5podio14LinkCollectionixENSt6size_tE">
 <span id="_CPPv3NK5podio14LinkCollectionixENSt6size_tE"></span><span id="_CPPv2NK5podio14LinkCollectionixENSt6size_tE"></span><span id="podio::LinkCollection::subscript-operator__std::sC"></span><span class="target" id="classpodio_1_1_link_collection_1ab1c74e52930f84456ee3ce50ef883146"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio14LinkCollection10value_typeE" title="podio::LinkCollection::value_type"><span class="n"><span class="pre">value_type</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">[]</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio14LinkCollectionixENSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the immutable object of given index. </p>
