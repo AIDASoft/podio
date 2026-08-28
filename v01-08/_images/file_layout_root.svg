@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="550.2323mm"
+   height="276.59653mm"
+   viewBox="0 0 550.2323 276.59653"
+   version="1.1"
+   id="svg1085"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="file_layout_root.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1087"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.34832352"
+     inkscape:cx="704.80455"
+     inkscape:cy="644.51577"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1082">
+    <rect
+       x="219.66945"
+       y="-117.54345"
+       width="154.38103"
+       height="54.915276"
+       id="rect1191" />
+    <rect
+       id="rect1191-7"
+       height="56.202854"
+       width="151.56081"
+       y="-117.54345"
+       x="219.66945" />
+    <rect
+       id="rect1191-4"
+       height="57.101673"
+       width="168.25653"
+       y="-117.54345"
+       x="219.66945" />
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(133.83225,-24.633955)">
+    <rect
+       ry="6.6823826"
+       y="80.639793"
+       x="-127.86626"
+       height="87.918266"
+       width="149.79207"
+       id="rect833-9"
+       style="fill:#f58412;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       id="text849-3"
+       y="130.84731"
+       x="-96.217751"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         style="font-size:16.9333px;stroke-width:0.264583"
+         y="130.84731"
+         x="-96.217751"
+         id="tspan847-6"
+         sodipodi:role="line">Frame data</tspan></text>
+    <rect
+       style="fill:#f58412;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect833-9-1"
+       width="149.79207"
+       height="87.918266"
+       x="-127.86626"
+       y="168.55806"
+       ry="6.6823826"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="-96.217751"
+       y="218.76558"
+       id="text849-3-5"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         sodipodi:role="line"
+         id="tspan847-6-5"
+         x="-96.217751"
+         y="218.76558"
+         style="font-size:16.9333px;stroke-width:0.264583">Frame data</tspan></text>
+    <rect
+       style="fill:#00aded;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect833-9-7"
+       width="149.79207"
+       height="87.918266"
+       x="33.64587"
+       y="80.639793"
+       ry="6.6823826"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="65.294365"
+       y="130.84731"
+       id="text849-3-6"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         sodipodi:role="line"
+         id="tspan847-6-56"
+         x="65.294365"
+         y="130.84731"
+         style="font-size:16.9333px;stroke-width:0.264583">Frame data</tspan></text>
+    <rect
+       ry="6.6823826"
+       y="168.55806"
+       x="33.64587"
+       height="87.918266"
+       width="149.79207"
+       id="rect833-9-1-3"
+       style="fill:#00aded;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       id="text849-3-5-7"
+       y="218.76558"
+       x="65.294365"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         style="font-size:16.9333px;stroke-width:0.264583"
+         y="218.76558"
+         x="65.294365"
+         id="tspan847-6-5-4"
+         sodipodi:role="line">Frame data</tspan></text>
+    <rect
+       ry="6.6823697"
+       y="119.12894"
+       x="256.38565"
+       height="38.489151"
+       width="150.10522"
+       id="rect835-1"
+       style="fill:#f58412;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       id="text845-2"
+       y="144.6219"
+       x="269.38638"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         style="font-size:16.9333px;stroke-width:0.264583"
+         y="144.6219"
+         x="269.38638"
+         id="tspan843-7"
+         sodipodi:role="line">Frame Metadata</tspan></text>
+    <rect
+       style="fill:#00aded;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect835-1-3"
+       width="150.10522"
+       height="38.489151"
+       x="256.38565"
+       y="157.6181"
+       ry="6.6823697"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="269.38638"
+       y="183.11107"
+       id="text845-2-2"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         sodipodi:role="line"
+         id="tspan843-7-0"
+         x="269.38638"
+         y="183.11107"
+         style="font-size:16.9333px;stroke-width:0.264583">Frame Metadata</tspan></text>
+    <g
+       transform="translate(299.81736,125.71875)"
+       id="g854-9-5"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028">
+      <rect
+         ry="6.6823697"
+         y="-45.078957"
+         x="-43.431427"
+         height="38.489151"
+         width="150.10522"
+         id="rect835-1-2"
+         style="fill:none;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke" />
+      <text
+         id="text845-2-5"
+         y="-19.585993"
+         x="-30.430706"
+         style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+         xml:space="preserve"><tspan
+           style="font-size:16.9333px;stroke-width:0.264583"
+           y="-19.585993"
+           x="-30.430706"
+           id="tspan843-7-4"
+           sodipodi:role="line">podio Metadata</tspan></text>
+    </g>
+    <text
+       xml:space="preserve"
+       id="text1189"
+       style="font-size:19.7556px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';white-space:pre;shape-inside:url(#rect1191)"
+       transform="translate(-344.71121,147.82412)"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         x="219.66992"
+         y="-99.680614"
+         id="tspan9976"><tspan
+           style="fill:#f58512"
+           id="tspan9972">Category1</tspan><tspan
+           style="shape-inside:url(#rect1191)"
+           id="tspan9974">
+</tspan></tspan><tspan
+         x="219.66992"
+         y="-74.98611"
+         id="tspan9980"><tspan
+           style="shape-inside:url(#rect1191)"
+           id="tspan9978">TTree/RNTModel</tspan></tspan></text>
+    <text
+       transform="translate(-183.72829,147.82412)"
+       style="font-size:19.7556px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';white-space:pre;shape-inside:url(#rect1191-7)"
+       id="text1189-4"
+       xml:space="preserve"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         x="219.66992"
+         y="-99.680614"
+         id="tspan9986"><tspan
+           style="fill:#00aded"
+           id="tspan9982">Category2</tspan><tspan
+           style="shape-inside:url(#rect1191-7)"
+           id="tspan9984">
+</tspan></tspan><tspan
+         x="219.66992"
+         y="-74.98611"
+         id="tspan9990"><tspan
+           style="shape-inside:url(#rect1191-7)"
+           id="tspan9988">TTree/RNTModel</tspan></tspan></text>
+    <text
+       transform="translate(39.16835,147.82412)"
+       style="font-size:19.7556px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';white-space:pre;shape-inside:url(#rect1191-4)"
+       id="text1189-0"
+       xml:space="preserve"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         x="219.66992"
+         y="-99.680614"
+         id="tspan9994"><tspan
+           style="shape-inside:url(#rect1191-4)"
+           id="tspan9992">podio_metadata
+</tspan></tspan><tspan
+         x="219.66992"
+         y="-74.98611"
+         id="tspan9998"><tspan
+           style="shape-inside:url(#rect1191-4)"
+           id="tspan9996">TTree/RNTWriter</tspan></tspan></text>
+    <rect
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect1241"
+       width="548.46838"
+       height="274.83264"
+       x="-132.9503"
+       y="25.5159"
+       ry="6.6823697"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028" />
+    <text
+       xml:space="preserve"
+       style="font-size:25.4px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="197.13748"
+       y="281.4671"
+       id="text1245"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028"><tspan
+         sodipodi:role="line"
+         id="tspan1243"
+         x="197.13748"
+         y="281.4671"
+         style="font-size:25.4px;stroke-width:0.264583">ROOT file</tspan></text>
+    <g
+       transform="matrix(0,-3.3467043,3.3467043,0,239.75385,171.25576)"
+       id="g5993-2-3-7"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028">
+      <circle
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.551;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-20-5-8"
+         cx="0.72945958"
+         cy="-12.413512"
+         r="1.2107366" />
+      <circle
+         r="1.2107366"
+         cy="-9.0190382"
+         cx="0.72945958"
+         id="path5967-3-5-6-6"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.551;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+      <circle
+         r="1.2107366"
+         cy="-5.6245642"
+         cx="0.72945958"
+         id="path5967-1-5-2-8"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.551;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g2230-5"
+       transform="translate(-326.75467,151.88947)"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028">
+      <circle
+         transform="scale(-1)"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-20-5-0"
+         cx="-664.38586"
+         cy="-77.607918"
+         r="4.0519776" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-66.24762"
+         cx="-664.38586"
+         id="path5967-3-5-6-4"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-54.887318"
+         cx="-664.38586"
+         id="path5967-1-5-2-87"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g2230-1"
+       transform="translate(-555.84396,211.75784)"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028">
+      <circle
+         transform="scale(-1)"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-20-5-7"
+         cx="-664.38586"
+         cy="-77.607918"
+         r="4.0519776" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-66.24762"
+         cx="-664.38586"
+         id="path5967-3-5-6-2"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-54.887318"
+         cx="-664.38586"
+         id="path5967-1-5-2-7"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+    <g
+       id="g2230-2"
+       transform="translate(-717.35609,211.75784)"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_root_file.png"
+       inkscape:export-xdpi="300.01028"
+       inkscape:export-ydpi="300.01028">
+      <circle
+         transform="scale(-1)"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-20-5-2"
+         cx="-664.38586"
+         cy="-77.607918"
+         r="4.0519776" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-66.24762"
+         cx="-664.38586"
+         id="path5967-3-5-6-61"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+      <circle
+         transform="scale(-1)"
+         r="4.0519776"
+         cy="-54.887318"
+         cx="-664.38586"
+         id="path5967-1-5-2-0"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none" />
+    </g>
+  </g>
+</svg>
