@@ -274,7 +274,7 @@ TEST_CASE("Links templated accessors", "[links]") {
   // NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks): There are quite a few
   // false positives here from clang-tidy that we are confident are false
   // positives, because we don't see issues in our builds with sanitizers
-  ExampleHit hit;
+  MutableExampleHit hit;
   ExampleCluster cluster;
 
   TestMutL link;
