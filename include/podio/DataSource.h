@@ -129,11 +129,23 @@ private:
   /// Ranges of events available ever created
   std::vector<std::pair<ULong64_t, ULong64_t>> m_rangesAll = {};
 
-  /// Column names
+  /// Column names visible to RDataFrame
   std::vector<std::string> m_columnNames{};
+
+  /// Event collection names read from each event frame.
+  /// This separate list prevents metadata such as _EventWeightNames from being
+  /// searched for inside every event frame. m_eventColumnNames is used when
+  /// reading events, while m_columnNames exposes both event and metadata columns
+  /// to RDataFrame.
+  std::vector<std::string> m_eventColumnNames = {};
 
   /// Column types
   std::vector<std::string> m_columnTypes = {};
+
+  /// Event weight names copied from the metadata frame
+  std::vector<std::string> m_eventWeightNames = {};
+  /// Pointers used to connect the stored metadata labels to RDataFrame
+  std::vector<std::vector<std::string>*> m_eventWeightNameReaders = {};
 
   /// Collections, m_Collections[columnIndex][slotIndex]
   std::vector<std::vector<const podio::CollectionBase*>> m_Collections = {};
