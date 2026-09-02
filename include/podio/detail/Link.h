@@ -281,9 +281,9 @@ public:
              (isMutableFromOrToT<T> || detail::isInterfaceInitializableFrom<ToT, T> ||
               detail::isInterfaceInitializableFrom<FromT, T>))
   void set(T value) {
-    if constexpr (std::is_same_v<T, FromT>) {
+    if constexpr (std::is_same_v<detail::GetDefaultHandleType<T>, FromT>) {
       setFrom(std::move(value));
-    } else if constexpr (std::is_same_v<T, ToT>) {
+    } else if constexpr (std::is_same_v<detail::GetDefaultHandleType<T>, ToT>) {
       setTo(std::move(value));
     } else if constexpr (detail::isInterfaceInitializableFrom<FromT, T> &&
                          !detail::isInterfaceInitializableFrom<ToT, T>) {
