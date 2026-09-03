@@ -346,7 +346,7 @@ class Frame:
             for key in keys:
                 # Make sure to convert to a python string here to not have a dangling
                 # reference here for the key.
-                key = str(key)
+                key = str(key)  # noqa: PLW2901
                 # In order to support the use case of having the same key for multiple
                 # types create a list of available types for the key, so that we can
                 # disambiguate later. Storing a vector<type> here, and check later how

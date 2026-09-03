@@ -393,7 +393,7 @@ class ClassDefinitionValidator:
             invalid_keys = [k for k in extracode if k not in cls.valid_extra_code_keys]
             if invalid_keys:
                 raise DefinitionError(
-                    f"{classname} defines invalid 'ExtraCode' categories: " f"{invalid_keys}"
+                    f"{classname} defines invalid 'ExtraCode' categories: {invalid_keys}"
                 )
 
     @classmethod

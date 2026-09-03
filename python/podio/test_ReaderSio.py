@@ -17,7 +17,7 @@ class SioReaderTestCase(ReaderTestCaseMixin, unittest.TestCase):
 
     def setUp(self):
         """Setup the corresponding reader"""
-        from podio.sio_io import Reader  # pylint: disable=import-outside-toplevel
+        from podio.sio_io import Reader  # noqa: PLC0415
 
         self.reader = Reader("sio_io/example_frame.sio")
 
@@ -28,6 +28,6 @@ class SIOLegacyReaderTestCase(LegacyReaderTestCaseMixin, unittest.TestCase):
 
     def setUp(self):
         """Setup a reader, reading from the example files"""
-        from podio.sio_io import LegacyReader  # pylint: disable=import-outside-toplevel
+        from podio.sio_io import LegacyReader  # noqa: PLC0415
 
         self.reader = LegacyReader(get_legacy_input("v00-16-06-example.sio"))
