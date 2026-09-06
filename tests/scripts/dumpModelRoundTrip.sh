@@ -51,4 +51,8 @@ fi
 
 diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} "${DIFF_EXTRA_ARGS[@]}"
 diff -ru ${OUTPUT_FOLDER}/src ${COMP_BASE_FOLDER}/src "${DIFF_EXTRA_ARGS[@]}"
-diff -u ${OUTPUT_FOLDER}/podio_generated_files.cmake ${COMP_BASE_FOLDER}/podio_generated_files.cmake
+# Module files are selected by the build configuration, not the dumped EDM.
+# Remove their manifest block before comparing the generated source lists.
+diff -u \
+    <(sed '/^# Generated C++20 module interface files$/,/^)/d' ${OUTPUT_FOLDER}/podio_generated_files.cmake) \
+    <(sed '/^# Generated C++20 module interface files$/,/^)/d' ${COMP_BASE_FOLDER}/podio_generated_files.cmake)
