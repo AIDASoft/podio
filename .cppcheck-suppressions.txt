@@ -11,6 +11,11 @@ preprocessorErrorDirective:cpython/
 # Call finish() explicitly to handle write errors before destruction.
 throwInNoexceptFunction:ROOTWriter.cc
 throwInNoexceptFunction:RNTupleWriter.cc
+syntaxError:RNTupleReader.h
+syntaxError:RNTupleWriter.h
+throwInEntryPoint:podio-dump-tool.cpp
+# MapIndex is always constructed with explicit values before it is used.
+uninitMemberVarNoCtor:*
 
 # These functions implement instance-bound APIs without reading instance state.
 functionStatic:ROOTLegacyReader.cc
