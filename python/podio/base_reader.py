@@ -2,7 +2,6 @@
 """Python module for defining the basic reader interface that is used by the
 backend specific bindings"""
 
-
 from podio.frame_iterator import FrameCategoryIterator
 
 

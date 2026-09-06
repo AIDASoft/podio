@@ -18,7 +18,6 @@ import subprocess
 import shutil
 from pathlib import Path
 
-
 sys.path.insert(0, os.path.abspath("../python"))
 
 doc_dir = Path(__file__).parent

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Create objects and collections to test strace output"""
 
-
 from ROOT import ExampleHitCollection, ExampleHit, TestLink, TestLinkCollection, nsp
 import podio
 

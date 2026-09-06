@@ -12,7 +12,6 @@ from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_utils import DataModel
 from podio_gen.schema_evolution import SchemaMigrationReader, ChangeType
 
-
 # @TODO: not really a good class model here
 # this is a remnant from previous more-sophisticated setups
 

@@ -4,7 +4,6 @@
 import sys
 import ROOT
 
-
 ROOT.gInterpreter.Declare("#include <podio/utilities/RootHelpers.h>")
 df = ROOT.RDataFrame("events", sys.argv[1])
 

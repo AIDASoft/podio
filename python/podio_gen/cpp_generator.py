@@ -676,18 +676,14 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
 
             # some sanity checks
             if len(comparison_results.errors) > 0:
-                print(
-                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
-have unresolvable schema evolution incompatibilities:"
-                )
+                print(f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
+have unresolvable schema evolution incompatibilities:")
                 for error in comparison_results.errors:
                     print(error)
                 sys.exit(-1)
             if len(comparison_results.warnings) > 0:
-                print(
-                    f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
-have resolvable schema evolution incompatibilities:"
-                )
+                print(f"The given datamodels '{self.yamlfile}' and '{old_yamlfile}' \
+have resolvable schema evolution incompatibilities:")
                 for warning in comparison_results.warnings:
                     print(warning)
                 sys.exit(-1)

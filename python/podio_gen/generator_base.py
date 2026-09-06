@@ -11,7 +11,6 @@ from podio_gen.podio_config_reader import PodioConfigReader
 from podio_gen.generator_utils import DefinitionError
 from podio_gen.generator_utils import DataType
 
-
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PYTHONBASE_DIR = os.path.abspath(THIS_DIR + "/../")
 TEMPLATE_DIR = os.path.join(PYTHONBASE_DIR, "templates")

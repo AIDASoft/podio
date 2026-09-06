@@ -19,11 +19,9 @@ class ObjectConversionsTest(unittest.TestCase):
     """Object conversion binding tests"""
 
     def test_conversion_mutable_to_immutable(self):
-        ROOT.gInterpreter.Declare(
-            """
+        ROOT.gInterpreter.Declare("""
             void test_accepts_immutable(ExampleMC) {}
-            """
-        )
+            """)
         accepts_immutable = ROOT.test_accepts_immutable
         mutable_obj = MutableExampleMC()
         accepts_immutable(mutable_obj)
