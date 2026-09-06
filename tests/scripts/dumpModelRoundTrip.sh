@@ -35,6 +35,13 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # file. Need to diff subfolders explicitly here because $PODIO_BASE/tests contains
 # more stuff
 DIFF_EXTRA_ARGS=()
+# Module interfaces are generated only when C++ modules are enabled. They are
+# ignored source-tree artifacts and are not recreated by podio-dump.
+DIFF_EXTRA_ARGS+=(--exclude "*_module.ixx")
+if [[ " ${IO_HANDLERS} " != *" ARROW "* ]]; then
+    # The repository may contain a mapper produced by an Arrow-enabled build.
+    DIFF_EXTRA_ARGS+=(--exclude "ArrowMapper.cc")
+fi
 if [ ${ENABLE_SIO} = "OFF" ]; then
     DIFF_EXTRA_ARGS+=(--exclude "*SIO*")
 fi
