@@ -76,7 +76,7 @@ option(PODIO_USE_CLANG_FORMAT "Use clang-format to format the code" OFF)
 option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels will be generated, and Julia tests will run." OFF)
 
 
-#--- Declare ROOT dependency ---------------------------------------------------
+#--- Declare dependencies ------------------------------------------------------
 list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(root_components_needed RIO Tree)
