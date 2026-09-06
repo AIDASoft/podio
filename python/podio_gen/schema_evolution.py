@@ -26,7 +26,7 @@ class SchemaMigration:
 
     from_version: int
     to_version: int
-    type: ChangeType
+    type: ChangeType  # noqa: A003
     details: Dict[str, Any]
 
     def __post_init__(self):

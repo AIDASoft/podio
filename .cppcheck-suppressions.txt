@@ -6,6 +6,16 @@ missingIncludeSystem:*
 *:*Dict.cxx
 *:MurmurHash3.cpp
 preprocessorErrorDirective:cpython/
+# These functions implement instance-bound APIs without reading instance state.
+functionStatic:ROOTLegacyReader.cc
+functionStatic:Frame.h
+functionStatic:ROOTReader.cc
+functionStatic:SIOLegacyReader.cc
+functionStatic:ArrowWriter.cc
+
+# The link endpoint parameters use the domain-specific names despite the
+# similarly named range factory on LinkCollection.
+shadowFunction:LinkCollectionImpl.h
 
 copyCtorPointerCopying:MaybeSharedPtr.h
 knownConditionTrueFalse:LinkCollectionImpl.h

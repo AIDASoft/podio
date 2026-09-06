@@ -32,7 +32,7 @@ public:
   /// Provide an order solely for use in ordered containers.
   /// Order ObjectIDs by collectionID first and then by their index within the collection.
   constexpr std::strong_ordering operator<=>(const ObjectID& other) const noexcept {
-    if (const auto comparison = collectionID <=> other.collectionID; comparison != 0) {
+    if (const auto comparison = collectionID <=> other.collectionID; comparison != std::strong_ordering::equal) {
       return comparison;
     }
     return index <=> other.index;

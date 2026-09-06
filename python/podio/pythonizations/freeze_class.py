@@ -21,7 +21,7 @@ class FreezeClassPythonizer(Pythonizer):
         return 99
 
     @classmethod
-    def filter(cls, class_, name):
+    def filter(cls, class_, name):  # noqa: A003
         """
         Filter passing all the classes
 

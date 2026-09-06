@@ -133,7 +133,7 @@ private:
   void fillParams(const GenericParameters& params, CategoryInfo& catInfo, root_compat::REntry* entry);
 
   template <typename T>
-  root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
+  static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
   std::unique_ptr<TFile> m_file{};
 

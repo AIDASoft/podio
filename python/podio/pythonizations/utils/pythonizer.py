@@ -20,7 +20,7 @@ class Pythonizer(metaclass=ABCMeta):
 
     @classmethod
     @abstractmethod
-    def filter(cls, class_, name):
+    def filter(cls, class_, name):  # noqa: A003
         """
         Abstract classmethod to filter classes to which the pythonizations should be applied
 

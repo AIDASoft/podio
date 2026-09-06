@@ -16,9 +16,9 @@ CollectionIDTable::CollectionIDTable(const std::vector<uint32_t>& ids, const std
     m_collectionIDs(ids), m_names(names) {
 }
 
-std::optional<const std::string> CollectionIDTable::name(uint32_t ID) const {
+std::optional<const std::string> CollectionIDTable::name(uint32_t id) const {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::ranges::find(m_collectionIDs, ID);
+  const auto result = std::ranges::find(m_collectionIDs, id);
   const auto index = std::distance(m_collectionIDs.begin(), result);
   if (index >= static_cast<ptrdiff_t>(m_names.size())) {
     return std::nullopt;
@@ -26,9 +26,9 @@ std::optional<const std::string> CollectionIDTable::name(uint32_t ID) const {
   return m_names[index];
 }
 
-std::optional<uint32_t> CollectionIDTable::collectionID(const std::string& name) const {
+std::optional<uint32_t> CollectionIDTable::collectionID(const std::string& collectionName) const {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::ranges::find(m_names, name);
+  const auto result = std::ranges::find(m_names, collectionName);
   const auto index = std::distance(m_names.begin(), result);
   if (index >= static_cast<ptrdiff_t>(m_collectionIDs.size())) {
     return std::nullopt;
@@ -44,21 +44,21 @@ void CollectionIDTable::print() const {
   }
 }
 
-bool CollectionIDTable::present(const std::string& name) const {
-  return collectionID(name).has_value();
+bool CollectionIDTable::present(const std::string& collectionName) const {
+  return collectionID(collectionName).has_value();
 }
 
-bool CollectionIDTable::present(uint32_t collectionID) const {
-  return name(collectionID).has_value();
+bool CollectionIDTable::present(uint32_t id) const {
+  return name(id).has_value();
 }
 
-uint32_t CollectionIDTable::add(const std::string& name) {
+uint32_t CollectionIDTable::add(const std::string& collectionName) {
   std::lock_guard<std::mutex> lock{*m_mutex};
-  const auto result = std::ranges::find(m_names, name);
+  const auto result = std::ranges::find(m_names, collectionName);
   uint32_t ID = 0;
   if (result == m_names.end()) {
-    m_names.emplace_back(name);
-    MurmurHash3_x86_32(name.c_str(), name.size(), 0, &ID);
+    m_names.emplace_back(collectionName);
+    MurmurHash3_x86_32(collectionName.c_str(), collectionName.size(), 0, &ID);
     m_collectionIDs.emplace_back(ID);
   } else {
     const auto index = std::distance(m_names.begin(), result);

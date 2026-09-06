@@ -38,10 +38,10 @@ class SchemaEvolution {
   /// Helper struct combining the current schema version of each type and an
   /// index into the schema evolution "map" below
   struct MapIndex {
-    SchemaVersionT currentVersion; ///< The current schema version for each type
-    size_t index;                  ///< The index in the evolution function map
     /// Tombstone value indicating that no evolution function is available (yet)
     constexpr static size_t NoEvolutionAvailable = -1u;
+    SchemaVersionT currentVersion{};    ///< The current schema version for each type
+    size_t index{NoEvolutionAvailable}; ///< The index in the evolution function map
   };
 
   /// The map that holds the current version for each type that is known to

@@ -20,10 +20,9 @@ class BaseReaderMixin:
         setup.
         """
         self._categories = tuple(s.data() for s in self._reader.getAvailableCategories())
-        if hasattr(self, "_is_legacy"):
-            self._is_legacy = getattr(self, "_is_legacy")
-        else:
-            self._is_legacy = False  # by default assume we are not legacy
+        self._is_legacy = (
+            self._is_legacy if hasattr(self, "_is_legacy") else False
+        )  # by default assume we are not legacy
 
     @property
     def categories(self):

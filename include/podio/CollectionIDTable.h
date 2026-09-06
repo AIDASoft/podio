@@ -28,16 +28,16 @@ public:
   CollectionIDTable(const std::vector<uint32_t>& ids, const std::vector<std::string>& names);
 
   /// return collection ID for given name
-  std::optional<uint32_t> collectionID(const std::string& name) const;
+  std::optional<uint32_t> collectionID(const std::string& collectionName) const;
 
   /// return name for given collection ID
-  std::optional<const std::string> name(uint32_t collectionID) const;
+  std::optional<const std::string> name(uint32_t id) const;
 
   /// Check if collection name is known
-  bool present(const std::string& name) const;
+  bool present(const std::string& collectionName) const;
 
   /// Check if collection ID is known
-  bool present(uint32_t collectionID) const;
+  bool present(uint32_t id) const;
 
   /// return registered names
   const std::vector<std::string>& names() const {
@@ -51,7 +51,7 @@ public:
 
   /// register new name to the table
   /// returns assigned collection ID
-  uint32_t add(const std::string& name);
+  uint32_t add(const std::string& collectionName);
 
   /// Prints collection information
   void print() const;

@@ -12,6 +12,7 @@
 #include <fmt/ranges.h>
 
 #include <algorithm>
+#include <exception>
 #include <iterator>
 #include <numeric>
 #include <ranges>
@@ -279,30 +280,30 @@ void printFrame(const podio::Frame& frame, const std::string& category, size_t i
 }
 
 int main(int argc, char* argv[]) {
-  // We strip the executable name off directly for parsing
-  const auto args = parseArgs({argv + 1, argv + argc});
+  try {
+    // We strip the executable name off directly for parsing
+    const auto args = parseArgs({argv + 1, argv + argc});
 
-  auto reader = podio::makeReader(args.inputFile);
-  if (!args.dumpEDM.empty()) {
-    return dumpEDMDefinition(reader, args.dumpEDM);
-  }
+    auto reader = podio::makeReader(args.inputFile);
+    if (!args.dumpEDM.empty()) {
+      return dumpEDMDefinition(reader, args.dumpEDM);
+    }
 
-  printGeneralInfo(reader, args.inputFile);
+    printGeneralInfo(reader, args.inputFile);
 
-  auto stats = std::optional<std::map<std::string, SizeStats>>{};
-  if (args.sizeStats) {
-    stats = reader.getSizeStats(args.category);
-  }
+    auto stats = std::optional<std::map<std::string, SizeStats>>{};
+    if (args.sizeStats) {
+      stats = reader.getSizeStats(args.category);
+    }
 
-  for (const auto event : fullEntryList(args, reader)) {
-    try {
+    for (const auto event : fullEntryList(args, reader)) {
       const auto& frame = reader.readFrame(args.category, event);
       printFrame(frame, args.category, event, args.detailed, stats);
-    } catch (std::runtime_error& err) {
-      fmt::println(stderr, "{}", err.what());
-      return 1;
     }
-  }
 
-  return 0;
+    return 0;
+  } catch (const std::exception& err) {
+    fmt::println(stderr, "ERROR: {}", err.what());
+    return 1;
+  }
 }

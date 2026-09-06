@@ -27,7 +27,7 @@ class CollectionSubscriptPythonizer(Pythonizer):
         return 50
 
     @classmethod
-    def filter(cls, class_, name):
+    def filter(cls, class_, name):  # noqa: A003
         """
         Filters-out classes non derived from `podio.CollectionBase`.
 
