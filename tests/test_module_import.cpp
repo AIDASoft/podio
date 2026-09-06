@@ -9,11 +9,11 @@
 //
 // Returns 0 on success, non-zero on failure
 
-import podio.core;
-import datamodel.datamodel;
-
 #include <cstdlib>
 #include <iostream>
+
+import podio.core;
+import datamodel.datamodel;
 
 int main() {
   int failures = 0;
