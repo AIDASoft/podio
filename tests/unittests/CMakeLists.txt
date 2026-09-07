@@ -40,7 +40,6 @@ else()
   set_target_properties(Catch2::Catch2 PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${CATCH2_IF_INC_DIRS}")
 endif()
 
-find_package(Threads REQUIRED)
 add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioRootIO)
 # Catch2 TEST_CASE/SECTION macros expand __COUNTER__ at the call site in user
