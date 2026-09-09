@@ -13,9 +13,9 @@ import ROOT  # type: ignore
 if ROOT.gSystem.Load("libTestDataModelDict") < 0:  # type: ignore[attr-defined]
     raise RuntimeError("Could not load TestDataModel dictionary")
 
-from ROOT import ExampleHitCollection  # pylint: disable=wrong-import-position
+from ROOT import ExampleHitCollection
 
-from podio import Frame, reading, root_io  # pylint: disable=wrong-import-position
+from podio import Frame, reading, root_io
 
 
 def create_frame():
@@ -60,7 +60,7 @@ def write_file(filename):
 
     # The important part: explicitly pass an empty list
     writer.write_frame(frame, "events", [])
-    writer._writer.finish()  # pylint: disable=protected-access
+    writer._writer.finish()
 
     # Use the standard (TTree) reader inference and validate contents.
     reader = reading.get_reader(filename)

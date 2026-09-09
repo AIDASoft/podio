@@ -12,7 +12,7 @@ import ROOT
 # We check whether we can actually load the header to not break python bindings
 # in environments with *ancient* podio versions
 if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:  # noqa: E402
-    from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+    from ROOT import podio  # noqa: E402
 else:
     raise ImportError(
         "Could not load podio/Frame.h. Make sure it is available on ROOT_INCLUDE_PATH."
@@ -173,7 +173,6 @@ class Frame:
             # first one will throw an invalid_argument (as expected), which then
             # makes cppyy try the second one which fails with a type conversion.
             # Hence we catch the TypeError here and return a ValueError.
-            # pylint: disable-next=raise-missing-from
             raise ValueError(f"An object with key {name} already exists in the Frame")
 
     @property

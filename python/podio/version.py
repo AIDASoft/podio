@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Module that facilitates working with the podio::version::Version"""
 
-from podio import __version__  # pylint: disable=wrong-import-order
+from podio import __version__
 
 import ROOT
 
@@ -9,7 +9,7 @@ import ROOT
 if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") != 0:  # noqa: E402
     raise ImportError("Cannot find the podio/podioVersion.h header")
 
-from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+from ROOT import podio  # noqa: E402
 
 Version = podio.version.Version
 

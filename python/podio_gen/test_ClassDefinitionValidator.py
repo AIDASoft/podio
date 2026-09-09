@@ -22,7 +22,7 @@ def make_dm(components, datatypes, interfaces=None, links=None, options=None):
     return DataModel(datatypes, components, interfaces, links, options)
 
 
-class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-many-public-methods
+class ClassDefinitionValidatorTest(unittest.TestCase):
     """Unit tests for the ClassDefinitionValidator"""
 
     def setUp(self):
