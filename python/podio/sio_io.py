@@ -4,10 +4,10 @@
 from ROOT import gSystem
 
 if gSystem.DynamicPathName("libpodioSioIO.so", True):
-    gSystem.Load("libpodioSioIO")  # noqa: 402
+    gSystem.Load("libpodioSioIO")  # noqa: E402
 else:
     raise ImportError("Error when importing libpodioSioIO")
-from ROOT import podio  # noqa: 402 # pylint: disable=wrong-import-position
+from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position
 from podio.base_writer import BaseWriterMixin  # pylint: disable=wrong-import-position
