@@ -121,7 +121,7 @@ class IncludeFrom(IntEnum):
 class CPPClassGenerator(ClassGeneratorBaseMixin):
     """The c++ class / code generator for podio"""
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         yamlfile,
         install_dir,
@@ -461,7 +461,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
                 includes.add(self._build_include(vectormember))
 
         includes.update(datatype.get("ExtraCode", {}).get("includes", "").split("\n"))
-        # TODO: in principle only the mutable classes need these includes!  # pylint: disable=fixme
+        # TODO: in principle only the mutable classes need these includes!
         includes.update(datatype.get("MutableExtraCode", {}).get("includes", "").split("\n"))
 
         # When we have a relation to the same type we have the header that we are
@@ -549,7 +549,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         # the ostream operator needs a bit of help from the python side in the form
         # of some pre processing but also in the form of formatting, both are done
         # here.
-        # TODO: handle array members properly. These are currently ignored  # pylint: disable=fixme
+        # TODO: handle array members properly. These are currently ignored
         header_contents = []
         for member in datatype["Members"]:
             header = {"name": member.name}
@@ -696,7 +696,7 @@ have resolvable schema evolution incompatibilities:"
             old_datamodels[old_schema_version] = comparison_results.old_datamodel
 
             # Store old definitions for items that have actually changed
-            # TODO: Move this somewher else?  # pylint: disable=fixme
+            # TODO: Move this somewher else?
             for change in comparison_results.schema_changes:
                 if hasattr(change, "klassname"):
                     # Handle components (both existing and removed)

@@ -94,7 +94,7 @@ def print_frame(frame, cat_name, ientry, detailed):
         ientry (int): The entry number of this Frame
         detailed (bool): Print just an overview or dump the whole contents
     """
-    print("{:#^82}".format(f" {cat_name}: {ientry} "))  # pylint: disable=consider-using-f-string
+    print("{:#^82}".format(f" {cat_name}: {ientry} "))
 
     if detailed:
         print_frame_detailed(frame)
@@ -174,7 +174,6 @@ if __name__ == "__main__":
         " version files."
     )
 
-    # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
     parser = argparse.ArgumentParser(
         description="Dump contents of a podio file to stdout.", epilog=_EPILOG
     )
