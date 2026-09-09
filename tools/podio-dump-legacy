@@ -119,7 +119,7 @@ def dump_model(reader, model_name):
 
 def main(args):
     """Main"""
-    from podio.reading import get_reader  # pylint: disable=import-outside-toplevel
+    from podio.reading import get_reader  # noqa: PLC0415
 
     try:
         reader = get_reader(args.inputfile)
