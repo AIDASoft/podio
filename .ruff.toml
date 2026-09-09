@@ -2,6 +2,9 @@ target-version = "py310"
 
 line-length = 99
 
+# Respect the excludes even for the files pre-commit passes in explicitly.
+force-exclude = true
+
 [format]
 # Make things format the same way as black
 quote-style = "double"
