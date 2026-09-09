@@ -15,12 +15,12 @@ repos:
         language: system
       - id: ruff
         name: ruff
-        entry: ruff check --force-exclude
+        entry: ruff check
         types: [python]
         language: system
       - id: ruff-format
         name: ruff-format
-        entry: ruff format --force-exclude
+        entry: ruff format
         types: [python]
         language: system
       - id: cppcheck
