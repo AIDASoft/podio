@@ -40,7 +40,7 @@ class ModelToGraphviz:
         # It doesn't matter if they are remade latter so we don't need
         # to check for that
         for i, (label, group) in enumerate(self.graph_conf.items()):
-            with self.graph.subgraph(name=f"cluster{i+1}") as subgraph:
+            with self.graph.subgraph(name=f"cluster{i + 1}") as subgraph:
                 subgraph.attr(label=label)
                 for name in group:
                     if name in self.remove:

@@ -103,9 +103,9 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
 
     def test_component_invalid_extra_code(self):
         component = deepcopy(self.valid_component)
-        component["Component"]["ExtraCode"][
-            "const_declaration"
-        ] = "// not even valid c++ passes here"
+        component["Component"]["ExtraCode"]["const_declaration"] = (
+            "// not even valid c++ passes here"
+        )
         with self.assertRaises(DefinitionError):
             self.validate(make_dm(component, {}), False)
 
@@ -216,9 +216,9 @@ class ClassDefinitionValidatorTest(unittest.TestCase):  # pylint: disable=too-ma
                 self.validate(make_dm({}, datatype), False)
 
         datatype = deepcopy(self.valid_datatype)
-        datatype["DataType"]["ExtraCode"][
-            "invalid_extracode"
-        ] = "an invalid entry to the ExtraCode"
+        datatype["DataType"]["ExtraCode"]["invalid_extracode"] = (
+            "an invalid entry to the ExtraCode"
+        )
         with self.assertRaises(DefinitionError):
             self.validate(make_dm({}, datatype), False)
 
