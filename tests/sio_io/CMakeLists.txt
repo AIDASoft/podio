@@ -2,13 +2,15 @@ set(sio_dependent_tests
   read_frame_sio.cpp
   write_frame_sio.cpp
   read_and_write_frame_sio.cpp
-  read_python_frame_sio.cpp
   write_interface_sio.cpp
   read_interface_sio.cpp
   selected_colls_roundtrip_sio.cpp
   write_frame_sio_multithreaded.cpp
   read_frame_sio_multithreaded.cpp
 )
+if(ENABLE_ROOT)
+  list(APPEND sio_dependent_tests read_python_frame_sio.cpp)
+endif()
 set(sio_libs podio::podioSioIO podio::podioIO)
 foreach( sourcefile ${sio_dependent_tests} )
   CREATE_PODIO_TEST(${sourcefile} "${sio_libs}")
@@ -32,10 +34,18 @@ set_tests_properties(read_frame_sio_multithreaded PROPERTIES FIXTURES_REQUIRED p
 
 #--- Write via python and the SIO backend and see if we can read it back in in
 #--- c++
-add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio sio_io.Writer)
-PODIO_SET_TEST_ENV(write_python_frame_sio PYTHON)
-set_tests_properties(write_python_frame_sio PROPERTIES FIXTURES_SETUP podio_write_python_sio_fixture)
-set_tests_properties(read_python_frame_sio PROPERTIES FIXTURES_REQUIRED podio_write_python_sio_fixture)
+if(ENABLE_ROOT)
+  add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio sio_io.Writer)
+  PODIO_SET_TEST_ENV(write_python_frame_sio PYTHON)
+  set_tests_properties(write_python_frame_sio PROPERTIES FIXTURES_SETUP podio_write_python_sio_fixture)
+  set_tests_properties(read_python_frame_sio PROPERTIES FIXTURES_REQUIRED podio_write_python_sio_fixture)
+  set_tests_properties(
+    read_python_frame_sio
+    write_python_frame_sio
+    PROPERTIES
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+  )
+endif()
 
 add_executable(read_frame_legacy_sio read_frame_legacy_sio.cpp)
 target_link_libraries(read_frame_legacy_sio PRIVATE "${sio_libs}" TestDataModel)

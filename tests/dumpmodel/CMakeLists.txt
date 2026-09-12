@@ -1,6 +1,7 @@
 # Copy the main .clang-format to here so that the tests can always find it
 configure_file(${PROJECT_SOURCE_DIR}/.clang-format ${CMAKE_CURRENT_BINARY_DIR}/.clang-format COPYONLY)
 
+if (ENABLE_ROOT)
 # Add tests for storing and retrieving the EDM definitions into the produced
 # files
 add_test(NAME datamodel_def_store_roundtrip_root COMMAND ${PROJECT_SOURCE_DIR}/tests/scripts/dumpModelRoundTrip.sh
@@ -28,6 +29,7 @@ set_tests_properties(
   PROPERTIES
     FIXTURES_REQUIRED podio_write_root_fixture
   )
+endif()
 
 set(sio_roundtrip_tests "")
 if (ENABLE_SIO)
@@ -92,9 +94,16 @@ if (ENABLE_RNTUPLE)
 
 endif()
 
-set_tests_properties(
+set(root_roundtrip_tests "")
+if (ENABLE_ROOT)
+  set(root_roundtrip_tests
     datamodel_def_store_roundtrip_root
     datamodel_def_store_roundtrip_root_extension
+  )
+endif()
+
+set_tests_properties(
+    ${root_roundtrip_tests}
     ${sio_roundtrip_tests}
     ${rntuple_roundtrip_tests}
   PROPERTIES

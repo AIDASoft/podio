@@ -58,39 +58,41 @@ function(GENERATE_DATAMODEL test_case model_version)
   PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
     OUTPUT_FOLDER ${output_base}
   )
-  PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
-    OUTPUT_FOLDER ${output_base}
-  )
-
-  # Make sure that each model can be "toggled" at runtime separately.
-  # Effectively amounts to moving the byproducts of the dictgen above to the
-  # appropriate place and making sure libraries are built into the right output
-  # directory
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
-  set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
-  add_custom_command(TARGET ${model_base}Dict
-    POST_BUILD
-    BYPRODUCTS
-      ${output_base}/lib${model_base}Dict_rdict.pcm
-      ${output_base}/${model_base}DictDict.rootmap
+  if (ENABLE_ROOT)
+    PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
+      OUTPUT_FOLDER ${output_base}
+    )
 
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
+    set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
+    add_custom_command(TARGET ${model_base}Dict
+      POST_BUILD
+      BYPRODUCTS
+        ${output_base}/lib${model_base}Dict_rdict.pcm
+        ${output_base}/${model_base}DictDict.rootmap
 
-    COMMENT "Moving generated rootmaps for ${test_case}"
-    VERBATIM
-  )
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/lib${model_base}Dict_rdict.pcm ${output_base}/lib${model_base}Dict_rdict.pcm
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_BINARY_DIR}/${model_base}DictDict.rootmap ${output_base}/${model_base}DictDict.rootmap
 
-  # Make sure cmake is aware of how these files came to their final destination
-  # so that there is a chance of dependency tracking and we might avoid too
-  # frequent triggering of the dictgen step
-  add_custom_target(Move_${model_base}Dict_files
-    DEPENDS
-      ${output_base}/lib${model_base}Dict_rdict.pcm
-      ${output_base}/${model_base}DictDict.rootmap
-      ${model_base}Dict
-  )
-  set_target_properties(${model_base}Dict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+      COMMENT "Moving generated rootmaps for ${test_case}"
+      VERBATIM
+    )
+
+    add_custom_target(Move_${model_base}Dict_files
+      DEPENDS
+        ${output_base}/lib${model_base}Dict_rdict.pcm
+        ${output_base}/${model_base}DictDict.rootmap
+        ${model_base}Dict
+    )
+    set_target_properties(${model_base}Dict-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+  endif()
+
+  if (ENABLE_SIO)
+    PODIO_ADD_SIO_IO_BLOCKS(${model_base} "${headers}" "${sources}"
+      OUTPUT_FOLDER ${output_base}
+    )
+    set_target_properties(${model_base}SioBlocks PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
+  endif()
 endfunction()
 
 #--- ADD_SCHEMA_EVOLUTION_TEST(test_case [RNTUPLE] [NO_GENERATE_MODELS])
@@ -179,7 +181,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
     set_property(TEST schema_evol:code_gen:${test_case}:write_${old_version}${suffix}
       PROPERTY ENVIRONMENT
         ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${old_version}_model
-        LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+        LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/${old_version}_model:${PROJECT_BINARY_DIR}/src:$<$<TARGET_EXISTS:ROOT::Tree>:$<TARGET_FILE_DIR:ROOT::Tree>>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
         $<$<BOOL:${USE_SANITIZER}>:TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt>
         $<$<BOOL:${USE_SANITIZER}>:LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt>
     )
@@ -208,7 +210,7 @@ function(ADD_SCHEMA_EVOLUTION_TEST test_case)
   set_property(TEST schema_evol:code_gen:${test_case}:read${suffix}
     PROPERTY ENVIRONMENT
       ROOT_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model
-      LD_LIBRARY_PATH=${PROJECT_BINARY_DIR}/src:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
+      LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}/${test_case}/new_model:${PROJECT_BINARY_DIR}/src:$<$<TARGET_EXISTS:ROOT::Tree>:$<TARGET_FILE_DIR:ROOT::Tree>>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       $<$<BOOL:${USE_SANITIZER}>:TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt>
       $<$<BOOL:${USE_SANITIZER}>:LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt>
   )
