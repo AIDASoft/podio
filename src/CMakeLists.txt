@@ -28,22 +28,24 @@ FUNCTION(PODIO_ADD_LIB_AND_DICT libname headers sources selection )
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   )
 
-  # dictionary
-  set(dictname ${libname}Dict)
-  add_library(${dictname} SHARED)
-  target_include_directories(${dictname} PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-  target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
-  if(ENABLE_RNTUPLE)
-    target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
+  if(ENABLE_ROOT)
+    # dictionary
+    set(dictname ${libname}Dict)
+    add_library(${dictname} SHARED)
+    target_include_directories(${dictname} PUBLIC
+      $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+      $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
+    target_link_libraries(${dictname} PUBLIC podio::${libname} podio::podio ROOT::Core ROOT::Tree)
+    if(ENABLE_RNTUPLE)
+      target_link_libraries(${dictname} PUBLIC ROOT::ROOTNTuple)
+    endif()
+    PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
+      OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
+      )
+    # prevent generating dictionary twice
+    set_target_properties(${dictname}-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    target_sources(${dictname} PRIVATE ${dictname}.cxx)
   endif()
-  PODIO_GENERATE_DICTIONARY(${dictname} ${headers} SELECTION ${selection}
-    OPTIONS --library ${CMAKE_SHARED_LIBRARY_PREFIX}${dictname}${CMAKE_SHARED_LIBRARY_SUFFIX}
-    )
-  # prevent generating dictionary twice
-  set_target_properties(${dictname}-dictgen PROPERTIES EXCLUDE_FROM_ALL TRUE)
-  target_sources(${dictname} PRIVATE ${dictname}.cxx)
 ENDFUNCTION()
 
 
@@ -79,50 +81,60 @@ SET(core_headers
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
 target_link_libraries(podio PUBLIC Threads::Threads)
 target_link_libraries(podio PRIVATE Python3::Python)
+if(ENABLE_ROOT)
+  target_compile_definitions(podio PUBLIC PODIO_ENABLE_ROOT=1)
+else()
+  target_compile_definitions(podio PUBLIC PODIO_ENABLE_ROOT=0)
+endif()
 # For Frame.h
-if (ROOT_VERSION VERSION_LESS 6.36)
+if (ENABLE_ROOT AND ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
 endif()
 
 
 # --- Root I/O functionality and corresponding dictionary
-SET(root_sources
-  rootUtils.h
-  ROOTWriter.cc
-  ROOTReader.cc
-  ROOTLegacyReader.cc
-  ROOTFrameData.cc
-  RootHelpers.cc
-)
-if(ENABLE_RNTUPLE)
-  list(APPEND root_sources
-      RNTupleReader.cc
-      RNTupleWriter.cc
-     )
-endif()
-
-SET(root_headers
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
-  ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
-  ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
+if(ENABLE_ROOT)
+  SET(root_sources
+    rootUtils.h
+    ROOTWriter.cc
+    ROOTReader.cc
+    ROOTLegacyReader.cc
+    ROOTFrameData.cc
+    RootHelpers.cc
   )
-if(ENABLE_RNTUPLE)
-  list(APPEND root_headers
-      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleReader.h
-      ${PROJECT_SOURCE_DIR}/include/podio/RNTupleWriter.h
-     )
+  if(ENABLE_RNTUPLE)
+    list(APPEND root_sources
+        RNTupleReader.cc
+        RNTupleWriter.cc
+       )
+  endif()
+
+  SET(root_headers
+    ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
+    ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
+    ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
+    )
+  if(ENABLE_RNTUPLE)
+    list(APPEND root_headers
+        ${PROJECT_SOURCE_DIR}/include/podio/RNTupleReader.h
+        ${PROJECT_SOURCE_DIR}/include/podio/RNTupleWriter.h
+       )
+  endif()
+
+  PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
+  target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTVecOps)
+  if(ENABLE_RNTUPLE)
+    target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
+    target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=1)
+  else()
+    target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=0)
+  endif()
+  
+  LIST(APPEND INSTALL_LIBRARIES podioRootIO podioRootIODict)
 endif()
 
-PODIO_ADD_LIB_AND_DICT(podioRootIO "${root_headers}" "${root_sources}" root_selection.xml)
-target_link_libraries(podioRootIO PUBLIC podio::podio ROOT::Core ROOT::RIO ROOT::Tree ROOT::ROOTVecOps)
-if(ENABLE_RNTUPLE)
-  target_link_libraries(podioRootIO PUBLIC ROOT::ROOTNTuple)
-  target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=1)
-else()
-  target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=0)
-endif()
 
 
 # --- SIO I/O functionality and corresponding dictionary
@@ -147,7 +159,11 @@ if(ENABLE_SIO)
   target_link_libraries(podioSioIO PUBLIC podio::podio SIO::sio ${CMAKE_DL_LIBS})
   target_compile_definitions(podioSioIO PUBLIC PODIO_ENABLE_SIO=1)
 
-  LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
+  if (ENABLE_ROOT)
+    LIST(APPEND INSTALL_LIBRARIES podioSioIO podioSioIODict)
+  else()
+    LIST(APPEND INSTALL_LIBRARIES podioSioIO)
+  endif()
 endif()
 
 # --- Arrow functionality
@@ -221,7 +237,10 @@ add_library(podio::podioIO ALIAS podioIO)
 target_include_directories(podioIO PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
-target_link_libraries(podioIO PUBLIC podio::podio podio::podioRootIO)
+target_link_libraries(podioIO PUBLIC podio::podio)
+if(ENABLE_ROOT)
+  target_link_libraries(podioIO PUBLIC podio::podioRootIO)
+endif()
 if(ENABLE_SIO)
   target_link_libraries(podioIO PUBLIC podio::podioSioIO)
 endif()
@@ -255,12 +274,17 @@ endif()
 
 
 # --- Install everything
+set(PODIO_CORE_TARGETS podio podioIO)
+if (ENABLE_ROOT)
+  list(APPEND PODIO_CORE_TARGETS podioDict)
+endif()
+
 if (NOT ENABLE_DATASOURCE)
-  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO ${INSTALL_LIBRARIES}
+  install(TARGETS ${PODIO_CORE_TARGETS} ${INSTALL_LIBRARIES}
     EXPORT podioTargets
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 else()
-  install(TARGETS podio podioDict podioRootIO podioRootIODict podioIO podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
+  install(TARGETS ${PODIO_CORE_TARGETS} podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
     EXPORT podioTargets
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
 endif()
@@ -269,6 +293,9 @@ endif()
 file(GLOB headers_necessary
      "${PROJECT_SOURCE_DIR}/include/podio/*.h")
 
+if (NOT ENABLE_ROOT)
+  list(FILTER headers_necessary EXCLUDE REGEX ROOT.*\\.h$)
+endif()
 if (NOT ENABLE_SIO)
   list(FILTER headers_necessary EXCLUDE REGEX SIO.*\\.h$)
 endif()
@@ -290,14 +317,19 @@ install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio/utilities
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
 )
 
-install(FILES
-  ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
-  ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
-  ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
-  DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+if(ENABLE_ROOT)
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+  
+  install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
+    ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+endif()
 
-if (ENABLE_SIO)
+if (ENABLE_SIO AND ENABLE_ROOT)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioSioIODictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioSioIODict_rdict.pcm
