@@ -8,6 +8,7 @@ set(sio_dependent_tests
   write_frame_sio_multithreaded.cpp
   read_frame_sio_multithreaded.cpp
 )
+# Python tests require ROOT dictionaries
 if(ENABLE_ROOT)
   list(APPEND sio_dependent_tests read_python_frame_sio.cpp)
 endif()
@@ -34,6 +35,8 @@ set_tests_properties(read_frame_sio_multithreaded PROPERTIES FIXTURES_REQUIRED p
 
 #--- Write via python and the SIO backend and see if we can read it back in in
 #--- c++
+# Python bindings currently rely on cppyy and ROOT dictionaries.
+# Therefore, all Python tests (including SIO) require ENABLE_ROOT.
 if(ENABLE_ROOT)
   add_test(NAME write_python_frame_sio COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.sio sio_io.Writer)
   PODIO_SET_TEST_ENV(write_python_frame_sio PYTHON)

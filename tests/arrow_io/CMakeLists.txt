@@ -8,6 +8,7 @@ set(arrow_dependent_tests
   write_frame_arrow_multithreaded.cpp
   read_frame_arrow_multithreaded.cpp
 )
+# Python tests require ROOT dictionaries
 if(ENABLE_ROOT)
   list(APPEND arrow_dependent_tests read_python_frame_arrow.cpp)
 endif()
@@ -34,6 +35,8 @@ set_tests_properties(read_frame_arrow_multithreaded PROPERTIES FIXTURES_REQUIRED
 
 #--- Write via python and the Arrow backend and see if we can read it back in in
 #--- c++
+# Python bindings currently rely on cppyy and ROOT dictionaries.
+# Therefore, all Python tests (including Arrow) require ENABLE_ROOT.
 if(ENABLE_ROOT)
   add_test(NAME write_python_frame_arrow COMMAND python3 ${PROJECT_SOURCE_DIR}/tests/write_frame.py example_frame_with_py.podio_parquet arrow_io.Writer)
   PODIO_SET_TEST_ENV(write_python_frame_arrow PYTHON)
