@@ -58,6 +58,10 @@ function(GENERATE_DATAMODEL test_case model_version)
   PODIO_ADD_DATAMODEL_CORE_LIB(${model_base} "${headers}" "${sources}"
     OUTPUT_FOLDER ${output_base}
   )
+  # Make sure that each model can be "toggled" at runtime separately.
+  # Effectively amounts to moving the byproducts of the dictgen above to the
+  # appropriate place and making sure libraries are built into the right output
+  # directory
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
   PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
     OUTPUT_FOLDER ${output_base}
@@ -78,6 +82,9 @@ function(GENERATE_DATAMODEL test_case model_version)
       VERBATIM
     )
 
+    # Make sure cmake is aware of how these files came to their final destination
+    # so that there is a chance of dependency tracking and we might avoid too
+    # frequent triggering of the dictgen step
     add_custom_target(Move_${model_base}Dict_files
       DEPENDS
         ${output_base}/lib${model_base}Dict_rdict.pcm

@@ -65,6 +65,8 @@ IF (BUILD_TESTING)
         message(WARNING "strace not found, skipping test_strace")
       else()
         message(STATUS "strace found: ${strace_program}")
+        # Test if too many files are being opened (https://github.com/AIDASoft/podio/issues/770)
+        # When the issue happened, it was around 7k with the Key4hep stack and 20k with the LCG stack
         add_test(NAME test_strace
           COMMAND bash -c "
             ${strace_program} -e open,openat,creat -f -o ${CMAKE_CURRENT_BINARY_DIR}/strace.log \
