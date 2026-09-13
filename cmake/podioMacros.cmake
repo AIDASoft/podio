@@ -232,6 +232,11 @@ endfunction()
 #    OUTPUT_FOLDER        OPTIONAL: The folder in which the output files have been placed by PODIO_GENERATE_DATAMODEL. Defaults to ${CMAKE_CURRENT_SOURCE_DIR}
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
+if((DEFINED PODIO_ENABLE_ROOT AND NOT PODIO_ENABLE_ROOT) OR (NOT DEFINED PODIO_ENABLE_ROOT AND NOT ENABLE_ROOT))
+  message(STATUS "Not adding the ROOT dictionaries for ${CORE_LIB} because ROOT support is not enabled")
+  return()
+endif()
+
   CMAKE_PARSE_ARGUMENTS(ARG "" "OUTPUT_FOLDER" "" ${ARGN})
   IF(NOT ARG_OUTPUT_FOLDER)
     SET(ARG_OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR})

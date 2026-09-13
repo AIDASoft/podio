@@ -26,9 +26,7 @@ if (nlohmann_json_FOUND)
   target_link_libraries(TestDataModel PUBLIC nlohmann_json::nlohmann_json)
 endif()
 
-if(ENABLE_ROOT)
-  PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
-endif()
+PODIO_ADD_ROOT_IO_DICT(TestDataModelDict TestDataModel "${headers}" src/selection.xml)
 PODIO_ADD_SIO_IO_BLOCKS(TestDataModel "${headers}" "${sources}")
 PODIO_ADD_ARROW(TestDataModel "${headers}" "${sources}")
 
@@ -42,10 +40,8 @@ PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
 
-if(ENABLE_ROOT)
   PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
     OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
-endif()
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 PODIO_ADD_ARROW(ExtensionDataModel "${ext_headers}" "${ext_sources}" OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
@@ -60,10 +56,8 @@ PODIO_ADD_DATAMODEL_CORE_LIB(InterfaceExtensionDataModel "${iext_headers}" "${ie
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
 target_link_libraries(InterfaceExtensionDataModel PUBLIC TestDataModel)
 
-if(ENABLE_ROOT)
   PODIO_ADD_ROOT_IO_DICT(InterfaceExtensionDataModelDict InterfaceExtensionDataModel "${iext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model/src/selection.xml
     OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
-endif()
 
 PODIO_ADD_SIO_IO_BLOCKS(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}")
 PODIO_ADD_ARROW(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}" OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)

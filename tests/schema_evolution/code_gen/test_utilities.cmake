@@ -59,11 +59,11 @@ function(GENERATE_DATAMODEL test_case model_version)
     OUTPUT_FOLDER ${output_base}
   )
   set_target_properties(${model_base} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
-  if (ENABLE_ROOT)
-    PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
-      OUTPUT_FOLDER ${output_base}
-    )
+  PODIO_ADD_ROOT_IO_DICT(${model_base}Dict ${model_base} "${headers}" ${output_base}/src/selection.xml
+    OUTPUT_FOLDER ${output_base}
+  )
 
+  if(TARGET ${model_base}Dict)
     set_target_properties(${model_base}Dict PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${output_base})
     add_custom_command(TARGET ${model_base}Dict
       POST_BUILD
