@@ -5,7 +5,7 @@ set(to_install
 
 install(FILES ${to_install} DESTINATION ${podio_PYTHON_INSTALLDIR})
 
-set(python_excludes REGEX test_.*\\.py$ PATTERN __pycache__ EXCLUDE)
+set(python_excludes REGEX test_.*\\.py$ EXCLUDE PATTERN __pycache__ EXCLUDE)
 
 if (NOT ENABLE_SIO)
   list(APPEND python_excludes REGEX .*sio_.*\\.py$ EXCLUDE)

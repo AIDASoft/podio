@@ -43,8 +43,8 @@ first = args.files[0]
 if first.endswith(".root"):
     try:
         from podio.root_merge import merge_files  # pylint: disable=wrong-import-position # noqa: E402
-    except ImportError as e:
-        print("Error: podio ROOT backend is not installed/enabled. Cannot merge ROOT files.")
+    except ImportError:
+        print("Error: podio ROOT backend is not installed/enabled. Cannot merge ROOT files.", file=sys.stderr)
         sys.exit(1)
     merge_files(args.files, args.output_file, metadata=args.metadata, compression=args.compression)
 elif first.endswith(".sio"):

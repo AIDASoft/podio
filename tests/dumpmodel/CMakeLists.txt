@@ -102,10 +102,12 @@ if (ENABLE_ROOT)
   )
 endif()
 
-set_tests_properties(
-    ${root_roundtrip_tests}
-    ${sio_roundtrip_tests}
-    ${rntuple_roundtrip_tests}
-  PROPERTIES
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-  )
+if (root_roundtrip_tests OR sio_roundtrip_tests OR rntuple_roundtrip_tests)
+  set_tests_properties(
+      ${root_roundtrip_tests}
+      ${sio_roundtrip_tests}
+      ${rntuple_roundtrip_tests}
+    PROPERTIES
+      WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+endif()

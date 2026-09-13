@@ -2,8 +2,6 @@
 
 from .__version__ import __version__
 
-import sys
-
 # Try to load podio via ROOT, this is equivalent to trying to load libpodio.so and will
 # error if libpodio.so is not found but work if it's found
 try:

@@ -312,9 +312,15 @@ endif()
 install(FILES ${headers_necessary}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
 )
+set(util_excludes)
+if(NOT ENABLE_ROOT)
+  set(util_excludes PATTERN "RootHelpers.h" EXCLUDE)
+endif()
+
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/podio/utilities
                   ${PROJECT_SOURCE_DIR}/include/podio/detail
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio
+        ${util_excludes}
 )
 
 if(ENABLE_ROOT)
