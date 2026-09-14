@@ -41,7 +41,7 @@ else()
 endif()
 
 add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp)
-target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads)
+target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioIO)
 if (ENABLE_ROOT)
   target_link_libraries(unittest_podio PRIVATE podio::podioRootIO)
 endif()
