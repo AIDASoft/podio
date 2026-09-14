@@ -12,7 +12,7 @@
 
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleReader.hxx>
-#include <RVersion.h>
+#include <ROOT/RVersion.hxx>
 
 namespace podio {
 
