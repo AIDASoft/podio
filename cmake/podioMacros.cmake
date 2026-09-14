@@ -233,7 +233,7 @@ endfunction()
 #---------------------------------------------------------------------------------------------------
 function(PODIO_ADD_ROOT_IO_DICT dict_name CORE_LIB HEADERS SELECTION_XML)
 if((DEFINED PODIO_ENABLE_ROOT AND NOT PODIO_ENABLE_ROOT) OR (NOT DEFINED PODIO_ENABLE_ROOT AND NOT ENABLE_ROOT))
-  message(STATUS "Not adding the ROOT dictionaries for ${CORE_LIB} because ROOT support is not enabled")
+  message(STATUS "Not adding the ROOT dictionaries for ${CORE_LIB} because ROOT support is not enabled for podio")
   return()
 endif()
 
