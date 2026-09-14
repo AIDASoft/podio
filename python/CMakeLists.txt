@@ -48,11 +48,11 @@ IF (BUILD_TESTING)
     endif()
     set_tests_properties(pyunittest PROPERTIES WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
   endif()
-  
+
   add_test( NAME pyunittest_gen COMMAND python3 -m unittest discover -s ${PROJECT_SOURCE_DIR}/python/podio_gen)
   PODIO_SET_TEST_ENV(pyunittest_gen PYTHON)
   set_tests_properties(pyunittest_gen PROPERTIES WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/tests)
-  
+
   if (ENABLE_ROOT)
     find_program(strace_program
       NAMES strace

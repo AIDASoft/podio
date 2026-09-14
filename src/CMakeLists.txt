@@ -131,7 +131,7 @@ if(ENABLE_ROOT)
   else()
     target_compile_definitions(podioRootIO PUBLIC PODIO_ENABLE_RNTUPLE=0)
   endif()
-  
+
   LIST(APPEND INSTALL_LIBRARIES podioRootIO podioRootIODict)
 endif()
 
@@ -328,7 +328,7 @@ if(ENABLE_ROOT)
     ${CMAKE_CURRENT_BINARY_DIR}/podioDictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioDict_rdict.pcm
     DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-  
+
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioRootIODictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioRootIODict_rdict.pcm
