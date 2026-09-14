@@ -654,7 +654,11 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#podio-arrow-io-module">podio.arrow_io module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-podio.arrow_io">podio.arrow_io module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#podio.arrow_io.Reader"><code class="docutils literal notranslate"><span class="pre">Reader</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#podio.arrow_io.Writer"><code class="docutils literal notranslate"><span class="pre">Writer</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-podio.base_reader">podio.base_reader module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#podio.base_reader.BaseReaderMixin"><code class="docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></li>
 </ul>
@@ -890,8 +894,35 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="podio-arrow-io-module">
-<h2>podio.arrow_io module<a class="headerlink" href="#podio-arrow-io-module" title="Link to this heading"></a></h2>
+<section id="module-podio.arrow_io">
+<span id="podio-arrow-io-module"></span><h2>podio.arrow_io module<a class="headerlink" href="#module-podio.arrow_io" title="Link to this heading"></a></h2>
+<p>Python module for reading arrow files containing podio Frames</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="podio.arrow_io.Reader">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.arrow_io.</span></span><span class="sig-name descname"><span class="pre">Reader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.arrow_io.Reader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio.base_reader.BaseReaderMixin" title="podio.base_reader.BaseReaderMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseReaderMixin</span></code></a></p>
+<p>Reader class for reading podio Arrow files.</p>
+<p>Create a reader that reads from the passed directory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em><em> or </em><em>Path</em>) – Directory to open and read data from.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="podio.arrow_io.Writer">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">podio.arrow_io.</span></span><span class="sig-name descname"><span class="pre">Writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#podio.arrow_io.Writer" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#podio.base_writer.BaseWriterMixin" title="podio.base_writer.BaseWriterMixin"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseWriterMixin</span></code></a></p>
+<p>Writer class for writing podio arrow files.</p>
+<p>Create a writer for writing files.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>directory</strong> (<em>str</em><em> or </em><em>Path</em>) – The name of the output directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-podio.base_reader">
 <span id="podio-base-reader-module"></span><h2>podio.base_reader module<a class="headerlink" href="#module-podio.base_reader" title="Link to this heading"></a></h2>
@@ -1338,7 +1369,7 @@ reader as well as accessing specific entries</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>reader</strong> (<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader"><em>Reader</em></a>) – Any podio reader offering access to Frames</p></li>
+<li><p><strong>reader</strong> (<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader"><em>Reader</em></a>) – Any podio reader offering access to Frames</p></li>
 <li><p><strong>category</strong> (<em>str</em>) – The category name of the Frames to be iterated over</p></li>
 <li><p><strong>coll_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The list of collections to read (optional,
 all available collections will by default)</p></li>
@@ -1423,7 +1454,7 @@ All files are assumed to be of the same I/O format.</p>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>root_io.[Legacy]<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader">Reader</a>, sio_io.[Legacy]<a class="reference internal" href="#podio.root_io.Reader" title="podio.root_io.Reader">Reader</a></p>
+<dd class="field-odd"><p>root_io.[Legacy]<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader">Reader</a>, sio_io.[Legacy]<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader">Reader</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
