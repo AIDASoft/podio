@@ -4,6 +4,8 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
 #include "podio/utilities/RootHelpers.h"
+
+#include "ioUtils.h"
 #include "rootUtils.h"
 
 #include <ROOT/RError.hxx>
@@ -93,6 +95,10 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     }
   }
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
+
+  for (const auto& warning : io_utils::checkEDMVersionsReadable(m_datamodelHolder)) {
+    std::cerr << "WARNING: " << warning << std::endl;
+  }
 
   auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
   m_availableCategories = availableCategoriesField(0);
