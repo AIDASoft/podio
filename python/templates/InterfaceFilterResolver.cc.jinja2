@@ -1,0 +1,29 @@
+// AUTOMATICALLY GENERATED FILE - DO NOT EDIT
+
+#include "{{ incfolder }}{{ class.bare_type }}.h"
+{% for include in include_types %}
+{{ include }}
+{% endfor %}
+
+#include <podio/detail/FilterHooks.h>
+
+#include <optional>
+#include <string_view>
+
+// Resolve an interface-typed relation target to its concrete handle in the
+// filtered output. The interface stores only ObjectIDs, so the concrete type is
+// recovered at runtime from the target collection's value type name.
+std::optional<{{ class.full_type }}>
+{{ class.full_type }}::resolveFilteredTarget(const podio::detail::FilterRemap& remap, podio::ObjectID id) {
+  const auto* loc = remap.find(id);
+  if (!loc) {
+    return std::nullopt;
+  }
+  const auto valueType = loc->collection->getValueTypeName();
+{% for member in Types %}
+  if (valueType == {{ member.full_type }}::typeName) {
+    return {{ class.full_type }}(static_cast<const {{ member.full_type }}::collection_type&>(*loc->collection)[loc->index]);
+  }
+{% endfor %}
+  return std::nullopt;
+}
