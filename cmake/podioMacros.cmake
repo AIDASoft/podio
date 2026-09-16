@@ -227,7 +227,7 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
       target_sources(${lib_name}
         PUBLIC
           FILE_SET CXX_MODULES
-          BASE_DIRS ${ARG_OUTPUT_FOLDER}
+          BASE_DIRS ${ARG_OUTPUT_FOLDER}/src
           FILES ${module_files}
       )
     endif()
