@@ -72,6 +72,11 @@ function(PODIO_ADD_MODULE_INTERFACE target module_name module_file)
       BASE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}
       FILES ${module_file}
   )
+
+  # Make sure downstream consumers get the right c++ standard for module
+  # scanning. CMake doesn't take the provided CMAKE_CXX_STANDARD for deciding
+  # here, but rather checks the target_compile_features
+  target_compile_features(${target} PUBLIC cxx_std_20)
 endfunction()
 
 #---------------------------------------------------------------------------------------------------
