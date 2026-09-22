@@ -13,14 +13,14 @@ repos:
         exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)$|podioVersion.in.h)
         types: [c++]
         language: system
-      - id: ruff
-        name: ruff
-        entry: ruff check
-        types: [python]
-        language: system
       - id: ruff-format
         name: ruff-format
         entry: ruff format
+        types: [python]
+        language: system
+      - id: ruff
+        name: ruff
+        entry: ruff check
         types: [python]
         language: system
       - id: cppcheck
