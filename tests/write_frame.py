@@ -6,7 +6,7 @@ import importlib
 
 import ROOT
 
-if ROOT.gSystem.Load("libTestDataModelDict") < 0:  # noqa: E402
+if ROOT.gSystem.Load("libTestDataModelDict") < 0:
     raise RuntimeError("Could not load TestDataModel dictionary")
 
 from ROOT import (
@@ -15,7 +15,7 @@ from ROOT import (
     TestLinkCollection,
     TestInterfaceLinkCollection,
     TypeWithEnergy,
-)  # noqa: E402
+)
 
 from podio import Frame
 

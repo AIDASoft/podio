@@ -3,7 +3,7 @@
 
 from ROOT import gSystem
 
-gSystem.Load("libpodioRootIO")  # noqa: E402
+gSystem.Load("libpodioRootIO")
 from ROOT import podio  # noqa: E402
 
 from podio.base_reader import BaseReaderMixin  # noqa: E402

@@ -13,7 +13,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 [lint]
-select = ["F", "E", "W", "PLE", "PLW", "PLC"]
+select = ["F", "E", "W", "PLE", "PLW", "PLC", "RUF100"]
 
 [lint.per-file-ignores]
 "python/podio_gen/test_MemberParser.py" = ["E501"]

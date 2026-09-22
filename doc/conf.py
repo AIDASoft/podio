@@ -23,7 +23,7 @@ doc_dir = Path(__file__).parent
 # -- Project information -----------------------------------------------------
 
 project = "PODIO"
-copyright = "2023, Key4hep authors"  # noqa: A001
+copyright = "2023, Key4hep authors"
 author = "Key4hep authors"
 
 

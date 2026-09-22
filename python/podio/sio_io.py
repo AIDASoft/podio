@@ -4,14 +4,14 @@
 from ROOT import gSystem
 
 if gSystem.DynamicPathName("libpodioSioIO.so", True):
-    gSystem.Load("libpodioSioIO")  # noqa: E402
+    gSystem.Load("libpodioSioIO")
 else:
     raise ImportError("Error when importing libpodioSioIO")
-from ROOT import podio  # noqa: E402
+from ROOT import podio
 
 from podio.base_reader import BaseReaderMixin
 from podio.base_writer import BaseWriterMixin
-from podio.utils import convert_to_str_paths  # noqa: E402
+from podio.utils import convert_to_str_paths
 
 
 class Reader(BaseReaderMixin):
