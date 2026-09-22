@@ -1,35 +1,26 @@
-# Additional target to run python linters and formatters on python scripts
+# Additional targets to run the python formatter and linter on python scripts
 #
-# Requires black/flake8 to be available in the environment
-
+# Requires ruff to be available in the environment. The configuration is taken
+# from .ruff.toml in the source directory.
 
 # Get all our Python files
 file(GLOB_RECURSE ALL_PYTHON_FILES ${PROJECT_SOURCE_DIR}/python/*.py)
 
-
-# Black is rather simple because there are no options...
-find_program(BLACK_EXECUTABLE black)
-if(BLACK_EXECUTABLE)
+find_program(RUFF_EXECUTABLE ruff)
+if(RUFF_EXECUTABLE)
     add_custom_target(
-            black
-            COMMAND ${BLACK_EXECUTABLE}
-            ${ALL_PYTHON_FILES}
-    )
-    set_target_properties(black PROPERTIES EXCLUDE_FROM_ALL TRUE)
-else()
-    message(STATUS "Failed to find black executable - no target to run black can be set")
-endif()
-
-find_program(FLAKE8_EXECUTABLE flake8)
-if(FLAKE8_EXECUTABLE)
-    add_custom_target(
-        flake8
+        ruff-format
         WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
-        COMMAND ${FLAKE8_EXECUTABLE}
-        --config=${PROJECT_SOURCE_DIR}/.flake8
-        ${ALL_PYTHON_FILES}
+        COMMAND ${RUFF_EXECUTABLE} format ${ALL_PYTHON_FILES}
     )
-    set_target_properties(flake8 PROPERTIES EXCLUDE_FROM_ALL TRUE)
+    set_target_properties(ruff-format PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+    add_custom_target(
+        ruff-check
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMAND ${RUFF_EXECUTABLE} check ${ALL_PYTHON_FILES}
+    )
+    set_target_properties(ruff-check PROPERTIES EXCLUDE_FROM_ALL TRUE)
 else()
-    message(STATUS "Failed to find flake8 executable - no target to run flake8 can be set")
+    message(STATUS "Failed to find ruff executable - no targets to run ruff can be set")
 endif()
