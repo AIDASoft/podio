@@ -11,8 +11,8 @@ import ROOT
 #
 # We check whether we can actually load the header to not break python bindings
 # in environments with *ancient* podio versions
-if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:  # noqa: E402
-    from ROOT import podio  # noqa: E402
+if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:
+    from ROOT import podio
 else:
     raise ImportError(
         "Could not load podio/Frame.h. Make sure it is available on ROOT_INCLUDE_PATH."

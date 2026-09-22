@@ -6,10 +6,10 @@ from podio import __version__
 import ROOT
 
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
-if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") != 0:  # noqa: E402
+if ROOT.gInterpreter.LoadFile("podio/podioVersion.h") != 0:
     raise ImportError("Cannot find the podio/podioVersion.h header")
 
-from ROOT import podio  # noqa: E402
+from ROOT import podio
 
 Version = podio.version.Version
 

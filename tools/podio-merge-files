@@ -45,8 +45,8 @@ if first.endswith(".root"):
     merge_files(args.files, args.output_file, metadata=args.metadata, compression=args.compression)
 elif first.endswith(".sio"):
     # Slow path: frame-by-frame copy
-    from podio import reading  # noqa: E402
-    from podio import sio_io  # noqa: E402
+    from podio import reading
+    from podio import sio_io
 
     reader = reading.get_reader(args.files)
     writer = sio_io.Writer(args.output_file)
