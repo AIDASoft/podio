@@ -77,14 +77,6 @@ cmake_dependent_option(ENABLE_DATASOURCE "Build podio's ROOT DataSource" OFF "EN
 option(PODIO_USE_CLANG_FORMAT "Use clang-format to format the code" OFF)
 option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels will be generated, and Julia tests will run." OFF)
 
-if(ENABLE_RNTUPLE AND NOT ENABLE_ROOT)
-  message(FATAL_ERROR "ENABLE_RNTUPLE requires ENABLE_ROOT=ON")
-endif()
-if(ENABLE_DATASOURCE AND NOT ENABLE_ROOT)
-  message(FATAL_ERROR "ENABLE_DATASOURCE requires ENABLE_ROOT=ON")
-endif()
-
-
 #--- Declare ROOT dependency ---------------------------------------------------
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 find_package(Threads REQUIRED)
