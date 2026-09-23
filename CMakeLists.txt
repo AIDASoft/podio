@@ -65,14 +65,15 @@ option(CLANG_TIDY "Run clang-tidy after compilation." OFF)
 ADD_CLANG_TIDY()
 
 #--- Declare options -----------------------------------------------------------
+include(CMakeDependentOption)
 option(CREATE_DOC        "Whether or not to create doxygen doc target." OFF)
 option(ENABLE_ROOT       "Build ROOT I/O support" ON)
 option(ENABLE_SIO        "Build SIO I/O support" OFF)
 option(ENABLE_ARROW      "Build Arrow I/O support" OFF)
 option(ENABLE_PARQUET    "Build Parquet support" OFF)
 option(PODIO_RELAX_PYVER "Do not require exact python version match with ROOT" OFF)
-option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF)
-option(ENABLE_DATASOURCE "Build podio's ROOT DataSource" OFF)
+cmake_dependent_option(ENABLE_RNTUPLE    "Build with support for the new ROOT NTtuple format" OFF "ENABLE_ROOT" OFF)
+cmake_dependent_option(ENABLE_DATASOURCE "Build podio's ROOT DataSource" OFF "ENABLE_ROOT" OFF)
 option(PODIO_USE_CLANG_FORMAT "Use clang-format to format the code" OFF)
 option(ENABLE_JULIA      "Enable Julia support. When enabled, Julia datamodels will be generated, and Julia tests will run." OFF)
 
