@@ -2,9 +2,6 @@
 
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
-#include "read_test.h"
-
-#include <string>
 
 int main() {
   return rewrite_frames<podio::ROOTReader, podio::ROOTWriter>("example_frame.root", "rewritten_frame.root") +
