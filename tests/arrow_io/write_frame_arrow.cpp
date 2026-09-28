@@ -3,6 +3,7 @@
 #include "podio/ArrowWriter.h"
 
 #include <filesystem>
+#include <string>
 
 int main(int, char**) {
   std::string filename = "example_frame.podio_parquet";

@@ -2,6 +2,9 @@
 
 #include "podio/SIOReader.h"
 #include "podio/SIOWriter.h"
+#include "read_test.h"
+
+#include <string>
 
 int main() {
   return rewrite_frames<podio::SIOReader, podio::SIOWriter>("example_frame.sio", "rewritten_frame.sio") +

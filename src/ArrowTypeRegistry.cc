@@ -2,6 +2,8 @@
 #include "podio/utilities/ArrowConverterRegistry.h"
 #include <arrow/api.h>
 
+#include <utility>
+
 namespace podio {
 
 ArrowTypeRegistry::ArrowTypeRegistry() : m_registry() {

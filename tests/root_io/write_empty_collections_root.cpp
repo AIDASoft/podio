@@ -5,7 +5,10 @@
 #include "podio/ROOTWriter.h"
 
 #include <iostream>
+#include <memory>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace {

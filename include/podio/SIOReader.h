@@ -7,14 +7,14 @@
 
 #include <sio/definitions.h>
 
+#include <fstream>
 #include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <vector>
 
 namespace podio {
-
-class CollectionIDTable;
 
 /// The SIOReader can be used to read files that have been written with the SIO
 /// backend.

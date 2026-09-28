@@ -1,23 +1,33 @@
 #include "argparseUtils.h"
 #include "tabulate.h"
 
+#include "podio/CollectionBase.h"
 #include "podio/Frame.h"
+#include "podio/GenericParameters.h"
 #include "podio/Reader.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/ReaderUtils.h"
 
 #include <fmt/core.h>
+#include <fmt/format.h>
 #include <fmt/ostream.h>
-#include <fmt/ranges.h>
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <exception>
 #include <iterator>
+#include <map>
 #include <numeric>
+#include <optional>
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 template <>
 struct fmt::formatter<podio::version::Version> : ostream_formatter {};

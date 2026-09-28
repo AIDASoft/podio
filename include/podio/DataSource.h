@@ -2,22 +2,23 @@
 #define PODIO_DATASOURCE_H
 
 // Podio
-#include <podio/CollectionBase.h>
 #include <podio/Frame.h>
 #include <podio/Reader.h>
 
 // ROOT
 #include <ROOT/RDataFrame.hxx>
 #include <ROOT/RDataSource.hxx>
+#include <RtypesCore.h>
 
 // STL
 #include <memory>
 #include <string>
-#include <typeinfo>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 namespace podio {
+class CollectionBase;
 class DataSource : public ROOT::RDF::RDataSource {
 public:
   ///

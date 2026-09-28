@@ -3,6 +3,7 @@
 #include "podio/ArrowReader.h"
 
 #include <cstdlib>
+#include <string>
 
 int main(int argc, char* argv[]) {
   int nThreads = 4;

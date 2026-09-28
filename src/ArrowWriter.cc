@@ -7,16 +7,23 @@
 #include "podio/utilities/ArrowFrameConverter.h"
 
 #include <arrow/io/file.h>
+#include <arrow/result.h>
 #include <arrow/table.h>
 #include <arrow/type.h>
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/writer.h>
+#include <parquet/platform.h>
 #include <parquet/properties.h>
 
 #include <algorithm>
+#include <exception>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <stdexcept>
+#include <tuple>
+#include <utility>
 
 #ifndef PODIO_ARROW_DEFAULT_COMPRESSION
   #define PODIO_ARROW_DEFAULT_COMPRESSION "UNCOMPRESSED"

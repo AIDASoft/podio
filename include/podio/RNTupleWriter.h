@@ -1,7 +1,6 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
-#include "podio/Frame.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/StringKeyMap.h"
@@ -12,10 +11,15 @@
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
 
+#include <memory>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <vector>
 
 namespace podio {
+class GenericParameters;
+class Frame;
 
 namespace root_compat {
 #if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)

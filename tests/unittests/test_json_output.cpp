@@ -2,18 +2,25 @@
 
 #include <podio/ObjectID.h>
 
+#include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/ExampleMCCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/ExampleWithVectorMemberCollection.h"
+#include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleHit.h"
+#include "datamodel/MutableExampleMC.h"
+#include "datamodel/MutableExampleWithOneRelation.h"
+#include "datamodel/MutableExampleWithVectorMember.h"
 
 #include <catch2/catch_test_macros.hpp>
+#include <catch2/catch_tostring.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 #include <catch2/matchers/catch_matchers_vector.hpp>
 #include <nlohmann/json.hpp>
 
-#include <limits>
-#include <set>
+#include <cstddef>
+#include <cstdint>
+#include <initializer_list>
 #include <vector>
 
 template <typename T>

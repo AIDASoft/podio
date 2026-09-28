@@ -9,6 +9,7 @@
 #include "podio/utilities/StringKeyMap.h"
 
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -17,7 +18,6 @@ class TTree;
 
 namespace podio {
 class Frame;
-class CollectionBase;
 class GenericParameters;
 
 /// The ROOTWriter writes podio files into ROOT files using TTrees.

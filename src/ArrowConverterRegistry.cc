@@ -5,6 +5,15 @@
 #include "podio/utilities/ArrowUtils.h"
 #include "podio/utilities/BackendLibraryLoader.h"
 #include <arrow/api.h>
+#include <arrow/array/array_nested.h>
+#include <arrow/array/array_primitive.h>
+#include <arrow/array/builder_dict.h>
+#include <arrow/array/builder_nested.h>
+
+#include <cstddef>
+#include <stdexcept>
+#include <utility>
+#include <vector>
 
 namespace podio {
 

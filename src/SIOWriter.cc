@@ -2,11 +2,19 @@
 #include "podio/Frame.h"
 #include "podio/SIOBlock.h"
 
+#include "podio/DatamodelRegistry.h"
+#include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "sioUtils.h"
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
+#include <tuple>
+#include <utility>
+
+#include <sio/exception.h>
 
 namespace podio {
 

@@ -3,17 +3,24 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
+#include "podio/ObjectID.h"
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
 #include <ROOT/RError.hxx>
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <iostream>
 #include <memory>
+#include <optional>
+#include <stdexcept>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 // Adjust for the move of this out of ROOT v7 in

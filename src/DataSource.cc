@@ -1,18 +1,18 @@
 #include "podio/DataSource.h"
+#include "podio/CollectionBase.h"
+#include "podio/Frame.h"
 #include "podio/Reader.h"
 #include "podio/utilities/Glob.h"
 
 // podio
 #include <podio/FrameCategories.h>
 
-// ROOT
-#include <TFile.h>
-
 // STL
 #include <algorithm>
 #include <cstddef>
-#include <cstdio>
+#include <iterator>
 #include <memory>
+#include <stdexcept>
 
 namespace podio {
 DataSource::DataSource(const std::string& filePath, int nEvents, const std::vector<std::string>& collNames) :

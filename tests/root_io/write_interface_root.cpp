@@ -1,5 +1,7 @@
+#include "podio/Writer.h"
 #include "write_interface.h"
 
+#include <iostream>
 #include <string>
 
 int main(int argc, char* argv[]) {

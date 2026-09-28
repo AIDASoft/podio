@@ -3,6 +3,7 @@
 
 #include "podio/podioVersion.h"
 
+#include <cstddef>
 #include <optional>
 #include <string>
 #include <string_view>

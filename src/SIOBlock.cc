@@ -1,7 +1,10 @@
 #include "podio/SIOBlock.h"
 
+#include "podio/CollectionBase.h"
+#include "podio/GenericParameters.h"
 #include "podio/utilities/BackendLibraryLoader.h"
 #include <algorithm>
+#include <ranges>
 
 namespace podio {
 

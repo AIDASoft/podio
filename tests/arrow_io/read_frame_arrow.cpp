@@ -3,6 +3,8 @@
 
 #include "podio/ArrowReader.h"
 
+#include <string>
+
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.podio_parquet";
   bool assertBuildVersion = true;

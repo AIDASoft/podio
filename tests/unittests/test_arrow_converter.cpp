@@ -15,14 +15,55 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 
 // Test frame validation helpers
+#include "datamodel/ExampleCluster.h"
+#include "datamodel/ExampleHit.h"
+#include "datamodel/ExampleMC.h"
+#include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleWithARelation.h"
+#include "datamodel/ExampleWithARelationCollection.h"
+#include "datamodel/ExampleWithArray.h"
+#include "datamodel/ExampleWithFixedWidthIntegers.h"
+#include "datamodel/ExampleWithNamespace.h"
+#include "datamodel/ExampleWithVectorMember.h"
+#include "datamodel/MutableExampleWithARelation.h"
+#include "datamodel/NamespaceStruct.h"
+#include "datamodel/NotSoSimpleStruct.h"
+#include "datamodel/SimpleStruct.h"
+#include "datamodel/StructWithFixedWithTypes.h"
+#include "datamodel/TestInterfaceLinkCollection.h"
+#include "datamodel/TypeWithEnergy.h"
+#include "podio/CollectionBase.h"
+#include "podio/LinkCollection.h"
+#include "podio/ObjectID.h"
+#include "podio/RelationRange.h"
+#include "podio/podioVersion.h"
 #include "read_frame.h"
+#include "read_test.h"
 #include "write_frame.h"
 
 // Arrow headers
 #include <arrow/api.h>
+#include <arrow/array/array_binary.h>
+#include <arrow/array/array_nested.h>
+#include <arrow/array/array_primitive.h>
+#include <arrow/array/builder_dict.h>
+#include <arrow/array/builder_nested.h>
 #include <arrow/table.h>
-#include <arrow/type.h>
-#include <iostream>
+
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <limits>
+#include <memory>
+#include <optional>
+#include <sstream>
+#include <string>
+#include <utility>
+#include <vector>
+
+namespace arrow {
+class Array;
+} // namespace arrow
 
 TEST_CASE("ArrowFrameConverter - convertFrameToTable Verification", "[arrow][converter]") {
   auto originalFrame = makeFrame(0);

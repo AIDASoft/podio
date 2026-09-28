@@ -4,6 +4,8 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include <algorithm>
+#include <cstddef>
+#include <initializer_list>
 #include <iostream>
 #include <iterator>
 #include <map>
@@ -11,6 +13,9 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <tuple>
+#include <type_traits>
+#include <utility>
 #include <vector>
 
 #if PODIO_ENABLE_SIO

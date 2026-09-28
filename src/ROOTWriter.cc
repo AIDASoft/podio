@@ -4,12 +4,22 @@
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 
+#include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/MiscHelpers.h"
 #include "rootUtils.h"
 
+#include "TBranch.h"
+#include "TFile.h"
 #include "TTree.h"
+
+#include <cstddef>
+#include <memory>
+#include <optional>
+#include <stdexcept>
 #include <tuple>
+#include <utility>
 
 namespace podio {
 

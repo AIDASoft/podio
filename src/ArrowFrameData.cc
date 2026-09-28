@@ -3,8 +3,13 @@
 
 #include <algorithm>
 #include <arrow/api.h>
+#include <arrow/array/array_base.h>
+#include <arrow/array/array_binary.h>
+#include <arrow/array/array_nested.h>
+#include <arrow/array/array_primitive.h>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 
 namespace podio {
 

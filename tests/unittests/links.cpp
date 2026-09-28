@@ -1,25 +1,41 @@
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
+#include <catch2/catch_tostring.hpp>
+#include <catch2/matchers/catch_matchers.hpp>
 
 #include "podio/LinkCollection.h"
 #include "podio/LinkNavigator.h"
 #include "podio/utilities/TypeHelpers.h"
 
+#include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "datamodel/MutableExampleCluster.h"
+#include "datamodel/MutableExampleHit.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
+#include "podio/ObjectID.h"
+#include "podio/detail/LinkFwd.h"
 #include <utility>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
 #endif
 
+#include <array>
+#include <cstddef>
+#include <iterator>
 #include <map>
+#include <ranges>
 #include <set>
+#include <stdexcept>
+#include <string_view>
+#include <tuple>
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <vector>
 
 // Test datatypes (spelling them out here explicitly to make sure that
 // assumptions about typedefs actually hold)

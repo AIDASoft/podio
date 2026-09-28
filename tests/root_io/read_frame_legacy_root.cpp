@@ -3,7 +3,10 @@
 #include "podio/Frame.h"
 #include "podio/ROOTLegacyReader.h"
 
+#include <cstddef>
 #include <iostream>
+#include <stdexcept>
+#include <string>
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {

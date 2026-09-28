@@ -5,6 +5,7 @@
 #include "podio/CollectionIDTable.h"
 #include "podio/GenericParameters.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
