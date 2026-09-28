@@ -20,8 +20,6 @@
 #include <utility>
 #include <vector>
 
-// forward declarations
-
 namespace podio {
 
 namespace detail {
