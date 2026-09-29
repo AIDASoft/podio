@@ -6,7 +6,6 @@
 #include "podio/LinkCollection.h"
 #include "podio/LinkNavigator.h"
 #include "podio/utilities/TypeHelpers.h"
-
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
