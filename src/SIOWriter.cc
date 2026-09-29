@@ -1,7 +1,6 @@
 #include "podio/SIOWriter.h"
 #include "podio/Frame.h"
 #include "podio/SIOBlock.h"
-
 #include "podio/DatamodelRegistry.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
