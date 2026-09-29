@@ -13,6 +13,7 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
+#include <Compression.h>
 #include <ROOT/RVersion.hxx>
 
 #include <cstddef>
