@@ -25,7 +25,6 @@
 #include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithNamespace.h"
 #include "datamodel/ExampleWithVectorMember.h"
-#include "datamodel/MutableExampleWithARelation.h"
 #include "datamodel/NamespaceStruct.h"
 #include "datamodel/NotSoSimpleStruct.h"
 #include "datamodel/SimpleStruct.h"

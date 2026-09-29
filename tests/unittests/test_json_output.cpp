@@ -6,10 +6,7 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
-#include "datamodel/MutableExampleCluster.h"
-#include "datamodel/MutableExampleHit.h"
 #include "datamodel/MutableExampleMC.h"
-#include "datamodel/MutableExampleWithOneRelation.h"
 #include "datamodel/MutableExampleWithVectorMember.h"
 
 #include <catch2/catch_test_macros.hpp>

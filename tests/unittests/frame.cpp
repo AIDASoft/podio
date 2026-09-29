@@ -6,7 +6,6 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/MutableExampleCluster.h"
 #include "podio/RelationRange.h"
 
 #include <algorithm>

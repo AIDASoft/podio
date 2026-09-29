@@ -11,7 +11,6 @@
 #include "interface_extension_model/MutableAnotherHit.h"
 
 #include "datamodel/ExampleCluster.h"
-#include "datamodel/MutableExampleHit.h"
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
 

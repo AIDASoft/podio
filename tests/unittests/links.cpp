@@ -11,8 +11,6 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
-#include "datamodel/MutableExampleCluster.h"
-#include "datamodel/MutableExampleHit.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
 #include "podio/ObjectID.h"

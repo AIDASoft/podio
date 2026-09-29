@@ -4,7 +4,6 @@
 
 #include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleReferencingType.h"
-#include "datamodel/MutableExampleMC.h"
 #include "podio/Frame.h"
 #include "podio/FrameCategories.h"
 #include "podio/ROOTReader.h"
