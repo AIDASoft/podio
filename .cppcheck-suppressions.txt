@@ -18,6 +18,9 @@ functionStatic:ArrowWriter.cc
 shadowFunction:LinkCollectionImpl.h
 
 copyCtorPointerCopying:MaybeSharedPtr.h
+# LinkT hands a raw pointer to MaybeSharedPtr, which does the reference counting
+# so the defaulted copy constructor is correct
+noCopyConstructor:Link.h
 knownConditionTrueFalse:LinkCollectionImpl.h
 
 useStlAlgorithm:*Reader.cc

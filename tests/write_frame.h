@@ -479,13 +479,13 @@ podio::Frame makeFrame(int iFrame) {
   frame.put(createInfoCollection(iFrame), "info");
   frame.put(createFixedWidthCollection(), "fixedWidthInts");
 
-  auto& mcps = frame.put(createMCCollection(), "mcparticles");
+  const auto& mcps = frame.put(createMCCollection(), "mcparticles");
 
   ExampleMCCollection moreMCs{};
   for (const auto&& mc : mcps) {
     moreMCs.push_back(mc.clone());
   }
-  auto& otherMCs = frame.put(std::move(moreMCs), "moreMCs");
+  const auto& otherMCs = frame.put(std::move(moreMCs), "moreMCs");
   frame.put(createMCRefCollection(mcps, otherMCs), "mcParticleRefs");
 
   const auto& hits = frame.put(createHitCollection(iFrame), "hits");

@@ -38,7 +38,7 @@ void checkIntUserDataCollection(const podio::Frame& event, int eventNum) {
   auto& usrInts = event.get<podio::UserDataCollection<uint64_t>>("userInts");
   ASSERT(usrInts.size() == static_cast<unsigned>(eventNum + 1), "userInts collection does not have the expected size")
 
-  auto& uivec = usrInts.vec();
+  const auto& uivec = usrInts.vec();
   int myInt = 0;
   for (int iu : uivec) {
     ASSERT(iu == myInt++, "userInts contents not as expected");
@@ -220,13 +220,13 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
 
   checkClusterCollection(event, hits);
 
-  auto& clusters = event.get<ExampleClusterCollection>("clusters");
+  const auto& clusters = event.get<ExampleClusterCollection>("clusters");
 
   if (fileVersion >= podio::version::Version{0, 13, 2}) {
     // Read the mcParticleRefs before reading any of the other collections that
     // are referenced to make sure that all the necessary relations are handled
     // correctly
-    auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
+    const auto& mcpRefs = event.get<ExampleMCCollection>("mcParticleRefs");
 
     // Only doing a very basic check here, that mainly just ensures that the
     // RelationRange is valid and does not segfault.
@@ -302,7 +302,7 @@ void processEvent(const podio::Frame& event, int eventNum, podio::version::Versi
     for (auto hit [[maybe_unused]] : cluster.Hits()) {
     }
   }
-  auto& rels [[maybe_unused]] = event.get<ExampleWithOneRelationCollection>("OneRelation");
+  const auto& rels [[maybe_unused]] = event.get<ExampleWithOneRelationCollection>("OneRelation");
 
   //  std::cout << "Fetching collection 'WithVectorMember'" << std::endl;
   auto& vecs = event.get<ExampleWithVectorMemberCollection>("WithVectorMember");

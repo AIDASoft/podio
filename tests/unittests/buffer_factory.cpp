@@ -22,7 +22,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(buffers.vectorMembers);
 
     // Cast this to something useful again
-    auto dataBuffers = static_cast<ExampleHitDataContainer*>(buffers.data);
+    const auto* dataBuffers = static_cast<ExampleHitDataContainer*>(buffers.data);
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->empty());
@@ -40,7 +40,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(buffers.vectorMembers);
 
     // Cast this to something useful again
-    auto dataBuffers = static_cast<ExampleClusterDataContainer*>(buffers.data);
+    const auto* dataBuffers = static_cast<ExampleClusterDataContainer*>(buffers.data);
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->size() == 2);
     REQUIRE(buffers.vectorMembers->empty());
@@ -59,7 +59,7 @@ TEST_CASE("createBuffers", "[internals][memory-management]") {
     REQUIRE(buffers.vectorMembers);
 
     // Cast this to something useful again
-    auto dataBuffers = static_cast<ExampleWithVectorMemberDataContainer*>(buffers.data);
+    const auto* dataBuffers = static_cast<ExampleWithVectorMemberDataContainer*>(buffers.data);
     REQUIRE(dataBuffers->empty());
     REQUIRE(buffers.references->empty());
     REQUIRE(buffers.vectorMembers->size() == 1);

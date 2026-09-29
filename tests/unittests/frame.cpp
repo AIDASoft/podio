@@ -119,7 +119,7 @@ auto createFrame() {
   frame.put(ExampleClusterCollection(), "emptyClusters");
 
   // Create a few hits inline (to avoid having to have two identifiers)
-  auto& hits = frame.put(
+  const auto& hits = frame.put(
       []() {
         auto coll = ExampleHitCollection();
         auto hit = coll.create(0x42ULL, 0., 0., 0., 0.);

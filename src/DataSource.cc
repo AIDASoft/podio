@@ -9,6 +9,7 @@
 #include <TFile.h>
 
 // STL
+#include <algorithm>
 #include <cstddef>
 #include <cstdio>
 #include <memory>
@@ -146,9 +147,8 @@ std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName,
   m_activeCollections.emplace_back(columnIndex);
 
   std::vector<void*> columnReaders(m_nSlots);
-  for (size_t slotIndex = 0; slotIndex < m_nSlots; ++slotIndex) {
-    columnReaders[slotIndex] = static_cast<void*>(&m_Collections[columnIndex][slotIndex]);
-  }
+  std::ranges::transform(m_Collections[columnIndex], columnReaders.begin(),
+                         [](auto& slotCollection) { return static_cast<void*>(&slotCollection); });
 
   return columnReaders;
 }

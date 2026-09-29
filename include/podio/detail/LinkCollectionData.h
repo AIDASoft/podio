@@ -20,15 +20,17 @@ public:
   LinkObjPointerContainer<FromT, ToT> entries{};
 
   LinkCollectionData() :
-      m_rel_from(new std::vector<FromT>()), m_rel_to(new std::vector<ToT>()), m_data(new LinkDataContainer()) {
+      m_rel_from(std::make_unique<std::vector<FromT>>()),
+      m_rel_to(std::make_unique<std::vector<ToT>>()),
+      m_data(std::make_unique<LinkDataContainer>()) {
     m_refCollections.reserve(2);
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
     m_refCollections.emplace_back(std::make_unique<std::vector<podio::ObjectID>>());
   }
 
   LinkCollectionData(podio::CollectionReadBuffers&& buffers, bool isSubsetColl) :
-      m_rel_from(new std::vector<FromT>()),
-      m_rel_to(new std::vector<ToT>()),
+      m_rel_from(std::make_unique<std::vector<FromT>>()),
+      m_rel_to(std::make_unique<std::vector<ToT>>()),
       m_refCollections(std::move(*buffers.references)) {
     if (!isSubsetColl) {
       m_data.reset(buffers.dataAsVector<LinkData>());
