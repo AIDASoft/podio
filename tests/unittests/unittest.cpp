@@ -1836,7 +1836,7 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
   #include "podio/RelationRange.h"
   #include "podio/utilities/ArrowTypeRegistry.h"
   #include "podio/utilities/RootHelpers.h"
-  #include <arrow/type.h>
+  #include <arrow/api.h>
 
   #include <catch2/catch_message.hpp>
   #include <catch2/catch_tostring.hpp>
