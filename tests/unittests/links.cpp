@@ -5,15 +5,16 @@
 
 #include "podio/LinkCollection.h"
 #include "podio/LinkNavigator.h"
+#include "podio/ObjectID.h"
+#include "podio/detail/LinkFwd.h"
 #include "podio/utilities/TypeHelpers.h"
+
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/TestInterfaceLinkCollection.h"
 #include "datamodel/TypeWithEnergy.h"
-#include "podio/ObjectID.h"
-#include "podio/detail/LinkFwd.h"
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"

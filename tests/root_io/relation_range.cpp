@@ -1,8 +1,8 @@
+#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleMCCollection.h"
+#include "datamodel/ExampleReferencingType.h"
 #include "datamodel/MutableExampleReferencingType.h"
 #include "datamodel/MutableExampleWithVectorMember.h"
-#include "datamodel/ExampleMC.h"
-#include "datamodel/ExampleReferencingType.h"
 
 #include "podio/Frame.h"
 #include "podio/FrameCategories.h"
