@@ -15,16 +15,9 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 
 // Test frame validation helpers
-#include "datamodel/ExampleCluster.h"
-#include "datamodel/ExampleHit.h"
-#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleWithARelation.h"
 #include "datamodel/ExampleWithARelationCollection.h"
-#include "datamodel/ExampleWithArray.h"
-#include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithNamespace.h"
-#include "datamodel/ExampleWithVectorMember.h"
 #include "datamodel/NamespaceStruct.h"
 #include "datamodel/NotSoSimpleStruct.h"
 #include "datamodel/SimpleStruct.h"

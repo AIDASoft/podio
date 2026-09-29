@@ -1,25 +1,3 @@
-// STL
-#include <array>
-#include <cstddef>
-#include <cstdint>
-#include <filesystem>
-#include <iterator>
-#include <map>
-#include <memory>
-#include <optional>
-#include <ranges>
-#include <set>
-#include <sstream>
-#include <stdexcept>
-#include <string>
-#include <thread>
-#include <tuple>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
@@ -71,6 +49,28 @@
 #include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
+
+// STL
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <filesystem>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <optional>
+#include <ranges>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <thread>
+#include <tuple>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();

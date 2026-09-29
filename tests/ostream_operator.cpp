@@ -1,10 +1,6 @@
-#include "datamodel/ExampleForCyclicDependency1.h"
 #include "datamodel/ExampleForCyclicDependency1Collection.h"
-#include "datamodel/ExampleForCyclicDependency2.h"
 #include "datamodel/ExampleForCyclicDependency2Collection.h"
-#include "datamodel/ExampleMC.h"
 #include "datamodel/ExampleMCCollection.h"
-#include "datamodel/ExampleReferencingType.h"
 #include "datamodel/ExampleReferencingTypeCollection.h"
 
 #include <iostream>
