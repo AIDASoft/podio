@@ -78,7 +78,7 @@ void readCollection() {
   for (unsigned i = 0; i < nEvents; ++i) {
     auto store = podio::Frame(reader.readNextEntry(podio::Category::Event));
 
-    auto& clusters = store.get<ExampleClusterCollection>("clusters");
+    const auto& clusters = store.get<ExampleClusterCollection>("clusters");
     for (const auto& cluster : clusters) {
       if (cluster.isAvailable()) {
         for (const auto& hit : cluster.Hits()) {
