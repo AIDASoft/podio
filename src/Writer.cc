@@ -11,8 +11,11 @@
   #include "podio/ArrowWriter.h"
 #endif
 
+#include <algorithm>
+#include <cctype>
 #include <cstdlib>
 #include <memory>
+#include <stdexcept>
 
 namespace podio {
 

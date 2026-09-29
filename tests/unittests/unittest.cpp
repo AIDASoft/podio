@@ -1,18 +1,3 @@
-// STL
-#include <cstdint>
-#include <filesystem>
-#include <functional>
-#include <map>
-#include <set>
-#include <sstream>
-#include <stdexcept>
-#include <thread>
-#include <type_traits>
-#include <unordered_map>
-#include <unordered_set>
-#include <utility>
-#include <vector>
-
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
@@ -50,7 +35,6 @@
 #include "datamodel/ExampleHitCollection.h"
 #include "datamodel/ExampleWithArray.h"
 #include "datamodel/ExampleWithArrayComponent.h"
-#include "datamodel/ExampleWithComponent.h"
 #include "datamodel/ExampleWithExternalExtraCode.h"
 #include "datamodel/ExampleWithFixedWidthIntegers.h"
 #include "datamodel/ExampleWithOneRelationCollection.h"
@@ -65,6 +49,28 @@
 #include "extension_model/extension_model.h"
 
 #include "podio/UserDataCollection.h"
+
+// STL
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <filesystem>
+#include <iterator>
+#include <map>
+#include <memory>
+#include <optional>
+#include <ranges>
+#include <set>
+#include <sstream>
+#include <stdexcept>
+#include <string>
+#include <thread>
+#include <tuple>
+#include <type_traits>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
+#include <vector>
 
 TEST_CASE("AutoDelete", "[basics][memory-management]") {
   auto coll = EventInfoCollection();
@@ -1016,9 +1022,6 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
   }
 }
 
-template <typename>
-struct TD;
-
 TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   // Setup a few collections that will be used throughout below
   auto [hitColl, clusterColl, vecMemColl, userDataColl] = createCollections();
@@ -1808,10 +1811,36 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
 }
 
 #if PODIO_ENABLE_ARROW
+  #include "datamodel/CompWithInit.h"
   #include "datamodel/EnergyInNamespaceCollection.h"
+  #include "datamodel/ExampleCluster.h"
+  #include "datamodel/ExampleClusterData.h"
+  #include "datamodel/ExampleForCyclicDependency1.h"
+  #include "datamodel/ExampleForCyclicDependency2.h"
+  #include "datamodel/ExampleHit.h"
+  #include "datamodel/ExampleHitData.h"
+  #include "datamodel/ExampleWithArrayCollection.h"
+  #include "datamodel/ExampleWithArrayComponentCollection.h"
+  #include "datamodel/ExampleWithFixedWidthIntegersCollection.h"
   #include "datamodel/ExampleWithNamespaceCollection.h"
+  #include "datamodel/ExampleWithOneRelation.h"
+  #include "datamodel/ExampleWithOneRelationData.h"
+  #include "datamodel/ExampleWithVectorMember.h"
+  #include "datamodel/NamespaceStruct.h"
+  #include "datamodel/NotSoSimpleStruct.h"
+  #include "datamodel/SimpleStruct.h"
+  #include "podio/CollectionBuffers.h"
+  #include "podio/FrameCategories.h"
+  #include "podio/LinkCollection.h"
+  #include "podio/ObjectID.h"
+  #include "podio/RelationRange.h"
   #include "podio/utilities/ArrowTypeRegistry.h"
-  #include <arrow/type.h>
+  #include "podio/utilities/RootHelpers.h"
+  #include <arrow/api.h>
+
+  #include <catch2/catch_message.hpp>
+  #include <catch2/catch_tostring.hpp>
+  #include <catch2/matchers/catch_matchers.hpp>
 
 // Helper lambda to extract the struct type from a registered List type
 inline std::shared_ptr<arrow::StructType> getArrowStructType(const std::shared_ptr<arrow::DataType>& type) {

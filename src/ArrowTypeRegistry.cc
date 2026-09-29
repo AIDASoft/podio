@@ -1,6 +1,9 @@
 #include "podio/utilities/ArrowTypeRegistry.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
-#include <arrow/api.h>
+
+#include <arrow/type.h>
+
+#include <utility>
 
 namespace podio {
 

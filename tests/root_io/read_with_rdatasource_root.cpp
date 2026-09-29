@@ -1,10 +1,15 @@
 #include "datamodel/ExampleClusterCollection.h"
 #include "podio/DataSource.h"
+#include "podio/Frame.h"
 #include "podio/Reader.h"
 
+#include "ROOT/RVec.hxx"
+
 #include <algorithm>
+#include <cstdlib>
 #include <iostream>
 #include <string>
+#include <vector>
 
 ROOT::VecOps::RVec<float> getEnergy(const ExampleClusterCollection& inColl) {
   ROOT::VecOps::RVec<double> result;

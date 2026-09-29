@@ -1,10 +1,18 @@
 #include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
 
+#include <arrow/array/array_base.h>
+#include <arrow/array/array_binary.h>
+#include <arrow/array/array_nested.h>
+#include <arrow/array/array_primitive.h>
+#include <arrow/chunked_array.h>
+#include <arrow/table.h>
+#include <arrow/util/key_value_metadata.h>
+
 #include <algorithm>
-#include <arrow/api.h>
 #include <stdexcept>
 #include <type_traits>
+#include <utility>
 
 namespace podio {
 

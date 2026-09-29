@@ -8,6 +8,8 @@
 #include <sio/buffer.h>
 #include <sio/definitions.h>
 
+#include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>

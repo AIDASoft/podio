@@ -5,6 +5,11 @@
 #include <sio/api.h>
 #include <sio/compression/zlib.h>
 #include <sio/definitions.h>
+#include <sio/exception.h>
+
+#include <cstdint>
+#include <stdexcept>
+#include <utility>
 
 namespace podio {
 

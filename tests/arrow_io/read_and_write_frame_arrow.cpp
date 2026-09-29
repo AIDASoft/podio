@@ -3,6 +3,7 @@
 #include "podio/ArrowReader.h"
 #include "podio/ArrowWriter.h"
 #include <filesystem>
+#include <string>
 
 int main() {
   std::filesystem::remove_all("rewritten_frame.podio_parquet");

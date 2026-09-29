@@ -1,5 +1,7 @@
 #include "podio/utilities/RootHelpers.h"
 
+#include <ROOT/RVec.hxx>
+
 namespace podio::root_utils {
 GenericParameters
 loadParamsFrom(ROOT::VecOps::RVec<std::string> intKeys, ROOT::VecOps::RVec<std::vector<int>> intValues,

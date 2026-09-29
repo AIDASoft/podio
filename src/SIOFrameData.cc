@@ -1,10 +1,15 @@
 #include "podio/SIOFrameData.h"
 #include "podio/SIOBlock.h"
 
+#include <sio/api.h>
+#include <sio/block.h>
 #include <sio/compression/zlib.h>
 
 #include <algorithm>
 #include <iterator>
+#include <ranges>
+#include <stdexcept>
+#include <utility>
 
 namespace podio {
 

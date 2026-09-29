@@ -4,6 +4,13 @@
   #include "podio/DataSource.h"
 #endif
 
+#include <ROOT/RDataFrame.hxx>
+#include <ROOT/RResultPtr.hxx>
+
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #define ASSERT(condition, msg)                                                                                         \
   if (!(condition)) {                                                                                                  \
     throw std::runtime_error(msg);                                                                                     \

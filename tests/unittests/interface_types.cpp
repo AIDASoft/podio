@@ -10,11 +10,13 @@
 #include "interface_extension_model/EnergyInterface.h"
 #include "interface_extension_model/MutableAnotherHit.h"
 
+#include "datamodel/ExampleCluster.h"
 #include "podio/ObjectID.h"
 #include "podio/utilities/TypeHelpers.h"
 
 #include <map>
 #include <stdexcept>
+#include <string_view>
 #include <unordered_map>
 #include <utility>
 #include <vector>

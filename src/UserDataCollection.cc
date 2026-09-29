@@ -3,6 +3,7 @@
 #include "podio/CollectionBuffers.h"
 #include "podio/SchemaEvolution.h"
 
+#include <memory>
 #include <tuple>
 #include <vector>
 

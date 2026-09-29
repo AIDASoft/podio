@@ -1,14 +1,24 @@
 #include "podio/ArrowReader.h"
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <arrow/io/file.h>
+#include <arrow/result.h>
+#include <arrow/status.h>
 #include <arrow/table.h>
+#include <arrow/type.h>
 #include <arrow/util/config.h>
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
 
+#include <cstdint>
+#include <filesystem>
 #include <fstream>
-#include <sstream>
+#include <optional>
 #include <stdexcept>
+#include <tuple>
+#include <utility>
+#include <variant>
 
 namespace podio {
 

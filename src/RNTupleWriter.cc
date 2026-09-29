@@ -1,5 +1,8 @@
 #include "podio/RNTupleWriter.h"
+#include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/Frame.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
@@ -10,7 +13,13 @@
 #include <ROOT/RField.hxx>
 #include <ROOT/RNTupleModel.hxx>
 
+#include <Compression.h>
 #include <ROOT/RVersion.hxx>
+
+#include <cstddef>
+#include <stdexcept>
+#include <type_traits>
+#include <utility>
 
 // Adjust for the API stabilization of RNTuple
 // https://github.com/root-project/root/pull/17804
@@ -23,6 +32,7 @@ using ROOT::Experimental::RNTupleWriteOptions;
 #endif
 
 namespace podio {
+class GenericParameters;
 
 RNTupleWriter::RNTupleWriter(const std::string& filename) :
     m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {

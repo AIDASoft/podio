@@ -1,5 +1,7 @@
 #include "write_interface.h"
 
+#include "podio/Writer.h"
+
 #include <filesystem>
 
 int main(int, char**) {

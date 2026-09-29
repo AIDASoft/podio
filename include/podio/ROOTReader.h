@@ -2,24 +2,23 @@
 #define PODIO_ROOTREADER_H
 
 #include "podio/ROOTFrameData.h"
+#include "podio/SchemaEvolution.h"
 #include "podio/utilities/ReaderCommon.h"
 #include "podio/utilities/ReaderUtils.h"
 #include "podio/utilities/RootHelpers.h"
 
 #include "TChain.h"
 
+#include <cstddef>
+#include <map>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <unordered_map>
 #include <utility>
 #include <vector>
-
-// forward declarations
-class TClass;
-class TFile;
-class TTree;
 
 namespace podio {
 
@@ -35,7 +34,6 @@ namespace detail {
   };
 } // namespace detail
 
-class CollectionBase;
 class CollectionIDTable;
 class GenericParameters;
 struct CollectionReadBuffers;

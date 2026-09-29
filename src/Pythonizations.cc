@@ -6,6 +6,7 @@
 
 #include <cstring>
 #include <stdexcept>
+#include <string>
 namespace podio::detail::pythonizations {
 
 // Callback function for the subscript pythonization

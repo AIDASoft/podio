@@ -1,11 +1,14 @@
 #include "podio/SIOReader.h"
-
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "sioUtils.h"
 
 #include <sio/api.h>
+#include <sio/buffer.h>
 #include <sio/definitions.h>
 
-#include <algorithm>
+#include <cstdint>
+#include <stdexcept>
 #include <utility>
 
 namespace podio {

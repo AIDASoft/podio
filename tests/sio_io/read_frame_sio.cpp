@@ -3,6 +3,8 @@
 
 #include "podio/SIOReader.h"
 
+#include <string>
+
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.sio";
   bool assertBuildVersion = true;

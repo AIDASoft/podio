@@ -6,15 +6,22 @@
 #include "podio/DatamodelRegistry.h"
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
 // ROOT specific includes
+#include "TBranch.h"
 #include "TChain.h"
 #include "TClass.h"
+#include "TCollection.h"
+#include "TObjArray.h"
+#include "TObject.h"
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
+#include <ranges>
 #include <stdexcept>
 #include <string>
 #include <tuple>

@@ -4,9 +4,20 @@
 #include "podio/CollectionBase.h"
 #include "podio/CollectionBuffers.h"
 #include "podio/DatamodelRegistry.h"
+#include "podio/ObjectID.h"
 #include "podio/SchemaEvolution.h"
 #include "podio/detail/Pythonizations.h"
 #include "podio/utilities/TypeHelpers.h"
+
+#include <cstddef>
+#include <cstdint>
+#include <iostream>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #define PODIO_ADD_USER_TYPE(type)                                                                                      \
   template <>                                                                                                          \

@@ -1,5 +1,8 @@
 #include "podio/utilities/ArrowFrameConverter.h"
+#include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/Frame.h"
+#include "podio/ObjectID.h"
 #include "podio/utilities/ArrowConverterRegistry.h"
 #include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ArrowTypeRegistry.h"
@@ -11,15 +14,19 @@
 #include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
-#include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
+#include <arrow/result.h>
+#include <arrow/status.h>
 #include <arrow/table.h>
 #include <arrow/type.h>
+#include <arrow/type_traits.h>
 #include <arrow/util/key_value_metadata.h>
 
 #include <stdexcept>
+#include <utility>
 
 namespace podio {
+class GenericParameters;
 
 std::shared_ptr<arrow::DataType> objectRefType() {
   return arrow::struct_({

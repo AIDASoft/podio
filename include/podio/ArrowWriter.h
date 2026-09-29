@@ -7,10 +7,10 @@
 
 #include <cstddef>
 #include <cstdint>
-#include <filesystem>
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 // Forward declarations for Arrow and Parquet

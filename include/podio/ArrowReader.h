@@ -1,16 +1,14 @@
 #ifndef PODIO_ARROWREADER_H
 #define PODIO_ARROWREADER_H
 
-#include "podio/podioVersion.h"
 #include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ReaderCommon.h"
 
 #include <cstddef>
-#include <filesystem>
 #include <map>
 #include <memory>
-#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace arrow {

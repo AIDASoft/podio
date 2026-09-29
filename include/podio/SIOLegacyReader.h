@@ -5,9 +5,12 @@
 #include "podio/SIOFrameData.h"
 #include "podio/podioVersion.h"
 
+#include <sio/buffer.h>
 #include <sio/definitions.h>
 
+#include <fstream>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 

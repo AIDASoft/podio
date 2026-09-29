@@ -4,10 +4,16 @@
 
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
+#include "datamodel/ExampleHit.h"
 #include "datamodel/ExampleHitCollection.h"
+#include "podio/FrameCategories.h"
+#include "podio/ROOTFrameData.h"
+#include "podio/RelationRange.h"
 
 #include <iostream>
+#include <stdexcept>
 #include <string>
+#include <utility>
 
 void writeCollection() {
   podio::ROOTWriter writer("associations.root");

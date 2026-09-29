@@ -1,10 +1,12 @@
 #ifndef PODIO_RNTUPLEREADER_H
 #define PODIO_RNTUPLEREADER_H
 
+#include "podio/GenericParameters.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/utilities/ReaderCommon.h"
 #include "podio/utilities/RootHelpers.h"
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -15,6 +17,7 @@
 #include <ROOT/RVersion.hxx>
 
 namespace podio {
+class CollectionIDTable;
 
 /// Introduce a new namespace instead of potentially opening and polluting the
 /// ROOT namespace

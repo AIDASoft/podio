@@ -4,11 +4,14 @@
 #include "podio/GenericParameters.h"
 
 #include "ROOT/RVec.hxx"
-#include "TBranch.h"
 
+#include <cstdint>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
+
+class TBranch;
 
 namespace podio {
 class CollectionBase;
