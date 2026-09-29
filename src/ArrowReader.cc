@@ -1,4 +1,6 @@
 #include "podio/ArrowReader.h"
+#include "podio/podioVersion.h"
+#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <arrow/io/file.h>
 #include <arrow/result.h>
@@ -17,9 +19,6 @@
 #include <tuple>
 #include <utility>
 #include <variant>
-
-#include "podio/podioVersion.h"
-#include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 namespace podio {
 

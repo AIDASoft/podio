@@ -17,7 +17,6 @@
 #include "datamodel/TypeWithEnergy.h"
 #include "podio/ObjectID.h"
 #include "podio/detail/LinkFwd.h"
-#include <utility>
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"
@@ -35,6 +34,7 @@
 #include <type_traits>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
 #include <vector>
 
 // Test datatypes (spelling them out here explicitly to make sure that
