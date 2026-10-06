@@ -55,9 +55,12 @@ private:
     size_t entries = 0;
     size_t currentIndex = 0;
     std::shared_ptr<arrow::Table> table{nullptr};
+    bool allColumnsLoaded{false}; ///< Whether the complete table containing all columns is loaded
   };
 
-  void loadCategoryTable(CategoryInfo& catInfo);
+  /// Load the arrow::Table for the given category, selectively projecting only
+  /// requested collections if collsToRead is specified
+  void loadCategoryTable(CategoryInfo& catInfo, const std::vector<std::string>& collsToRead = {});
 
   std::string m_directory{};
   std::map<std::string, CategoryInfo> m_categories{};

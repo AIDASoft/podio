@@ -11,6 +11,7 @@
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
@@ -86,9 +87,24 @@ void ArrowReader::openFile(const std::string& directory) {
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(defs), std::move(versions));
 }
 
-void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
-  if (catInfo.table) {
+void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std::string>& collsToRead) {
+  if (catInfo.allColumnsLoaded) {
     return;
+  }
+
+  if (catInfo.table) {
+    if (!collsToRead.empty()) {
+      bool allRequestedPresent = true;
+      for (const auto& collName : collsToRead) {
+        if (catInfo.table->schema()->GetFieldIndex(collName) == -1) {
+          allRequestedPresent = false;
+          break;
+        }
+      }
+      if (allRequestedPresent) {
+        return;
+      }
+    }
   }
 
   if (!std::filesystem::exists(catInfo.filePath)) {
@@ -116,20 +132,79 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
   }
 #endif
 
+  if (collsToRead.empty()) {
 #if ARROW_VERSION_MAJOR >= 24
-  auto result = reader->ReadTable();
-  if (!result.ok()) {
-    throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
-  }
-  catInfo.table = std::move(result.ValueOrDie());
+    auto result = reader->ReadTable();
+    if (!result.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
+    }
+    catInfo.table = std::move(result.ValueOrDie());
 #else
-  std::shared_ptr<arrow::Table> table;
-  auto status = reader->ReadTable(&table);
-  if (!status.ok()) {
-    throw std::runtime_error("Failed to read arrow table: " + status.ToString());
-  }
-  catInfo.table = std::move(table);
+    std::shared_ptr<arrow::Table> table;
+    auto status = reader->ReadTable(&table);
+    if (!status.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + status.ToString());
+    }
+    catInfo.table = std::move(table);
 #endif
+    catInfo.allColumnsLoaded = true;
+  } else {
+    std::shared_ptr<arrow::Schema> fileSchema;
+    auto schemaStatus = reader->GetSchema(&fileSchema);
+    if (!schemaStatus.ok()) {
+      throw std::runtime_error("Failed to get schema from parquet reader: " + schemaStatus.ToString());
+    }
+
+    for (const auto& collName : collsToRead) {
+      if (fileSchema->GetFieldIndex(collName) == -1) {
+        throw std::invalid_argument(collName + " is not available from Frame");
+      }
+    }
+
+    std::vector<int> colIndices;
+    if (catInfo.table) {
+      auto currentSchema = catInfo.table->schema();
+      for (int i = 0; i < currentSchema->num_fields(); ++i) {
+        int idx = fileSchema->GetFieldIndex(currentSchema->field(i)->name());
+        if (idx != -1) {
+          colIndices.push_back(idx);
+        }
+      }
+    }
+
+    for (const auto& collName : collsToRead) {
+      int idx = fileSchema->GetFieldIndex(collName);
+      if (idx != -1) {
+        colIndices.push_back(idx);
+      }
+    }
+
+    int paramIdx = fileSchema->GetFieldIndex("frame_parameters");
+    if (paramIdx != -1) {
+      colIndices.push_back(paramIdx);
+    }
+
+    std::sort(colIndices.begin(), colIndices.end());
+    colIndices.erase(std::unique(colIndices.begin(), colIndices.end()), colIndices.end());
+
+#if ARROW_VERSION_MAJOR >= 24
+    auto result = reader->ReadTable(colIndices);
+    if (!result.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
+    }
+    catInfo.table = std::move(result.ValueOrDie());
+#else
+    std::shared_ptr<arrow::Table> table;
+    auto status = reader->ReadTable(colIndices, &table);
+    if (!status.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + status.ToString());
+    }
+    catInfo.table = std::move(table);
+#endif
+    if (colIndices.size() == static_cast<size_t>(fileSchema->num_fields())) {
+      catInfo.allColumnsLoaded = true;
+    }
+  }
 }
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_view name,
@@ -158,7 +233,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
   }
 
   it->second.currentIndex = index + 1;
-  loadCategoryTable(it->second);
+  loadCategoryTable(it->second, collsToRead);
 
   if (!collsToRead.empty()) {
     for (const auto& collName : collsToRead) {

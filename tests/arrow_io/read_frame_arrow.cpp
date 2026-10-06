@@ -3,7 +3,55 @@
 
 #include "podio/ArrowReader.h"
 
+#include <iostream>
+#include <stdexcept>
 #include <string>
+
+int test_arrow_reader_invalid_coll(const std::string& inputFile) {
+  auto reader = podio::ArrowReader();
+  reader.openFile(inputFile);
+  try {
+    reader.readEntry("events", 0, {"non_existent_collection"});
+    std::cerr << "Expected std::invalid_argument for non-existent collection" << std::endl;
+    return 1;
+  } catch (const std::invalid_argument&) {
+    return 0;
+  }
+}
+
+int test_arrow_reader_edge_cases(const std::string& inputFile) {
+  auto reader = podio::ArrowReader();
+  reader.openFile(inputFile);
+
+  // Edge case 1: duplicate collection names in collsToRead
+  auto frameDup = reader.readEntry("events", 0, {"mcparticles", "mcparticles"});
+  if (!frameDup) {
+    std::cerr << "Failed to read entry with duplicate collection names in collsToRead" << std::endl;
+    return 1;
+  }
+
+  // Edge case 2: expanding collections across successive reads
+  auto frameA = reader.readEntry("events", 0, {"mcparticles"});
+  if (!frameA) {
+    std::cerr << "Failed to read entry with subset collection" << std::endl;
+    return 1;
+  }
+
+  auto frameAB = reader.readEntry("events", 1, {"mcparticles", "clusters"});
+  if (!frameAB) {
+    std::cerr << "Failed to read entry with expanded collection set" << std::endl;
+    return 1;
+  }
+
+  // Edge case 3: reading all collections after subset read
+  auto frameAll = reader.readEntry("events", 2, {});
+  if (!frameAll) {
+    std::cerr << "Failed to read full entry after subset read" << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
 
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.podio_parquet";
@@ -14,5 +62,6 @@ int main(int argc, char* argv[]) {
   }
 
   return read_frames<podio::ArrowReader>(inputFile, assertBuildVersion) +
-      test_frame_aux_info<podio::ArrowReader>(inputFile) + test_read_frame_limited<podio::ArrowReader>(inputFile);
+      test_frame_aux_info<podio::ArrowReader>(inputFile) + test_read_frame_limited<podio::ArrowReader>(inputFile) +
+      test_arrow_reader_invalid_coll(inputFile) + test_arrow_reader_edge_cases(inputFile);
 }
