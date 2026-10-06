@@ -1,9 +1,21 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-from ROOT import gSystem
+from ROOT import gSystem, gInterpreter
 
 gSystem.Load("libpodioRootIO")  # noqa: E402
+# Make sure the full class declarations are parsed before the first python
+# proxies are created. If the dictionary has been loaded via a different class
+# (e.g. when opening a podio file via TFile), the proxies might otherwise be
+# built from the bare forward declarations, missing all base class methods.
+for _cls in (
+    "podio::ROOTReader",
+    "podio::ROOTLegacyReader",
+    "podio::ROOTWriter",
+    "podio::RNTupleReader",
+    "podio::RNTupleWriter",
+):
+    gInterpreter.AutoParse(_cls)
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
 
 from podio.base_reader import BaseReaderMixin  # pylint: disable=wrong-import-position # noqa: E402
