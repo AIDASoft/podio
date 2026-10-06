@@ -1,6 +1,11 @@
 #include "podio/Reader.h"
 
-#include "podio/ROOTReader.h"
+#if PODIO_ENABLE_ROOT
+  #include "podio/ROOTReader.h"
+  #include "TFile.h"
+  #include "TKey.h"
+#endif
+
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleReader.h"
 #endif
@@ -14,8 +19,6 @@
 #include "podio/utilities/Glob.h"
 #include "podio/utilities/ReaderUtils.h"
 
-#include "TFile.h"
-#include "TKey.h"
 #include <filesystem>
 #include <memory>
 
@@ -43,6 +46,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   }
 
   if (suffix == "root") {
+#if PODIO_ENABLE_ROOT
     std::unique_ptr<TFile> file(TFile::Open(filenames[0].c_str()));
     bool hasRNTuple = false;
 
@@ -76,6 +80,9 @@ Reader makeReader(const std::vector<std::string>& filenames) {
       Reader reader{std::move(actualReader)};
       return reader;
     }
+#else
+    throw std::runtime_error("ROOT reader not available. Please recompile with ROOT support.");
+#endif
   } else if (suffix == "sio") {
 #if PODIO_ENABLE_SIO
     if (filenames.size() > 1) {
@@ -108,9 +115,11 @@ Reader makeReader(const std::vector<std::string>& filenames) {
 }
 
 std::optional<std::map<std::string, SizeStats>> Reader::getSizeStats(std::string_view category) {
+#if PODIO_ENABLE_ROOT
   if (const auto* rootReader = dynamic_cast<ReaderModel<ROOTReader>*>(m_self.get())) {
     return rootReader->m_reader->getSizeStats(category);
   }
+#endif
   return std::nullopt;
 }
 

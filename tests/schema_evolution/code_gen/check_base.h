@@ -2,11 +2,18 @@
 #define PODIO_TESTS_SCHEMAEVOLUTION_CODEGEN_CHECKBASE_H // NOLINT(llvm-header-guard): folder structure not suitable
 
 #include <podio/Frame.h>
-#include <podio/ROOTReader.h>
-#include <podio/ROOTWriter.h>
+
+#if PODIO_ENABLE_ROOT
+  #include <podio/ROOTReader.h>
+  #include <podio/ROOTWriter.h>
+#endif
 #if PODIO_ENABLE_RNTUPLE
   #include <podio/RNTupleReader.h>
   #include <podio/RNTupleWriter.h>
+#endif
+#if PODIO_ENABLE_SIO
+  #include <podio/SIOReader.h>
+  #include <podio/SIOWriter.h>
 #endif
 
 #include <iostream>
@@ -19,10 +26,16 @@
 using WriterT = podio::RNTupleWriter;
 using ReaderT = podio::RNTupleReader;
   #define FILE_SUFFIX "_rntuple.root"
-#else
+#elif PODIO_ENABLE_ROOT
 using WriterT = podio::ROOTWriter;
 using ReaderT = podio::ROOTReader;
   #define FILE_SUFFIX ".root"
+#elif PODIO_ENABLE_SIO
+using WriterT = podio::SIOWriter;
+using ReaderT = podio::SIOReader;
+  #define FILE_SUFFIX ".sio"
+#else
+  #error "No IO backend available for schema evolution tests"
 #endif
 
 #define ASSERT_EQUAL(actual, expected, msg)                                                                            \
