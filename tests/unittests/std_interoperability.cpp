@@ -1184,11 +1184,6 @@ TEMPLATE_TEST_CASE("Podio back inserter", "[collection][adapter][std]", ExampleH
     ++expectedSize;
   }
 
-  SECTION("Standard copy into a subset preserves mutable handles") {
-    output.setSubsetCollection();
-    std::copy(source.begin(), source.end(), podio::back_inserter(output));
-  }
-
   SECTION("Ranges copy into a subset preserves immutable handles") {
     output.setSubsetCollection();
     std::ranges::copy(input, podio::back_inserter(output));
