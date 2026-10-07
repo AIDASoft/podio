@@ -1,3 +1,4 @@
+#include "catch2/catch_template_test_macros.hpp"
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_string.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
@@ -185,6 +186,42 @@ TEST_CASE("Container lifetime", "[basics][memory-management]") {
   }
   auto hit = hits[0];
   REQUIRE(hit.energy() == 3.14f);
+}
+
+TEMPLATE_TEST_CASE("Handle move construction and vector growth", "[basics][memory-management]", ExampleHit,
+                   MutableExampleHit) {
+  STATIC_REQUIRE(std::is_nothrow_copy_constructible_v<podio::utils::MaybeSharedPtr<ExampleHitObj>>);
+  STATIC_REQUIRE(std::is_nothrow_move_constructible_v<podio::utils::MaybeSharedPtr<ExampleHitObj>>);
+  STATIC_REQUIRE(std::is_nothrow_copy_constructible_v<TestType>);
+  STATIC_REQUIRE(std::is_nothrow_move_constructible_v<TestType>);
+  STATIC_REQUIRE_FALSE(std::is_nothrow_default_constructible_v<TestType>);
+
+  auto collection = ExampleHitCollection();
+  auto source = TestType();
+  SECTION("Standalone object") {
+    source = MutableExampleHit(0x42ULL, 0., 0., 0., 3.14);
+  }
+  SECTION("Collection managed object") {
+    source = collection.create(0x42ULL, 0., 0., 0., 3.14);
+  }
+
+  const auto alias = source;
+  auto moved = TestType(std::move(source));
+  REQUIRE_FALSE(source.isAvailable());
+  REQUIRE(moved == alias);
+  REQUIRE(moved.energy() == 3.14);
+
+  // A moved-from handle can be rebound to an existing object.
+  source = alias;
+  REQUIRE(source == alias);
+
+  std::vector<TestType> hits;
+  hits.push_back(std::move(moved));
+  REQUIRE_FALSE(moved.isAvailable());
+  // Force reallocation regardless of the initial capacity chosen by the STL.
+  hits.reserve(hits.capacity() + 1);
+  REQUIRE(hits.front() == alias);
+  REQUIRE(hits.front().energy() == 3.14);
 }
 
 TEST_CASE("Invalid_refs", "[basics][relations]") {
