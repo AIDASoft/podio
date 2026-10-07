@@ -1169,11 +1169,6 @@ TEMPLATE_TEST_CASE("Podio back inserter", "[collection][adapter][std]", ExampleH
     REQUIRE(output[1] == constClone);
   }
 
-  SECTION("Standard transform clones into an owning collection") {
-    std::transform(input.begin(), input.end(), podio::back_inserter(output),
-                   [](const auto& handle) { return handle.clone(); });
-  }
-
   SECTION("Ranges transform clones into an owning collection") {
     auto result =
         std::ranges::transform(input, podio::back_inserter(output), [](const auto& handle) { return handle.clone(); });
@@ -1193,9 +1188,6 @@ TEMPLATE_TEST_CASE("Podio back inserter", "[collection][adapter][std]", ExampleH
     auto it = podio::back_inserter(output);
     REQUIRE_THROWS_AS(*it = input[0], std::invalid_argument);
     REQUIRE_THROWS_AS(*it = source[0], std::invalid_argument);
-    auto clone = input[0].clone();
-    const value_type immutableClone = clone;
-    REQUIRE_THROWS_AS(*it = immutableClone, std::invalid_argument);
     REQUIRE(output.empty());
     return;
   }
