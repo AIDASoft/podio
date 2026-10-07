@@ -4,7 +4,9 @@
 
 #include "podio/LinkCollection.h"
 #include "podio/RelationRange.h"
+#include "podio/utilities/BackInsertIterator.h"
 
+#include <catch2/catch_template_test_macros.hpp>
 #include <catch2/catch_test_macros.hpp>
 
 #include <algorithm>
@@ -1117,6 +1119,119 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
         std::is_base_of_v<std::forward_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
 
   } // end of LegacyOutputIterator
+}
+
+using HitLinkCollection = podio::LinkCollection<ExampleHit, ExampleHit>;
+
+TEMPLATE_TEST_CASE("Podio back inserter", "[collection][adapter][std]", ExampleHitCollection, HitLinkCollection) {
+  using mutable_type = typename TestType::mutable_type;
+  using value_type = typename TestType::value_type;
+  using output_iterator = podio::BackInsertIterator<TestType>;
+
+  STATIC_REQUIRE(std::output_iterator<output_iterator, mutable_type>);
+  STATIC_REQUIRE(std::output_iterator<output_iterator, mutable_type&>);
+  STATIC_REQUIRE(std::output_iterator<output_iterator, const mutable_type&>);
+  STATIC_REQUIRE(std::output_iterator<output_iterator, value_type>);
+  STATIC_REQUIRE(std::output_iterator<output_iterator, const value_type&>);
+  STATIC_REQUIRE_FALSE(std::indirectly_writable<output_iterator, int>);
+
+  auto hits = ExampleHitCollection{};
+  auto source = TestType{};
+  for (int i = 0; i < 3; ++i) {
+    auto handle = source.create();
+    if constexpr (std::is_same_v<TestType, ExampleHitCollection>) {
+      handle.cellID(42 + i);
+    } else {
+      handle.setWeight(42.0f + i);
+    }
+  }
+  if constexpr (std::is_same_v<TestType, HitLinkCollection>) {
+    auto from = hits.create();
+    auto to = hits.create();
+    for (auto link : source) {
+      link.setFrom(from);
+      link.setTo(to);
+    }
+  }
+  const auto& input = source;
+  auto output = TestType{};
+  auto expectedSize = input.size();
+
+  SECTION("Mutable lvalues and rvalues retain their type") {
+    auto it = podio::back_inserter(output);
+    auto clone = input[0].clone();
+    *it = clone;
+    const auto constClone = input[1].clone();
+    *++it = constClone;
+    *it++ = input[2].clone();
+    REQUIRE(output.size() == 3);
+    REQUIRE(output[0] == clone);
+    REQUIRE(output[1] == constClone);
+  }
+
+  SECTION("Standard transform clones into an owning collection") {
+    std::transform(input.begin(), input.end(), podio::back_inserter(output),
+                   [](const auto& handle) { return handle.clone(); });
+  }
+
+  SECTION("Ranges transform clones into an owning collection") {
+    auto result =
+        std::ranges::transform(input, podio::back_inserter(output), [](const auto& handle) { return handle.clone(); });
+    REQUIRE(result.in == input.end());
+    REQUIRE(output.size() == input.size());
+    // The iterator returned by the algorithm remains usable.
+    *result.out = input[0].clone();
+    ++expectedSize;
+  }
+
+  SECTION("Standard copy into a subset preserves mutable handles") {
+    output.setSubsetCollection();
+    std::copy(source.begin(), source.end(), podio::back_inserter(output));
+  }
+
+  SECTION("Ranges copy into a subset preserves immutable handles") {
+    output.setSubsetCollection();
+    std::ranges::copy(input, podio::back_inserter(output));
+  }
+
+  SECTION("Owning collections reject immutable and already owned handles") {
+    auto it = podio::back_inserter(output);
+    REQUIRE_THROWS_AS(*it = input[0], std::invalid_argument);
+    REQUIRE_THROWS_AS(*it = source[0], std::invalid_argument);
+    auto clone = input[0].clone();
+    const value_type immutableClone = clone;
+    REQUIRE_THROWS_AS(*it = immutableClone, std::invalid_argument);
+    REQUIRE(output.empty());
+    return;
+  }
+
+  SECTION("Subset collections reject unowned handles") {
+    output.setSubsetCollection();
+    auto it = podio::back_inserter(output);
+    auto clone = input[0].clone();
+    REQUIRE_THROWS_AS(*it = clone, std::invalid_argument);
+    const value_type immutableClone = clone;
+    REQUIRE_THROWS_AS(*it = immutableClone, std::invalid_argument);
+    REQUIRE(output.empty());
+    return;
+  }
+
+  REQUIRE(output.size() == expectedSize);
+  for (size_t i = 0; i < input.size(); ++i) {
+    if (output.isSubsetCollection()) {
+      REQUIRE(output[i] == input[i]);
+    } else {
+      REQUIRE(output[i] != input[i]);
+      REQUIRE(output[i].getObjectID().index == static_cast<int>(i));
+    }
+    if constexpr (std::is_same_v<TestType, ExampleHitCollection>) {
+      REQUIRE(output[i].cellID() == input[i].cellID());
+    } else {
+      REQUIRE(output[i].getWeight() == input[i].getWeight());
+      REQUIRE(output[i].getFrom() == input[i].getFrom());
+      REQUIRE(output[i].getTo() == input[i].getTo());
+    }
+  }
 }
 
 TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapter][std]") {
