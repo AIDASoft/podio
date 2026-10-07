@@ -92,18 +92,16 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
     return;
   }
 
-  if (catInfo.table) {
-    if (!collsToRead.empty()) {
-      bool allRequestedPresent = true;
-      for (const auto& collName : collsToRead) {
-        if (catInfo.table->schema()->GetFieldIndex(collName) == -1) {
-          allRequestedPresent = false;
-          break;
-        }
+  if (catInfo.table && !collsToRead.empty()) {
+    bool allRequestedPresent = true;
+    for (const auto& collName : collsToRead) {
+      if (catInfo.table->schema()->GetFieldIndex(collName) == -1) {
+        allRequestedPresent = false;
+        break;
       }
-      if (allRequestedPresent) {
-        return;
-      }
+    }
+    if (allRequestedPresent) {
+      return;
     }
   }
 
@@ -184,8 +182,8 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
       colIndices.push_back(paramIdx);
     }
 
-    std::sort(colIndices.begin(), colIndices.end());
-    colIndices.erase(std::unique(colIndices.begin(), colIndices.end()), colIndices.end());
+    std::ranges::sort(colIndices);
+    colIndices.erase(std::ranges::unique(colIndices).begin(), colIndices.end());
 
 #if ARROW_VERSION_MAJOR >= 24
     auto result = reader->ReadTable(colIndices);
