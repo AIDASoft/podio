@@ -40,7 +40,7 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category
   // Use the TTree as proxy here to decide whether this category has already
   // been initialized
   if (catInfo.tree == nullptr) {
-    catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
+    catInfo.collsToWrite = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
     catInfo.tree = new TTree(category.data(), (std::string(category) + " data tree").c_str());
     catInfo.tree->SetDirectory(&m_file);
   }

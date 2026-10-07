@@ -6,6 +6,7 @@
 #include "podio/ObjectID.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -152,6 +153,10 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view cat
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
+  // Deduplicate collections to read
+  auto dedupedCollsToRead =
+      collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
+
   auto collInfoIt = m_collectionInfo.find(category);
   if (collInfoIt == m_collectionInfo.end()) {
     if (!initCategory(category)) {
@@ -170,8 +175,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
 
   const auto& collInfo = m_collectionInfo[stableCategory];
   // Make sure to not silently ignore non-existant but requested collections
-  if (!collsToRead.empty()) {
-    for (const auto& name : collsToRead) {
+  if (!dedupedCollsToRead.empty()) {
+    for (const auto& name : dedupedCollsToRead) {
       if (std::ranges::find(collInfo, name, &root_utils::CollectionWriteInfo::name) == collInfo.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
@@ -197,7 +202,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
   const auto dentry = reader->GetModel().CreateEntry();
 
   for (const auto& coll : collInfo) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
+    if (!dedupedCollsToRead.empty() && std::ranges::find(dedupedCollsToRead, coll.name) == dedupedCollsToRead.end()) {
       continue;
     }
     const auto& collType = coll.dataType;

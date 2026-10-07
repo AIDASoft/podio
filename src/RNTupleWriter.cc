@@ -78,7 +78,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   const bool new_category = catInfo.writer == nullptr;
   if (new_category) {
     // This is the minimal information that we need for now
-    catInfo.names = podio::utils::sortAlphabeticaly(collsToWrite);
+    catInfo.names = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
   }
 
   std::vector<root_utils::StoreCollection> collections;
