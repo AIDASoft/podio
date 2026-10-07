@@ -179,7 +179,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
     if (catInfo.table) {
       auto currentSchema = catInfo.table->schema();
       for (int i = 0; i < currentSchema->num_fields(); ++i) {
-        fieldsToRead.push_back(currentSchema->field(i)->name());
+        fieldsToRead.emplace_back(currentSchema->field(i)->name());
       }
     }
 
@@ -188,7 +188,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
     }
 
     if (fileSchema->GetFieldIndex("frame_parameters") != -1) {
-      fieldsToRead.push_back("frame_parameters");
+      fieldsToRead.emplace_back("frame_parameters");
     }
 
     std::ranges::sort(fieldsToRead);
