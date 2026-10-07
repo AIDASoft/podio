@@ -24,28 +24,28 @@ int test_arrow_reader_edge_cases(const std::string& inputFile) {
   reader.openFile(inputFile);
 
   // Edge case 1: duplicate collection names in collsToRead
-  auto frameDup = reader.readEntry("events", 0, {"mcparticles", "mcparticles"});
-  if (!frameDup) {
+  auto frameDup = podio::Frame(reader.readEntry("events", 0, {"mcparticles", "mcparticles"}));
+  if (frameDup.get("mcparticles") == nullptr) {
     std::cerr << "Failed to read entry with duplicate collection names in collsToRead" << std::endl;
     return 1;
   }
 
   // Edge case 2: expanding collections across successive reads
-  auto frameA = reader.readEntry("events", 0, {"mcparticles"});
-  if (!frameA) {
+  auto frameA = podio::Frame(reader.readEntry("events", 0, {"mcparticles"}));
+  if (frameA.get("mcparticles") == nullptr) {
     std::cerr << "Failed to read entry with subset collection" << std::endl;
     return 1;
   }
 
-  auto frameAB = reader.readEntry("events", 1, {"mcparticles", "clusters"});
-  if (!frameAB) {
+  auto frameAB = podio::Frame(reader.readEntry("events", 1, {"mcparticles", "clusters"}));
+  if (frameAB.get("mcparticles") == nullptr || frameAB.get("clusters") == nullptr) {
     std::cerr << "Failed to read entry with expanded collection set" << std::endl;
     return 1;
   }
 
   // Edge case 3: reading all collections after subset read
-  auto frameAll = reader.readEntry("events", 2, {});
-  if (!frameAll) {
+  auto frameAll = podio::Frame(reader.readEntry("events", 2, {}));
+  if (frameAll.get("mcparticles") == nullptr || frameAll.get("clusters") == nullptr) {
     std::cerr << "Failed to read full entry after subset read" << std::endl;
     return 1;
   }

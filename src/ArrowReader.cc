@@ -10,6 +10,7 @@
 #include <arrow/util/config.h>
 #include <nlohmann/json.hpp>
 #include <parquet/arrow/reader.h>
+#include <parquet/arrow/schema.h>
 
 #include <algorithm>
 #include <cstdint>
@@ -20,8 +21,23 @@
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace podio {
+
+namespace {
+
+  void collectLeafIndices(const parquet::arrow::SchemaField& schemaField, std::vector<int>& colIndices) {
+    if (schemaField.is_leaf()) {
+      colIndices.push_back(schemaField.column_index);
+    } else {
+      for (const auto& child : schemaField.children) {
+        collectLeafIndices(child, colIndices);
+      }
+    }
+  }
+
+} // namespace
 
 ArrowReader::ArrowReader() = default;
 
@@ -159,48 +175,72 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
       }
     }
 
-    std::vector<int> colIndices;
+    std::vector<std::string> fieldsToRead;
     if (catInfo.table) {
       auto currentSchema = catInfo.table->schema();
       for (int i = 0; i < currentSchema->num_fields(); ++i) {
-        int idx = fileSchema->GetFieldIndex(currentSchema->field(i)->name());
-        if (idx != -1) {
-          colIndices.push_back(idx);
-        }
+        fieldsToRead.push_back(currentSchema->field(i)->name());
       }
     }
 
     for (const auto& collName : collsToRead) {
-      int idx = fileSchema->GetFieldIndex(collName);
-      if (idx != -1) {
-        colIndices.push_back(idx);
+      fieldsToRead.push_back(collName);
+    }
+
+    if (fileSchema->GetFieldIndex("frame_parameters") != -1) {
+      fieldsToRead.push_back("frame_parameters");
+    }
+
+    std::ranges::sort(fieldsToRead);
+    const auto [fieldsFirst, fieldsLast] = std::ranges::unique(fieldsToRead);
+    fieldsToRead.erase(fieldsFirst, fieldsLast);
+
+    if (fieldsToRead.size() == static_cast<size_t>(fileSchema->num_fields())) {
+#if ARROW_VERSION_MAJOR >= 24
+      auto result = reader->ReadTable();
+      if (!result.ok()) {
+        throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
       }
-    }
+      catInfo.table = std::move(result.ValueOrDie());
+#else
+      std::shared_ptr<arrow::Table> table;
+      auto status = reader->ReadTable(&table);
+      if (!status.ok()) {
+        throw std::runtime_error("Failed to read arrow table: " + status.ToString());
+      }
+      catInfo.table = std::move(table);
+#endif
+      catInfo.allColumnsLoaded = true;
+    } else {
+      const auto& manifest = reader->manifest();
+      std::vector<int> colIndices;
+      for (const auto& fieldName : fieldsToRead) {
+        for (const auto& schemaField : manifest.schema_fields) {
+          if (schemaField.field && schemaField.field->name() == fieldName) {
+            collectLeafIndices(schemaField, colIndices);
+            break;
+          }
+        }
+      }
 
-    int paramIdx = fileSchema->GetFieldIndex("frame_parameters");
-    if (paramIdx != -1) {
-      colIndices.push_back(paramIdx);
-    }
-
-    std::ranges::sort(colIndices);
-    colIndices.erase(std::ranges::unique(colIndices).begin(), colIndices.end());
+      std::ranges::sort(colIndices);
+      const auto [first, last] = std::ranges::unique(colIndices);
+      colIndices.erase(first, last);
 
 #if ARROW_VERSION_MAJOR >= 24
-    auto result = reader->ReadTable(colIndices);
-    if (!result.ok()) {
-      throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
-    }
-    catInfo.table = std::move(result.ValueOrDie());
+      auto result = reader->ReadTable(colIndices);
+      if (!result.ok()) {
+        throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
+      }
+      catInfo.table = std::move(result.ValueOrDie());
 #else
-    std::shared_ptr<arrow::Table> table;
-    auto status = reader->ReadTable(colIndices, &table);
-    if (!status.ok()) {
-      throw std::runtime_error("Failed to read arrow table: " + status.ToString());
-    }
-    catInfo.table = std::move(table);
+      std::shared_ptr<arrow::Table> table;
+      auto status = reader->ReadTable(colIndices, &table);
+      if (!status.ok()) {
+        throw std::runtime_error("Failed to read arrow table: " + status.ToString());
+      }
+      catInfo.table = std::move(table);
 #endif
-    if (colIndices.size() == static_cast<size_t>(fileSchema->num_fields())) {
-      catInfo.allColumnsLoaded = true;
     }
   }
 }
