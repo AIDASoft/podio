@@ -6,6 +6,7 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace podio::utils {
@@ -40,19 +41,11 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
 /// @returns A vector of unique strings sorted alphabetically, case insensitive
 inline std::vector<std::string> sortAndDeduplicate(std::vector<std::string> strings, std::string_view context = "") {
   const auto originalSize = strings.size();
+  strings = sortAlphabeticaly(std::move(strings));
 
-  // Sort alphabetically
-  std::ranges::sort(strings, [](const auto& lhs, const auto& rhs) {
-    return std::lexicographical_compare(
-        lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-        [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
-  });
+  const auto uniqueResult = std::ranges::unique(strings);
+  strings.erase(uniqueResult.begin(), uniqueResult.end());
 
-  // Remove duplicates
-  auto last = std::unique(strings.begin(), strings.end());
-  strings.erase(last, strings.end());
-
-  // Warn if duplicates were found
   if (strings.size() < originalSize) {
     std::cerr << "WARNING: Found " << (originalSize - strings.size()) << " duplicate collection(s)";
     if (!context.empty()) {
