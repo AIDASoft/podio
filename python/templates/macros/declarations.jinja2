@@ -63,7 +63,10 @@
 {% endif %}
 
   /// copy constructor
-  {{  full_type }}(const {{  full_type }}& other) = default;
+  {{  full_type }}(const {{  full_type }}& other) noexcept = default;
+
+  /// move constructor
+  {{ full_type }}({{ full_type }}&& other) noexcept = default;
 
   /// copy-assignment operator
   {{  full_type }}& operator=({{ full_type }} other) &; // Rebind this to other's internal object

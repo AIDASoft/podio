@@ -85,7 +85,10 @@ public:
   }
 
   /// Copy constructor
-  LinkT(const LinkT& other) = default;
+  LinkT(const LinkT& other) noexcept = default;
+
+  /// Move constructor
+  LinkT(LinkT&& other) noexcept = default;
 
   /// Assignment operators
   LinkT& operator=(LinkT other) & {
