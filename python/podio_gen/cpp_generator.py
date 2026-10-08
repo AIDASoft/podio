@@ -664,13 +664,20 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         reader = PodioConfigReader()
         # Read the current model again into a "new" namespace to have it more
         # easily discerned from the "old" model
-        datamodel_new = reader.read(self.yamlfile, package_name="new")
+        datamodel_new = reader.read(
+            self.yamlfile, package_name="new", upstream_edm=self.upstream_edm
+        )
         comparator = DataModelComparator(datamodel_new)
         judge = SchemaEvolutionJudge(comparator.datamodel_new, evolution_file=self.evolution_file)
 
         # Process each old schema version
         for old_yamlfile in self.old_yamlfiles:
-            datamodel_old = reader.read(old_yamlfile, package_name="old", ignore_extracode=True)
+            datamodel_old = reader.read(
+                old_yamlfile,
+                package_name="old",
+                upstream_edm=self.upstream_edm,
+                ignore_extracode=True,
+            )
             detected_changes = comparator.compare(datamodel_old)
             comparison_results = judge.judge(datamodel_old, detected_changes)
 
