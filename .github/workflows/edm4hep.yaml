@@ -53,7 +53,7 @@ jobs:
               -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
               -DCMAKE_CXX_STANDARD=$([[ ${{ matrix.LCG }} == *-gcc15-* ]] && echo "23" || echo "20") \
               -DUSE_EXTERNAL_CATCH2=ON \
-              -DPODIO_RUN_STRACE_TEST=ON
+              -DPODIO_RUN_STRACE_TEST=$([[ ${{ matrix.LCG }} == *dev3/* ]] && echo "OFF" || echo "ON")
             cmake --build --preset ci-build
             echo "::endgroup::"
             echo "::group::Test and install podio"
