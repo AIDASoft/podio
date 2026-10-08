@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Python module for reading root files containing podio Frames"""
 
-from ROOT import gSystem, gInterpreter
+from ROOT import gSystem
 
 gSystem.Load("libpodioRootIO")  # noqa: E402
 from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
