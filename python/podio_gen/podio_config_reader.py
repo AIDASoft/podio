@@ -130,7 +130,6 @@ class MemberParser:
                 # check whether we could parse this if we don't require a description and
                 # provide more details in the error if we can
                 self._parse_with_regexps(string, no_desc_matchers_cbs)
-                # pylint: disable-next=raise-missing-from
                 raise DefinitionError(
                     f"'{string}' is not a valid member definition. "
                     "Description comment is missing.\n"
@@ -393,7 +392,7 @@ class ClassDefinitionValidator:
             invalid_keys = [k for k in extracode if k not in cls.valid_extra_code_keys]
             if invalid_keys:
                 raise DefinitionError(
-                    f"{classname} defines invalid 'ExtraCode' categories: " f"{invalid_keys}"
+                    f"{classname} defines invalid 'ExtraCode' categories: {invalid_keys}"
                 )
 
     @classmethod
@@ -567,10 +566,8 @@ class PodioConfigReader:
                     f"schema_version has to be larger than 0 (is {schema_version})"
                 )
         except KeyError:
-            # pylint: disable-next=raise-missing-from
             raise DefinitionError("Please provide a 'schema_version' in your definition")
         except ValueError:
-            # pylint: disable-next=raise-missing-from
             raise DefinitionError(
                 f"schema_version has to be convertible to int (is {model_dict['schema_version']})"
             )

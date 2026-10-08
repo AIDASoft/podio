@@ -1,5 +1,3 @@
-# pylint: disable=invalid-name, redefined-builtin, missing-module-docstring
-
 # Configuration file for the Sphinx documentation builder.
 #
 # This file only contains a selection of the most common options. For a full
@@ -25,7 +23,7 @@ doc_dir = Path(__file__).parent
 # -- Project information -----------------------------------------------------
 
 project = "PODIO"
-copyright = "2023, Key4hep authors"  # noqa: A001
+copyright = "2023, Key4hep authors"
 author = "Key4hep authors"
 
 

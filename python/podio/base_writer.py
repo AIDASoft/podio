@@ -52,7 +52,6 @@ class BaseWriterMixin:
             collections (optional, default=None): The subset of collections to
                write. If None, all collections are written
         """
-        # pylint: disable=protected-access
         args = [frame._frame, category]
         if collections is not None:
             args.append(collections)
@@ -60,4 +59,4 @@ class BaseWriterMixin:
 
     def finish(self):
         """Finish writing and flush all data to the output file."""
-        self._writer.finish()  # pylint: disable=protected-access
+        self._writer.finish()

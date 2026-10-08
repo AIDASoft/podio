@@ -6,18 +6,18 @@ import importlib
 
 import ROOT
 
-if ROOT.gSystem.Load("libTestDataModelDict") < 0:  # noqa: E402
+if ROOT.gSystem.Load("libTestDataModelDict") < 0:
     raise RuntimeError("Could not load TestDataModel dictionary")
 
-from ROOT import (  # pylint: disable=wrong-import-position
+from ROOT import (
     ExampleHitCollection,
     ExampleClusterCollection,
     TestLinkCollection,
     TestInterfaceLinkCollection,
     TypeWithEnergy,
-)  # noqa: E402
+)
 
-from podio import Frame  # pylint: disable=wrong-import-position
+from podio import Frame
 
 
 def create_hit_collection():
