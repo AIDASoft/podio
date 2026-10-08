@@ -4,7 +4,6 @@
 from copy import deepcopy
 
 import cppyy
-import cppyy.types
 
 import ROOT
 
@@ -62,7 +61,7 @@ def _is_collection_base(thing):
     """
     # Make sure to only instantiate the template with things that cppyy
     # understands
-    if isinstance(thing, cppyy.types.Instance):
+    if isinstance(thing, cppyy._backend.CPPInstance):  # pylint: disable=protected-access
         return cppyy.gbl.std.is_base_of[cppyy.gbl.podio.CollectionBase, type(thing)].value
     return False
 
