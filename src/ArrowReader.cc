@@ -146,7 +146,56 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
   }
 #endif
 
+  if (!catInfo.fullSchema) {
+    auto schemaStatus = reader->GetSchema(&catInfo.fullSchema);
+    if (!schemaStatus.ok()) {
+      throw std::runtime_error("Failed to get schema from parquet reader: " + schemaStatus.ToString());
+    }
+  }
+
+  for (const auto& collName : collsToRead) {
+    if (catInfo.fullSchema->GetFieldIndex(collName) == -1) {
+      throw std::invalid_argument(collName + " is not available from Frame");
+    }
+  }
+
+  std::vector<std::string> targetFields;
   if (collsToRead.empty()) {
+    for (int i = 0; i < catInfo.fullSchema->num_fields(); ++i) {
+      targetFields.emplace_back(catInfo.fullSchema->field(i)->name());
+    }
+  } else {
+    for (const auto& collName : collsToRead) {
+      targetFields.push_back(collName);
+    }
+    if (catInfo.fullSchema->GetFieldIndex("frame_parameters") != -1) {
+      targetFields.emplace_back("frame_parameters");
+    }
+  }
+
+  std::vector<std::string> missingFields;
+  if (!catInfo.table) {
+    missingFields = std::move(targetFields);
+  } else {
+    for (auto& name : targetFields) {
+      if (catInfo.table->schema()->GetFieldIndex(name) == -1) {
+        missingFields.push_back(std::move(name));
+      }
+    }
+  }
+
+  std::ranges::sort(missingFields);
+  const auto [mfFirst, mfLast] = std::ranges::unique(missingFields);
+  missingFields.erase(mfFirst, mfLast);
+
+  if (missingFields.empty()) {
+    if (catInfo.table && catInfo.table->num_columns() == catInfo.fullSchema->num_fields()) {
+      catInfo.allColumnsLoaded = true;
+    }
+    return;
+  }
+
+  if (!catInfo.table && missingFields.size() == static_cast<size_t>(catInfo.fullSchema->num_fields())) {
 #if ARROW_VERSION_MAJOR >= 24
     auto result = reader->ReadTable();
     if (!result.ok()) {
@@ -163,84 +212,50 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
 #endif
     catInfo.allColumnsLoaded = true;
   } else {
-    std::shared_ptr<arrow::Schema> fileSchema;
-    auto schemaStatus = reader->GetSchema(&fileSchema);
-    if (!schemaStatus.ok()) {
-      throw std::runtime_error("Failed to get schema from parquet reader: " + schemaStatus.ToString());
-    }
-
-    for (const auto& collName : collsToRead) {
-      if (fileSchema->GetFieldIndex(collName) == -1) {
-        throw std::invalid_argument(collName + " is not available from Frame");
-      }
-    }
-
-    std::vector<std::string> fieldsToRead;
-    if (catInfo.table) {
-      auto currentSchema = catInfo.table->schema();
-      for (int i = 0; i < currentSchema->num_fields(); ++i) {
-        fieldsToRead.emplace_back(currentSchema->field(i)->name());
-      }
-    }
-
-    for (const auto& collName : collsToRead) {
-      fieldsToRead.push_back(collName);
-    }
-
-    if (fileSchema->GetFieldIndex("frame_parameters") != -1) {
-      fieldsToRead.emplace_back("frame_parameters");
-    }
-
-    std::ranges::sort(fieldsToRead);
-    const auto [fieldsFirst, fieldsLast] = std::ranges::unique(fieldsToRead);
-    fieldsToRead.erase(fieldsFirst, fieldsLast);
-
-    if (fieldsToRead.size() == static_cast<size_t>(fileSchema->num_fields())) {
-#if ARROW_VERSION_MAJOR >= 24
-      auto result = reader->ReadTable();
-      if (!result.ok()) {
-        throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
-      }
-      catInfo.table = std::move(result.ValueOrDie());
-#else
-      std::shared_ptr<arrow::Table> table;
-      auto status = reader->ReadTable(&table);
-      if (!status.ok()) {
-        throw std::runtime_error("Failed to read arrow table: " + status.ToString());
-      }
-      catInfo.table = std::move(table);
-#endif
-      catInfo.allColumnsLoaded = true;
-    } else {
-      const auto& manifest = reader->manifest();
-      std::vector<int> colIndices;
-      for (const auto& fieldName : fieldsToRead) {
-        for (const auto& schemaField : manifest.schema_fields) {
-          if (schemaField.field && schemaField.field->name() == fieldName) {
-            collectLeafIndices(schemaField, colIndices);
-            break;
-          }
+    const auto& manifest = reader->manifest();
+    std::vector<int> colIndices;
+    for (const auto& fieldName : missingFields) {
+      for (const auto& schemaField : manifest.schema_fields) {
+        if (schemaField.field && schemaField.field->name() == fieldName) {
+          collectLeafIndices(schemaField, colIndices);
+          break;
         }
       }
+    }
 
-      std::ranges::sort(colIndices);
-      const auto [first, last] = std::ranges::unique(colIndices);
-      colIndices.erase(first, last);
+    std::ranges::sort(colIndices);
+    const auto [first, last] = std::ranges::unique(colIndices);
+    colIndices.erase(first, last);
 
+    std::shared_ptr<arrow::Table> newTable;
 #if ARROW_VERSION_MAJOR >= 24
-      auto result = reader->ReadTable(colIndices);
-      if (!result.ok()) {
-        throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
-      }
-      catInfo.table = std::move(result.ValueOrDie());
+    auto result = reader->ReadTable(colIndices);
+    if (!result.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + result.status().ToString());
+    }
+    newTable = std::move(result.ValueOrDie());
 #else
-      std::shared_ptr<arrow::Table> table;
-      auto status = reader->ReadTable(colIndices, &table);
-      if (!status.ok()) {
-        throw std::runtime_error("Failed to read arrow table: " + status.ToString());
-      }
-      catInfo.table = std::move(table);
+    auto status = reader->ReadTable(colIndices, &newTable);
+    if (!status.ok()) {
+      throw std::runtime_error("Failed to read arrow table: " + status.ToString());
+    }
 #endif
+
+    if (!catInfo.table) {
+      catInfo.table = std::move(newTable);
+    } else {
+      std::vector<std::shared_ptr<arrow::Field>> allFields = catInfo.table->schema()->fields();
+      std::vector<std::shared_ptr<arrow::ChunkedArray>> allColumns = catInfo.table->columns();
+      for (int i = 0; i < newTable->num_columns(); ++i) {
+        allFields.push_back(newTable->schema()->field(i));
+        allColumns.push_back(newTable->column(i));
+      }
+      catInfo.table = arrow::Table::Make(
+          std::make_shared<arrow::Schema>(std::move(allFields), catInfo.fullSchema->metadata()), std::move(allColumns));
+    }
+
+    if (catInfo.table->num_columns() == catInfo.fullSchema->num_fields()) {
+      catInfo.allColumnsLoaded = true;
     }
   }
 }
@@ -256,7 +271,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_vi
     return nullptr;
   }
 
-  return readEntry(name, it->second.currentIndex++, collsToRead);
+  return readEntry(name, it->second.currentIndex, collsToRead);
 }
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index,
@@ -281,7 +296,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
     }
   }
 
-  return std::make_unique<podio::ArrowFrameData>(it->second.table, index, collsToRead);
+  return std::make_unique<podio::ArrowFrameData>(it->second.table, index, collsToRead, it->second.fullSchema);
 }
 
 size_t ArrowReader::getEntries(std::string_view name) const {

@@ -68,7 +68,7 @@ namespace {
 } // namespace
 
 ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex,
-                               const std::vector<std::string>& collsToRead) :
+                               const std::vector<std::string>& collsToRead, std::shared_ptr<arrow::Schema> fullSchema) :
     m_table(std::move(table)), m_rowIndex(rowIndex), m_availableCollections(), m_idTable() {
   if (!m_table) {
     throw std::runtime_error("ArrowTable is null");
@@ -90,7 +90,7 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
     m_availableCollections = collsToRead;
   }
 
-  auto schema = m_table->schema();
+  auto schema = fullSchema ? std::move(fullSchema) : m_table->schema();
   for (int i = 0; i < schema->num_fields(); ++i) {
     auto field = schema->field(i);
     if (field->name() == "frame_parameters") {

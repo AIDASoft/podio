@@ -13,7 +13,8 @@
 
 namespace arrow {
 class Table;
-}
+class Schema;
+} // namespace arrow
 
 namespace podio {
 
@@ -55,7 +56,8 @@ private:
     size_t entries = 0;
     size_t currentIndex = 0;
     std::shared_ptr<arrow::Table> table{nullptr};
-    bool allColumnsLoaded{false}; ///< Whether the complete table containing all columns is loaded
+    bool allColumnsLoaded{false};                       ///< Whether the complete table containing all columns is loaded
+    std::shared_ptr<arrow::Schema> fullSchema{nullptr}; ///< Full file schema containing all fields and metadata
   };
 
   /// Load the arrow::Table for the given category, selectively projecting only
