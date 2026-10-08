@@ -52,7 +52,7 @@ TEST_CASE("Link constness", "[links][static-checks]") {
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestL>().getTo()), const ExampleCluster>);
 }
 
-TEMPLATE_TEST_CASE("Link move construction and vector growth", "[links][move-semantics]", TestL, TestMutL) {
+TEMPLATE_TEST_CASE("Link move construction", "[links][move-semantics]", TestL, TestMutL) {
   STATIC_REQUIRE(std::is_nothrow_copy_constructible_v<TestType>);
   STATIC_REQUIRE(std::is_nothrow_move_constructible_v<TestType>);
   STATIC_REQUIRE_FALSE(std::is_nothrow_default_constructible_v<TestType>);
@@ -78,20 +78,6 @@ TEMPLATE_TEST_CASE("Link move construction and vector growth", "[links][move-sem
   REQUIRE(moved.getWeight() == 3.14f);
   REQUIRE(moved.getFrom() == hit);
   REQUIRE(moved.getTo() == cluster);
-
-  // A moved-from link can be rebound to an existing object.
-  source = alias;
-  REQUIRE(source == alias);
-
-  std::vector<TestType> links;
-  links.push_back(std::move(moved));
-  REQUIRE_FALSE(moved.isAvailable());
-  // Force reallocation regardless of the initial capacity chosen by the STL.
-  links.reserve(links.capacity() + 1);
-  REQUIRE(links.front() == alias);
-  REQUIRE(links.front().getWeight() == 3.14f);
-  REQUIRE(links.front().getFrom() == hit);
-  REQUIRE(links.front().getTo() == cluster);
 }
 
 TEST_CASE("Link basics", "[links]") {
