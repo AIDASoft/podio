@@ -10,7 +10,9 @@ import ROOT
 try:
     from cppyy.types import Instance as CPPInstance
 except ImportError:
-    CPPInstance = cppyy._backend.CPPInstance  # pylint: disable=protected-access
+    # cppyy exposes its backend dynamically, which pylint cannot infer.
+    # pylint: disable-next=protected-access,no-member
+    CPPInstance = cppyy._backend.CPPInstance
 
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
 #
