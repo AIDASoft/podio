@@ -157,6 +157,14 @@ class Frame {
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
 
+  static bool isCollectionOwned(const podio::CollectionBase& coll) {
+    return coll.isOwnedByFrame();
+  }
+
+  static void markCollectionOwned(podio::CollectionBase& coll) {
+    coll.markOwnedByFrame();
+  }
+
 public:
   /// Empty Frame constructor
   Frame();
@@ -419,6 +427,9 @@ inline void Frame::put(std::unique_ptr<podio::CollectionBase> coll, const std::s
 
 template <CollectionRValueType CollT>
 const CollT& Frame::put(CollT&& coll, const std::string& name) {
+  if (isCollectionOwned(coll)) {
+    throw std::invalid_argument("Collection is already owned by a frame and cannot be moved into another frame");
+  }
   return *static_cast<const CollT*>(m_self->put(std::make_unique<CollT>(std::move(coll)), name));
 }
 
@@ -485,6 +496,9 @@ podio::CollectionBase* Frame::FrameModel<FrameDataT>::doGet(const std::string& n
         // TODO: Check success? Or simply assume that everything is fine at this point?
         // TODO: Collision handling?
         retColl = it->second.get();
+        if (success) {
+          Frame::markCollectionOwned(*retColl);
+        }
       }
 
       if (setReferences) {
@@ -524,6 +538,13 @@ bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& 
 template <typename FrameDataT>
 const podio::CollectionBase* Frame::FrameModel<FrameDataT>::put(std::unique_ptr<podio::CollectionBase> coll,
                                                                 const std::string& name) {
+  if (!coll) {
+    throw std::invalid_argument("Cannot put a null collection into a frame");
+  }
+  if (Frame::isCollectionOwned(*coll)) {
+    throw std::invalid_argument("Collection is already owned by a frame and cannot be moved into another frame");
+  }
+
   {
     std::lock_guard lock{*m_mapMtx};
     auto [it, success] = m_collections.try_emplace(name, std::move(coll));
@@ -533,6 +554,7 @@ const podio::CollectionBase* Frame::FrameModel<FrameDataT>::put(std::unique_ptr<
       // -> Check before we emplace it into the internal map to prevent possible
       //    collisions from collections that are potentially present from rawdata?
       it->second->setID(m_idTable.add(name));
+      Frame::markCollectionOwned(*it->second);
       return it->second.get();
     } else {
       throw std::invalid_argument("An object with key " + name + " already exists in the frame");
