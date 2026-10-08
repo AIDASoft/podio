@@ -391,6 +391,40 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
   }
 }
 
+TEST_CASE("Frame rejects collections already owned by a frame", "[frame][ownership]") {
+  podio::Frame sourceFrame;
+  auto hits = ExampleHitCollection();
+  hits.create(0x42ULL, 1., 2., 3., 4.);
+  const auto& storedHits = sourceFrame.put(std::move(hits), "hits");
+
+  // Python can currently expose a collection obtained from Frame::get without
+  // preserving the C++ const/ownership restriction. const_cast models that
+  // misuse here and verifies that Frame::put rejects it before moving from the
+  // source frame's collection.
+  auto& mutableStoredHits = const_cast<ExampleHitCollection&>(storedHits);
+
+  SECTION("another frame cannot take ownership") {
+    podio::Frame destinationFrame;
+
+    REQUIRE_THROWS_AS(destinationFrame.put(std::move(mutableStoredHits), "stolenHits"), std::invalid_argument);
+    REQUIRE_FALSE(destinationFrame.get("stolenHits"));
+
+    const auto& sourceHits = sourceFrame.get<ExampleHitCollection>("hits");
+    REQUIRE(sourceHits.size() == 1);
+    REQUIRE(sourceHits[0].cellID() == 0x42ULL);
+    REQUIRE(sourceHits[0].energy() == 4.);
+  }
+
+  SECTION("the same frame cannot store the collection under a second name") {
+    REQUIRE_THROWS_AS(sourceFrame.put(std::move(mutableStoredHits), "hitsAgain"), std::invalid_argument);
+    REQUIRE_FALSE(sourceFrame.get("hitsAgain"));
+
+    const auto& sourceHits = sourceFrame.get<ExampleHitCollection>("hits");
+    REQUIRE(sourceHits.size() == 1);
+    REQUIRE(sourceHits[0].cellID() == 0x42ULL);
+  }
+}
+
 TEST_CASE("Frame double insert", "[frame][basics]") {
   auto event = podio::Frame();
   auto clusters = ExampleClusterCollection();
