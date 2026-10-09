@@ -1515,6 +1515,20 @@ void runConsistentFrameTest(const std::string& filename) {
   writer.writeFrame(frame, "subset2", otherCollsToWrite);
   REQUIRE_NOTHROW(writer.writeFrame(frame2, "subset2", otherCollsToWrite));
 
+  // Duplicate requests must work on both the first and subsequent frames.
+  const std::vector<std::string> duplicateCollsToWrite = {"hits", "clusters", "hits"};
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", duplicateCollsToWrite));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", duplicateCollsToWrite));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", {"clusters", "hits", "clusters"}));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", collsToWrite));
+
+  // Duplicates must not hide missing collections or appear as extra collections.
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "duplicates", {"clusters", "clusters"}),
+                      ContainsSubstring("inconsistent collection content") && ContainsSubstring("missing: [hits]"));
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "duplicates", {"clusters", "hits", "hits2", "hits2"}),
+                      ContainsSubstring("inconsistent collection content") &&
+                          ContainsSubstring("superfluous: [hits2]"));
+
   // Make sure that restricting the second frame works.
   // See https://github.com/AIDASoft/podio/issues/382 for the original issue
   writer.writeFrame(frame2, "full_frame2");
@@ -1541,6 +1555,25 @@ void runCheckConsistencyTest(const std::string& filename) {
   const auto& [missing, superfluous] = writer.checkConsistency(collsToWrite, "frame");
   REQUIRE_THAT(missing, UnorderedEquals<std::string>({"hits"}));
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
+
+  const auto& [duplicateMissing, duplicateSuperfluous] =
+      writer.checkConsistency({"clusters", "clusters2", "hits", "hits"}, "frame");
+  REQUIRE(duplicateMissing.empty());
+  REQUIRE(duplicateSuperfluous.empty());
+
+  const auto& [missingWithDuplicates, extraWithDuplicates] =
+      writer.checkConsistency({"clusters", "clusters", "clusters2"}, "frame");
+  REQUIRE_THAT(missingWithDuplicates, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE(extraWithDuplicates.empty());
+
+  const auto& [missingWithExtra, dedupedExtra] =
+      writer.checkConsistency({"clusters", "clusters2", "non-existant", "non-existant"}, "frame");
+  REQUIRE_THAT(missingWithExtra, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE_THAT(dedupedExtra, UnorderedEquals<std::string>({"non-existant"}));
+
+  const auto& [unknownMissing, unknownExtra] = writer.checkConsistency({"hits", "hits", "clusters"}, "unknown");
+  REQUIRE(unknownMissing.empty());
+  REQUIRE_THAT(unknownExtra, UnorderedEquals<std::string>({"clusters", "hits"}));
 }
 
 template <typename ReaderT, typename WriterT>
