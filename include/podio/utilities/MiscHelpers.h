@@ -2,9 +2,11 @@
 #define PODIO_UTILITIES_MISCHELPERS_H
 
 #include <algorithm>
+#include <iostream>
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace podio::utils {
@@ -27,6 +29,31 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
         [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
   });
+  return strings;
+}
+
+/// Sort the input vector of strings alphabetically and remove duplicates.
+/// Prints a warning if duplicates are found.
+///
+/// @param strings The strings that should be sorted and deduplicated
+/// @param context A context string for the warning message (e.g., "collsToRead", "collsToWrite")
+///
+/// @returns A vector of unique strings sorted alphabetically, case insensitive
+inline std::vector<std::string> sortAndDeduplicate(std::vector<std::string> strings, std::string_view context = "") {
+  const auto originalSize = strings.size();
+  strings = sortAlphabeticaly(std::move(strings));
+
+  const auto uniqueResult = std::ranges::unique(strings);
+  strings.erase(uniqueResult.begin(), uniqueResult.end());
+
+  if (strings.size() < originalSize) {
+    std::cerr << "WARNING: Found " << (originalSize - strings.size()) << " duplicate collection(s)";
+    if (!context.empty()) {
+      std::cerr << " in " << context;
+    }
+    std::cerr << ". Duplicates have been removed." << std::endl;
+  }
+
   return strings;
 }
 

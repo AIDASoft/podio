@@ -71,6 +71,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
 
 void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                                const std::vector<std::string>& collsToWrite) {
+  const auto dedupedCollsToWrite = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
   auto& catInfo = getCategoryInfo(category);
 
   // Use the writer as proxy to check whether this category has been initialized
@@ -78,7 +79,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   const bool new_category = catInfo.writer == nullptr;
   if (new_category) {
     // This is the minimal information that we need for now
-    catInfo.names = podio::utils::sortAlphabeticaly(collsToWrite);
+    catInfo.names = dedupedCollsToWrite;
   }
 
   std::vector<root_utils::StoreCollection> collections;
@@ -108,10 +109,10 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
                                     coll->getSchemaVersion(), name, root_utils::getStorageTypeName(coll));
     }
   } else {
-    if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.collInfo, dedupedCollsToWrite)) {
       throw std::runtime_error("Trying to write category '" + std::string(category) +
                                "' with inconsistent collection content. " +
-                               root_utils::getInconsistentCollsMsg(catInfo.names, collsToWrite));
+                               root_utils::getInconsistentCollsMsg(catInfo.names, dedupedCollsToWrite));
     }
   }
 
@@ -300,11 +301,12 @@ void RNTupleWriter::finish() {
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
 RNTupleWriter::checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const {
+  const auto dedupedCollsToWrite = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
-    return root_utils::getInconsistentColls(it->second.names, collsToWrite);
+    return root_utils::getInconsistentColls(it->second.names, dedupedCollsToWrite);
   }
 
-  return {std::vector<std::string>{}, collsToWrite};
+  return {std::vector<std::string>{}, dedupedCollsToWrite};
 }
 
 } // namespace podio

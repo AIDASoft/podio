@@ -7,6 +7,7 @@
 #include "podio/GenericParameters.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -107,6 +108,10 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(std::string_view name, cons
 
 std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo,
                                                      const std::vector<std::string>& collsToRead) {
+  // Deduplicate collections to read
+  auto dedupedCollsToRead =
+      collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
+
   if (!catInfo.chain) {
     return nullptr;
   }
@@ -115,8 +120,8 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   }
 
   // Make sure to not silently ignore non-existant but requested collections
-  if (!collsToRead.empty()) {
-    for (const auto& name : collsToRead) {
+  if (!dedupedCollsToRead.empty()) {
+    for (const auto& name : dedupedCollsToRead) {
       if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
@@ -135,7 +140,8 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, catInfo.storedClasses[i].name) == collsToRead.end()) {
+    if (!dedupedCollsToRead.empty() &&
+        std::ranges::find(dedupedCollsToRead, catInfo.storedClasses[i].name) == dedupedCollsToRead.end()) {
       continue;
     }
     auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);

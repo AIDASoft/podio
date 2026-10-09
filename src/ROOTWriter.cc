@@ -36,11 +36,12 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category
 
 void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                             const std::vector<std::string>& collsToWrite) {
+  const auto dedupedCollsToWrite = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
   auto& catInfo = getCategoryInfo(category);
   // Use the TTree as proxy here to decide whether this category has already
   // been initialized
   if (catInfo.tree == nullptr) {
-    catInfo.collsToWrite = podio::utils::sortAlphabeticaly(collsToWrite);
+    catInfo.collsToWrite = dedupedCollsToWrite;
     catInfo.tree = new TTree(category.data(), (std::string(category) + " data tree").c_str());
     catInfo.tree->SetDirectory(&m_file);
   }
@@ -65,10 +66,10 @@ void ROOTWriter::writeFrame(const podio::Frame& frame, std::string_view category
   } else {
     // Make sure that the category contents are consistent with the initial
     // frame in the category
-    if (!root_utils::checkConsistentColls(catInfo.collInfo, collsToWrite)) {
+    if (!root_utils::checkConsistentColls(catInfo.collInfo, dedupedCollsToWrite)) {
       throw std::runtime_error("Trying to write category '" + std::string(category) +
                                "' with inconsistent collection content. " +
-                               root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, collsToWrite));
+                               root_utils::getInconsistentCollsMsg(catInfo.collsToWrite, dedupedCollsToWrite));
     }
     fillParams(catInfo, frame.getParameters());
     resetBranches(catInfo, collections);
@@ -218,11 +219,12 @@ void ROOTWriter::finish() {
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
 ROOTWriter::checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const {
+  const auto dedupedCollsToWrite = podio::utils::sortAndDeduplicate(collsToWrite, "collsToWrite");
   if (const auto it = m_categories.find(category); it != m_categories.end()) {
-    return root_utils::getInconsistentColls(it->second.collsToWrite, collsToWrite);
+    return root_utils::getInconsistentColls(it->second.collsToWrite, dedupedCollsToWrite);
   }
 
-  return {std::vector<std::string>{}, collsToWrite};
+  return {std::vector<std::string>{}, dedupedCollsToWrite};
 }
 
 void ROOTWriter::fillParams(CategoryInfo& catInfo, const GenericParameters& params) {

@@ -1,6 +1,7 @@
 #include "podio/ArrowReader.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 
 #include <arrow/io/file.h>
 #include <arrow/result.h>
@@ -148,6 +149,10 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_vi
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index,
                                                               const std::vector<std::string>& collsToRead) {
+  // Deduplicate collections to read
+  auto dedupedCollsToRead =
+      collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
+
   auto it = m_categories.find(std::string(name));
   if (it == m_categories.end()) {
     return nullptr;
@@ -160,15 +165,15 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
   it->second.currentIndex = index + 1;
   loadCategoryTable(it->second);
 
-  if (!collsToRead.empty()) {
-    for (const auto& collName : collsToRead) {
+  if (!dedupedCollsToRead.empty()) {
+    for (const auto& collName : dedupedCollsToRead) {
       if (it->second.table->schema()->GetFieldIndex(collName) == -1) {
         throw std::invalid_argument(collName + " is not available from Frame");
       }
     }
   }
 
-  return std::make_unique<podio::ArrowFrameData>(it->second.table, index, collsToRead);
+  return std::make_unique<podio::ArrowFrameData>(it->second.table, index, dedupedCollsToRead);
 }
 
 size_t ArrowReader::getEntries(std::string_view name) const {
