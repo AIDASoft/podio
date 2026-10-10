@@ -18,15 +18,8 @@ class CollectionBase {
   friend class Frame;
 
 private:
-  bool m_isOwnedByFrame{false};
-
-  bool isOwnedByFrame() const {
-    return m_isOwnedByFrame;
-  }
-
-  void markOwnedByFrame() {
-    m_isOwnedByFrame = true;
-  }
+  virtual bool isOwnedByFrame() const = 0;
+  virtual void markOwnedByFrame() = 0;
 
 protected:
   /// default constructor
