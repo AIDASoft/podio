@@ -403,8 +403,17 @@ private:
   // that gives access to the Obj* which is definitely not what we want
   friend CollectionDataT;
 
-  mutable bool m_isPrepared{false};
-  bool m_isSubsetColl{false};
+  bool isOwnedByFrame() const final {
+    return m_isOwnedByFrame;
+  }
+
+  void markOwnedByFrame() final {
+    m_isOwnedByFrame = true;
+  }
+
+  mutable bool m_isPrepared : 1 {false};
+  bool m_isSubsetColl : 1 {false};
+  bool m_isOwnedByFrame : 1 {false};
   uint32_t m_collectionID{0};
   mutable std::unique_ptr<std::mutex> m_storageMtx{std::make_unique<std::mutex>()};
   mutable CollectionDataT m_storage{};
