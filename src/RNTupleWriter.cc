@@ -109,7 +109,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
                                     coll->getSchemaVersion(), name, root_utils::getStorageTypeName(coll));
     }
   } else {
-    if (!root_utils::checkConsistentColls(catInfo.collInfo, dedupedCollsToWrite)) {
+    if (catInfo.names != dedupedCollsToWrite) {
       throw std::runtime_error("Trying to write category '" + std::string(category) +
                                "' with inconsistent collection content. " +
                                root_utils::getInconsistentCollsMsg(catInfo.names, dedupedCollsToWrite));

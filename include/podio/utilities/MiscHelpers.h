@@ -2,6 +2,8 @@
 #define PODIO_UTILITIES_MISCHELPERS_H
 
 #include <algorithm>
+#include <cctype>
+#include <compare>
 #include <iostream>
 #include <ranges>
 #include <string>
@@ -12,22 +14,17 @@
 namespace podio::utils {
 
 ///  Sort the input vector of strings alphabetically, case insensitive.
+///  Names that differ only by case are ordered by their case-sensitive spelling.
 ///
 ///  @param strings The strings that should be sorted alphabetically
 ///
 ///  @returns A vector of strings sorted alphabetically, case insensitive
 inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strings) {
-  // Obviously there is no tolower(std::string) in c++, so this is slightly more
-  // involved and we make use of the fact that lexicographical_compare works on
-  // ranges and the fact that we can feed it a dedicated comparison function,
-  // where we convert the strings to lower case char-by-char. The alternative is
-  // to make string copies inside the first lambda, transform them to lowercase
-  // and then use operator< of std::string, which would be effectively
-  // hand-writing what is happening below.
   std::ranges::sort(strings, [](const auto& lhs, const auto& rhs) {
-    return std::lexicographical_compare(
+    const auto order = std::lexicographical_compare_three_way(
         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-        [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
+        [](unsigned char cl, unsigned char cr) { return std::tolower(cl) <=> std::tolower(cr); });
+    return order == 0 ? lhs < rhs : order < 0;
   });
   return strings;
 }
