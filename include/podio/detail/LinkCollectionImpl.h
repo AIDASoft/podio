@@ -125,7 +125,8 @@ public:
     return coll;
   }
 
-  /// Append a new link to the collection and return this object
+  /// Append a new link to the collection and return this object.
+  /// Does not invalidate iterators.
   mutable_type create() {
     if (m_isSubsetColl) {
       throw std::logic_error("Cannot create new elements on a subset collection");
@@ -155,6 +156,8 @@ public:
   /// @returns the newly created (mutable) link
   ///
   /// @throws std::logic_error if this is a subset collection
+  ///
+  /// Does not invalidate iterators.
   template <typename FromU, typename ToU>
     requires detail::LinkInitializableFrom<FromT, ToT, FromU, ToU> ||
       detail::LinkInitializableFrom<ToT, FromT, FromU, ToU>
@@ -189,6 +192,7 @@ public:
     return mutable_type(podio::utils::MaybeSharedPtr(m_storage.entries.at(index)));
   }
 
+  /// Does not invalidate iterators.
   void push_back(mutable_type object) {
     // We have to do different things here depending on whether this is a
     // subset collection or not. A normal collection cannot collect objects
@@ -208,6 +212,7 @@ public:
     }
   }
 
+  /// Does not invalidate iterators.
   void push_back(value_type object) {
     if (!m_isSubsetColl) {
       throw std::invalid_argument("Can only add immutable objects to subset collections");
@@ -241,6 +246,7 @@ public:
     return m_storage.entries.empty();
   }
 
+  /// Invalidates all iterators.
   void clear() override {
     m_storage.clear(m_isSubsetColl);
     m_isPrepared = false;

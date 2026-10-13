@@ -232,3 +232,15 @@ std::ranges::views::reverse(collection); //requires bidirectional_range -> OK
 std::ranges::fill(collection, value ); // requires output_range -> won't compile
 std::ranges::sort(collection); // requires random_access_range and sortable -> won't compile
 ```
+
+## Iterator invalidation
+
+The following table lists which operations invalidate collections' iterators. Note that the rules differ from `std::vector` for generated collections and `podio::LinkCollection`, and differ between collection kinds on move.
+
+| Operation | Generated collections and `LinkCollection` | `UserDataCollection` |
+|-----------|--------------------------------------------|----------------------|
+| `create()`, `push_back()` | ✔️ not invalidated (a previously obtained `end()` does not include the new elements) | ❌ invalidated if reallocation happens |
+| `resize()` | not available | ❌ invalidated if reallocation happens |
+| `clear()` | ❌ invalidated | ❌ invalidated |
+| Move construction / assignment | ❌ invalidated (they refer to the moved-from collection) | ✔️ not invalidated (they refer to the new collection) |
+| Destruction | ❌ invalidated | ❌ invalidated |
