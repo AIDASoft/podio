@@ -26,13 +26,15 @@ namespace podio {
 ArrowReader::ArrowReader() = default;
 
 void ArrowReader::openFile(const std::string& directory) {
-  m_directory = directory;
+  if (!m_directory.empty()) {
+    throw std::logic_error("ArrowReader: a directory has already been opened with this reader");
+  }
 
-  if (!std::filesystem::exists(m_directory) || !std::filesystem::is_directory(m_directory)) {
+  if (!std::filesystem::exists(directory) || !std::filesystem::is_directory(directory)) {
     throw std::runtime_error("Directory does not exist: " + directory);
   }
 
-  auto metadataPath = std::filesystem::path(m_directory) / "metadata.json";
+  auto metadataPath = std::filesystem::path(directory) / "metadata.json";
   if (!std::filesystem::exists(metadataPath)) {
     throw std::runtime_error("Missing metadata.json in directory: " + directory);
   }
@@ -56,6 +58,8 @@ void ArrowReader::openFile(const std::string& directory) {
   } else {
     throw std::runtime_error("Invalid or missing podio_version in metadata.json: " + versionStr);
   }
+
+  m_directory = directory;
 
   for (auto& [name, catJson] : metadata["categories"].items()) {
     CategoryInfo catInfo;

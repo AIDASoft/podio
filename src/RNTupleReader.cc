@@ -76,13 +76,16 @@ void RNTupleReader::openFile(const std::string& filename) {
 }
 
 void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
+  if (m_metadata) {
+    throw std::logic_error("RNTupleReader: files have already been opened with this reader");
+  }
 
-  m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
   for (const auto& filename : filenames) {
     m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
   }
 
   m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
+  m_filenames = filenames;
 
   auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
   const auto version = versionView(0);
