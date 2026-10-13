@@ -1124,6 +1124,8 @@ TEST_CASE("Collection iterators", "[collection][container][iterator][std]") {
 using HitLinkCollection = podio::LinkCollection<ExampleHit, ExampleHit>;
 
 TEMPLATE_TEST_CASE("Podio back inserter", "[collection][adapter][std]", ExampleHitCollection, HitLinkCollection) {
+  // The sections share setup and final checks below. After each successful insertion section, those checks verify
+  // the output size, object identity, and data. Sections testing rejected insertions return before the shared checks.
   using mutable_type = typename TestType::mutable_type;
   using value_type = typename TestType::value_type;
   using output_iterator = podio::BackInsertIterator<TestType>;
