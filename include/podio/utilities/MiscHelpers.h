@@ -24,7 +24,7 @@ inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strin
     const auto order = std::lexicographical_compare_three_way(
         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
         [](unsigned char cl, unsigned char cr) { return std::tolower(cl) <=> std::tolower(cr); });
-    return order == 0 ? lhs < rhs : order < 0;
+    return std::is_eq(order) ? lhs < rhs : std::is_lt(order);
   });
   return strings;
 }

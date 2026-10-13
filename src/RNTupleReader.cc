@@ -154,7 +154,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view cat
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
   // Deduplicate collections to read
-  auto dedupedCollsToRead =
+  const auto dedupedCollsToRead =
       collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
 
   auto collInfoIt = m_collectionInfo.find(category);

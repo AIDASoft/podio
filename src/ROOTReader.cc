@@ -109,7 +109,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(std::string_view name, cons
 std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& catInfo,
                                                      const std::vector<std::string>& collsToRead) {
   // Deduplicate collections to read
-  auto dedupedCollsToRead =
+  const auto dedupedCollsToRead =
       collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
 
   if (!catInfo.chain) {

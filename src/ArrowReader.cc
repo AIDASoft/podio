@@ -150,7 +150,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_vi
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index,
                                                               const std::vector<std::string>& collsToRead) {
   // Deduplicate collections to read
-  auto dedupedCollsToRead =
+  const auto dedupedCollsToRead =
       collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
 
   auto it = m_categories.find(std::string(name));
