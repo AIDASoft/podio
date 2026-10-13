@@ -271,7 +271,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_vi
     return nullptr;
   }
 
-  return readEntry(name, it->second.currentIndex, collsToRead);
+  return readEntry(name, it->second.currentIndex++, collsToRead);
 }
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view name, size_t index,
