@@ -5,7 +5,11 @@ on:
     branches:
     - master
   pull_request:
+  merge_group:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   pre-commit:
