@@ -82,7 +82,8 @@ public:
   /// @param frame        The Frame to store
   /// @param category     The category name under which this Frame should be
   ///                     stored
-  /// @param collsToWrite The collection names that should be written
+  /// @param collsToWrite The collection names that should be written. Duplicate
+  ///                     names are ignored.
   void writeFrame(const podio::Frame& frame, std::string_view category, const std::vector<std::string>& collsToWrite);
 
   /// Write the current file, including all the necessary metadata to read it
@@ -101,7 +102,7 @@ public:
   ///
   ///
   /// @param collsToWrite The collection names that should be checked for
-  ///                     consistency
+  ///                     consistency. Duplicate names are ignored.
   /// @param category     The category name for which consistency should be
   ///                     checked
   ///
