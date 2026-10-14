@@ -265,7 +265,10 @@
 <li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../collections_as_container.html#inserting-handles-with-standard-algorithms">Inserting handles with standard algorithms</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
@@ -292,6 +295,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html">Class podio::BackInsertIterator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE"><code class="docutils literal notranslate"><span class="pre">podio::BackInsertIterator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -1172,6 +1179,12 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio13back_inserterE18BackInsertIteratorI10CollectionER10Collection">
+<span id="_CPPv3I0EN5podio13back_inserterER10Collection"></span><span id="_CPPv2I0EN5podio13back_inserterER10Collection"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Collection</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespacepodio_1a032f3a92003c6b78d7a0481a1413f01d"></span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator"><span class="n"><span class="pre">BackInsertIterator</span></span></a><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN5podio13back_inserterE18BackInsertIteratorI10CollectionER10Collection" title="podio::back_inserter::Collection"><span class="n"><span class="pre">Collection</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">back_inserter</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN5podio13back_inserterE18BackInsertIteratorI10CollectionER10Collection" title="podio::back_inserter::Collection"><span class="n"><span class="pre">Collection</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collection</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><a class="headerlink" href="#_CPPv4I0EN5podio13back_inserterE18BackInsertIteratorI10CollectionER10Collection" title="Link to this definition"></a><br /></dt>
+<dd><p>Create an output iterator that preserves the type of handles passed to push_back. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE">
 <span id="_CPPv3N5podio10makeWriterERKNSt6stringERKNSt6stringE"></span><span id="_CPPv2N5podio10makeWriterERKNSt6stringERKNSt6stringE"></span><span id="podio::makeWriter__ssCR.ssCR"></span><span class="target" id="namespacepodio_1adf04ad40573c44070c745104224ff3ef"></span><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE" title="podio::Writer"><span class="n"><span class="pre">Writer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">makeWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;default&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd><p>Create a Writer that is able to write files for the desired backend. </p>
@@ -1656,6 +1669,81 @@
 </div>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio18BackInsertIteratorE">
+<span id="_CPPv3I0EN5podio18BackInsertIteratorE"></span><span id="_CPPv2I0EN5podio18BackInsertIteratorE"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Collection</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_back_insert_iterator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BackInsertIterator</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/utilities/BackInsertIterator.h&gt;</em></div>
+<p>An output iterator that forwards assigned handles to a collection’s push_back. </p>
+<p>Unlike std::back_insert_iterator, this iterator preserves the handle type, allowing mutable handles (e.g. clones) to be inserted into owning collections. The collection’s existing ownership and subset insertion rules still apply. The destination collection must outlive the iterator. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator14container_typeE">
+<span id="_CPPv3N5podio18BackInsertIterator14container_typeE"></span><span id="_CPPv2N5podio18BackInsertIterator14container_typeE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a3376f6e0527986927b01f9af2ae46e43"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">container_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator::Collection"><span class="n"><span class="pre">Collection</span></span></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator17iterator_categoryE">
+<span id="_CPPv3N5podio18BackInsertIterator17iterator_categoryE"></span><span id="_CPPv2N5podio18BackInsertIterator17iterator_categoryE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a5ffc2050db8415bdcbae7d0682a745e1"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">iterator_category</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">output_iterator_tag</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator10value_typeE">
+<span id="_CPPv3N5podio18BackInsertIterator10value_typeE"></span><span id="_CPPv2N5podio18BackInsertIterator10value_typeE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a989b42d8fdd50a4885b93a09b6ea3978"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">value_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator15difference_typeE">
+<span id="_CPPv3N5podio18BackInsertIterator15difference_typeE"></span><span id="_CPPv2N5podio18BackInsertIterator15difference_typeE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a97a60ccde2f35df657f35b4cd5ed6772"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">difference_type</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">ptrdiff_t</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator7pointerE">
+<span id="_CPPv3N5podio18BackInsertIterator7pointerE"></span><span id="_CPPv2N5podio18BackInsertIterator7pointerE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1affb53ff9ae775bc4a392f8035cba30ff"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">pointer</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator9referenceE">
+<span id="_CPPv3N5podio18BackInsertIterator9referenceE"></span><span id="_CPPv2N5podio18BackInsertIterator9referenceE"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1aa4c72c6420b4e9adc280c9df90404778"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reference</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator18BackInsertIteratorEv">
+<span id="_CPPv3N5podio18BackInsertIterator18BackInsertIteratorEv"></span><span id="_CPPv2N5podio18BackInsertIterator18BackInsertIteratorEv"></span><span id="podio::BackInsertIterator::BackInsertIterator"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a6b5a65e312cc0b2d0c757d560103e5dc"></span><span class="sig-name descname"><span class="n"><span class="pre">BackInsertIterator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIterator18BackInsertIteratorER10Collection">
+<span id="_CPPv3N5podio18BackInsertIterator18BackInsertIteratorER10Collection"></span><span id="_CPPv2N5podio18BackInsertIterator18BackInsertIteratorER10Collection"></span><span id="podio::BackInsertIterator::BackInsertIterator__CollectionR"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a553a2136c8662b6033d8a5b5e4f38d08"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BackInsertIterator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator::Collection"><span class="n"><span class="pre">Collection</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">collection</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN5podio18BackInsertIteratoraSER18BackInsertIteratorRR1T">
+<span id="_CPPv3I0EN5podio18BackInsertIteratoraSERR1T"></span><span id="_CPPv2I0EN5podio18BackInsertIteratoraSERR1T"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_back_insert_iterator_1a10b7a08fbad334590aeada2f5fd5ef02"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator"><span class="n"><span class="pre">BackInsertIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">=</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratoraSER18BackInsertIteratorRR1T" title="podio::BackInsertIterator::operator=::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIteratormlEv">
+<span id="_CPPv3N5podio18BackInsertIteratormlEv"></span><span id="_CPPv2N5podio18BackInsertIteratormlEv"></span><span id="podio::BackInsertIterator::mul-operator"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a123734fa95053cf19bd60ad570c42585"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator"><span class="n"><span class="pre">BackInsertIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">*</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIteratorppEv">
+<span id="_CPPv3N5podio18BackInsertIteratorppEv"></span><span id="_CPPv2N5podio18BackInsertIteratorppEv"></span><span id="podio::BackInsertIterator::inc-operator"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1ab17ab902040586037bd05b9ad8d5d912"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator"><span class="n"><span class="pre">BackInsertIterator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio18BackInsertIteratorppEi">
+<span id="_CPPv3N5podio18BackInsertIteratorppEi"></span><span id="_CPPv2N5podio18BackInsertIteratorppEi"></span><span id="podio::BackInsertIterator::inc-operator__i"></span><span class="target" id="classpodio_1_1_back_insert_iterator_1a6f9af4749bdaed2ab673b3bb49ecf9cd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE" title="podio::BackInsertIterator"><span class="n"><span class="pre">BackInsertIterator</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="k"><span class="pre">operator</span></span><span class="o"><span class="pre">++</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">noexcept</span></span><br /></dt>
+<dd></dd></dl>
+
+</div>
 </dd></dl>
 
 <dl class="cpp class">

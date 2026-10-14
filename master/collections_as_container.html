@@ -265,7 +265,10 @@
 <li class="toctree-l3"><a class="reference internal" href="#legacyoutputiterator">LegacyOutputIterator</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#inserting-handles-with-standard-algorithms">Inserting handles with standard algorithms</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
@@ -292,6 +295,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_back_insert_iterator.html">Class podio::BackInsertIterator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE"><code class="docutils literal notranslate"><span class="pre">podio::BackInsertIterator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -1432,7 +1439,7 @@ Despite the exception, the collection iterators are made to still report themsel
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">std::back_insert_iterator</span></code></p></td>
 <td><p>❗ attention</p></td>
-<td><p>Compatible only with SubsetCollections, otherwise throws <code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code></p></td>
+<td><p>Compatible only with SubsetCollections, otherwise throws <code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code>; use <code class="docutils literal notranslate"><span class="pre">podio::back_inserter</span></code> to insert mutable handles into owning collections</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">std::front_insert_iterator</span></code></p></td>
 <td><p>❌ no</p></td>
@@ -1456,6 +1463,34 @@ Despite the exception, the collection iterators are made to still report themsel
 </tr>
 </tbody>
 </table>
+<section id="inserting-handles-with-standard-algorithms">
+<h3>Inserting handles with standard algorithms<a class="headerlink" href="#inserting-handles-with-standard-algorithms" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">std::back_inserter</span></code> converts assigned elements to the collection’s <code class="docutils literal notranslate"><span class="pre">value_type</span></code>,
+which is an immutable handle. As a result, even assigning a mutable clone through
+this iterator throws when the destination is an owning collection.</p>
+<p>Include <code class="docutils literal notranslate"><span class="pre">podio/utilities/BackInsertIterator.h</span></code> and use <code class="docutils literal notranslate"><span class="pre">podio::back_inserter</span></code> to
+forward the original handle type to <code class="docutils literal notranslate"><span class="pre">push_back</span></code>. It works with both generated
+collections and link collections, and supports standard and ranges algorithms:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;podio/utilities/BackInsertIterator.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
+
+<span class="c1">// input and output are collections of the same type; output is an owning collection.</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">transform</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">output</span><span class="p">),</span>
+<span class="w">                       </span><span class="p">[](</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">handle</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">handle</span><span class="p">.</span><span class="n">clone</span><span class="p">();</span><span class="w"> </span><span class="p">});</span>
+</pre></div>
+</div>
+<p>The iterator follows the destination collection’s insertion rules: owning
+collections accept unowned mutable handles, while subset collections accept
+handles to objects already owned by another collection. It does not clone
+implicitly or change a collection’s subset status. For example, copying handles
+from an existing collection requires a subset destination:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">subset</span><span class="p">.</span><span class="n">setSubsetCollection</span><span class="p">();</span>
+<span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">copy</span><span class="p">(</span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">back_inserter</span><span class="p">(</span><span class="n">subset</span><span class="p">));</span>
+</pre></div>
+</div>
+<p>The destination collection must remain alive while the iterator is used.</p>
+</section>
 </section>
 <section id="collection-as-a-range">
 <h2>Collection as a <em>range</em><a class="headerlink" href="#collection-as-a-range" title="Link to this heading"></a></h2>

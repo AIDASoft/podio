@@ -262,7 +262,10 @@
 <li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#legacyoutputiterator">LegacyOutputIterator</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-iterators-and-standard-iterator-adaptors">Collection iterators and standard iterator adaptors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="collections_as_container.html#inserting-handles-with-standard-algorithms">Inserting handles with standard algorithms</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
@@ -289,6 +292,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html">Class podio::ArrowWriter</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ArrowWriter</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_back_insert_iterator.html">Class podio::BackInsertIterator</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE"><code class="docutils literal notranslate"><span class="pre">podio::BackInsertIterator</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_collection_base.html">Class podio::CollectionBase</a><ul>
@@ -1605,11 +1612,35 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_arrow_writer.html#_CPPv4N5podio11ArrowWriterD0Ev">podio::ArrowWriter::~ArrowWriter (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio11ArrowWriterD0Ev">[1]</a>
 </li>
+      <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio13back_inserterE18BackInsertIteratorI10CollectionER10Collection">podio::back_inserter (C++ function)</a>
+</li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7BackendE">podio::Backend (C++ enum)</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7Backend4ROOTE">podio::Backend::ROOT (C++ enumerator)</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio7Backend3SIOE">podio::Backend::SIO (C++ enumerator)</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratorE">podio::BackInsertIterator (C++ class)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio18BackInsertIteratorE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator18BackInsertIteratorER10Collection">podio::BackInsertIterator::BackInsertIterator (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator18BackInsertIteratorEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator18BackInsertIteratorER10Collection">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator18BackInsertIteratorEv">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator14container_typeE">podio::BackInsertIterator::container_type (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator14container_typeE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator15difference_typeE">podio::BackInsertIterator::difference_type (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator15difference_typeE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator17iterator_categoryE">podio::BackInsertIterator::iterator_category (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator17iterator_categoryE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIteratormlEv">podio::BackInsertIterator::operator* (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIteratormlEv">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIteratorppEi">podio::BackInsertIterator::operator++ (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIteratorppEv">[1]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIteratorppEi">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIteratorppEv">[3]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4I0EN5podio18BackInsertIteratoraSER18BackInsertIteratorRR1T">podio::BackInsertIterator::operator= (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio18BackInsertIteratoraSER18BackInsertIteratorRR1T">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator7pointerE">podio::BackInsertIterator::pointer (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator7pointerE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator9referenceE">podio::BackInsertIterator::reference (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator9referenceE">[1]</a>
+</li>
+      <li><a href="cpp_api/class/classpodio_1_1_back_insert_iterator.html#_CPPv4N5podio18BackInsertIterator10value_typeE">podio::BackInsertIterator::value_type (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio18BackInsertIterator10value_typeE">[1]</a>
 </li>
       <li><a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio8CategoryE">podio::Category (C++ type)</a>, <a href="cpp_api/namespace/namespacepodio_1_1_category.html#_CPPv4N5podio8CategoryE">[1]</a>
 </li>
@@ -2267,6 +2298,8 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader22getAvailableDatamodelsEv">podio::Reader::getAvailableDatamodels (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader22getAvailableDatamodelsEv">[1]</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader22getDatamodelDefinitionENSt11string_viewE">podio::Reader::getDatamodelDefinition (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader22getDatamodelDefinitionENSt11string_viewE">[1]</a>
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4NK5podio6Reader10getEntriesENSt11string_viewE">podio::Reader::getEntries (C++ function)</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4NK5podio6Reader10getEntriesENSt11string_viewE">[1]</a>
@@ -2279,8 +2312,6 @@
 </li>
       <li><a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4I0EN5podio6Reader6ReaderENSt10unique_ptrI1TEE">podio::Reader::Reader (C++ function)</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader6ReaderERK6Reader">[1]</a>, <a href="cpp_api/class/classpodio_1_1_reader.html#_CPPv4N5podio6Reader6ReaderERR6Reader">[2]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4I0EN5podio6Reader6ReaderENSt10unique_ptrI1TEE">[3]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader6ReaderERK6Reader">[4]</a>, <a href="cpp_api/namespace/namespacepodio.html#_CPPv4N5podio6Reader6ReaderERR6Reader">[5]</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4N5podio6Reader13ReaderConceptE">podio::Reader::ReaderConcept (C++ struct)</a>
 </li>
       <li><a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionENSt11string_viewE">podio::Reader::ReaderConcept::currentFileVersion (C++ function)</a>, <a href="cpp_api/struct/structpodio_1_1_reader_1_1_reader_concept.html#_CPPv4NK5podio6Reader13ReaderConcept18currentFileVersionEv">[1]</a>
