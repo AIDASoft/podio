@@ -7,6 +7,13 @@ import cppyy
 
 import ROOT
 
+try:
+    from cppyy.types import Instance as CPPInstance
+except ImportError:
+    # cppyy exposes its backend dynamically, which pylint cannot infer.
+    # pylint: disable-next=protected-access,no-member
+    CPPInstance = cppyy._backend.CPPInstance
+
 # NOTE: It is necessary that this can be found on the ROOT_INCLUDE_PATH
 #
 # We check whether we can actually load the header to not break python bindings
@@ -61,7 +68,7 @@ def _is_collection_base(thing):
     """
     # Make sure to only instantiate the template with things that cppyy
     # understands
-    if "cppyy" in repr(thing):
+    if isinstance(thing, CPPInstance):
         return cppyy.gbl.std.is_base_of[cppyy.gbl.podio.CollectionBase, type(thing)].value
     return False
 

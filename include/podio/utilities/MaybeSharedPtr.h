@@ -41,7 +41,7 @@ public:
   }
 
   /// Copy constructor
-  MaybeSharedPtr(const MaybeSharedPtr& other) : m_ptr(other.m_ptr), m_ctrlBlock(other.m_ctrlBlock) {
+  MaybeSharedPtr(const MaybeSharedPtr& other) noexcept : m_ptr(other.m_ptr), m_ctrlBlock(other.m_ctrlBlock) {
     // Increase the reference count if there is a control block
     m_ctrlBlock && m_ctrlBlock->count++;
   }
@@ -53,7 +53,7 @@ public:
   }
 
   /// Move constructor
-  MaybeSharedPtr(MaybeSharedPtr&& other) : m_ptr(other.m_ptr), m_ctrlBlock(other.m_ctrlBlock) {
+  MaybeSharedPtr(MaybeSharedPtr&& other) noexcept : m_ptr(other.m_ptr), m_ctrlBlock(other.m_ctrlBlock) {
     other.m_ptr = nullptr;
     other.m_ctrlBlock = nullptr;
   }

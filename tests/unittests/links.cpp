@@ -1,3 +1,4 @@
+#include "catch2/catch_template_test_macros.hpp"
 #include "catch2/catch_test_macros.hpp"
 #include "catch2/matchers/catch_matchers_vector.hpp"
 #include <catch2/catch_tostring.hpp>
@@ -49,6 +50,34 @@ TEST_CASE("Link constness", "[links][static-checks]") {
 
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestL>().getFrom()), const ExampleHit>);
   STATIC_REQUIRE(std::is_same_v<decltype(std::declval<TestL>().getTo()), const ExampleCluster>);
+}
+
+TEMPLATE_TEST_CASE("Link move construction", "[links][move-semantics]", TestL, TestMutL) {
+  STATIC_REQUIRE(std::is_nothrow_copy_constructible_v<TestType>);
+  STATIC_REQUIRE(std::is_nothrow_move_constructible_v<TestType>);
+  STATIC_REQUIRE_FALSE(std::is_nothrow_default_constructible_v<TestType>);
+
+  auto hit = MutableExampleHit();
+  auto cluster = MutableExampleCluster();
+  auto collection = TestLColl();
+  auto source = TestType();
+  SECTION("Standalone link") {
+    auto link = TestMutL(3.14f);
+    link.setFrom(hit);
+    link.setTo(cluster);
+    source = link;
+  }
+  SECTION("Collection managed link") {
+    source = collection.create(hit, cluster, 3.14f);
+  }
+
+  const auto alias = source;
+  auto moved = TestType(std::move(source));
+  REQUIRE_FALSE(source.isAvailable());
+  REQUIRE(moved == alias);
+  REQUIRE(moved.getWeight() == 3.14f);
+  REQUIRE(moved.getFrom() == hit);
+  REQUIRE(moved.getTo() == cluster);
 }
 
 TEST_CASE("Link basics", "[links]") {

@@ -323,8 +323,12 @@ public:
   }
 
   /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
-  static void __cppyy_pythonize__(PyObject* klass, const std::string& name) {
+  static void __cppjit_pythonize__(PyObject* klass, const std::string& name) {
     podio::detail::pythonizations::pythonize_subscript(klass, name);
+  }
+  /// Pythonizations for ROOT <= 6.40 before the switch to cppjit
+  static void __cppyy_pythonize__(PyObject* klass, const std::string& name) {
+    __cppjit_pythonize__(klass, name);
   }
 
   bool isSubsetCollection() const override {
