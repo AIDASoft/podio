@@ -1,6 +1,8 @@
 #include "podio/Writer.h"
 
-#include "podio/ROOTWriter.h"
+#if PODIO_ENABLE_ROOT
+  #include "podio/ROOTWriter.h"
+#endif
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleWriter.h"
 #endif
@@ -39,7 +41,11 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
   }
 
   if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
+#if PODIO_ENABLE_ROOT
     return Writer{std::make_unique<ROOTWriter>(filename)};
+#else
+    throw std::runtime_error("ROOT writer not available. Please recompile with ROOT support.");
+#endif
   } else if ((type == "default" && defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
     return Writer{std::make_unique<RNTupleWriter>(filename)};
