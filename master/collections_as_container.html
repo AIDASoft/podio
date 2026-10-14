@@ -269,6 +269,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iterator-invalidation">Iterator invalidation</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="cpp_api/api.html">C++ API documentation</a><ul>
@@ -1528,6 +1529,40 @@ Despite the exception, the collection iterators are made to still report themsel
 <span class="n">std</span><span class="o">::</span><span class="n">ranges</span><span class="o">::</span><span class="n">sort</span><span class="p">(</span><span class="n">collection</span><span class="p">);</span><span class="w"> </span><span class="c1">// requires random_access_range and sortable -&gt; won&#39;t compile</span>
 </pre></div>
 </div>
+</section>
+<section id="iterator-invalidation">
+<h2>Iterator invalidation<a class="headerlink" href="#iterator-invalidation" title="Link to this heading"></a></h2>
+<p>The following table lists which operations invalidate collections’ iterators. Note that the rules differ from <code class="docutils literal notranslate"><span class="pre">std::vector</span></code> for generated collections and <code class="docutils literal notranslate"><span class="pre">podio::LinkCollection</span></code>, and differ between collection kinds on move.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operation</p></th>
+<th class="head"><p>Generated collections and <code class="docutils literal notranslate"><span class="pre">LinkCollection</span></code></p></th>
+<th class="head"><p><code class="docutils literal notranslate"><span class="pre">UserDataCollection</span></code></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">create()</span></code>, <code class="docutils literal notranslate"><span class="pre">push_back()</span></code></p></td>
+<td><p>✔️ not invalidated (a previously obtained <code class="docutils literal notranslate"><span class="pre">end()</span></code> does not include the new elements)</p></td>
+<td><p>❌ invalidated if reallocation happens</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">resize()</span></code></p></td>
+<td><p>not available</p></td>
+<td><p>❌ invalidated if reallocation happens</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">clear()</span></code></p></td>
+<td><p>❌ invalidated</p></td>
+<td><p>❌ invalidated</p></td>
+</tr>
+<tr class="row-odd"><td><p>Move construction / assignment</p></td>
+<td><p>❌ invalidated (they refer to the moved-from collection)</p></td>
+<td><p>✔️ not invalidated (they refer to the new collection)</p></td>
+</tr>
+<tr class="row-even"><td><p>Destruction</p></td>
+<td><p>❌ invalidated</p></td>
+<td><p>❌ invalidated</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 </section>
 

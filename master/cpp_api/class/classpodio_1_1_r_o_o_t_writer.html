@@ -269,6 +269,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#iterator-invalidation">Iterator invalidation</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">C++ API documentation</a><ul class="current">
@@ -933,7 +934,7 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>frame</strong> – The Frame to store </p></li>
 <li><p><strong>category</strong> – The category name under which this Frame should be stored </p></li>
-<li><p><strong>collsToWrite</strong> – The collection names that should be written </p></li>
+<li><p><strong>collsToWrite</strong> – The collection names that should be written. Duplicate names are ignored. </p></li>
 </ul>
 </dd>
 </dl>
@@ -960,7 +961,7 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>collsToWrite</strong> – The collection names that should be checked for consistency </p></li>
+<li><p><strong>collsToWrite</strong> – The collection names that should be checked for consistency. Duplicate names are ignored. </p></li>
 <li><p><strong>category</strong> – The category name for which consistency should be checked</p></li>
 </ul>
 </dd>

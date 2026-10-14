@@ -269,6 +269,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-as-a-range">Collection as a <em>range</em></a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-algorithms">Collection and standard algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#collection-and-standard-range-algorithms">Collection and standard range algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../collections_as_container.html#iterator-invalidation">Iterator invalidation</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api.html">C++ API documentation</a><ul class="current">
@@ -897,12 +898,31 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5podio5utils17sortAlphabeticalyENSt6vectorINSt6stringEEE">
 <span id="_CPPv3N5podio5utils17sortAlphabeticalyENSt6vectorINSt6stringEEE"></span><span id="_CPPv2N5podio5utils17sortAlphabeticalyENSt6vectorINSt6stringEEE"></span><span id="podio::utils::sortAlphabeticaly__std::vector:ss:"></span><span class="target" id="namespacepodio_1_1utils_1ad96e6d0bc8c4c788b10450b34ffc730f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sortAlphabeticaly</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strings</span></span><span class="sig-paren">)</span><br /></dt>
 <dd><p>Sort the input vector of strings alphabetically, case insensitive. </p>
+<p>Names that differ only by case are ordered by their case-sensitive spelling.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>strings</strong> – The strings that should be sorted alphabetically</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A vector of strings sorted alphabetically, case insensitive </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio5utils18sortAndDeduplicateENSt6vectorINSt6stringEEENSt11string_viewE">
+<span id="_CPPv3N5podio5utils18sortAndDeduplicateENSt6vectorINSt6stringEEENSt11string_viewE"></span><span id="_CPPv2N5podio5utils18sortAndDeduplicateENSt6vectorINSt6stringEEENSt11string_viewE"></span><span id="podio::utils::sortAndDeduplicate__std::vector:ss:.std::string_view"></span><span class="target" id="namespacepodio_1_1utils_1a1e3b8ad7b025612e8f4c7018d37f532c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sortAndDeduplicate</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">strings</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string_view</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">context</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;&quot;</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Sort the input vector of strings alphabetically and remove duplicates. </p>
+<p>Prints a warning if duplicates are found.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>strings</strong> – The strings that should be sorted and deduplicated </p></li>
+<li><p><strong>context</strong> – A context string for the warning message (e.g., “collsToRead”, “collsToWrite”)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A vector of unique strings sorted alphabetically, case insensitive </p>
 </dd>
 </dl>
 </dd></dl>
