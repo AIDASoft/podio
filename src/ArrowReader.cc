@@ -62,7 +62,7 @@ void ArrowReader::openFile(const std::string& directory) {
     catInfo.filePath = (std::filesystem::path(m_directory) / catJson["file"].get<std::string>()).string();
     catInfo.entries = catJson["entries"].get<size_t>();
 
-    m_categories[name] = std::move(catInfo);
+    m_categories.emplace(name, std::move(catInfo));
     m_availableCategories.push_back(name);
   }
 
@@ -135,7 +135,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {
 
 std::unique_ptr<podio::ArrowFrameData> ArrowReader::readNextEntry(std::string_view name,
                                                                   const std::vector<std::string>& collsToRead) {
-  auto it = m_categories.find(std::string(name));
+  auto it = m_categories.find(name);
   if (it == m_categories.end()) {
     return nullptr;
   }
@@ -153,7 +153,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
   const auto dedupedCollsToRead =
       collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
 
-  auto it = m_categories.find(std::string(name));
+  auto it = m_categories.find(name);
   if (it == m_categories.end()) {
     return nullptr;
   }
@@ -177,7 +177,7 @@ std::unique_ptr<podio::ArrowFrameData> ArrowReader::readEntry(std::string_view n
 }
 
 size_t ArrowReader::getEntries(std::string_view name) const {
-  auto it = m_categories.find(std::string(name));
+  auto it = m_categories.find(name);
   if (it != m_categories.end()) {
     return it->second.entries;
   }
