@@ -10,9 +10,8 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/podioVersion.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/TypeHelpers.h"
-
-#include "../../src/rootUtils.h"
 
 #ifndef PODIO_ENABLE_SIO
   #define PODIO_ENABLE_SIO 0
@@ -1515,10 +1514,35 @@ void runConsistentFrameTest(const std::string& filename) {
   writer.writeFrame(frame, "subset2", otherCollsToWrite);
   REQUIRE_NOTHROW(writer.writeFrame(frame2, "subset2", otherCollsToWrite));
 
+  // Duplicate requests must work on both the first and subsequent frames.
+  const std::vector<std::string> duplicateCollsToWrite = {"hits", "clusters", "hits"};
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", duplicateCollsToWrite));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", duplicateCollsToWrite));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", {"clusters", "hits", "clusters"}));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "duplicates", collsToWrite));
+
+  // Duplicates must not hide missing collections or appear as extra collections.
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "duplicates", {"clusters", "clusters"}),
+                      ContainsSubstring("inconsistent collection content") && ContainsSubstring("missing: [hits]"));
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "duplicates", {"clusters", "hits", "hits2", "hits2"}),
+                      ContainsSubstring("inconsistent collection content") &&
+                          ContainsSubstring("superfluous: [hits2]"));
+
   // Make sure that restricting the second frame works.
   // See https://github.com/AIDASoft/podio/issues/382 for the original issue
   writer.writeFrame(frame2, "full_frame2");
   REQUIRE_NOTHROW(writer.writeFrame(frame, "full_frame2", frame2.getAvailableCollections()));
+
+  // Names differing only by case remain distinct and normalize consistently.
+  frame.put(ExampleHitCollection(), "Hits");
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "case_sensitive", {"hits", "Hits", "hits"}));
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "case_sensitive", {"Hits", "hits", "Hits"}));
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "case_sensitive", {"hits", "hits"}),
+                      ContainsSubstring("inconsistent collection content") && ContainsSubstring("missing: [Hits]"));
+
+  REQUIRE_NOTHROW(writer.writeFrame(frame, "case_replaced", {"hits"}));
+  REQUIRE_THROWS_WITH(writer.writeFrame(frame, "case_replaced", {"Hits"}),
+                      ContainsSubstring("missing: [hits]") && ContainsSubstring("superfluous: [Hits]"));
 }
 
 template <typename WriterT>
@@ -1541,6 +1565,25 @@ void runCheckConsistencyTest(const std::string& filename) {
   const auto& [missing, superfluous] = writer.checkConsistency(collsToWrite, "frame");
   REQUIRE_THAT(missing, UnorderedEquals<std::string>({"hits"}));
   REQUIRE_THAT(superfluous, UnorderedEquals<std::string>({"non-existant"}));
+
+  const auto& [duplicateMissing, duplicateSuperfluous] =
+      writer.checkConsistency({"clusters", "clusters2", "hits", "hits"}, "frame");
+  REQUIRE(duplicateMissing.empty());
+  REQUIRE(duplicateSuperfluous.empty());
+
+  const auto& [missingWithDuplicates, extraWithDuplicates] =
+      writer.checkConsistency({"clusters", "clusters", "clusters2"}, "frame");
+  REQUIRE_THAT(missingWithDuplicates, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE(extraWithDuplicates.empty());
+
+  const auto& [missingWithExtra, dedupedExtra] =
+      writer.checkConsistency({"clusters", "clusters2", "non-existant", "non-existant"}, "frame");
+  REQUIRE_THAT(missingWithExtra, UnorderedEquals<std::string>({"hits"}));
+  REQUIRE_THAT(dedupedExtra, UnorderedEquals<std::string>({"non-existant"}));
+
+  const auto& [unknownMissing, unknownExtra] = writer.checkConsistency({"hits", "hits", "clusters"}, "unknown");
+  REQUIRE(unknownMissing.empty());
+  REQUIRE_THAT(unknownExtra, UnorderedEquals<std::string>({"clusters", "hits"}));
 }
 
 template <typename ReaderT, typename WriterT>
@@ -1656,17 +1699,10 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
   runCheckConsistencyTest<podio::ROOTWriter>("unittests_frame_check_consistency.root");
 }
 
-TEST_CASE("checkConsistentColls detects missing collection", "[basics][root]") {
-  std::vector<podio::root_utils::CollectionWriteInfo> collInfo{};
-  collInfo.emplace_back(0, "T1", false, 0, "clusters", "storage");
-  collInfo.emplace_back(1, "T2", false, 0, "hits", "storage");
-  collInfo.emplace_back(2, "T3", false, 0, "new", "storage");
-
-  REQUIRE(::podio::root_utils::checkConsistentColls(collInfo, {"clusters", "hits", "new"}));
-  const std::vector<std::string> candsWithMissing{"clusters", "hits"};
-  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithMissing));
-  const std::vector<std::string> candsWithAdditional{"clusters", "hits", "new", "superfluous"};
-  REQUIRE_FALSE(::podio::root_utils::checkConsistentColls(collInfo, candsWithAdditional));
+TEST_CASE("Collection names normalize deterministically", "[basics]") {
+  const std::vector<std::string> expected = {"clusters", "Hits", "hits"};
+  REQUIRE(podio::utils::sortAndDeduplicate({"hits", "Hits", "hits", "clusters"}) == expected);
+  REQUIRE(podio::utils::sortAndDeduplicate({"Hits", "clusters", "hits", "Hits"}) == expected);
 }
 
 #if PODIO_ENABLE_RNTUPLE

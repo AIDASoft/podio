@@ -207,7 +207,7 @@ public:
     __cppjit_pythonize__(klass, name);
   }
 
-  /// clear the collection and all internal states
+  /// clear the collection and all internal states. Invalidates all iterators.
   void clear() override {
     _vec.clear();
   }
@@ -248,6 +248,7 @@ public:
 
   // ----- some wrappers for std::vector and access to the complete std::vector (if really needed)
 
+  /// Invalidates iterators if the underlying vector reallocates.
   typename std::vector<BasicType>::reference create() {
     return _vec.emplace_back();
   }
@@ -304,9 +305,11 @@ public:
     return _vec.at(idx);
   }
 
+  /// Invalidates iterators if the underlying vector reallocates.
   void resize(size_t count) {
     _vec.resize(count);
   }
+  /// Invalidates iterators if the underlying vector reallocates.
   void push_back(const BasicType& value) {
     _vec.push_back(value);
   }

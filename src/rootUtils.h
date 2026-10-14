@@ -11,7 +11,6 @@
 #include "TTree.h"
 
 #include <algorithm>
-#include <cctype>
 #include <iostream>
 #include <iterator>
 #include <sstream>
@@ -306,36 +305,6 @@ inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable
   }
 
   return collInfo;
-}
-
-/**
- * Check whether existingColls and candidateColls both contain the same
- * collection names. Returns false if the two vectors differ in content. Inputs
- * can have random order wrt each other, but the assumption is that each vector
- * only contains unique names.
- */
-inline bool checkConsistentColls(const std::vector<root_utils::CollectionWriteInfo>& collInfo,
-                                 const std::vector<std::string>& candidateColls) {
-  if (collInfo.size() != candidateColls.size()) {
-    return false;
-  }
-
-  std::vector<std::string_view> sortedCollNames{};
-  sortedCollNames.reserve(collInfo.size());
-  for (const auto& elem : collInfo) {
-    sortedCollNames.emplace_back(elem.name);
-  }
-
-  const auto comp = [](const auto& lhs, const auto& rhs) {
-    return std::lexicographical_compare(
-        lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-        [](const auto cl, const auto cr) { return std::tolower(cl) < std::tolower(cr); });
-  };
-
-  std::ranges::sort(sortedCollNames, comp);
-
-  return std::ranges::all_of(candidateColls,
-                             [&](const auto& name) { return std::ranges::binary_search(sortedCollNames, name, comp); });
 }
 
 /**
