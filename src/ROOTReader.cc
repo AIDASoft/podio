@@ -317,15 +317,14 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
                                "\" tree couldn't be read.");
     }
   }
-  m_metaChain = std::move(metaChain);
 
   auto* versionPtr = &m_fileVersion;
-  if (auto* versionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::versionBranchName)) {
+  if (auto* versionBranch = root_utils::getBranch(metaChain.get(), root_utils::versionBranchName)) {
     versionBranch->SetAddress(&versionPtr);
     versionBranch->GetEntry(0);
   }
 
-  if (auto* edmDefBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmDefBranchName)) {
+  if (auto* edmDefBranch = root_utils::getBranch(metaChain.get(), root_utils::edmDefBranchName)) {
     auto datamodelDefs = DatamodelDefinitionHolder::MapType{};
     auto* datamodelDefsPtr = &datamodelDefs;
     edmDefBranch->SetAddress(&datamodelDefsPtr);
@@ -333,7 +332,7 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
 
     DatamodelDefinitionHolder::VersionList edmVersions{};
     for (const auto& [name, _] : datamodelDefs) {
-      if (auto* edmVersionBranch = root_utils::getBranch(m_metaChain.get(), root_utils::edmVersionBranchName(name))) {
+      if (auto* edmVersionBranch = root_utils::getBranch(metaChain.get(), root_utils::edmVersionBranchName(name))) {
         const auto edmVersion = podio::version::Version{};
         auto* tmpPtr = &edmVersion;
         edmVersionBranch->SetAddress(&tmpPtr);
@@ -348,13 +347,17 @@ void ROOTReader::openFiles(const std::vector<std::string>& filenames) {
   // Do some work up front for setting up categories and setup all the chains
   // and record the available categories. The rest of the setup follows on
   // demand when the category is first read
-  m_availableCategories = ::podio::getAvailableCategories(m_metaChain.get());
+  m_availableCategories = ::podio::getAvailableCategories(metaChain.get());
   for (const auto& cat : m_availableCategories) {
     const auto [it, _] = m_categories.try_emplace(cat, std::make_unique<TChain>(cat.c_str()));
     for (const auto& fn : filenames) {
       it->second.chain->Add(fn.c_str());
     }
   }
+
+  // Only set this at the very end, since it marks this reader as having opened
+  // files and a failed attempt should not do that
+  m_metaChain = std::move(metaChain);
 }
 
 unsigned ROOTReader::getEntries(std::string_view name) const {

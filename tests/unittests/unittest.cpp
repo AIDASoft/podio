@@ -1435,13 +1435,13 @@ TEST_CASE("Readers can only open files once with TTrees", "[ASAN-FAIL][UBSAN-FAI
 }
 
 #if PODIO_ENABLE_RNTUPLE
-TEST_CASE("Readers can only open files once with RNTuple", "[UBSAN-FAIL][basics][root]") {
+TEST_CASE("Readers can only open files once with RNTuple", "[THREAD-FAIL][UBSAN-FAIL][basics][root]") {
   runOpenOnlyOnceCheck<podio::RNTupleReader, podio::RNTupleWriter>("unittests_open_only_once_rntuple.root");
 }
 #endif
 
 #if PODIO_ENABLE_SIO
-TEST_CASE("Readers can only open files once with SIO", "[basics]") {
+TEST_CASE("Readers can only open files once with SIO", "[basics][sio]") {
   runOpenOnlyOnceCheck<podio::SIOReader, podio::SIOWriter>("unittests_open_only_once.sio");
 }
 #endif

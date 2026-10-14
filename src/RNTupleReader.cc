@@ -80,24 +80,24 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     throw std::logic_error("RNTupleReader: files have already been opened with this reader");
   }
 
+  decltype(m_metadata_readers) metadataReaders{};
   for (const auto& filename : filenames) {
-    m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
+    metadataReaders.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
   }
 
-  m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
-  m_filenames = filenames;
+  auto metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
 
-  auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
+  auto versionView = metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
   const auto version = versionView(0);
 
   m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
 
-  auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  auto edmView = metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edmView(0);
   DatamodelDefinitionHolder::VersionList edmVersions{};
   for (const auto& [name, _] : edm) {
     try {
-      auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
+      auto edmVersionView = metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
       const auto edmVersion = edmVersionView(0);
       edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
     } catch (const RException&) {
@@ -105,9 +105,13 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   }
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
 
-  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
-  m_availableCategories = availableCategoriesField(0);
-  std::ranges::sort(m_availableCategories);
+  auto availableCategoriesField = metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
+  auto availableCategories = availableCategoriesField(0);
+  std::ranges::sort(availableCategories);
+
+  m_metadata_readers = std::move(metadataReaders);
+  m_filenames = filenames;
+  m_availableCategories = std::move(availableCategories);
 
   // Pre-fill the entries map
   for (const auto& category : m_availableCategories) {
@@ -133,6 +137,10 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     // The last entry is not needed since it's the total number of entries
     m_readerEntries[category].pop_back();
   }
+
+  // Only set this at the very end, since it marks this reader as having opened
+  // files and a failed attempt should not do that
+  m_metadata = std::move(metadata);
 }
 
 unsigned RNTupleReader::getEntries(std::string_view name) const {
