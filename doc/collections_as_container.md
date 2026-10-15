@@ -173,13 +173,46 @@ In addition to the *LegacyForwardIterator* the C++ standard specifies also the *
 | Adaptor | Compatible with Collection? | Comment |
 |---------|-----------------------------|---------|
 | `std::reverse_iterator` | ❗ attention | `operator->` not defined as `iterator`'s and `const_iterator`'s `operator->` are non-`const` |
-| `std::back_insert_iterator` | ❗ attention | Compatible only with SubsetCollections, otherwise throws `std::invalid_argument` |
+| `std::back_insert_iterator` | ❗ attention | Compatible only with SubsetCollections, otherwise throws `std::invalid_argument`; use `podio::back_inserter` to insert mutable handles into owning collections |
 | `std::front_insert_iterator` | ❌ no | `push_front` not defined |
 | `std::insert_iterator` | ❌ no | `insert` not defined |
 | `std::const_iterator` (C++23) | ❗ attention | `operator->` not defined as `iterator`'s and `const_iterator`'s `operator->` are non-`const`. |
 | `std::move_iterator` | ✔️ yes | Limited usefulness since dereference returns `reference` type not rvalue reference (`&&`) |
 | `std::counted_iterator` | ❗ attention | `operator->` not defined as it requires `std::contiguous_iterator` |
 
+
+### Inserting handles with standard algorithms
+
+`std::back_inserter` converts assigned elements to the collection's `value_type`,
+which is an immutable handle. As a result, even assigning a mutable clone through
+this iterator throws when the destination is an owning collection.
+
+Include `podio/utilities/BackInsertIterator.h` and use `podio::back_inserter` to
+forward the original handle type to `push_back`. It works with both generated
+collections and link collections, and supports standard and ranges algorithms:
+
+```cpp
+#include "podio/utilities/BackInsertIterator.h"
+
+#include <algorithm>
+
+// input and output are collections of the same type; output is an owning collection.
+std::ranges::transform(input, podio::back_inserter(output),
+                       [](const auto& handle) { return handle.clone(); });
+```
+
+The iterator follows the destination collection's insertion rules: owning
+collections accept unowned mutable handles, while subset collections accept
+handles to objects already owned by another collection. It does not clone
+implicitly or change a collection's subset status. For example, copying handles
+from an existing collection requires a subset destination:
+
+```cpp
+subset.setSubsetCollection();
+std::ranges::copy(input, podio::back_inserter(subset));
+```
+
+The destination collection must remain alive while the iterator is used.
 
 ## Collection as a *range*
 

@@ -3,9 +3,9 @@
 
 #include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ReaderCommon.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -65,7 +65,7 @@ private:
   void loadCategoryTable(CategoryInfo& catInfo, const std::vector<std::string>& collsToRead = {});
 
   std::string m_directory{};
-  std::map<std::string, CategoryInfo> m_categories{};
+  podio::StringKeyMap<CategoryInfo> m_categories{};
 };
 
 } // namespace podio
