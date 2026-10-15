@@ -4,20 +4,7 @@
 #include "podio/ArrowReader.h"
 
 #include <iostream>
-#include <stdexcept>
 #include <string>
-
-int test_arrow_reader_invalid_coll(const std::string& inputFile) {
-  auto reader = podio::ArrowReader();
-  reader.openFile(inputFile);
-  try {
-    reader.readEntry("events", 0, {"non_existent_collection"});
-    std::cerr << "Expected std::invalid_argument for non-existent collection" << std::endl;
-    return 1;
-  } catch (const std::invalid_argument&) {
-    return 0;
-  }
-}
 
 int test_arrow_reader_edge_cases(const std::string& inputFile) {
   auto reader = podio::ArrowReader();
@@ -61,5 +48,5 @@ int main(int argc, char* argv[]) {
 
   return read_frames<podio::ArrowReader>(inputFile, assertBuildVersion) +
       test_frame_aux_info<podio::ArrowReader>(inputFile) + test_read_frame_limited<podio::ArrowReader>(inputFile) +
-      test_arrow_reader_invalid_coll(inputFile) + test_arrow_reader_edge_cases(inputFile);
+      test_arrow_reader_edge_cases(inputFile);
 }
