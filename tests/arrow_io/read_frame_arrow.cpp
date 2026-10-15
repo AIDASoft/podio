@@ -6,38 +6,6 @@
 #include <iostream>
 #include <string>
 
-int test_arrow_reader_edge_cases(const std::string& inputFile) {
-  auto reader = podio::ArrowReader();
-  reader.openFile(inputFile);
-
-  // Partial read: requested collection present, unrequested absent
-  auto frameA = podio::Frame(reader.readEntry("events", 0, {"mcparticles"}));
-  if (frameA.get("mcparticles") == nullptr) {
-    std::cerr << "Failed to read entry with subset collection" << std::endl;
-    return 1;
-  }
-  if (frameA.get("clusters") != nullptr) {
-    std::cerr << "Expected unrequested collection to be absent in payload" << std::endl;
-    return 1;
-  }
-
-  // Expanding collections across successive reads
-  auto frameAB = podio::Frame(reader.readEntry("events", 1, {"mcparticles", "clusters"}));
-  if (frameAB.get("mcparticles") == nullptr || frameAB.get("clusters") == nullptr) {
-    std::cerr << "Failed to read entry with expanded collection set" << std::endl;
-    return 1;
-  }
-
-  // Reading all collections after subset read
-  auto frameAll = podio::Frame(reader.readEntry("events", 2, {}));
-  if (frameAll.get("mcparticles") == nullptr || frameAll.get("clusters") == nullptr) {
-    std::cerr << "Failed to read full entry after subset read" << std::endl;
-    return 1;
-  }
-
-  return 0;
-}
-
 int main(int argc, char* argv[]) {
   std::string inputFile = "example_frame.podio_parquet";
   bool assertBuildVersion = true;
@@ -48,5 +16,5 @@ int main(int argc, char* argv[]) {
 
   return read_frames<podio::ArrowReader>(inputFile, assertBuildVersion) +
       test_frame_aux_info<podio::ArrowReader>(inputFile) + test_read_frame_limited<podio::ArrowReader>(inputFile) +
-      test_arrow_reader_edge_cases(inputFile);
+      test_read_changing_collection_subsets<podio::ArrowReader>(inputFile);
 }

@@ -19,5 +19,6 @@ int main(int argc, char* argv[]) {
   }
 
   return read_frames<podio::ROOTReader>(inputFile, assertBuildVersion) +
-      test_frame_aux_info<podio::ROOTReader>(inputFile) + test_read_frame_limited<podio::ROOTReader>(inputFile);
+      test_frame_aux_info<podio::ROOTReader>(inputFile) + test_read_frame_limited<podio::ROOTReader>(inputFile) +
+      test_read_changing_collection_subsets<podio::ROOTReader>(inputFile);
 }

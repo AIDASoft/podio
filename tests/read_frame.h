@@ -364,4 +364,51 @@ int test_read_frame_limited(const std::string& inputFile) {
   return test_read_frame_limited(reader);
 }
 
+/// Check that reading changing subsets of collections across successive reads works as expected
+template <typename ReaderT>
+int test_read_changing_collection_subsets(ReaderT& reader) {
+  auto readEntry = [&reader](const std::string& category, unsigned entry, const std::vector<std::string>& colls) {
+    if constexpr (std::is_same_v<ReaderT, podio::Reader>) {
+      return podio::Frame(reader.readFrame(category, entry, colls));
+    } else {
+      return podio::Frame(reader.readEntry(category, entry, colls));
+    }
+  };
+
+  // Partial read: requested collection present, unrequested absent
+  auto frameA = readEntry("events", 0, {"mcparticles"});
+  if (frameA.get("mcparticles") == nullptr) {
+    std::cerr << "Failed to read entry with subset collection" << std::endl;
+    return 1;
+  }
+  if (frameA.get("clusters") != nullptr) {
+    std::cerr << "Expected unrequested collection to be absent in payload" << std::endl;
+    return 1;
+  }
+
+  // Expanding collections across successive reads
+  auto frameAB = readEntry("events", 1, {"mcparticles", "clusters"});
+  if (frameAB.get("mcparticles") == nullptr || frameAB.get("clusters") == nullptr) {
+    std::cerr << "Failed to read entry with expanded collection set" << std::endl;
+    return 1;
+  }
+
+  // Reading all collections after subset read
+  auto frameAll = readEntry("events", 2, {});
+  if (frameAll.get("mcparticles") == nullptr || frameAll.get("clusters") == nullptr) {
+    std::cerr << "Failed to read full entry after subset read" << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
+template <typename ReaderT>
+int test_read_changing_collection_subsets(const std::string& inputFile) {
+  auto reader = ReaderT();
+  reader.openFile(inputFile);
+
+  return test_read_changing_collection_subsets(reader);
+}
+
 #endif // PODIO_TESTS_READ_FRAME_H
