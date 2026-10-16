@@ -115,7 +115,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   if (!catInfo.chain) {
     return nullptr;
   }
-  if (catInfo.entry >= catInfo.chain->GetEntries()) {
+  if (catInfo.entry >= catInfo.chain->GetEntriesFast()) {
     return nullptr;
   }
 
