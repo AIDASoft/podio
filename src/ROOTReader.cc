@@ -115,7 +115,11 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   if (!catInfo.chain) {
     return nullptr;
   }
-  if (catInfo.entry >= catInfo.chain->GetEntries()) {
+  // We do this weird looking comparison here because GetEntriesFast will only
+  // return the acutal number once we are at the last file in the TChain (as per
+  // the documentation), before that it will return essentially
+  // numeric_limits<long64_t>::max.
+  if (!(catInfo.entry < catInfo.chain->GetEntriesFast())) {
     return nullptr;
   }
 
