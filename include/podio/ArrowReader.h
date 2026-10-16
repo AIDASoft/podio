@@ -29,6 +29,8 @@ public:
   /// Open the passed directory for reading.
   ///
   /// @param directory The path to the directory to read from
+  ///
+  /// @throws std::logic_error if a directory has already been opened with this reader
   void openFile(const std::string& directory);
 
   ~ArrowReader() = default;

@@ -27,6 +27,11 @@
   #include "podio/RNTupleWriter.h"
 #endif
 
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+  #include "podio/ArrowReader.h"
+  #include "podio/ArrowWriter.h"
+#endif
+
 // Test data types
 #include "datamodel/EventInfoCollection.h"
 #include "datamodel/ExampleClusterCollection.h"
@@ -1404,6 +1409,48 @@ TEST_CASE("Missing files", "[basics]") {
   }
 #endif
 }
+
+template <typename ReaderT, typename WriterT>
+void runOpenOnlyOnceCheck(const std::string& filename) {
+  {
+    auto frame = podio::Frame();
+    auto hits = ExampleHitCollection();
+    hits.create();
+    frame.put(std::move(hits), "hits");
+    auto writer = WriterT(filename);
+    writer.writeFrame(frame, podio::Category::Event);
+    writer.finish();
+  }
+
+  auto reader = ReaderT();
+  // A failed attempt does not count as having opened a file
+  REQUIRE_THROWS_AS(reader.openFile("NonExistentFile"), std::runtime_error);
+  reader.openFile(filename);
+  REQUIRE_THROWS_AS(reader.openFile(filename), std::logic_error);
+  REQUIRE(reader.getEntries(podio::Category::Event) == 1);
+}
+
+TEST_CASE("Readers can only open files once with TTrees", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
+  runOpenOnlyOnceCheck<podio::ROOTReader, podio::ROOTWriter>("unittests_open_only_once.root");
+}
+
+#if PODIO_ENABLE_RNTUPLE
+TEST_CASE("Readers can only open files once with RNTuple", "[THREAD-FAIL][UBSAN-FAIL][basics][root]") {
+  runOpenOnlyOnceCheck<podio::RNTupleReader, podio::RNTupleWriter>("unittests_open_only_once_rntuple.root");
+}
+#endif
+
+#if PODIO_ENABLE_SIO
+TEST_CASE("Readers can only open files once with SIO", "[basics][sio]") {
+  runOpenOnlyOnceCheck<podio::SIOReader, podio::SIOWriter>("unittests_open_only_once.sio");
+}
+#endif
+
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+TEST_CASE("Readers can only open files once with Arrow", "[basics][arrow]") {
+  runOpenOnlyOnceCheck<podio::ArrowReader, podio::ArrowWriter>("unittests_open_only_once.podio_parquet");
+}
+#endif
 
 #ifdef PODIO_JSON_OUTPUT
   #include "nlohmann/json.hpp"

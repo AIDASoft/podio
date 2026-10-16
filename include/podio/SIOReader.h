@@ -80,6 +80,8 @@ public:
   /// Open the passed file for reading.
   ///
   /// @param filename The path to the file to read from
+  ///
+  /// @throws std::logic_error if a file has already been opened with this reader
   void openFile(const std::string& filename);
 
 private:

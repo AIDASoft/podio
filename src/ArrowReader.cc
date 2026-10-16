@@ -17,22 +17,26 @@
 #include <fstream>
 #include <optional>
 #include <stdexcept>
+#include <string>
 #include <tuple>
 #include <utility>
 #include <variant>
+#include <vector>
 
 namespace podio {
 
 ArrowReader::ArrowReader() = default;
 
 void ArrowReader::openFile(const std::string& directory) {
-  m_directory = directory;
+  if (!m_directory.empty()) {
+    throw std::logic_error("ArrowReader: a directory has already been opened with this reader");
+  }
 
-  if (!std::filesystem::exists(m_directory) || !std::filesystem::is_directory(m_directory)) {
+  if (!std::filesystem::exists(directory) || !std::filesystem::is_directory(directory)) {
     throw std::runtime_error("Directory does not exist: " + directory);
   }
 
-  auto metadataPath = std::filesystem::path(m_directory) / "metadata.json";
+  auto metadataPath = std::filesystem::path(directory) / "metadata.json";
   if (!std::filesystem::exists(metadataPath)) {
     throw std::runtime_error("Missing metadata.json in directory: " + directory);
   }
@@ -51,19 +55,21 @@ void ArrowReader::openFile(const std::string& directory) {
 
   auto versionStr = metadata.value("podio_version", "");
   auto parsedVersion = podio::version::Version::fromString(versionStr);
-  if (parsedVersion) {
-    m_fileVersion = parsedVersion.value();
-  } else {
+  if (!parsedVersion) {
     throw std::runtime_error("Invalid or missing podio_version in metadata.json: " + versionStr);
   }
 
+  // Only fill the members once nothing else can fail, so that a failed attempt
+  // leaves the reader untouched
+  decltype(m_categories) categories;
+  std::vector<std::string> availableCategories;
   for (auto& [name, catJson] : metadata["categories"].items()) {
     CategoryInfo catInfo;
-    catInfo.filePath = (std::filesystem::path(m_directory) / catJson["file"].get<std::string>()).string();
+    catInfo.filePath = (std::filesystem::path(directory) / catJson["file"].get<std::string>()).string();
     catInfo.entries = catJson["entries"].get<size_t>();
 
-    m_categories.emplace(name, std::move(catInfo));
-    m_availableCategories.push_back(name);
+    categories.emplace(name, std::move(catInfo));
+    availableCategories.push_back(name);
   }
 
   std::vector<std::tuple<std::string, std::string>> defs;
@@ -84,7 +90,11 @@ void ArrowReader::openFile(const std::string& directory) {
     }
   }
 
+  m_fileVersion = parsedVersion.value();
+  m_categories = std::move(categories);
+  m_availableCategories = std::move(availableCategories);
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(defs), std::move(versions));
+  m_directory = directory;
 }
 
 void ArrowReader::loadCategoryTable(CategoryInfo& catInfo) {

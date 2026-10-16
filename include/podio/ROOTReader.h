@@ -57,6 +57,8 @@ public:
   /// Open a single file for reading.
   ///
   /// @param filename The name of the input file
+  ///
+  /// @throws std::logic_error if files have already been opened with this reader
   void openFile(const std::string& filename);
 
   /// Open multiple files for reading and then treat them as if they are one file
@@ -70,6 +72,8 @@ public:
   ///   "settings", e.g. they are outputs of a batched process.
   ///
   /// @param filenames The filenames of all input files that should be read
+  ///
+  /// @throws std::logic_error if files have already been opened with this reader
   void openFiles(const std::vector<std::string>& filenames);
 
   /// Read the next data entry for a given category.
