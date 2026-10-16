@@ -6,6 +6,7 @@
 #include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 namespace podio {
@@ -28,13 +29,13 @@ public:
   CollectionIDTable(const std::vector<uint32_t>& ids, const std::vector<std::string>& names);
 
   /// return collection ID for given name
-  std::optional<uint32_t> collectionID(const std::string& collectionName) const;
+  std::optional<uint32_t> collectionID(std::string_view collectionName) const;
 
   /// return name for given collection ID
   std::optional<const std::string> name(uint32_t id) const;
 
   /// Check if collection name is known
-  bool present(const std::string& collectionName) const;
+  bool present(std::string_view collectionName) const;
 
   /// Check if collection ID is known
   bool present(uint32_t id) const;
@@ -51,7 +52,7 @@ public:
 
   /// register new name to the table
   /// returns assigned collection ID
-  uint32_t add(const std::string& collectionName);
+  uint32_t add(std::string_view collectionName);
 
   /// Prints collection information
   void print() const;
