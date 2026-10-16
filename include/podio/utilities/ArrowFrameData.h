@@ -13,6 +13,7 @@
 
 namespace arrow {
 class Table;
+class Schema;
 } // namespace arrow
 
 namespace podio {
@@ -20,7 +21,8 @@ namespace podio {
 class ArrowFrameData {
 public:
   ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowIndex,
-                 const std::vector<std::string>& collsToRead = {});
+                 const std::vector<std::string>& collsToRead = {},
+                 const std::shared_ptr<arrow::Schema>& fullSchema = nullptr);
 
   podio::CollectionIDTable getIDTable() const;
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name);
