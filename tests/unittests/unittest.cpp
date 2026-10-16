@@ -4,6 +4,7 @@
 #include "catch2/matchers/catch_matchers_vector.hpp"
 
 // podio specific includes
+#include "podio/CollectionIDTable.h"
 #include "podio/Frame.h"
 #include "podio/GenericParameters.h"
 #include "podio/ROOTLegacyReader.h"
@@ -2134,3 +2135,90 @@ TEST_CASE("ArrowTypeRegistry - Comprehensive Verification", "[arrow]") {
   }
 }
 #endif
+
+TEST_CASE("CollectionIDTable operations and lookup", "[basics][collectionIDTable]") {
+  SECTION("empty table") {
+    podio::CollectionIDTable table{};
+    REQUIRE(table.empty());
+    REQUIRE_FALSE(table.collectionID("any").has_value());
+    REQUIRE_FALSE(table.name(123).has_value());
+    REQUIRE_FALSE(table.present("any"));
+    REQUIRE_FALSE(table.present(123));
+  }
+
+  SECTION("construct from vectors") {
+    std::vector<uint32_t> ids = {10, 20, 30};
+    std::vector<std::string> names = {"hits", "tracks", "clusters"};
+    podio::CollectionIDTable table(ids, names);
+
+    REQUIRE_FALSE(table.empty());
+    REQUIRE(table.names().size() == 3);
+    REQUIRE(table.ids().size() == 3);
+
+    // Test name to ID (using std::string and string literals / string_view)
+    REQUIRE(table.collectionID("hits").value() == 10);
+    REQUIRE(table.collectionID(std::string("tracks")).value() == 20);
+    REQUIRE(table.collectionID(std::string_view("clusters")).value() == 30);
+    REQUIRE_FALSE(table.collectionID("nonExistent").has_value());
+
+    // Test ID to name
+    REQUIRE(table.name(10).value() == "hits");
+    REQUIRE(table.name(20).value() == "tracks");
+    REQUIRE(table.name(30).value() == "clusters");
+    REQUIRE_FALSE(table.name(999).has_value());
+
+    // Test present
+    REQUIRE(table.present("hits"));
+    REQUIRE(table.present(std::string_view("tracks")));
+    REQUIRE_FALSE(table.present("vertices"));
+    REQUIRE(table.present(10));
+    REQUIRE(table.present(20));
+    REQUIRE_FALSE(table.present(40));
+  }
+
+  SECTION("construct from moved vectors") {
+    std::vector<uint32_t> ids = {100, 200};
+    std::vector<std::string> names = {"particles", "mc_particles"};
+    podio::CollectionIDTable table(std::move(ids), std::move(names));
+
+    REQUIRE(table.collectionID("particles").value() == 100);
+    REQUIRE(table.name(200).value() == "mc_particles");
+  }
+
+  SECTION("dynamic add and deduplication") {
+    podio::CollectionIDTable table{};
+    const auto id1 = table.add("calorimeter_hits");
+    REQUIRE(id1 != 0);
+    REQUIRE(table.present("calorimeter_hits"));
+    REQUIRE(table.present(id1));
+    REQUIRE(table.name(id1).value() == "calorimeter_hits");
+    REQUIRE(table.collectionID("calorimeter_hits").value() == id1);
+
+    // Adding existing name returns the same ID without duplicate entry
+    const auto id1_again = table.add("calorimeter_hits");
+    REQUIRE(id1_again == id1);
+    REQUIRE(table.names().size() == 1);
+    REQUIRE(table.ids().size() == 1);
+
+    const auto id2 = table.add("tracker_hits");
+    REQUIRE(id2 != id1);
+    REQUIRE(table.names().size() == 2);
+    REQUIRE(table.collectionID("tracker_hits").value() == id2);
+    REQUIRE(table.name(id2).value() == "tracker_hits");
+  }
+
+  SECTION("move semantics") {
+    std::vector<uint32_t> ids = {10, 20};
+    std::vector<std::string> names = {"hits", "tracks"};
+    podio::CollectionIDTable table(ids, names);
+
+    podio::CollectionIDTable movedTable(std::move(table));
+    REQUIRE(movedTable.collectionID("hits").value() == 10);
+    REQUIRE(movedTable.name(20).value() == "tracks");
+
+    podio::CollectionIDTable assignedTable{};
+    assignedTable = std::move(movedTable);
+    REQUIRE(assignedTable.collectionID("tracks").value() == 20);
+    REQUIRE(assignedTable.name(10).value() == "hits");
+  }
+}
