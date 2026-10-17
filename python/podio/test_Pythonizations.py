@@ -3,7 +3,7 @@
 
 import unittest
 from ROOT import ex2
-from pythonizations import load_pythonizations  # pylint: disable=import-error
+from pythonizations import load_pythonizations
 
 # load all available pythonizations to the classes in a namespace
 # loading pythonizations changes the state of cppyy backend shared by all the tests in a process
