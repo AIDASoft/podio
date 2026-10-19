@@ -7,15 +7,17 @@ from .__version__ import __version__
 try:
     from ROOT import podio  # noqa: F401
 except ImportError:
-    print("Unable to load podio via ROOT. podio may have built without ROOT support or libpodio is not on LD_LIBRARY_PATH.")
-    pass
+    print(
+        "Unable to load podio via ROOT. podio may have built without ROOT support"
+        " or libpodio is not on LD_LIBRARY_PATH."
+    )
 
 from .frame import Frame
 from .link_navigator import LinkNavigator, ReturnFrom, ReturnTo, LinkCollection
 from . import reading, version
 
 try:
-    from . import root_io
+    from . import root_io  # noqa: F401
 except ImportError:
     pass
 
@@ -23,13 +25,13 @@ try:
     # We try to import the sio bindings which may fail if ROOT is not able to
     # load the dictionary. In this case they have most likely not been built and
     # we just move on
-    from . import sio_io
+    from . import sio_io  # noqa: F401
 except ImportError:
     pass
 
 try:
     # Same mechanism as for the sio_io above
-    from . import data_source
+    from . import data_source  # noqa: F401
 except ImportError:
     pass
 
