@@ -115,13 +115,24 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   if (!catInfo.chain) {
     return nullptr;
   }
-  // We do this weird looking comparison here because GetEntriesFast will only
-  // return the acutal number once we are at the last file in the TChain (as per
-  // the documentation), before that it will return essentially
-  // numeric_limits<long64_t>::max.
-  if (!(catInfo.entry < catInfo.chain->GetEntriesFast())) {
+  // LoadTree only opens as many files as necessary to find the requested
+  // entry and returns a negative value if the entry is not present. In
+  // contrast to GetEntries this does not require opening all files upfront
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
+  if (localEntry < 0) {
     return nullptr;
   }
+  // After switching trees in the chain, branch pointers get invalidated so
+  // they need to be reassigned. We compare against the tree for which we have
+  // last set up the branches, since an unsuccessful LoadTree (see above) can
+  // also switch trees.
+  // NOTE: root 6.22/06 requires that we get completely new branches here,
+  // with 6.20/04 we could just re-set them
+  const auto treeNo = catInfo.chain->GetTreeNumber();
+  const auto treeChange = treeNo != catInfo.treeNumber;
+  catInfo.treeNumber = treeNo;
+  // Also need to make sure to handle the first event
+  const auto reloadBranches = treeChange || localEntry == 0;
 
   // Make sure to not silently ignore non-existant but requested collections
   if (!dedupedCollsToRead.empty()) {
@@ -131,16 +142,6 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
       }
     }
   }
-
-  // After switching trees in the chain, branch pointers get invalidated so
-  // they need to be reassigned.
-  // NOTE: root 6.22/06 requires that we get completely new branches here,
-  // with 6.20/04 we could just re-set them
-  const auto preTreeNo = catInfo.chain->GetTreeNumber();
-  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
-  const auto treeChange = catInfo.chain->GetTreeNumber() != preTreeNo;
-  // Also need to make sure to handle the first event
-  const auto reloadBranches = treeChange || localEntry == 0;
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
