@@ -147,6 +147,14 @@ int read_out_of_bounds_first() {
                 << std::endl;
       return 1;
     }
+
+    // A failed attempt should not leave the reader in a broken state, i.e.
+    // reading an existing entry from the last file has to still work
+    auto lastFileFrame = podio::Frame(reader.readEntry("events", 15));
+    processEvent(lastFileFrame, 5, reader.currentFileVersion());
+    // And reading continues from there
+    auto nextFrame = podio::Frame(reader.readNextEntry("events"));
+    processEvent(nextFrame, 6, reader.currentFileVersion());
   }
 
   return 0;
