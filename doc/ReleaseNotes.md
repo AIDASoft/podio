@@ -1,3 +1,81 @@
+# v01-09
+
+* 2026-10-19 Thomas Madlener ([PR#1048](https://github.com/AIDASoft/podio/pull/1048))
+  - Make the `ROOTReader` stop opening all input files up front just to find out how many entries there are. This should speed up reading many files, especially on shared file systems.
+  - Fix a crash when asking the `ROOTReader` for an entry that does not exist when reading multiple files.
+
+* 2026-10-16 Juan Miguel Carceller ([PR#1043](https://github.com/AIDASoft/podio/pull/1043))
+  - Make `ROOTReader`, `RNTupleReader`, `SIOReader` and `ArrowReader` throw a `std::logic_error` when `openFile` / `openFiles` is called on a reader that has already opened a file. Previously a second call led to use-after-free (`ROOTReader`, `RNTupleReader`), silently kept reading the first file (`SIOReader`) or kept stale category state (`ArrowReader`). A failed attempt to open a file does not count, so it is still possible to retry with the same reader.
+
+* 2026-10-16 Ishaan Maheshwari ([PR#1033](https://github.com/AIDASoft/podio/pull/1033))
+  - optimize `ArrowReader` to read only the requested collections from parquet files (#1009)
+
+* 2026-10-14 Thomas Madlener ([PR#1045](https://github.com/AIDASoft/podio/pull/1045))
+  - Make sure to trigger gitlab ci only on master branch
+
+* 2026-10-14 Mateusz Jakub Fila ([PR#1044](https://github.com/AIDASoft/podio/pull/1044))
+  - Add documentation on possible iterator invalidation in collections
+
+* 2026-10-14 Juan Miguel Carceller ([PR#1036](https://github.com/AIDASoft/podio/pull/1036))
+  - Add `podio::back_inserter` for inserting mutable handles into owning collections through standard algorithms.
+
+* 2026-10-14 Ishaan Maheshwari ([PR#1035](https://github.com/AIDASoft/podio/pull/1035))
+  * use `podio::StringKeyMap` for zero-allocation heterogeneous category lookups in `ArrowReader` and `ArrowWriter`.
+
+* 2026-10-14 Juan Miguel Carceller ([PR#1034](https://github.com/AIDASoft/podio/pull/1034))
+  - Deduplicate requested collection names with warnings in Arrow, ROOT and RNTuple readers and ROOT and RNTuple writers, including writer consistency checks.
+
+* 2026-10-13 Thomas Madlener ([PR#1041](https://github.com/AIDASoft/podio/pull/1041))
+  - Tighten CI workflow permissions and add setup steps for merqe queues
+
+* 2026-10-08 Thomas Madlener ([PR#1039](https://github.com/AIDASoft/podio/pull/1039))
+  - Turn off the strace tests for dev3 based workflows to have a working CI
+
+* 2026-10-08 Juan Miguel Carceller ([PR#1037](https://github.com/AIDASoft/podio/pull/1037))
+  - Add `noexcept` copy and move construction for generated object handles, links, and `MaybeSharedPtr`, allowing `std::vector` to move handles during reallocation.
+
+* 2026-10-08 Juan Miguel Carceller ([PR#1031](https://github.com/AIDASoft/podio/pull/1031))
+  - Fix `Frame.put` rejecting all collections with ROOT master, where the bindings have moved from cppyy to cppjit. `_is_collection_base` checked for `"cppyy"` in the `repr` of the object, which is now `<cppjit.gbl...>`. Use `isinstance(thing, cppyy.types.Instance)` instead, which works for both.
+
+* 2026-10-01 Juan Miguel Carceller ([PR#1030](https://github.com/AIDASoft/podio/pull/1030))
+  - Look for zstd quietly when finding Arrow to avoid a CMake warning about a missing `zstd` config file
+
+* 2026-09-29 Juan Miguel Carceller ([PR#1029](https://github.com/AIDASoft/podio/pull/1029))
+  - Fix the new warnings reported by cppcheck 2.22.0, which currently make the pre-commit job fail for all PRs
+     - Use `std::make_unique` instead of raw `new` in the `LinkCollectionData` constructors (`noOperatorEq`)
+     - Use `std::ranges::transform` in `DataSource::GetColumnReadersImpl` (`objectIndex`)
+     - Suppress `noCopyConstructor` for `LinkT`, whose defaulted copy constructor is correct since `MaybeSharedPtr` takes care of the reference counting
+   - Fix other warnings that are obtained running `cppcheck` without suppressions (done by mistake but I don't think they hurt)
+     - Use `const auto&` and `const auto*` in tests where references and pointers are only read from (`constVariableReference`, `constVariablePointer`)
+     - Use `std::ranges::all_of` in `root_utils::checkConsistentColls` (`useStlAlgorithm`)
+
+* 2026-09-29 Juan Miguel Carceller ([PR#1028](https://github.com/AIDASoft/podio/pull/1028))
+  - Apply the suggestions from include-what-you-use: add missing includes (mostly standard library headers) and remove unused ones.
+
+* 2026-09-14 Juan Miguel Carceller ([PR#1024](https://github.com/AIDASoft/podio/pull/1024))
+  - Use `ROOT/RVersion.hxx` in the RNTuple reader header.
+
+* 2026-09-14 Juan Miguel Carceller ([PR#1021](https://github.com/AIDASoft/podio/pull/1021))
+  - Use CMake's portable Threads target for thread support.
+
+* 2026-09-14 Juan Miguel Carceller ([PR#1020](https://github.com/AIDASoft/podio/pull/1020))
+  - Fix pre-commit checks for the updated LCG tool stack.
+
+* 2026-09-02 Paul Gessinger ([PR#1017](https://github.com/AIDASoft/podio/pull/1017))
+  - Remove the leftover `Python3_INCLUDE_DIRS` from `PODIO_ADD_ROOT_IO_DICT`. It is no longer needed, and because it was not wrapped in a generator expression it made generated dictionary targets un-exportable in some environments.
+
+* 2026-09-02 Juan Miguel Carceller ([PR#1016](https://github.com/AIDASoft/podio/pull/1016))
+  - Report the installed podio version when found by CMake.
+
+* 2026-09-02 Wouter Deconinck ([PR#1015](https://github.com/AIDASoft/podio/pull/1015))
+  - fix: add nlohmann_json_VERSION to find_dependency
+
+* 2026-09-02 Thomas Madlener ([PR#1014](https://github.com/AIDASoft/podio/pull/1014))
+  - Make `Link::set<T>` accept `MutableT` as well instead of wrongly triggering a `static_assert`
+
+* 2026-08-31 Juan Miguel Carceller ([PR#973](https://github.com/AIDASoft/podio/pull/973))
+  - **Remove** the method **`isValid`** for Collections (generated and library provided). **Use `hasID`** if you want to check if a collection has been assigned a collection id, otherwise assume a collection is valid.
+
 # v01-08
 
 * 2026-08-27 Juan Miguel Carceller ([PR#1012](https://github.com/AIDASoft/podio/pull/1012))
