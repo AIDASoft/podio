@@ -131,6 +131,7 @@ private:
                                                             ///< category
     std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
     std::shared_ptr<CollectionIDTable> table{nullptr};      ///< The collection ID table for this category
+    int treeNumber{-1}; ///< The tree number in the chain for which the branches have been set up
   };
 
   /// Initialize the passed CategoryInfo by setting up the necessary branches,
