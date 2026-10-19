@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 int read_frames(podio::ROOTReader& reader) {
@@ -90,8 +91,78 @@ int read_frames(podio::ROOTReader& reader) {
   return 0;
 }
 
+// The following tests use freshly opened readers on which getEntries is never
+// called. Depending on the backend getEntries might force some eager loading of
+// information that might hide issues with the lazier loading when reading
+// entries
+int read_until_exhausted() {
+  auto reader = podio::ROOTReader();
+  reader.openFiles({"example_frame.root", "example_frame.root"});
+
+  size_t nEntries = 0;
+  while (auto frameData = reader.readNextEntry("events")) {
+    auto frame = podio::Frame(std::move(frameData));
+    processEvent(frame, (nEntries % 10), reader.currentFileVersion());
+    nEntries++;
+    if (nEntries > 20) {
+      std::cerr << "Read more entries than are present (expected: 20)" << std::endl;
+      return 1;
+    }
+  }
+
+  if (nEntries != 20) {
+    std::cerr << "Could not read all events via readNextEntry (expected: 20, actual: " << nEntries << ")" << std::endl;
+    return 1;
+  }
+
+  if (reader.readNextEntry("events")) {
+    std::cerr << "Trying to read more frame data than is present should return a nullptr" << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+
+// Request an entry that is beyond the available entries while the TChain has
+// not yet loaded the last file
+int read_out_of_bounds_first() {
+  {
+    auto reader = podio::ROOTReader();
+    reader.openFiles({"example_frame.root", "example_frame.root"});
+    if (reader.readEntry("events", 30)) {
+      std::cerr << "Trying to read a specific entry that does not exist (without having read any entry before) "
+                   "should return a nullptr"
+                << std::endl;
+      return 1;
+    }
+  }
+  {
+    auto reader = podio::ROOTReader();
+    reader.openFiles({"example_frame.root", "example_frame.root"});
+    auto frame = podio::Frame(reader.readNextEntry("events"));
+    processEvent(frame, 0, reader.currentFileVersion());
+    if (reader.readEntry("events", 30)) {
+      std::cerr << "Trying to read a specific entry that does not exist (after reading from the first file) should "
+                   "return a nullptr"
+                << std::endl;
+      return 1;
+    }
+
+    // A failed attempt should not leave the reader in a broken state, i.e.
+    // reading an existing entry from the last file has to still work
+    auto lastFileFrame = podio::Frame(reader.readEntry("events", 15));
+    processEvent(lastFileFrame, 5, reader.currentFileVersion());
+    // And reading continues from there
+    auto nextFrame = podio::Frame(reader.readNextEntry("events"));
+    processEvent(nextFrame, 6, reader.currentFileVersion());
+  }
+
+  return 0;
+}
+
 int main() {
   auto reader = podio::ROOTReader();
   reader.openFiles({"example_frame.root", "example_frame.root"});
-  return read_frames(reader);
+
+  return read_frames(reader) + read_until_exhausted() + read_out_of_bounds_first();
 }
