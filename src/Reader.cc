@@ -1,9 +1,9 @@
 #include "podio/Reader.h"
 
 #if PODIO_ENABLE_ROOT
-  #include "podio/ROOTReader.h"
   #include "TFile.h"
   #include "TKey.h"
+  #include "podio/ROOTReader.h"
 #endif
 
 #if PODIO_ENABLE_RNTUPLE
@@ -66,14 +66,14 @@ Reader makeReader(const std::vector<std::string>& filenames) {
       }
     }
     if (hasRNTuple) {
-#if PODIO_ENABLE_RNTUPLE
+  #if PODIO_ENABLE_RNTUPLE
       auto actualReader = std::make_unique<RNTupleReader>();
       actualReader->openFiles(filenames);
       Reader reader{std::move(actualReader)};
       return reader;
-#else
+  #else
       throw std::runtime_error("ROOT RNTuple reader not available. Please recompile with ROOT RNTuple support.");
-#endif
+  #endif
     } else {
       auto actualReader = std::make_unique<ROOTReader>();
       actualReader->openFiles(filenames);
