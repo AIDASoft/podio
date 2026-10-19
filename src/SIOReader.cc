@@ -18,6 +18,9 @@ SIOReader::SIOReader() {
 }
 
 void SIOReader::openFile(const std::string& filename) {
+  if (m_stream.is_open()) {
+    throw std::logic_error("SIOReader: a file has already been opened with this reader");
+  }
   m_stream.open(filename, std::ios::binary);
   if (!m_stream.is_open()) {
     throw std::runtime_error("File " + filename + " couldn't be opened");

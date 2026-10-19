@@ -78,6 +78,7 @@ public:
   constexpr static std::string_view valueTypeName = "{{ (class | string ).strip(':') }}";
   constexpr static std::string_view dataTypeName = "{{ ( class | string ).strip(':') }}Data";
 
+  /// Invalidates all iterators.
   void clear() final;
 
   /// Cppyy protocol to setup the pythonizations for this class. Not to be called directly.
@@ -93,10 +94,12 @@ public:
   void print(std::ostream& os=std::cout, bool flush=true) const final;
 
   /// Append a new object to the collection, and return this object.
+  /// Does not invalidate iterators.
   Mutable{{ class.bare_type }} create();
 
   /// Append a new object to the collection, and return this object.
-  /// Initialized with the parameters given
+  /// Initialized with the parameters given.
+  /// Does not invalidate iterators.
   template<typename... Args>
   Mutable{{ class.bare_type }} create(Args&&... args);
 
@@ -134,9 +137,11 @@ public:
   Mutable{{ class.bare_type }} at(std::size_t index);
 
 
-  /// Append object to the collection
+  /// Append object to the collection.
+  /// Does not invalidate iterators.
   void push_back(const Mutable{{class.bare_type}}& object);
-  /// Append an object to the (subset) collection
+  /// Append an object to the (subset) collection.
+  /// Does not invalidate iterators.
   void push_back(const {{ class.bare_type }}& object);
 
   void prepareForWrite() const final;

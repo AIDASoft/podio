@@ -2,31 +2,55 @@
 #define PODIO_UTILITIES_MISCHELPERS_H
 
 #include <algorithm>
+#include <cctype>
+#include <compare>
+#include <iostream>
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 namespace podio::utils {
 
 ///  Sort the input vector of strings alphabetically, case insensitive.
+///  Names that differ only by case are ordered by their case-sensitive spelling.
 ///
 ///  @param strings The strings that should be sorted alphabetically
 ///
 ///  @returns A vector of strings sorted alphabetically, case insensitive
 inline std::vector<std::string> sortAlphabeticaly(std::vector<std::string> strings) {
-  // Obviously there is no tolower(std::string) in c++, so this is slightly more
-  // involved and we make use of the fact that lexicographical_compare works on
-  // ranges and the fact that we can feed it a dedicated comparison function,
-  // where we convert the strings to lower case char-by-char. The alternative is
-  // to make string copies inside the first lambda, transform them to lowercase
-  // and then use operator< of std::string, which would be effectively
-  // hand-writing what is happening below.
   std::ranges::sort(strings, [](const auto& lhs, const auto& rhs) {
-    return std::lexicographical_compare(
+    const auto order = std::lexicographical_compare_three_way(
         lhs.begin(), lhs.end(), rhs.begin(), rhs.end(),
-        [](const auto& cl, const auto& cr) { return std::tolower(cl) < std::tolower(cr); });
+        [](unsigned char cl, unsigned char cr) { return std::tolower(cl) <=> std::tolower(cr); });
+    return std::is_eq(order) ? lhs < rhs : std::is_lt(order);
   });
+  return strings;
+}
+
+/// Sort the input vector of strings alphabetically and remove duplicates.
+/// Prints a warning if duplicates are found.
+///
+/// @param strings The strings that should be sorted and deduplicated
+/// @param context A context string for the warning message (e.g., "collsToRead", "collsToWrite")
+///
+/// @returns A vector of unique strings sorted alphabetically, case insensitive
+inline std::vector<std::string> sortAndDeduplicate(std::vector<std::string> strings, std::string_view context = "") {
+  const auto originalSize = strings.size();
+  strings = sortAlphabeticaly(std::move(strings));
+
+  const auto uniqueResult = std::ranges::unique(strings);
+  strings.erase(uniqueResult.begin(), uniqueResult.end());
+
+  if (strings.size() < originalSize) {
+    std::cerr << "WARNING: Found " << (originalSize - strings.size()) << " duplicate collection(s)";
+    if (!context.empty()) {
+      std::cerr << " in " << context;
+    }
+    std::cerr << ". Duplicates have been removed." << std::endl;
+  }
+
   return strings;
 }
 

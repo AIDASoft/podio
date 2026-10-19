@@ -18,5 +18,6 @@ int main(int argc, char* argv[]) {
   }
 
   return read_frames<podio::RNTupleReader>(inputFile) + test_frame_aux_info<podio::RNTupleReader>(inputFile) +
-      test_read_frame_limited<podio::RNTupleReader>(inputFile);
+      test_read_frame_limited<podio::RNTupleReader>(inputFile) +
+      test_read_changing_collection_subsets<podio::RNTupleReader>(inputFile);
 }

@@ -2,12 +2,12 @@
 #define PODIO_ARROWWRITER_H
 
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include <parquet/arrow/writer.h>
 
 #include <cstddef>
 #include <cstdint>
-#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -97,7 +97,7 @@ private:
 
   std::string m_directory{};
   Options m_options{};
-  std::map<std::string, CategoryInfo> m_categories{};
+  podio::StringKeyMap<CategoryInfo> m_categories{};
   DatamodelDefinitionCollector m_datamodelCollector{};
   bool m_finished = false;
 };

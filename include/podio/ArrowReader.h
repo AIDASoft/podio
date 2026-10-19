@@ -3,9 +3,9 @@
 
 #include "podio/utilities/ArrowFrameData.h"
 #include "podio/utilities/ReaderCommon.h"
+#include "podio/utilities/StringKeyMap.h"
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -13,7 +13,8 @@
 
 namespace arrow {
 class Table;
-}
+class Schema;
+} // namespace arrow
 
 namespace podio {
 
@@ -29,6 +30,8 @@ public:
   /// Open the passed directory for reading.
   ///
   /// @param directory The path to the directory to read from
+  ///
+  /// @throws std::logic_error if a directory has already been opened with this reader
   void openFile(const std::string& directory);
 
   ~ArrowReader() = default;
@@ -55,12 +58,16 @@ private:
     size_t entries = 0;
     size_t currentIndex = 0;
     std::shared_ptr<arrow::Table> table{nullptr};
+    bool allColumnsLoaded{false};                       ///< Whether the complete table containing all columns is loaded
+    std::shared_ptr<arrow::Schema> fullSchema{nullptr}; ///< Full file schema containing all fields and metadata
   };
 
-  void loadCategoryTable(CategoryInfo& catInfo);
+  /// Load the arrow::Table for the given category, selectively projecting only
+  /// requested collections if collsToRead is specified
+  void loadCategoryTable(CategoryInfo& catInfo, const std::vector<std::string>& collsToRead = {});
 
   std::string m_directory{};
-  std::map<std::string, CategoryInfo> m_categories{};
+  podio::StringKeyMap<CategoryInfo> m_categories{};
 };
 
 } // namespace podio

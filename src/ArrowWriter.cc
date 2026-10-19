@@ -64,15 +64,14 @@ void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view categor
 
 void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view category,
                              const std::vector<std::string>& collsToWrite) {
-  std::string catName(category);
-  auto it = m_categories.find(catName);
+  auto it = m_categories.find(category);
 
   std::vector<std::string> sortedColls = collsToWrite;
-  std::sort(sortedColls.begin(), sortedColls.end());
+  std::ranges::sort(sortedColls);
 
   if (it == m_categories.end()) {
     CategoryInfo catInfo;
-    catInfo.filePath = (std::filesystem::path(m_directory) / (catName + ".parquet")).string();
+    catInfo.filePath = (std::filesystem::path(m_directory) / (std::string(category) + ".parquet")).string();
     catInfo.collsToWrite = sortedColls;
 
     for (const auto& name : sortedColls) {
@@ -87,8 +86,8 @@ void ArrowWriter::writeFrame(const podio::Frame& frame, std::string_view categor
       m_datamodelCollector.registerDatamodelDefinition(coll, name);
     }
 
-    m_categories.emplace(catName, std::move(catInfo));
-    it = m_categories.find(catName);
+    const auto [insertedIt, _] = m_categories.emplace(category, std::move(catInfo));
+    it = insertedIt;
   } else {
     validateSchema(it->second, frame, sortedColls);
   }

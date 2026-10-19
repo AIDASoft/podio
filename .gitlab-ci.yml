@@ -7,6 +7,16 @@
 # https://key4hep.web.cern.ch/podio/
 
 
+# -- Only create pipelines for master ------------------------------
+#
+# The repository is mirrored from GitHub, which means that all branches (e.g.
+# the gh-readonly-queue/* branches created by the merge queue) end up here as
+# well. We only want to build and deploy the documentation for master.
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
+
 # -- Run the document generation ------------------------------
 #
 # We are going through the cmake infrastructure here. It is equivalent to
@@ -59,9 +69,8 @@ generate-docs:
 # The eos path and website are configured using https://webeos.cern.ch/
 deployment:
   # make sure that changes are deployed only when they are merged to master
-  only:
-    refs:
-      - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
   # need the doxygen artifacts for this step
   dependencies:
     - generate-docs

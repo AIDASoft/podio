@@ -6,6 +6,7 @@
 #include "podio/ObjectID.h"
 #include "podio/podioVersion.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
+#include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "rootUtils.h"
 
@@ -75,25 +76,28 @@ void RNTupleReader::openFile(const std::string& filename) {
 }
 
 void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
-
-  m_filenames.insert(m_filenames.end(), filenames.begin(), filenames.end());
-  for (const auto& filename : filenames) {
-    m_metadata_readers.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
+  if (m_metadata) {
+    throw std::logic_error("RNTupleReader: files have already been opened with this reader");
   }
 
-  m_metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
+  decltype(m_metadata_readers) metadataReaders{};
+  for (const auto& filename : filenames) {
+    metadataReaders.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
+  }
 
-  auto versionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
+  auto metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
+
+  auto versionView = metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
   const auto version = versionView(0);
 
   m_fileVersion = podio::version::Version{version[0], version[1], version[2]};
 
-  auto edmView = m_metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
+  auto edmView = metadata->GetView<std::vector<std::tuple<std::string, std::string>>>(root_utils::edmDefBranchName);
   auto edm = edmView(0);
   DatamodelDefinitionHolder::VersionList edmVersions{};
   for (const auto& [name, _] : edm) {
     try {
-      auto edmVersionView = m_metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
+      auto edmVersionView = metadata->GetView<std::vector<uint16_t>>(root_utils::edmVersionBranchName(name));
       const auto edmVersion = edmVersionView(0);
       edmVersions.emplace_back(name, podio::version::Version{edmVersion[0], edmVersion[1], edmVersion[2]});
     } catch (const RException&) {
@@ -101,9 +105,13 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
   }
   m_datamodelHolder = DatamodelDefinitionHolder(std::move(edm), std::move(edmVersions));
 
-  auto availableCategoriesField = m_metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
-  m_availableCategories = availableCategoriesField(0);
-  std::ranges::sort(m_availableCategories);
+  auto availableCategoriesField = metadata->GetView<std::vector<std::string>>(root_utils::availableCategories);
+  auto availableCategories = availableCategoriesField(0);
+  std::ranges::sort(availableCategories);
+
+  m_metadata_readers = std::move(metadataReaders);
+  m_filenames = filenames;
+  m_availableCategories = std::move(availableCategories);
 
   // Pre-fill the entries map
   for (const auto& category : m_availableCategories) {
@@ -129,6 +137,10 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     // The last entry is not needed since it's the total number of entries
     m_readerEntries[category].pop_back();
   }
+
+  // Only set this at the very end, since it marks this reader as having opened
+  // files and a failed attempt should not do that
+  m_metadata = std::move(metadata);
 }
 
 unsigned RNTupleReader::getEntries(std::string_view name) const {
@@ -152,6 +164,10 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readNextEntry(std::string_view cat
 
 std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view category, const unsigned entNum,
                                                         const std::vector<std::string>& collsToRead) {
+  // Deduplicate collections to read
+  const auto dedupedCollsToRead =
+      collsToRead.empty() ? std::vector<std::string>{} : podio::utils::sortAndDeduplicate(collsToRead, "collsToRead");
+
   auto collInfoIt = m_collectionInfo.find(category);
   if (collInfoIt == m_collectionInfo.end()) {
     if (!initCategory(category)) {
@@ -170,8 +186,8 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
 
   const auto& collInfo = m_collectionInfo[stableCategory];
   // Make sure to not silently ignore non-existant but requested collections
-  if (!collsToRead.empty()) {
-    for (const auto& name : collsToRead) {
+  if (!dedupedCollsToRead.empty()) {
+    for (const auto& name : dedupedCollsToRead) {
       if (std::ranges::find(collInfo, name, &root_utils::CollectionWriteInfo::name) == collInfo.end()) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
@@ -197,7 +213,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
   const auto dentry = reader->GetModel().CreateEntry();
 
   for (const auto& coll : collInfo) {
-    if (!collsToRead.empty() && std::ranges::find(collsToRead, coll.name) == collsToRead.end()) {
+    if (!dedupedCollsToRead.empty() && std::ranges::find(dedupedCollsToRead, coll.name) == dedupedCollsToRead.end()) {
       continue;
     }
     const auto& collType = coll.dataType;
