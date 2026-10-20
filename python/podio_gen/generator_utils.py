@@ -336,7 +336,7 @@ class MemberVariable:
         return f"{self.full_type} {self.name}{def_val}{unit}{description}"
 
 
-class DataModel:  # pylint: disable=too-few-public-methods
+class DataModel:
     """A class for holding a complete datamodel read from a configuration file"""
 
     def __init__(
@@ -383,6 +383,6 @@ class DataModelJSONEncoder(json.JSONEncoder):
         """The override for the default, first trying to call _to_json, otherwise
         handing off to the default JSONEncoder"""
         try:
-            return o._to_json()  # pylint: disable=protected-access
+            return o._to_json()
         except AttributeError:
             return super().default(o)

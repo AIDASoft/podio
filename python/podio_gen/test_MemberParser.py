@@ -12,7 +12,7 @@ from podio_gen.podio_config_reader import MemberParser, DefinitionError
 class MemberParserTest(unittest.TestCase):
     """Unit tests for the MemberParser"""
 
-    def test_parse_valid(self):  # pylint: disable=too-many-statements
+    def test_parse_valid(self):
         """Test if valid member definitions pass"""
         parser = MemberParser()
 
@@ -241,7 +241,6 @@ class MemberParserTest(unittest.TestCase):
             try:
                 self.assertRaises(DefinitionError, parser.parse, inp)
             except AssertionError:
-                # pylint: disable-next=raise-missing-from
                 raise AssertionError(
                     f"'{inp}' should raise a DefinitionError from the MemberParser"
                 )
