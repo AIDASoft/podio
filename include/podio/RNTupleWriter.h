@@ -6,6 +6,7 @@
 #include "podio/utilities/StringKeyMap.h"
 
 #include "TFile.h"
+#include <Compression.h>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriter.hxx>
@@ -43,12 +44,29 @@ namespace root_compat {
 /// Files written with the RNTupleWriter can be read with the RNTupleReader.
 class RNTupleWriter {
 public:
-  /// Create a RNTupleWriter to write to a file.
+  /// Configuration options for RNTupleWriter.
+  struct Options {
+    /// ROOT compression setting: algorithm*100+level.
+    /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
+    ///   kUseCompiledDefault=101 (ZLIB-1, default), kUseGeneralPurpose=505 (ZSTD-5),
+    ///   kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
+    int compressionSettings{ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault};
+  };
+
+  /// Create a RNTupleWriter to write to a file with custom options.
   ///
   /// @note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
-  RNTupleWriter(const std::string& filename);
+  /// @param options  Configuration options (compression etc.).
+  RNTupleWriter(const std::string& filename, const Options& options);
+
+  /// Create a RNTupleWriter to write to a file with default options.
+  ///
+  /// @note Existing files will be overwritten without warning.
+  ///
+  /// @param filename The path to the file that will be created.
+  explicit RNTupleWriter(const std::string& filename);
 
   /// RNTupleWriter destructor
   ///
@@ -140,6 +158,7 @@ private:
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
+  Options m_options{};                              ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};
