@@ -35,10 +35,21 @@ ${PODIO_BASE}/python/podio_class_generator.py \
 # file. Need to diff subfolders explicitly here because $PODIO_BASE/tests contains
 # more stuff
 DIFF_EXTRA_ARGS=()
+# Module interfaces are generated only when C++ modules are enabled. They are
+# ignored source-tree artifacts and are not recreated by podio-dump.
+DIFF_EXTRA_ARGS+=(--exclude "*_module.ixx")
+if [[ " ${IO_HANDLERS} " != *" ARROW "* ]]; then
+    # The repository may contain a mapper produced by an Arrow-enabled build.
+    DIFF_EXTRA_ARGS+=(--exclude "ArrowMapper.cc")
+fi
 if [ ${ENABLE_SIO} = "OFF" ]; then
     DIFF_EXTRA_ARGS+=(--exclude "*SIO*")
 fi
 
 diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} "${DIFF_EXTRA_ARGS[@]}"
 diff -ru ${OUTPUT_FOLDER}/src ${COMP_BASE_FOLDER}/src "${DIFF_EXTRA_ARGS[@]}"
-diff -u ${OUTPUT_FOLDER}/podio_generated_files.cmake ${COMP_BASE_FOLDER}/podio_generated_files.cmake
+# Module files are selected by the build configuration, not the dumped EDM.
+# Remove their manifest block before comparing the generated source lists.
+diff -u \
+    <(sed '/^# Generated C++20 module interface files$/,/^)/d' ${OUTPUT_FOLDER}/podio_generated_files.cmake) \
+    <(sed '/^# Generated C++20 module interface files$/,/^)/d' ${COMP_BASE_FOLDER}/podio_generated_files.cmake)
