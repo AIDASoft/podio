@@ -3,6 +3,7 @@ set(root_dependent_tests
   read_and_write_associated.cpp
   read_frame_root.cpp
   write_frame_root.cpp
+  test_compression_root.cpp
   read_python_frame_root.cpp
   read_frame_root_multiple.cpp
   read_and_write_frame_root.cpp
