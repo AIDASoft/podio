@@ -32,8 +32,10 @@ public:
   /// Configuration options for ROOTWriter.
   struct Options {
     /// ROOT compression setting: algorithm*100+level.
-    /// Examples: 101=ZLIB-1 (default), 505=ZSTD-5, 209=LZMA-9, 404=LZ4-4.
-    int compressionSettings{101};
+    /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
+    ///   kUseCompiledDefault=101 (ZLIB-1, default), kUseGeneralPurpose=505 (ZSTD-5),
+    ///   kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
+    int compressionSettings{ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault};
   };
 
   /// Create a ROOTWriter to write to a file with custom options.

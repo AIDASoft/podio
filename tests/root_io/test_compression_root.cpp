@@ -2,6 +2,7 @@
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 
+#include "Compression.h"
 #include "TFile.h"
 
 #include <cassert>
@@ -43,20 +44,22 @@ static void writeDefault(const std::string& filename) {
 }
 
 int main() {
-  // Default constructor must produce ZLIB-1 (101)
+  using D = ROOT::RCompressionSetting::EDefaults;
+
+  // Default constructor must produce kUseCompiledDefault (ZLIB-1)
   writeDefault("compression_default.root");
-  verifyFileCompression("compression_default.root", 101);
+  verifyFileCompression("compression_default.root", D::kUseCompiledDefault);
   verifyRoundtrip("compression_default.root");
 
-  // Options with ZSTD-5 (505)
-  writeWithOptions("compression_zstd5.root", {.compressionSettings = 505});
-  verifyFileCompression("compression_zstd5.root", 505);
+  // Options with kUseGeneralPurpose (ZSTD-5)
+  writeWithOptions("compression_zstd5.root", {.compressionSettings = D::kUseGeneralPurpose});
+  verifyFileCompression("compression_zstd5.root", D::kUseGeneralPurpose);
   verifyRoundtrip("compression_zstd5.root");
 
-  // Options with LZMA-9 (209)
-  writeWithOptions("compression_lzma9.root", {.compressionSettings = 209});
-  verifyFileCompression("compression_lzma9.root", 209);
-  verifyRoundtrip("compression_lzma9.root");
+  // Options with kUseSmallest (LZMA-7)
+  writeWithOptions("compression_smallest.root", {.compressionSettings = D::kUseSmallest});
+  verifyFileCompression("compression_smallest.root", D::kUseSmallest);
+  verifyRoundtrip("compression_smallest.root");
 
   std::cout << "All compression tests passed.\n";
   return 0;
