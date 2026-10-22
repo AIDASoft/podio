@@ -39,11 +39,15 @@ def _determine_root_format(filename):
     """Peek into the root file to determine which flavor we have at hand."""
     file = TFile.Open(filename)
 
-    metadata = file.Get("podio_metadata")
+    # Only look at the key instead of reading the object, since TDirectoryFile.Get
+    # leaks objects that are not owned by the directory, like an RNTuple. Using
+    # Get will be fine again once https://github.com/root-project/root/pull/23798
+    # is available
+    metadata = file.GetKey("podio_metadata")
     if not metadata:
         return RootFileFormat.LEGACY
 
-    md_class = metadata.IsA().GetName()
+    md_class = metadata.GetClassName()
     if "TTree" in md_class:
         return RootFileFormat.TTREE
 
