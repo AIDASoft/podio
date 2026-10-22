@@ -1,11 +1,15 @@
 #ifndef PODIO_COLLECTIONIDTABLE_H
 #define PODIO_COLLECTIONIDTABLE_H
 
+#include "podio/utilities/StringKeyMap.h"
+
 #include <cstdint>
 #include <memory>
 #include <mutex>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <unordered_map>
 #include <vector>
 
 namespace podio {
@@ -19,8 +23,8 @@ public:
 
   CollectionIDTable(const CollectionIDTable&) = delete;
   CollectionIDTable& operator=(const CollectionIDTable&) = delete;
-  CollectionIDTable(CollectionIDTable&&) = default;
-  CollectionIDTable& operator=(CollectionIDTable&&) = default;
+  CollectionIDTable(CollectionIDTable&&) noexcept = default;
+  CollectionIDTable& operator=(CollectionIDTable&&) noexcept = default;
 
   /// constructor from existing ID:name mapping
   CollectionIDTable(std::vector<uint32_t>&& ids, std::vector<std::string>&& names);
@@ -28,13 +32,13 @@ public:
   CollectionIDTable(const std::vector<uint32_t>& ids, const std::vector<std::string>& names);
 
   /// return collection ID for given name
-  std::optional<uint32_t> collectionID(const std::string& collectionName) const;
+  std::optional<uint32_t> collectionID(std::string_view collectionName) const;
 
   /// return name for given collection ID
   std::optional<const std::string> name(uint32_t id) const;
 
   /// Check if collection name is known
-  bool present(const std::string& collectionName) const;
+  bool present(std::string_view collectionName) const;
 
   /// Check if collection ID is known
   bool present(uint32_t id) const;
@@ -62,8 +66,14 @@ public:
   }
 
 private:
+  std::mutex& getMutex() const;
+  void rebuildMaps() const;
+  void ensureMapsPopulated() const;
+
   std::vector<uint32_t> m_collectionIDs{};
   std::vector<std::string> m_names{};
+  mutable podio::StringKeyMap<uint32_t> m_nameToID{};
+  mutable std::unordered_map<uint32_t, std::size_t> m_idToIndex{};
   mutable std::unique_ptr<std::mutex> m_mutex{std::make_unique<std::mutex>()};
 };
 
