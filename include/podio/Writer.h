@@ -130,6 +130,34 @@ public:
   }
 };
 
+/// Backend-agnostic configuration options for makeWriter().
+///
+/// Each nested struct mirrors the corresponding backend's own Options struct.
+/// Fields left at their zero/empty value are delegated to the backend's default.
+struct WriterOptions {
+  /// Options forwarded to ROOTWriter (TTree backend).
+  struct RootOptions {
+    /// Compression: ROOT algo*100+level encoding; 0 = backend default.
+    /// Use ROOT::RCompressionSetting::EDefaults values (requires Compression.h).
+    int compressionSettings{0};
+  } root{};
+
+  /// Options forwarded to RNTupleWriter.
+  struct RNTupleOptions {
+    /// Compression: ROOT algo*100+level encoding; 0 = backend default.
+    int compressionSettings{0};
+  } rntuple{};
+
+  /// Options forwarded to ArrowWriter (Parquet backend).
+  struct ArrowOptions {
+    /// Compression codec; "" = backend default.
+    /// Supported values: "ZSTD", "SNAPPY", "UNCOMPRESSED".
+    std::string compression{};
+    /// Maximum rows buffered before a row group is flushed; 0 = backend default.
+    size_t maxBufferedRows{0};
+  } arrow{};
+};
+
 /// Create a Writer that is able to write files for the desired backend
 ///
 /// Will look at the desired filename as well as the type argument to decide on
@@ -146,6 +174,16 @@ public:
 /// @throws std::runtime_error In case the suffix can not be associated to an
 ///         I/O backend or if support for the desired I/O backend has not been built
 Writer makeWriter(const std::string& filename, const std::string& type = "default");
+
+/// Create a Writer with explicit backend options (e.g. compression).
+///
+/// @param filename The filename of the output file that will be created.
+/// @param type     The type argument (see the two-argument overload).
+/// @param options  Backend options; see WriterOptions.
+///
+/// @returns A fully initialized Writer for the I/O backend that has been
+///         determined
+Writer makeWriter(const std::string& filename, const std::string& type, const WriterOptions& options);
 
 } // namespace podio
 
