@@ -215,6 +215,11 @@ inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffe
 
   if (const auto refCollections = collBuffers.references) {
     for (size_t i = 0; i < refCollections->size(); ++i) {
+      // Relations that are not stored in this schema version stay empty
+      if (!(*refCollections)[i]) {
+        (*refCollections)[i] = std::make_unique<std::vector<podio::ObjectID>>();
+        continue;
+      }
       if (!branches.refs[i]) {
         return false;
       }
@@ -268,7 +273,9 @@ inline void readBranchesData(const CollectionBranches& branches, Long64_t entry)
     branches.data->GetEntry(entry);
   }
   for (auto* br : branches.refs) {
-    br->GetEntry(entry);
+    if (br) { // missing for relations that are not stored in this schema version
+      br->GetEntry(entry);
+    }
   }
   for (auto* br : branches.vecs) {
     br->GetEntry(entry);
