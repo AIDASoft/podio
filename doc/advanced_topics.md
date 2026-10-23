@@ -169,6 +169,10 @@ I/O](https://root.cern.ch/doc/master/md_tree_2ntuple_2doc_2SchemaEvolution.html)
 All evolutions that are not covered by this are currently not supported, unless
 they are listed below in the table for manual evolutions.
 
+Adding a `OneToManyRelation` to an existing datatype is also supported (ROOT
+backends only): the new relation is empty when reading data written with an
+older schema version.
+
 #### Manual evolutions
 
 The following table lists the evolutions that require manual intervention, but

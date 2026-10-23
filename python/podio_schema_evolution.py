@@ -234,7 +234,6 @@ class SchemaEvolutionJudge:
         DroppedVectorMember,
         AddedSingleRelation,
         DroppedSingleRelation,
-        AddedMultiRelation,
         DroppedMultiRelation,
     )
 

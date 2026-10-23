@@ -4,7 +4,6 @@ set(should_fail_cases
   vector_members:rm_one
   relations:new_single_relation
   relations:rm_single_relation
-  relations:new_multi_relation
   relations:rm_multi_relation
   relations:mv_single_to_multi
   relations:mv_multi_to_single
@@ -14,6 +13,7 @@ set(should_fail_cases
 set(should_succeed_cases
   members:float_to_double
   members:add_one_rm_one
+  relations:new_multi_relation
 )
 
 set(should_warn_cases
