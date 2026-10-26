@@ -44,16 +44,12 @@ Writer makeWriter(const std::string& filename, const std::string& type, const Wr
 
   if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
     ROOTWriter::Options rOpts;
-    if (options.root.compressionSettings != 0) {
-      rOpts.compressionSettings = options.root.compressionSettings;
-    }
+    rOpts.compressionSettings = options.root.compressionSettings;
     return Writer{std::make_unique<ROOTWriter>(filename, rOpts)};
   } else if ((type == "default" && defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
     RNTupleWriter::Options rOpts;
-    if (options.rntuple.compressionSettings != 0) {
-      rOpts.compressionSettings = options.rntuple.compressionSettings;
-    }
+    rOpts.compressionSettings = options.rntuple.compressionSettings;
     return Writer{std::make_unique<RNTupleWriter>(filename, rOpts)};
 #else
     throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");

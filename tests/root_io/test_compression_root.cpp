@@ -61,6 +61,11 @@ int main() {
   verifyFileCompression("compression_smallest.root", D::kUseSmallest);
   verifyRoundtrip("compression_smallest.root");
 
+  // Explicit 0 disables compression
+  writeWithOptions("compression_none.root", {.compressionSettings = 0});
+  verifyFileCompression("compression_none.root", 0);
+  verifyRoundtrip("compression_none.root");
+
   std::cout << "All compression tests passed.\n";
   return 0;
 }

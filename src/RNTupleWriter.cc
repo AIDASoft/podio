@@ -105,7 +105,9 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
     RNTupleWriteOptions rntOpts;
-    rntOpts.SetCompression(m_options.compressionSettings);
+    if (m_options.compressionSettings) {
+      rntOpts.SetCompression(*m_options.compressionSettings);
+    }
     catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), rntOpts);
 
     catInfo.collInfo.reserve(collections.size());
@@ -285,7 +287,9 @@ void RNTupleWriter::finish() {
 
     metadata->Freeze();
     RNTupleWriteOptions rntOpts;
-    rntOpts.SetCompression(m_options.compressionSettings);
+    if (m_options.compressionSettings) {
+      rntOpts.SetCompression(*m_options.compressionSettings);
+    }
     const auto metadataWriter =
         root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, rntOpts);
 
