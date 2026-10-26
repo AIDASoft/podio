@@ -13,6 +13,7 @@
 #include <ROOT/RVersion.hxx>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -46,11 +47,11 @@ class RNTupleWriter {
 public:
   /// Configuration options for RNTupleWriter.
   struct Options {
-    /// ROOT compression setting: algorithm*100+level.
+    /// ROOT compression setting: algorithm*100+level (0 disables compression).
     /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
-    ///   kUseCompiledDefault=101 (ZLIB-1, default), kUseGeneralPurpose=505 (ZSTD-5),
-    ///   kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
-    int compressionSettings{ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault};
+    ///   kUseGeneralPurpose=505 (ZSTD-5), kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
+    /// If unset, the RNTuple default from ROOT is used.
+    std::optional<int> compressionSettings{};
   };
 
   /// Create a RNTupleWriter to write to a file with custom options.

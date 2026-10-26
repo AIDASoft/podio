@@ -5,6 +5,7 @@
 #include "podio/FrameCategories.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -133,19 +134,21 @@ public:
 /// Backend-agnostic configuration options for makeWriter().
 ///
 /// Each nested struct mirrors the corresponding backend's own Options struct.
-/// Fields left at their zero/empty value are delegated to the backend's default.
+/// Fields left unset (or empty) are delegated to the backend's default.
 struct WriterOptions {
   /// Options forwarded to ROOTWriter (TTree backend).
   struct RootOptions {
-    /// Compression: ROOT algo*100+level encoding; 0 = backend default.
-    /// Use ROOT::RCompressionSetting::EDefaults values (requires Compression.h).
-    int compressionSettings{0};
+    /// Compression: ROOT algo*100+level encoding (0 disables compression);
+    /// unset = backend default. Use ROOT::RCompressionSetting::EDefaults values
+    /// (requires Compression.h).
+    std::optional<int> compressionSettings{};
   } root{};
 
   /// Options forwarded to RNTupleWriter.
   struct RNTupleOptions {
-    /// Compression: ROOT algo*100+level encoding; 0 = backend default.
-    int compressionSettings{0};
+    /// Compression: ROOT algo*100+level encoding (0 disables compression);
+    /// unset = backend default.
+    std::optional<int> compressionSettings{};
   } rntuple{};
 
   /// Options forwarded to ArrowWriter (Parquet backend).
