@@ -16,14 +16,12 @@
 #include <cstdlib>
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
+#include <variant>
 
 namespace podio {
 
 Writer makeWriter(const std::string& filename, const std::string& type) {
-  return makeWriter(filename, type, WriterOptions{});
-}
-
-Writer makeWriter(const std::string& filename, const std::string& type, const WriterOptions& options) {
 
   auto endsWith = [](const std::string& str, const std::string& suffix) {
     return str.size() >= suffix.size() && 0 == str.compare(str.size() - suffix.size(), suffix.size(), suffix);
@@ -43,14 +41,10 @@ Writer makeWriter(const std::string& filename, const std::string& type, const Wr
   }
 
   if ((type == "default" && !defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "root") {
-    ROOTWriter::Options rOpts;
-    rOpts.compressionSettings = options.root.compressionSettings;
-    return Writer{std::make_unique<ROOTWriter>(filename, rOpts)};
+    return Writer{std::make_unique<ROOTWriter>(filename)};
   } else if ((type == "default" && defaultTypeRNTuple && endsWith(filename, ".root")) || lower(type) == "rntuple") {
 #if PODIO_ENABLE_RNTUPLE
-    RNTupleWriter::Options rOpts;
-    rOpts.compressionSettings = options.rntuple.compressionSettings;
-    return Writer{std::make_unique<RNTupleWriter>(filename, rOpts)};
+    return Writer{std::make_unique<RNTupleWriter>(filename)};
 #else
     throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
 #endif
@@ -62,19 +56,35 @@ Writer makeWriter(const std::string& filename, const std::string& type, const Wr
 #endif
   } else if (endsWith(filename, ".podio_parquet") || lower(type) == "parquet") {
 #if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
-    ArrowWriter::Options aOpts;
-    if (!options.arrow.compression.empty()) {
-      aOpts.compression = options.arrow.compression;
-    }
-    if (options.arrow.maxBufferedRows != 0) {
-      aOpts.maxBufferedRows = options.arrow.maxBufferedRows;
-    }
-    return Writer{std::make_unique<ArrowWriter>(filename, aOpts)};
+    return Writer{std::make_unique<ArrowWriter>(filename)};
 #else
     throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
 #endif
   }
   throw std::runtime_error("Unknown file type for file " + filename + " with type " + type);
+}
+
+Writer makeWriter(const std::string& filename, const WriterOptions& options) {
+  return std::visit(
+      [&filename](const auto& opts) -> Writer {
+        using OptionsT = std::decay_t<decltype(opts)>;
+        if constexpr (std::is_same_v<OptionsT, ROOTWriterOptions>) {
+          return Writer{std::make_unique<ROOTWriter>(filename, opts)};
+        } else if constexpr (std::is_same_v<OptionsT, RNTupleWriterOptions>) {
+#if PODIO_ENABLE_RNTUPLE
+          return Writer{std::make_unique<RNTupleWriter>(filename, opts)};
+#else
+          throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
+#endif
+        } else if constexpr (std::is_same_v<OptionsT, ArrowWriterOptions>) {
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+          return Writer{std::make_unique<ArrowWriter>(filename, opts)};
+#else
+          throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
+#endif
+        }
+      },
+      options);
 }
 
 } // namespace podio

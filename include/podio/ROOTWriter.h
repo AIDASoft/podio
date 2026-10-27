@@ -6,9 +6,9 @@
 
 #include "TFile.h"
 
+#include "podio/WriterOptions.h"
 #include "podio/utilities/StringKeyMap.h"
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -31,13 +31,7 @@ class GenericParameters;
 class ROOTWriter {
 public:
   /// Configuration options for ROOTWriter.
-  struct Options {
-    /// ROOT compression setting: algorithm*100+level (0 disables compression).
-    /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
-    ///   kUseGeneralPurpose=505 (ZSTD-5), kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
-    /// If unset, the TFile default (kUseCompiledDefault) is used.
-    std::optional<int> compressionSettings{};
-  };
+  using Options = ROOTWriterOptions;
 
   /// Create a ROOTWriter to write to a file with custom options.
   ///
