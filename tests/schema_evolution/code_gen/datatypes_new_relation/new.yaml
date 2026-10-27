@@ -20,4 +20,5 @@ datatypes:
       - double energy // cluster energy
     OneToManyRelations:
       - ExampleHit Hits // hits in this cluster
-      - ExampleCluster Clusters // clusters in this cluster (new relation)
+      - ExampleHit OtherHits // other hits in this cluster (new relation)
+      - ExampleCluster Clusters // clusters in this cluster
