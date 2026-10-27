@@ -1,9 +1,6 @@
-leak:Cling
 leak:libCPyCppyy
-leak:libcppyy
 leak:libpython
 leak:libCore
-leak:libROOTPythonizations
 
 # When libasan is LD_PRELOADed into a non-instrumented python3 (non-debug
 # builds) process the stack unwinder captures only 2 frames (libasan +

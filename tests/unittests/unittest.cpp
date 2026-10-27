@@ -1435,7 +1435,7 @@ TEST_CASE("Readers can only open files once with TTrees", "[ASAN-FAIL][UBSAN-FAI
 }
 
 #if PODIO_ENABLE_RNTUPLE
-TEST_CASE("Readers can only open files once with RNTuple", "[THREAD-FAIL][UBSAN-FAIL][basics][root]") {
+TEST_CASE("Readers can only open files once with RNTuple", "[UBSAN-FAIL][basics][root]") {
   runOpenOnlyOnceCheck<podio::RNTupleReader, podio::RNTupleWriter>("unittests_open_only_once_rntuple.root");
 }
 #endif
@@ -1754,7 +1754,7 @@ TEST_CASE("Collection names normalize deterministically", "[basics]") {
 
 #if PODIO_ENABLE_RNTUPLE
 
-TEST_CASE("Relations after cloning with RNTuple", "[THREAD-FAIL][UBSAN-FAIL][relations][basics]") {
+TEST_CASE("Relations after cloning with RNTuple", "[UBSAN-FAIL][relations][basics]") {
   runRelationAfterCloneCheck<podio::RNTupleReader, podio::RNTupleWriter>(
       "unittests_relations_after_cloning_rntuple.root");
 }

@@ -105,5 +105,9 @@ else()
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$<TARGET_FILE_DIR:ROOT::Tree>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       ENVIRONMENT
       LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt
+      ENVIRONMENT
+      TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt:$ENV{TSAN_OPTIONS}
+      ENVIRONMENT
+      ASAN_OPTIONS=detect_stack_use_after_return=1:$ENV{ASAN_OPTIONS}
   )
 endif()
