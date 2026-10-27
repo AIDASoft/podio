@@ -1,19 +1,18 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
+#include "podio/WriterOptions.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/StringKeyMap.h"
 
 #include "TFile.h"
-#include <Compression.h>
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -46,13 +45,7 @@ namespace root_compat {
 class RNTupleWriter {
 public:
   /// Configuration options for RNTupleWriter.
-  struct Options {
-    /// ROOT compression setting: algorithm*100+level (0 disables compression).
-    /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
-    ///   kUseGeneralPurpose=505 (ZSTD-5), kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).
-    /// If unset, the RNTuple default from ROOT is used.
-    std::optional<int> compressionSettings{};
-  };
+  using Options = RNTupleWriterOptions;
 
   /// Create a RNTupleWriter to write to a file with custom options.
   ///
@@ -159,7 +152,7 @@ private:
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
-  Options m_options{};                              ///< Writer configuration
+  Options m_options{}; ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};

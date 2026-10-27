@@ -3,12 +3,13 @@
 
 #include "podio/Frame.h"
 #include "podio/FrameCategories.h"
+#include "podio/WriterOptions.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace podio {
@@ -131,35 +132,14 @@ public:
   }
 };
 
-/// Backend-agnostic configuration options for makeWriter().
+/// Backend specific configuration options for makeWriter().
 ///
-/// Each nested struct mirrors the corresponding backend's own Options struct.
-/// Fields left unset (or empty) are delegated to the backend's default.
-struct WriterOptions {
-  /// Options forwarded to ROOTWriter (TTree backend).
-  struct RootOptions {
-    /// Compression: ROOT algo*100+level encoding (0 disables compression);
-    /// unset = backend default. Use ROOT::RCompressionSetting::EDefaults values
-    /// (requires Compression.h).
-    std::optional<int> compressionSettings{};
-  } root{};
-
-  /// Options forwarded to RNTupleWriter.
-  struct RNTupleOptions {
-    /// Compression: ROOT algo*100+level encoding (0 disables compression);
-    /// unset = backend default.
-    std::optional<int> compressionSettings{};
-  } rntuple{};
-
-  /// Options forwarded to ArrowWriter (Parquet backend).
-  struct ArrowOptions {
-    /// Compression codec; "" = backend default.
-    /// Supported values: "ZSTD", "SNAPPY", "UNCOMPRESSED".
-    std::string compression{};
-    /// Maximum rows buffered before a row group is flushed; 0 = backend default.
-    size_t maxBufferedRows{0};
-  } arrow{};
-};
+/// The alternative that is held determines which I/O backend is used.
+///
+/// @note A default constructed WriterOptions holds ROOTWriterOptions{}, i.e. it
+///       selects the TTree based ROOTWriter. Use makeWriter(filename) to let the
+///       backend be chosen from the filename and environment instead.
+using WriterOptions = std::variant<ROOTWriterOptions, RNTupleWriterOptions, ArrowWriterOptions>;
 
 /// Create a Writer that is able to write files for the desired backend
 ///
@@ -178,15 +158,20 @@ struct WriterOptions {
 ///         I/O backend or if support for the desired I/O backend has not been built
 Writer makeWriter(const std::string& filename, const std::string& type = "default");
 
-/// Create a Writer with explicit backend options (e.g. compression).
+/// Create a Writer for the I/O backend that corresponds to the passed options
+///
+/// The backend is chosen depending on which alternative is held by options,
+/// e.g. passing ROOTWriterOptions will create a TTree based ROOT writer.
 ///
 /// @param filename The filename of the output file that will be created.
-/// @param type     The type argument (see the two-argument overload).
-/// @param options  Backend options; see WriterOptions.
+/// @param options  The backend specific options; see WriterOptions.
 ///
-/// @returns A fully initialized Writer for the I/O backend that has been
-///         determined
-Writer makeWriter(const std::string& filename, const std::string& type, const WriterOptions& options);
+/// @returns A fully initialized Writer for the I/O backend that corresponds to
+///          the passed options
+///
+/// @throws std::runtime_error In case support for the desired I/O backend has
+///         not been built
+Writer makeWriter(const std::string& filename, const WriterOptions& options);
 
 } // namespace podio
 

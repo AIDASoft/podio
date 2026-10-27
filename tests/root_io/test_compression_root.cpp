@@ -1,6 +1,7 @@
 #include "podio/Frame.h"
 #include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
+#include "podio/Writer.h"
 
 #include "Compression.h"
 #include "TFile.h"
@@ -43,6 +44,13 @@ static void writeDefault(const std::string& filename) {
   writer.writeFrame(frame, "events");
 }
 
+static void writeWithMakeWriter(const std::string& filename, const podio::WriterOptions& opts) {
+  auto writer = podio::makeWriter(filename, opts);
+  podio::Frame frame;
+  frame.putParameter("sentinel", 42);
+  writer.writeEvent(frame);
+}
+
 int main() {
   using D = ROOT::RCompressionSetting::EDefaults;
 
@@ -65,6 +73,11 @@ int main() {
   writeWithOptions("compression_none.root", {.compressionSettings = 0});
   verifyFileCompression("compression_none.root", 0);
   verifyRoundtrip("compression_none.root");
+
+  // Options passed through the generic makeWriter select the ROOT backend
+  writeWithMakeWriter("compression_makewriter.root", podio::ROOTWriterOptions{.compressionSettings = D::kUseAnalysis});
+  verifyFileCompression("compression_makewriter.root", D::kUseAnalysis);
+  verifyRoundtrip("compression_makewriter.root");
 
   std::cout << "All compression tests passed.\n";
   return 0;
