@@ -50,8 +50,7 @@ public:
   ~LinkCollectionData() = default;
 
   podio::CollectionWriteBuffers getCollectionBuffers(bool isSubsetColl) {
-    return {isSubsetColl ? nullptr : static_cast<void*>(&m_data), static_cast<void*>(m_data.get()), &m_refCollections,
-            &m_vecInfo};
+    return {isSubsetColl ? nullptr : static_cast<void*>(m_data.get()), &m_refCollections, &m_vecInfo};
   }
 
   void clear(bool isSubsetColl) {

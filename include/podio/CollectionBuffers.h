@@ -22,18 +22,14 @@ using CollRefCollection = std::vector<UVecPtr<podio::ObjectID>>;
 using VectorMembersInfo = std::vector<std::pair<std::string, void*>>;
 
 /// Struct bundling the buffers that represent a collection for writing.
-///
-/// data is used by ROOT and holds the address of a unique_ptr.
-/// vecPtr holds the raw vector pointer, used by SIO and RNTuple.
 struct CollectionWriteBuffers {
   void* data{nullptr};
-  void* vecPtr{nullptr};
   CollRefCollection* references{nullptr};
   VectorMembersInfo* vectorMembers{nullptr};
 
   template <typename T>
   std::vector<T>* dataAsVector() {
-    return static_cast<std::vector<T>*>(vecPtr);
+    return static_cast<std::vector<T>*>(data);
   }
 };
 

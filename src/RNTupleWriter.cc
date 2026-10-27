@@ -123,8 +123,8 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
 
   for (const auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
-    if (collBuffers.vecPtr) {
-      entry->BindRawPtr(name, static_cast<void*>(collBuffers.vecPtr));
+    if (collBuffers.data) {
+      entry->BindRawPtr(name, collBuffers.data);
     }
 
     if (coll->isSubsetCollection()) {
@@ -179,7 +179,7 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
 
     const auto collBuffers = coll->getBuffers();
 
-    if (collBuffers.vecPtr) {
+    if (collBuffers.data) {
       const auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
       auto field = RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));

@@ -235,10 +235,11 @@ inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffe
 }
 
 inline bool setCollectionAddressesWriter(const podio::CollectionWriteBuffers& collBuffers,
-                                         const CollectionBranches& branches) {
+                                         CollectionBranches& branches) {
 
   if (collBuffers.data) {
-    branches.data->SetAddress(collBuffers.data);
+    branches.dataPtr = collBuffers.data;
+    branches.data->SetAddress(&branches.dataPtr);
   }
 
   if (const auto refCollections = collBuffers.references) {
