@@ -1,6 +1,7 @@
 #ifndef PODIO_ARROWWRITER_H
 #define PODIO_ARROWWRITER_H
 
+#include "podio/WriterOptions.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/StringKeyMap.h"
 
@@ -30,10 +31,7 @@ class Frame;
 class ArrowWriter {
 public:
   /// Configure the ArrowWriter
-  struct Options {
-    size_t maxBufferedRows = 1000;
-    std::string compression = "";
-  };
+  using Options = ArrowWriterOptions;
 
   /// Create a ArrowWriter to write to a directory.
   ///

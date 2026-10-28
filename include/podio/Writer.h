@@ -3,11 +3,13 @@
 
 #include "podio/Frame.h"
 #include "podio/FrameCategories.h"
+#include "podio/WriterOptions.h"
 
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace podio {
@@ -130,6 +132,15 @@ public:
   }
 };
 
+/// Backend specific configuration options for makeWriter().
+///
+/// The alternative that is held determines which I/O backend is used.
+///
+/// @note A default constructed WriterOptions holds ROOTWriterOptions{}, i.e. it
+///       selects the TTree based ROOTWriter. Use makeWriter(filename) to let the
+///       backend be chosen from the filename and environment instead.
+using WriterOptions = std::variant<ROOTWriterOptions, RNTupleWriterOptions, ArrowWriterOptions>;
+
 /// Create a Writer that is able to write files for the desired backend
 ///
 /// Will look at the desired filename as well as the type argument to decide on
@@ -146,6 +157,21 @@ public:
 /// @throws std::runtime_error In case the suffix can not be associated to an
 ///         I/O backend or if support for the desired I/O backend has not been built
 Writer makeWriter(const std::string& filename, const std::string& type = "default");
+
+/// Create a Writer for the I/O backend that corresponds to the passed options
+///
+/// The backend is chosen depending on which alternative is held by options,
+/// e.g. passing ROOTWriterOptions will create a TTree based ROOT writer.
+///
+/// @param filename The filename of the output file that will be created.
+/// @param options  The backend specific options; see WriterOptions.
+///
+/// @returns A fully initialized Writer for the I/O backend that corresponds to
+///          the passed options
+///
+/// @throws std::runtime_error In case support for the desired I/O backend has
+///         not been built
+Writer makeWriter(const std::string& filename, const WriterOptions& options);
 
 } // namespace podio
 

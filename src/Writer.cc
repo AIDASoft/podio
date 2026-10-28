@@ -16,6 +16,8 @@
 #include <cstdlib>
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
+#include <variant>
 
 namespace podio {
 
@@ -60,6 +62,29 @@ Writer makeWriter(const std::string& filename, const std::string& type) {
 #endif
   }
   throw std::runtime_error("Unknown file type for file " + filename + " with type " + type);
+}
+
+Writer makeWriter(const std::string& filename, const WriterOptions& options) {
+  return std::visit(
+      [&filename](const auto& opts) -> Writer {
+        using OptionsT = std::decay_t<decltype(opts)>;
+        if constexpr (std::is_same_v<OptionsT, ROOTWriterOptions>) {
+          return Writer{std::make_unique<ROOTWriter>(filename, opts)};
+        } else if constexpr (std::is_same_v<OptionsT, RNTupleWriterOptions>) {
+#if PODIO_ENABLE_RNTUPLE
+          return Writer{std::make_unique<RNTupleWriter>(filename, opts)};
+#else
+          throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
+#endif
+        } else if constexpr (std::is_same_v<OptionsT, ArrowWriterOptions>) {
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+          return Writer{std::make_unique<ArrowWriter>(filename, opts)};
+#else
+          throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
+#endif
+        }
+      },
+      options);
 }
 
 } // namespace podio

@@ -1,6 +1,7 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
+#include "podio/WriterOptions.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/StringKeyMap.h"
@@ -43,12 +44,23 @@ namespace root_compat {
 /// Files written with the RNTupleWriter can be read with the RNTupleReader.
 class RNTupleWriter {
 public:
-  /// Create a RNTupleWriter to write to a file.
+  /// Configuration options for RNTupleWriter.
+  using Options = RNTupleWriterOptions;
+
+  /// Create a RNTupleWriter to write to a file with custom options.
   ///
   /// @note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
-  RNTupleWriter(const std::string& filename);
+  /// @param options  Configuration options (compression etc.).
+  RNTupleWriter(const std::string& filename, const Options& options);
+
+  /// Create a RNTupleWriter to write to a file with default options.
+  ///
+  /// @note Existing files will be overwritten without warning.
+  ///
+  /// @param filename The path to the file that will be created.
+  explicit RNTupleWriter(const std::string& filename);
 
   /// RNTupleWriter destructor
   ///
@@ -140,6 +152,7 @@ private:
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
+  Options m_options{}; ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};
