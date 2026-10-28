@@ -1,0 +1,23 @@
+schema_version: 3
+options:
+  includeSubfolder: True
+
+datatypes:
+  ExampleHit:
+    Description: "A hit"
+    Author: "B. Hegner"
+    Members:
+      - int num // hit number
+
+  ExampleCluster:
+    Description: "A cluster"
+    Author: "B. Hegner"
+    Members:
+      - int num // cluster number
+    OneToManyRelations:
+      - ExampleHit OtherHits // other hits in this cluster (new relation)
+      - ExampleCluster Clusters // clusters in this cluster
+      - ExampleHit Hits // hits in this cluster
+      - ExampleCluster Siblings // sibling clusters (new relation)
+    OneToOneRelations:
+      - ExampleCluster Parent // parent cluster
