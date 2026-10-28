@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 """Module for general reading functionality."""
 
-from ROOT import TFile
+try:
+    from ROOT import TFile
+    from podio import root_io
 
-from podio import root_io
+    _has_root = True  # pylint: disable=invalid-name
+except ImportError:
+    _has_root = False  # pylint: disable=invalid-name
 
 try:
     from podio import sio_io
@@ -84,6 +88,10 @@ def get_reader(filenames):
         return sio_io.LegacyReader(filenames)
 
     if filename.endswith(".root"):
+        if not _has_root:
+            raise ValueError(
+                "podio has not been built with ROOT support, or ROOT is not available"
+            )
         root_flavor = _determine_root_format(filename)
         if root_flavor == RootFileFormat.TTREE:
             return root_io.Reader(filenames)
