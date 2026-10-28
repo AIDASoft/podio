@@ -8,8 +8,10 @@
 #include "podio/utilities/RootHelpers.h"
 
 #include "TChain.h"
+#include "TObject.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <map>
 #include <memory>
 #include <optional>
@@ -122,16 +124,41 @@ private:
   /// have the same contents. It encapsulates all state that is necessary for
   /// reading from a TTree / TChain (i.e. collection infos, branches, ...)
   struct CategoryInfo {
+    /// ROOT calls Notify whenever the TChain loads a new TTree, which
+    /// invalidates all branch pointers that have been obtained before
+    struct TreeChangeNotifier : public TObject {
+      bool Notify() override;
+      uint64_t generation{1}; ///< Incremented every time a new TTree is loaded
+    };
+
     /// constructor from chain for more convenient map insertion
     CategoryInfo(std::unique_ptr<TChain>&& c) : chain(std::move(c)) {
+      if (chain) {
+        chain->SetNotify(treeNotifier.get());
+      }
     }
+
+    /// Whether the branches at index i have been obtained from a TTree that is
+    /// no longer loaded and need to be reloaded before they can be used
+    bool branchesOutdated(size_t i) const {
+      return branchGenerations[i] != treeNotifier->generation;
+    }
+
+    /// Mark the branches at index i as obtained from the currently loaded TTree
+    void markBranchesCurrent(size_t i) {
+      branchGenerations[i] = treeNotifier->generation;
+    }
+
+    /// Needs to outlive the chain, since the chain keeps a pointer to it
+    std::unique_ptr<TreeChangeNotifier> treeNotifier{std::make_unique<TreeChangeNotifier>()};
     std::unique_ptr<TChain> chain{nullptr};                 ///< The TChain with the data
     unsigned entry{0};                                      ///< The next entry to read
     std::vector<detail::NamedCollInfo> storedClasses{};     ///< The stored collections in this
                                                             ///< category
     std::vector<root_utils::CollectionBranches> branches{}; ///< The branches for this category
-    std::shared_ptr<CollectionIDTable> table{nullptr};      ///< The collection ID table for this category
-    int treeNumber{-1}; ///< The tree number in the chain for which the branches have been set up
+    std::vector<uint64_t> branchGenerations{}; ///< The notifier generation for which each entry in branches has been
+                                               ///< obtained
+    std::shared_ptr<CollectionIDTable> table{nullptr}; ///< The collection ID table for this category
   };
 
   /// Initialize the passed CategoryInfo by setting up the necessary branches,
@@ -145,11 +172,10 @@ private:
   CategoryInfo& getCategoryInfo(std::string_view name);
 
   /// Read the parameters for the entry specified in the passed CategoryInfo
-  GenericParameters readEntryParameters(CategoryInfo& catInfo, bool reloadBranches, unsigned int localEntry);
+  GenericParameters readEntryParameters(CategoryInfo& catInfo, unsigned int localEntry);
 
   template <typename T>
-  static void readParams(CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
-                         unsigned int localEntry);
+  static void readParams(CategoryInfo& catInfo, podio::GenericParameters& params, unsigned int localEntry);
 
   /// Read the data entry specified in the passed CategoryInfo, and increase the
   /// counter afterwards. In case the requested entry is larger than the
@@ -159,7 +185,11 @@ private:
 
   /// Get / read the buffers at index iColl in the passed category information
   std::optional<podio::CollectionReadBuffers> getCollectionBuffers(CategoryInfo& catInfo, size_t iColl,
-                                                                   bool reloadBranches, unsigned int localEntry);
+                                                                   unsigned int localEntry);
+
+  /// Reload the branches at index i in the passed CategoryInfo if the chain has
+  /// switched to a new TTree since they have been obtained
+  static void reloadOutdatedBranches(CategoryInfo& catInfo, size_t i, const std::string& name);
 
   std::unique_ptr<TChain> m_metaChain{nullptr};                      ///< The metadata tree
   std::unordered_map<std::string_view, CategoryInfo> m_categories{}; ///< All categories
