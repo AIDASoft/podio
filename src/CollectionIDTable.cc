@@ -30,7 +30,7 @@ std::optional<const std::string> CollectionIDTable::name(uint32_t id) const {
   return m_names[index];
 }
 
-std::optional<uint32_t> CollectionIDTable::collectionID(const std::string& collectionName) const {
+std::optional<uint32_t> CollectionIDTable::collectionID(std::string_view collectionName) const {
   std::lock_guard<std::mutex> lock{*m_mutex};
   const auto result = std::ranges::find(m_names, collectionName);
   const auto index = std::distance(m_names.begin(), result);
@@ -48,7 +48,7 @@ void CollectionIDTable::print() const {
   }
 }
 
-bool CollectionIDTable::present(const std::string& collectionName) const {
+bool CollectionIDTable::present(std::string_view collectionName) const {
   return collectionID(collectionName).has_value();
 }
 
@@ -56,13 +56,13 @@ bool CollectionIDTable::present(uint32_t id) const {
   return name(id).has_value();
 }
 
-uint32_t CollectionIDTable::add(const std::string& collectionName) {
+uint32_t CollectionIDTable::add(std::string_view collectionName) {
   std::lock_guard<std::mutex> lock{*m_mutex};
   const auto result = std::ranges::find(m_names, collectionName);
   uint32_t ID = 0;
   if (result == m_names.end()) {
     m_names.emplace_back(collectionName);
-    MurmurHash3_x86_32(collectionName.c_str(), collectionName.size(), 0, &ID);
+    MurmurHash3_x86_32(collectionName.data(), collectionName.size(), 0, &ID);
     m_collectionIDs.emplace_back(ID);
   } else {
     const auto index = std::distance(m_names.begin(), result);
