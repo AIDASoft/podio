@@ -97,7 +97,7 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
     // definition
     m_datamodelCollector.registerDatamodelDefinition(coll, name);
 
-    root_utils::CollectionBranches branches;
+    auto& branches = catInfo.branches.emplace_back();
     const auto buffers = coll->getBuffers();
     // For subset collections we only fill one references branch
     if (coll->isSubsetCollection()) {
@@ -107,7 +107,8 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
     } else {
       // For "proper" collections we populate all branches, starting with the data
       const auto bufferDataType = "vector<" + std::string(coll->getDataTypeName()) + ">";
-      branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), buffers.data);
+      branches.dataPtr = buffers.data;
+      branches.data = catInfo.tree->Branch(name.c_str(), bufferDataType.c_str(), &branches.dataPtr);
 
       const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(coll->getValueTypeName());
       if (const auto refColls = buffers.references) {
@@ -128,7 +129,6 @@ void ROOTWriter::initBranches(CategoryInfo& catInfo, const std::vector<root_util
       }
     }
 
-    catInfo.branches.emplace_back(std::move(branches));
     catInfo.collInfo.emplace_back(coll->getID(), std::string(coll->getTypeName()), coll->isSubsetCollection(),
                                   coll->getSchemaVersion(), name, root_utils::getStorageTypeName(coll));
   }
@@ -153,7 +153,7 @@ void ROOTWriter::resetBranches(CategoryInfo& categoryInfo,
                                const std::vector<root_utils::StoreCollection>& collections) {
   size_t iColl = 0;
   for (const auto& [_, coll] : collections) {
-    const auto& branches = categoryInfo.branches[iColl];
+    auto& branches = categoryInfo.branches[iColl];
     root_utils::setCollectionAddressesWriter(coll->getBuffers(), branches);
     iColl++;
   }
