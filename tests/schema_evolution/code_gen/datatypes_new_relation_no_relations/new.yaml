@@ -1,0 +1,15 @@
+options:
+  includeSubfolder: true
+
+schema_version: 2
+
+datatypes:
+  ExampleHit:
+    Description: "A hit"
+    Author: "B. Hegner"
+    Members:
+      - int num // hit number
+    VectorMembers:
+      - int values // some values
+    OneToManyRelations:
+      - ExampleHit Neighbours // neighbouring hits (new relation)
