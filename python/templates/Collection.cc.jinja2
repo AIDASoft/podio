@@ -205,6 +205,20 @@ bool register{{ class.bare_type }}Collection() {
       );
     }
 
+{% for version, indices in absent_relations.items() %}
+    // Relations added after schema version {{ version }} are not stored in its
+    // files. A nullptr tells the readers to leave them empty
+    factory.registerCreationFunc("{{ class.full_type }}Collection", {{ version }}, [](bool isSubset) {
+      auto buffers = create{{ class.bare_type }}Buffers(isSubset);
+      if (!isSubset) {
+{% for index in indices %}
+        (*buffers.references)[{{ index }}].reset();
+{% endfor %}
+      }
+      return buffers;
+    });
+
+{% endfor %}
 {% if old_schema_version is defined %}
     // register a buffer creation function for the schema evolution buffer
    // SCHEMA EVOLUTION: Not yet required with only ROOT backend
