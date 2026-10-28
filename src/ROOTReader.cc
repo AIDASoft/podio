@@ -40,18 +40,28 @@ std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::Name
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfo>& collInfo);
 
+bool ROOTReader::CategoryInfo::TreeChangeNotifier::Notify() {
+  ++generation;
+  return true;
+}
+
+void ROOTReader::reloadOutdatedBranches(ROOTReader::CategoryInfo& catInfo, size_t i, const std::string& name) {
+  // The branches are owned by the tree they have been obtained from, so they
+  // become invalid once the chain switches to another tree
+  if (catInfo.branchesOutdated(i)) {
+    root_utils::resetBranches(catInfo.chain.get(), catInfo.branches[i], name);
+    catInfo.markBranchesCurrent(i);
+  }
+}
+
 template <typename T>
-void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params, bool reloadBranches,
+void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericParameters& params,
                             unsigned int localEntry) {
   const auto collBranchIdx = catInfo.branches.size() - root_utils::nParamBranches - 1;
   constexpr auto brOffset = root_utils::getGPBranchOffsets<T>();
 
-  if (reloadBranches) {
-    auto& keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
-    keyBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPKeyName<T>());
-    auto& valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
-    valueBranch = root_utils::getBranch(catInfo.chain.get(), root_utils::getGPValueName<T>());
-  }
+  reloadOutdatedBranches(catInfo, collBranchIdx + brOffset.keys, root_utils::getGPKeyName<T>());
+  reloadOutdatedBranches(catInfo, collBranchIdx + brOffset.values, root_utils::getGPValueName<T>());
 
   auto keyBranch = catInfo.branches[collBranchIdx + brOffset.keys].data;
   auto valueBranch = catInfo.branches[collBranchIdx + brOffset.values].data;
@@ -65,29 +75,23 @@ void ROOTReader::readParams(ROOTReader::CategoryInfo& catInfo, podio::GenericPar
   params.loadFrom(std::move(storage.keys), std::move(storage.values));
 }
 
-GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, bool reloadBranches,
-                                                  unsigned int localEntry) {
+GenericParameters ROOTReader::readEntryParameters(ROOTReader::CategoryInfo& catInfo, unsigned int localEntry) {
   GenericParameters params;
 
   if (m_fileVersion < podio::version::Version{0, 99, 99}) {
     // Parameter branch is always the last one
-    auto& paramBranches = catInfo.branches.back();
-
-    // Make sure to have a valid branch pointer after switching trees in the chain
-    // as well as on the first event
-    if (reloadBranches) {
-      paramBranches.data = root_utils::getBranch(catInfo.chain.get(), root_utils::paramBranchName);
-    }
-    auto* branch = paramBranches.data;
+    const auto paramBranchIdx = catInfo.branches.size() - 1;
+    reloadOutdatedBranches(catInfo, paramBranchIdx, root_utils::paramBranchName);
+    auto* branch = catInfo.branches[paramBranchIdx].data;
 
     auto* emd = &params;
     branch->SetAddress(&emd);
     branch->GetEntry(localEntry);
   } else {
-    readParams<int>(catInfo, params, reloadBranches, localEntry);
-    readParams<float>(catInfo, params, reloadBranches, localEntry);
-    readParams<double>(catInfo, params, reloadBranches, localEntry);
-    readParams<std::string>(catInfo, params, reloadBranches, localEntry);
+    readParams<int>(catInfo, params, localEntry);
+    readParams<float>(catInfo, params, localEntry);
+    readParams<double>(catInfo, params, localEntry);
+    readParams<std::string>(catInfo, params, localEntry);
   }
 
   return params;
@@ -115,24 +119,6 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   if (!catInfo.chain) {
     return nullptr;
   }
-  // LoadTree only opens as many files as necessary to find the requested
-  // entry and returns a negative value if the entry is not present. In
-  // contrast to GetEntries this does not require opening all files upfront
-  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
-  if (localEntry < 0) {
-    return nullptr;
-  }
-  // After switching trees in the chain, branch pointers get invalidated so
-  // they need to be reassigned. We compare against the tree for which we have
-  // last set up the branches, since an unsuccessful LoadTree (see above) can
-  // also switch trees.
-  // NOTE: root 6.22/06 requires that we get completely new branches here,
-  // with 6.20/04 we could just re-set them
-  const auto treeNo = catInfo.chain->GetTreeNumber();
-  const auto treeChange = treeNo != catInfo.treeNumber;
-  catInfo.treeNumber = treeNo;
-  // Also need to make sure to handle the first event
-  const auto reloadBranches = treeChange || localEntry == 0;
 
   // Make sure to not silently ignore non-existant but requested collections
   if (!dedupedCollsToRead.empty()) {
@@ -143,13 +129,23 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     }
   }
 
+  // LoadTree only opens as many files as necessary to find the requested
+  // entry and returns a negative value if the entry is not present. In
+  // contrast to GetEntries this does not require opening all files upfront.
+  // Whenever this (or anything else) loads a new tree, the TreeChangeNotifier
+  // marks all branches as outdated, and they are reloaded once they are used
+  const auto localEntry = catInfo.chain->LoadTree(catInfo.entry);
+  if (localEntry < 0) {
+    return nullptr;
+  }
+
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
     if (!dedupedCollsToRead.empty() &&
         std::ranges::find(dedupedCollsToRead, catInfo.storedClasses[i].name) == dedupedCollsToRead.end()) {
       continue;
     }
-    auto collBuffers = getCollectionBuffers(catInfo, i, reloadBranches, localEntry);
+    auto collBuffers = getCollectionBuffers(catInfo, i, localEntry);
     if (!collBuffers) {
       std::cerr << "WARNING: Buffers couldn't be created for collection " << catInfo.storedClasses[i].name
                 << " of type " << std::get<std::string>(catInfo.storedClasses[i].info) << " and schema version "
@@ -159,18 +155,16 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
     buffers.emplace(catInfo.storedClasses[i].name, std::move(collBuffers.value()));
   }
 
-  auto parameters = readEntryParameters(catInfo, reloadBranches, localEntry);
+  auto parameters = readEntryParameters(catInfo, localEntry);
 
   catInfo.entry++;
   return std::make_unique<ROOTFrameData>(std::move(buffers), catInfo.table, std::move(parameters));
 }
 
 std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROOTReader::CategoryInfo& catInfo,
-                                                                             size_t iColl, bool reloadBranches,
-                                                                             unsigned int localEntry) {
+                                                                             size_t iColl, unsigned int localEntry) {
   const auto& name = catInfo.storedClasses[iColl].name;
   const auto& [collType, isSubsetColl, schemaVersion, index] = catInfo.storedClasses[iColl].info;
-  auto& branches = catInfo.branches[index];
 
   const auto& bufferFactory = podio::CollectionBufferFactory::instance();
   auto maybeBuffers = bufferFactory.createBuffers(collType, schemaVersion, isSubsetColl);
@@ -181,9 +175,8 @@ std::optional<podio::CollectionReadBuffers> ROOTReader::getCollectionBuffers(ROO
 
   auto& collBuffers = maybeBuffers.value();
 
-  if (reloadBranches) {
-    root_utils::resetBranches(catInfo.chain.get(), branches, name);
-  }
+  reloadOutdatedBranches(catInfo, index, name);
+  const auto& branches = catInfo.branches[index];
 
   // set the addresses and read the data
   if (!root_utils::setCollectionAddressesReader(collBuffers, branches)) {
@@ -283,6 +276,9 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, std::string_view category) 
     catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringKeyName));
     catInfo.branches.emplace_back(root_utils::getBranch(catInfo.chain.get(), root_utils::stringValueName));
   }
+
+  // The branches above have been obtained from the currently loaded tree
+  catInfo.branchGenerations.assign(catInfo.branches.size(), catInfo.treeNotifier->generation);
 }
 
 std::vector<std::string> getAvailableCategories(TChain* metaChain) {
@@ -478,7 +474,21 @@ std::optional<std::map<std::string, SizeStats>> ROOTReader::getSizeStats(std::st
   if (catIt == m_categories.end()) {
     return std::nullopt;
   }
-  const auto& catInfo = catIt->second;
+  auto& catInfo = catIt->second;
+  // Make sure to not use any branches from a tree that is no longer loaded
+  for (const auto& [name, info] : catInfo.storedClasses) {
+    reloadOutdatedBranches(catInfo, std::get<3>(info), name);
+  }
+  const auto paramBranchNames = m_fileVersion < podio::version::Version{0, 99, 99}
+      ? std::vector<std::string>{root_utils::paramBranchName}
+      : std::vector<std::string>{root_utils::intKeyName,     root_utils::intValueName,   root_utils::floatKeyName,
+                                 root_utils::floatValueName, root_utils::doubleKeyName,  root_utils::doubleValueName,
+                                 root_utils::stringKeyName,  root_utils::stringValueName};
+  const auto firstParamIdx = catInfo.branches.size() - paramBranchNames.size();
+  for (size_t i = 0; i < paramBranchNames.size(); ++i) {
+    reloadOutdatedBranches(catInfo, firstParamIdx + i, paramBranchNames[i]);
+  }
+
   for (const auto& branches : catInfo.branches) {
     size_t totalZipBytes = 0;
     size_t totalTotBytes = 0;
