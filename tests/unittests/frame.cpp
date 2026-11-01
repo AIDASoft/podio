@@ -335,6 +335,7 @@ TEST_CASE("Frame parameters multithread insert", "[frame][basics][multithread]")
 
 TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multithread]") {
   constexpr int nThreads = 10;
+  constexpr int nParams = 100;
   std::vector<std::thread> threads;
   threads.reserve(nThreads);
 
@@ -366,13 +367,18 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
       CHECK_INCREASE(floatPars[1] == 4.56f, successes[i]);
       CHECK_INCREASE(floatPars[2] == 7.89f, successes[i]);
 
-      // Fill in a lot of new parameters to trigger rehashing of the internal
-      // map, which invalidates iterators
-      constexpr int nParams = 100;
+      // Enumerate parameter keys while other threads insert into the same maps.
       for (int k = 0; k < nParams; ++k) {
-        frame.putParameter(makeName("intPar", i) + std::to_string(k), i * k);
-        frame.putParameter(makeName("floatPar", i) + std::to_string(k), static_cast<float>(i) * k);
-        frame.putParameter(makeName("stringPar", i) + std::to_string(k), std::to_string(i * k));
+        const auto intKey = makeName("intPar", i) + std::to_string(k);
+        const auto floatKey = makeName("floatPar", i) + std::to_string(k);
+        const auto stringKey = makeName("stringPar", i) + std::to_string(k);
+        frame.putParameter(intKey, i * k);
+        frame.putParameter(floatKey, static_cast<float>(i) * k);
+        frame.putParameter(stringKey, std::to_string(i * k));
+
+        CHECK_INCREASE(std::ranges::count(frame.getParameterKeys<int>(), intKey) == 1, successes[i]);
+        CHECK_INCREASE(std::ranges::count(frame.getParameterKeys<float>(), floatKey) == 1, successes[i]);
+        CHECK_INCREASE(std::ranges::count(frame.getParameterKeys<std::string>(), stringKey) == 1, successes[i]);
       }
     });
   }
@@ -383,7 +389,7 @@ TEST_CASE("Frame parameters multithread insert and read", "[frame][basics][multi
 
   for (int i = 0; i < nThreads; ++i) {
     // Check the insertion successes
-    REQUIRE(successes[i] == 7);
+    REQUIRE(successes[i] == 7 + 3 * nParams);
 
     REQUIRE(frame.getParameter<int>(makeName("int", i)) == i);
     REQUIRE(frame.getParameter<float>(makeName("float", i)) == static_cast<float>(i));
