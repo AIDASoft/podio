@@ -144,22 +144,25 @@ public:
 ///   PODIO_DEFAULT_WRITE_RNTUPLE environment variable switches from TTree to
 ///   RNTuple, if it is set to a non-empty value.
 ///
-/// Options passed via withOptions() never select a backend, but they have to be
-/// usable with the backend that has been determined as described above.
+/// Options passed via withOptions() have to be usable with the backend that has
+/// been determined as described above.
 ///
 /// All configuration errors are detected before any file is created.
 ///
 /// @code{.cpp}
 /// #include <podio/Writer.h>
+/// #include <podio/ROOTWriteOptions.h>
 ///
 /// auto writer = podio::WriterFor{"output.root"}.withBackend(podio::WriterFor::Backend::RNTuple).create();
 /// auto writer = podio::WriterFor{"output.root"}.withType("rntuple").create();
 /// // TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE
-/// auto writer = podio::WriterFor{"output.root"}.withOptions({.compressionSettings = 505}).create();
+/// auto writer = podio::WriterFor{"output.root"}
+///                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
+///                   .create();
 /// // Always RNTuple
 /// auto writer = podio::WriterFor{"output.root"}
 ///                   .withBackend(podio::WriterFor::Backend::RNTuple)
-///                   .withOptions({.compressionSettings = 505})
+///                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
 ///                   .create();
 /// @endcode
 class WriterFor {
@@ -190,7 +193,7 @@ public:
   ///
   /// @param type One of "default", "root", "rntuple", "sio" or "parquet"
   ///             (case insensitive). "default" does not select a backend, it
-  ///             is determined from the options or the filename instead
+  ///             is determined from the filename instead
   ///
   /// @throws std::runtime_error If the type is not known or if support for
   ///         the backend has not been built

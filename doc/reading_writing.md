@@ -94,7 +94,7 @@ auto configuredWriter = podio::WriterFor{filename}.withOptions({.compressionSett
 // Configure compression and always use RNTuple
 auto configuredRNTupleWriter = podio::WriterFor{filename}
                                    .withBackend(podio::WriterFor::Backend::RNTuple)
-                                   .withOptions({.compressionSettings = 505})
+                                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
                                    .create();
 ```
 
@@ -109,6 +109,8 @@ podio::ROOTWriter writer(filename);              // For TTree output
 podio::RNTupleWriter rntupleWriter(filename);    // For RNTuple output
 podio::ArrowWriter parquetWriter(directoryName); // For Arrow/Parquet output
 ```
+
+These also offer a constructor that takes writer specific options.
 
 ### Arrow/Parquet I/O
 
