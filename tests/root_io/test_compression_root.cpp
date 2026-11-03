@@ -75,7 +75,7 @@ int main() {
   verifyRoundtrip("compression_none.root");
 
   // Options passed through the generic makeWriter select the ROOT backend
-  writeWithMakeWriter("compression_makewriter.root", podio::ROOTWriterOptions{.compressionSettings = D::kUseAnalysis});
+  writeWithMakeWriter("compression_makewriter.root", podio::ROOTWriter::Options{.compressionSettings = D::kUseAnalysis});
   verifyFileCompression("compression_makewriter.root", D::kUseAnalysis);
   verifyRoundtrip("compression_makewriter.root");
 

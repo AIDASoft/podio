@@ -68,21 +68,19 @@ Writer makeWriter(const std::string& filename, const WriterOptions& options) {
   return std::visit(
       [&filename](const auto& opts) -> Writer {
         using OptionsT = std::decay_t<decltype(opts)>;
-        if constexpr (std::is_same_v<OptionsT, ROOTWriterOptions>) {
+        if constexpr (std::is_same_v<OptionsT, ROOTWriter::Options>) {
           return Writer{std::make_unique<ROOTWriter>(filename, opts)};
-        } else if constexpr (std::is_same_v<OptionsT, RNTupleWriterOptions>) {
-#if PODIO_ENABLE_RNTUPLE
-          return Writer{std::make_unique<RNTupleWriter>(filename, opts)};
-#else
-          throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
-#endif
-        } else if constexpr (std::is_same_v<OptionsT, ArrowWriterOptions>) {
-#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
-          return Writer{std::make_unique<ArrowWriter>(filename, opts)};
-#else
-          throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
-#endif
         }
+#if PODIO_ENABLE_RNTUPLE
+        else if constexpr (std::is_same_v<OptionsT, RNTupleWriter::Options>) {
+          return Writer{std::make_unique<RNTupleWriter>(filename, opts)};
+        }
+#endif
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+        else if constexpr (std::is_same_v<OptionsT, ArrowWriter::Options>) {
+          return Writer{std::make_unique<ArrowWriter>(filename, opts)};
+        }
+#endif
       },
       options);
 }
