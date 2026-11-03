@@ -30,7 +30,7 @@ static void verifyRoundtrip(const std::string& filename) {
   }
 }
 
-static void writeWithOptions(const std::string& filename, const podio::ROOTWriter::Options& opts) {
+static void writeWithOptions(const std::string& filename, const podio::ROOTWriteOptions& opts) {
   podio::ROOTWriter writer(filename, opts);
   podio::Frame frame;
   frame.putParameter("sentinel", 42);
@@ -44,8 +44,8 @@ static void writeDefault(const std::string& filename) {
   writer.writeFrame(frame, "events");
 }
 
-static void writeWithWriterFor(const std::string& filename, const podio::ROOTWriter::Options& opts) {
-  auto writer = podio::WriterFor{filename}.withOptions(opts).create();
+static void writeWithWriterFor(const std::string& filename, const podio::ROOTWriteOptions& opts) {
+  auto writer = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::TTree).withOptions(opts).create();
   podio::Frame frame;
   frame.putParameter("sentinel", 42);
   writer.writeEvent(frame);
@@ -74,7 +74,7 @@ int main() {
   verifyFileCompression("compression_none.root", 0);
   verifyRoundtrip("compression_none.root");
 
-  // Options passed through WriterFor select the ROOT backend
+  // Options passed through WriterFor are forwarded to the ROOTWriter
   writeWithWriterFor("compression_writerfor.root", {.compressionSettings = D::kUseAnalysis});
   verifyFileCompression("compression_writerfor.root", D::kUseAnalysis);
   verifyRoundtrip("compression_writerfor.root");

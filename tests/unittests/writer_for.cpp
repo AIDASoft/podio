@@ -128,9 +128,20 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
             StorageType::TTree);
   }
 
-  SECTION("Options take precedence over environment") {
+  SECTION("ROOT options follow the default backend") {
+    DefaultRNTupleEnv env{false};
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions({.compressionSettings = 0}).create(), filename) ==
+            StorageType::TTree);
+    TFile rootFile(filename.c_str());
+    REQUIRE(rootFile.GetCompressionSettings() == 0);
+  }
+
+  SECTION("ROOT options with explicit TTree backend") {
     DefaultRNTupleEnv env{true};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions(podio::ROOTWriter::Options{}).create(),
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}
+                                   .withBackend(podio::WriterFor::Backend::TTree)
+                                   .withOptions(podio::ROOTWriteOptions{})
+                                   .create(),
                                filename) == StorageType::TTree);
   }
 
@@ -141,10 +152,10 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     REQUIRE(writeAndGetStorage(podio::makeWriter(filename), filename) == StorageType::RNTuple);
   }
 
-  SECTION("Options select RNTuple") {
-    DefaultRNTupleEnv env{false};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions(podio::RNTupleWriter::Options{}).create(),
-                               filename) == StorageType::RNTuple);
+  SECTION("ROOT options follow the environment") {
+    DefaultRNTupleEnv env{true};
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions(podio::ROOTWriteOptions{}).create(), filename) ==
+            StorageType::RNTuple);
   }
 
   SECTION("Explicit backend selects RNTuple") {
@@ -156,7 +167,7 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
   SECTION("Explicit type and matching options") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(
-                podio::WriterFor{filename}.withType("rntuple").withOptions(podio::RNTupleWriter::Options{}).create(),
+                podio::WriterFor{filename}.withType("rntuple").withOptions(podio::ROOTWriteOptions{}).create(),
                 filename) == StorageType::RNTuple);
   }
 #endif
@@ -167,17 +178,23 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
   const auto& filename = file.name();
 
   SECTION("Options not matching the explicit type") {
-    auto builder = podio::WriterFor{filename}.withType("sio").withOptions(podio::ROOTWriter::Options{});
+    auto builder = podio::WriterFor{filename}.withType("sio").withOptions(podio::ROOTWriteOptions{});
     REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
     REQUIRE_FALSE(std::filesystem::exists(filename));
   }
 
   SECTION("Options not matching the explicit backend") {
-    auto builder = podio::WriterFor{filename}
-                       .withBackend(podio::WriterFor::Backend::Arrow)
-                       .withOptions(podio::ROOTWriter::Options{});
+    auto builder =
+        podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::Arrow).withOptions(podio::ROOTWriteOptions{});
     REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
     REQUIRE_FALSE(std::filesystem::exists(filename));
+  }
+
+  SECTION("ROOT options for a non ROOT file") {
+    const TemporaryFile sioFile{".sio"};
+    auto builder = podio::WriterFor{sioFile.name()}.withOptions(podio::ROOTWriteOptions{});
+    REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
+    REQUIRE_FALSE(std::filesystem::exists(sioFile.name()));
   }
 
   SECTION("withBackend and withType cannot be combined") {

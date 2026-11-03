@@ -34,11 +34,11 @@ using ROOT::Experimental::RNTupleWriteOptions;
 namespace podio {
 class GenericParameters;
 
-RNTupleWriter::RNTupleWriter(const std::string& filename, const Options& options)
-    : m_options(options), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+RNTupleWriter::RNTupleWriter(const std::string& filename, const ROOTWriteOptions& options) :
+    m_options(options), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
 }
 
-RNTupleWriter::RNTupleWriter(const std::string& filename) : RNTupleWriter(filename, Options{}) {
+RNTupleWriter::RNTupleWriter(const std::string& filename) : RNTupleWriter(filename, ROOTWriteOptions{}) {
 }
 
 RNTupleWriter::~RNTupleWriter() {

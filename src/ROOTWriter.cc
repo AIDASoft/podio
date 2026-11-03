@@ -23,12 +23,13 @@
 
 namespace podio {
 
-ROOTWriter::ROOTWriter(const std::string& filename, const Options& options)
-    : m_options(options), m_file(filename.c_str(), "recreate", "",
-             options.compressionSettings.value_or(ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault)) {
+ROOTWriter::ROOTWriter(const std::string& filename, const ROOTWriteOptions& options) :
+    m_options(options),
+    m_file(filename.c_str(), "recreate", "",
+           options.compressionSettings.value_or(ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault)) {
 }
 
-ROOTWriter::ROOTWriter(const std::string& filename) : ROOTWriter(filename, Options{}) {
+ROOTWriter::ROOTWriter(const std::string& filename) : ROOTWriter(filename, ROOTWriteOptions{}) {
 }
 
 ROOTWriter::~ROOTWriter() {

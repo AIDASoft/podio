@@ -78,24 +78,25 @@ the environment variable is set **to a non-empty string**, RNTuples will be the 
 
 To configure backend specific options, use `WriterFor`. It allows for a more
 flexible selection of the backend as well, which will take precedence over types
-derived from filenames and / or environment variables. When using options for
-configuring the underlying low level reader, these options also fully determine
-the type. If specifying options and a type (using `withBackend` or `withType`)
-they have to match, otherwise an exception will be thrown. Only one of
-`withBackend` and `withType` can be used, combining them throws an exception.
+derived from filenames and / or environment variables. If specifying options and
+a type (using `withBackend` or `withType`) they have to match, otherwise an
+exception will be thrown. Only one of `withBackend` and `withType` can be used,
+combining them throws an exception.
 
 ```cpp
-#include <podio/RNTupleWriter.h> // only necessary when passing its options
 #include <podio/Writer.h>
 
 // Explicitly select the RNTuple backend
 auto rntupleWriter = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create();
 // Equivalent, selecting via name, as with podio::makeWriter(filename, "rntuple")
 auto sameWriter = podio::WriterFor{filename}.withType("rntuple").create();
-// The options type selects the RNTuple backend
-auto configuredWriter = podio::WriterFor{filename}
-                            .withOptions(podio::RNTupleWriter::Options{.compressionSettings = 505})
-                            .create();
+// Configure compression, TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE
+auto configuredWriter = podio::WriterFor{filename}.withOptions({.compressionSettings = 505}).create();
+// Configure compression and always use RNTuple
+auto configuredRNTupleWriter = podio::WriterFor{filename}
+                                   .withBackend(podio::WriterFor::Backend::RNTuple)
+                                   .withOptions({.compressionSettings = 505})
+                                   .create();
 ```
 
 Specific writers for each backend are also available:

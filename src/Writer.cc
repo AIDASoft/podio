@@ -105,6 +105,25 @@ namespace {
     return false;
   }
 
+  /// Create a ROOT based writer with the given options
+  Writer makeROOTWriter(Backend backend, const std::string& filename, const ROOTWriteOptions& options) {
+    switch (backend) {
+    case Backend::TTree:
+      return Writer{std::make_unique<ROOTWriter>(filename, options)};
+    case Backend::RNTuple:
+#if PODIO_ENABLE_RNTUPLE
+      return Writer{std::make_unique<RNTupleWriter>(filename, options)};
+#else
+      throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
+#endif
+    case Backend::SIO:
+    case Backend::Arrow:
+      break;
+    }
+    throw std::invalid_argument("ROOTWriteOptions cannot be used for writer type '" +
+                                std::string(backendName(backend)) + "'");
+  }
+
   /// Create a writer with default options for the given backend
   Writer makeDefaultWriter(Backend backend, const std::string& filename) {
     switch (backend) {
@@ -132,6 +151,13 @@ namespace {
     throw std::logic_error("Unhandled writer backend");
   }
 } // namespace
+
+WriterFor& WriterFor::withOptions(const ROOTWriteOptions& options) {
+  m_writerType.reset();
+  m_makeWriter = nullptr;
+  m_rootOptions = options;
+  return *this;
+}
 
 WriterFor& WriterFor::withBackend(Backend backend) {
   if (m_backendSelection == BackendSelection::ViaType) {
@@ -161,6 +187,9 @@ Writer WriterFor::create() const {
   }
 
   const auto backend = m_backend ? *m_backend : backendFromFilename(m_filename);
+  if (m_rootOptions) {
+    return makeROOTWriter(backend, m_filename, *m_rootOptions);
+  }
   return makeDefaultWriter(backend, m_filename);
 }
 
