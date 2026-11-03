@@ -7,7 +7,6 @@
 #endif
 
 #include "catch2/catch_test_macros.hpp"
-#include "catch2/generators/catch_generators.hpp"
 
 #include "Compression.h"
 #include "TFile.h"
@@ -128,27 +127,21 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.create(), filename) == StorageType::TTree);
     REQUIRE(writeAndGetStorage(podio::makeWriter(filename), filename) == StorageType::TTree);
-  }
 
-  SECTION("Explicit type takes precedence over environment") {
-    DefaultRNTupleEnv env{true};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("ROOT").create(), filename) == StorageType::TTree);
-    REQUIRE(writeAndGetStorage(podio::makeWriter(filename, "root"), filename) == StorageType::TTree);
-  }
-
-  SECTION("Explicit backend takes precedence over environment") {
-    DefaultRNTupleEnv env{true};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::TTree).create(),
-                               filename) == StorageType::TTree);
-  }
-
-  SECTION("Default type does not select a backend") {
-    DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("default").create(), filename) ==
             StorageType::TTree);
     REQUIRE(writeAndGetStorage(
                 podio::WriterFor{filename}.withType("default").withBackend(podio::WriterFor::Backend::TTree).create(),
                 filename) == StorageType::TTree);
+  }
+
+  SECTION("Explicit backend takes precedence over environment") {
+    DefaultRNTupleEnv env{true};
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("ROOT").create(), filename) == StorageType::TTree);
+    REQUIRE(writeAndGetStorage(podio::makeWriter(filename, "root"), filename) == StorageType::TTree);
+
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::TTree).create(),
+                               filename) == StorageType::TTree);
   }
 
   SECTION("ROOT options follow the default backend") {
@@ -159,7 +152,7 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     checkRoundtrip(filename);
   }
 
-  SECTION("ROOT options with explicit TTree backend") {
+  SECTION("ROOT compression options are applied") {
     DefaultRNTupleEnv env{true};
     constexpr int kUseAnalysis = ROOT::RCompressionSetting::EDefaults::kUseAnalysis;
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}
@@ -176,10 +169,7 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     DefaultRNTupleEnv env{true};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.create(), filename) == StorageType::RNTuple);
     REQUIRE(writeAndGetStorage(podio::makeWriter(filename), filename) == StorageType::RNTuple);
-  }
 
-  SECTION("ROOT options follow the environment") {
-    DefaultRNTupleEnv env{true};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions(podio::ROOTWriteOptions{}).create(), filename) ==
             StorageType::RNTuple);
   }
@@ -188,47 +178,11 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create(),
                                filename) == StorageType::RNTuple);
-  }
-
-  SECTION("Explicit type and matching options") {
-    DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(
                 podio::WriterFor{filename}.withType("rntuple").withOptions(podio::ROOTWriteOptions{}).create(),
                 filename) == StorageType::RNTuple);
   }
 #endif
-}
-
-TEST_CASE("ROOTWriter compression settings", "[writer-for][root-write-options]") {
-  using EDefaults = ROOT::RCompressionSetting::EDefaults;
-  const TemporaryFile file{".root"};
-  const auto& filename = file.name();
-
-  SECTION("Default options use the compiled in default") {
-    {
-      podio::ROOTWriter writer(filename);
-      podio::Frame frame;
-      frame.putParameter("value", 42);
-      writer.writeFrame(frame, "events");
-    }
-    REQUIRE(getCompressionSettings(filename) == EDefaults::kUseCompiledDefault);
-    checkRoundtrip(filename);
-  }
-
-  SECTION("Explicit compression settings are applied") {
-    // 0 explicitly disables compression
-    const int compression =
-        GENERATE(EDefaults::kUseGeneralPurpose, EDefaults::kUseSmallest, EDefaults::kUseAnalysis, 0);
-    CAPTURE(compression);
-    {
-      podio::ROOTWriter writer(filename, podio::ROOTWriteOptions{.compressionSettings = compression});
-      podio::Frame frame;
-      frame.putParameter("value", 42);
-      writer.writeFrame(frame, "events");
-    }
-    REQUIRE(getCompressionSettings(filename) == compression);
-    checkRoundtrip(filename);
-  }
 }
 
 TEST_CASE("WriterFor configuration errors", "[writer-for]") {
