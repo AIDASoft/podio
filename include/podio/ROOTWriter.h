@@ -137,7 +137,6 @@ private:
   /// Fill the parameter keys and values into the CategoryInfo storage
   static void fillParams(CategoryInfo& catInfo, const GenericParameters& params);
 
-  ROOTWriteOptions m_options{};                     ///< Writer configuration
   TFile m_file;                                     ///< The storage file
   podio::StringKeyMap<CategoryInfo> m_categories{}; ///< All categories
 

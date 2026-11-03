@@ -24,7 +24,6 @@
 namespace podio {
 
 ROOTWriter::ROOTWriter(const std::string& filename, const ROOTWriteOptions& options) :
-    m_options(options),
     m_file(filename.c_str(), "recreate", "",
            options.compressionSettings.value_or(ROOT::RCompressionSetting::EDefaults::kUseCompiledDefault)) {
 }
