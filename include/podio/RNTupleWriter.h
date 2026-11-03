@@ -9,6 +9,7 @@
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleWriteOptions.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
 
@@ -27,10 +28,12 @@ namespace root_compat {
   using REntry = ROOT::Experimental::REntry;
   using RNTupleModel = ROOT::Experimental::RNTupleModel;
   using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
+  using RNTupleWriteOptions = ROOT::Experimental::RNTupleWriteOptions;
 #else
   using REntry = ROOT::REntry;
   using RNTupleModel = ROOT::RNTupleModel;
   using RNTupleWriter = ROOT::RNTupleWriter;
+  using RNTupleWriteOptions = ROOT::RNTupleWriteOptions;
 #endif
 } // namespace root_compat
 
@@ -149,7 +152,7 @@ private:
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
-  ROOTWriteOptions m_options{}; ///< Writer configuration
+  root_compat::RNTupleWriteOptions m_options{}; ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};

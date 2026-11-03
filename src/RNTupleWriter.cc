@@ -35,7 +35,10 @@ namespace podio {
 class GenericParameters;
 
 RNTupleWriter::RNTupleWriter(const std::string& filename, const ROOTWriteOptions& options) :
-    m_options(options), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+    m_options(RNTupleWriteOptions{}), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+  if (options.compressionSettings.has_value()) {
+    m_options.SetCompression(options.compressionSettings.value());
+  }
 }
 
 RNTupleWriter::RNTupleWriter(const std::string& filename) : RNTupleWriter(filename, ROOTWriteOptions{}) {
@@ -104,11 +107,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   if (new_category) {
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    RNTupleWriteOptions rntOpts;
-    if (m_options.compressionSettings) {
-      rntOpts.SetCompression(*m_options.compressionSettings);
-    }
-    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), rntOpts);
+    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), m_options);
 
     catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
@@ -286,12 +285,8 @@ void RNTupleWriter::finish() {
     }
 
     metadata->Freeze();
-    RNTupleWriteOptions rntOpts;
-    if (m_options.compressionSettings) {
-      rntOpts.SetCompression(*m_options.compressionSettings);
-    }
     const auto metadataWriter =
-        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, rntOpts);
+        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, m_options);
 
     metadataWriter->Fill();
 
