@@ -109,11 +109,6 @@ namespace {
     return backend;
   }
 
-  [[noreturn]] void throwOptionsMismatch(Backend backend) {
-    throw std::invalid_argument("The provided options cannot be used for writer type '" +
-                                std::string(backendName(backend)) + "'");
-  }
-
   /// Get the options for a backend that takes options of type OptionsT
   ///
   /// @returns A pointer to the options, or a nullptr if no options have been set
@@ -126,7 +121,8 @@ namespace {
     if (const auto* opts = std::any_cast<OptionsT>(&options)) {
       return opts;
     }
-    throwOptionsMismatch(backend);
+    throw std::invalid_argument("The provided writer options cannot be used for writer type '" +
+                                std::string(backendName(backend)) + "'");
   }
 
   /// Create a low level writer, passing on the options if there are any
@@ -141,7 +137,7 @@ namespace {
   /// Create the writer for the backend with the (optional) options
   ///
   /// @note The backend has to be available, see ensureAvailable()
-  Writer makeWriterFor(Backend backend, const std::string& filename, const std::any& options) {
+  Writer makeWriter(Backend backend, const std::string& filename, const std::any& options) {
     switch (backend) {
     case Backend::TTree:
       return makeWriter<ROOTWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));
@@ -154,7 +150,7 @@ namespace {
     case Backend::SIO:
 #if PODIO_ENABLE_SIO
       if (options.has_value()) {
-        throwOptionsMismatch(backend);
+        throw std::invalid_argument("The SIOWriter does not provide support for options yet");
       }
       return Writer{std::make_unique<SIOWriter>(filename)};
 #else
@@ -194,7 +190,7 @@ WriterFor& WriterFor::withType(const std::string& type) {
 
 Writer WriterFor::create() const {
   const auto backend = m_backend ? *m_backend : ensureAvailable(backendFromFilename(m_filename));
-  return makeWriterFor(backend, m_filename, m_options);
+  return makeWriter(backend, m_filename, m_options);
 }
 
 Writer makeWriter(const std::string& filename, const std::string& type) {
