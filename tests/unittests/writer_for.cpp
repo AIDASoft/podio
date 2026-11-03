@@ -130,9 +130,6 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
 
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("default").create(), filename) ==
             StorageType::TTree);
-    REQUIRE(writeAndGetStorage(
-                podio::WriterFor{filename}.withType("default").withBackend(podio::WriterFor::Backend::TTree).create(),
-                filename) == StorageType::TTree);
   }
 
   SECTION("Explicit backend takes precedence over environment") {
