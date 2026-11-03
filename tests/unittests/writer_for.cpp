@@ -154,10 +154,9 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
   }
 
   SECTION("ROOT compression options are applied") {
-    DefaultRNTupleEnv env{true};
+    DefaultRNTupleEnv env{false};
     constexpr int kUseAnalysis = ROOT::RCompressionSetting::EDefaults::kUseAnalysis;
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}
-                                   .withBackend(podio::WriterFor::Backend::TTree)
                                    .withOptions(podio::ROOTWriteOptions{.compressionSettings = kUseAnalysis})
                                    .create(),
                                filename) == StorageType::TTree);
@@ -171,17 +170,15 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.create(), filename) == StorageType::RNTuple);
     REQUIRE(writeAndGetStorage(podio::makeWriter(filename), filename) == StorageType::RNTuple);
 
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions(podio::ROOTWriteOptions{}).create(), filename) ==
-            StorageType::RNTuple);
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.create(), filename) == StorageType::RNTuple);
   }
 
   SECTION("Explicit backend selects RNTuple") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create(),
                                filename) == StorageType::RNTuple);
-    REQUIRE(writeAndGetStorage(
-                podio::WriterFor{filename}.withType("rntuple").withOptions(podio::ROOTWriteOptions{}).create(),
-                filename) == StorageType::RNTuple);
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("rntuple").create(), filename) ==
+            StorageType::RNTuple);
   }
 #endif
 }
