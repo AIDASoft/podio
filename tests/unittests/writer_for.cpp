@@ -1,4 +1,5 @@
 #include "podio/Frame.h"
+#include "podio/ROOTReader.h"
 #include "podio/ROOTWriter.h"
 #include "podio/Writer.h"
 #if PODIO_ENABLE_RNTUPLE
@@ -6,7 +7,9 @@
 #endif
 
 #include "catch2/catch_test_macros.hpp"
+#include "catch2/generators/catch_generators.hpp"
 
+#include "Compression.h"
 #include "TFile.h"
 #include "TKey.h"
 
@@ -98,6 +101,23 @@ StorageType writeAndGetStorage(podio::Writer writer, const std::string& filename
   }
   return StorageType::Other;
 }
+
+/// Get the compression settings of a ROOT file
+int getCompressionSettings(const std::string& filename) {
+  TFile file(filename.c_str());
+  return file.GetCompressionSettings();
+}
+
+/// Read back the first event from a (TTree based) ROOT file and check that it
+/// contains the value written by writeAndGetStorage
+void checkRoundtrip(const std::string& filename) {
+  podio::ROOTReader reader;
+  reader.openFile(filename);
+  const auto frame = podio::Frame(reader.readNextEntry("events"));
+  const auto value = frame.getParameter<int>("value");
+  REQUIRE(value.has_value());
+  REQUIRE(value.value() == 42);
+}
 } // namespace
 
 TEST_CASE("WriterFor backend selection", "[writer-for]") {
@@ -135,17 +155,20 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions({.compressionSettings = 0}).create(), filename) ==
             StorageType::TTree);
-    TFile rootFile(filename.c_str());
-    REQUIRE(rootFile.GetCompressionSettings() == 0);
+    REQUIRE(getCompressionSettings(filename) == 0);
+    checkRoundtrip(filename);
   }
 
   SECTION("ROOT options with explicit TTree backend") {
     DefaultRNTupleEnv env{true};
+    constexpr int kUseAnalysis = ROOT::RCompressionSetting::EDefaults::kUseAnalysis;
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}
                                    .withBackend(podio::WriterFor::Backend::TTree)
-                                   .withOptions(podio::ROOTWriteOptions{})
+                                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = kUseAnalysis})
                                    .create(),
                                filename) == StorageType::TTree);
+    REQUIRE(getCompressionSettings(filename) == kUseAnalysis);
+    checkRoundtrip(filename);
   }
 
 #if PODIO_ENABLE_RNTUPLE
@@ -174,6 +197,38 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
                 filename) == StorageType::RNTuple);
   }
 #endif
+}
+
+TEST_CASE("ROOTWriter compression settings", "[writer-for][root-write-options]") {
+  using EDefaults = ROOT::RCompressionSetting::EDefaults;
+  const TemporaryFile file{".root"};
+  const auto& filename = file.name();
+
+  SECTION("Default options use the compiled in default") {
+    {
+      podio::ROOTWriter writer(filename);
+      podio::Frame frame;
+      frame.putParameter("value", 42);
+      writer.writeFrame(frame, "events");
+    }
+    REQUIRE(getCompressionSettings(filename) == EDefaults::kUseCompiledDefault);
+    checkRoundtrip(filename);
+  }
+
+  SECTION("Explicit compression settings are applied") {
+    // 0 explicitly disables compression
+    const int compression =
+        GENERATE(EDefaults::kUseGeneralPurpose, EDefaults::kUseSmallest, EDefaults::kUseAnalysis, 0);
+    CAPTURE(compression);
+    {
+      podio::ROOTWriter writer(filename, podio::ROOTWriteOptions{.compressionSettings = compression});
+      podio::Frame frame;
+      frame.putParameter("value", 42);
+      writer.writeFrame(frame, "events");
+    }
+    REQUIRE(getCompressionSettings(filename) == compression);
+    checkRoundtrip(filename);
+  }
 }
 
 TEST_CASE("WriterFor configuration errors", "[writer-for]") {
@@ -224,8 +279,7 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
 #if !PODIO_ENABLE_RNTUPLE
   SECTION("RNTuple not available") {
     REQUIRE_THROWS_AS(podio::WriterFor{filename}.withType("rntuple"), std::runtime_error);
-    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple),
-                      std::runtime_error);
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple), std::runtime_error);
   }
 #endif
 
