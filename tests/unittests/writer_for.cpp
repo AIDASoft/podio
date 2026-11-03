@@ -146,8 +146,9 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
 
   SECTION("ROOT options follow the default backend") {
     DefaultRNTupleEnv env{false};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withOptions({.compressionSettings = 0}).create(), filename) ==
-            StorageType::TTree);
+    REQUIRE(writeAndGetStorage(
+                podio::WriterFor{filename}.withOptions(podio::ROOTWriteOptions{.compressionSettings = 0}).create(),
+                filename) == StorageType::TTree);
     REQUIRE(getCompressionSettings(filename) == 0);
     checkRoundtrip(filename);
   }

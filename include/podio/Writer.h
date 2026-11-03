@@ -197,33 +197,13 @@ public:
   /// @throws std::invalid_argument If a backend has already been selected
   WriterFor& withType(const std::string& type);
 
-  /// Set the options for the ROOT based writers (TTree and RNTuple)
-  ///
-  /// These options do not select between TTree and RNTuple. The format is
-  /// determined by the explicitly selected backend, or by the
-  /// PODIO_DEFAULT_WRITE_RNTUPLE environment variable and the filename. It is
-  /// an error if this results in a backend that is not ROOT based.
-  ///
-  /// Replaces any previously set options.
-  ///
-  /// @note This overload exists to allow passing the options as a braced
-  /// initializer list, e.g. `withOptions({.compressionSettings = 505})`
-  ///
-  /// @param options The options for the ROOT based writers
-  WriterFor& withOptions(const ROOTWriteOptions& options) {
-    m_options = options;
-    return *this;
-  }
-
   /// Set the options of a specific low level writer
   ///
-  /// The options do not select a backend. They are only checked against the
-  /// backend that has been determined when create() is called.
-  ///
-  /// Replaces any previously set options.
+  /// The options are only checked against the backend that has been determined
+  /// when create() is called.
   ///
   /// @tparam OptionsT The options of a low level writer, e.g.
-  ///                  ArrowWriter::Options
+  ///                  ROOTWriteOptions or ArrowWriter::Options
   /// @param options   The backend specific options
   template <std::copy_constructible OptionsT>
   WriterFor& withOptions(const OptionsT& options) {
