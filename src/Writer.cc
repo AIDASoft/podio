@@ -83,7 +83,7 @@ namespace {
   /// @returns The backend for convenient chaining
   /// @throws std::runtime_error if the backend is not available
   Backend ensureAvailable(Backend backend) {
-    auto notAvailable = [backend](std::string_view requirement) {
+    [[maybe_unused]] auto notAvailable = [backend](std::string_view requirement) {
       return std::runtime_error("Writer type '" + std::string(backendName(backend)) +
                                 "' is not available. Please recompile with " + std::string(requirement) + " support.");
     };
