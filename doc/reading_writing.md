@@ -58,7 +58,11 @@ the type:
 auto ttreeWriter = podio::makeWriter(filename, "root");         // Use TTree
 auto rntupleWriter = podio::makeWriter(filename, "rntuple");    // Use RNTuple
 auto parquetWriter = podio::makeWriter(filename, "parquet");    // Use Arrow/Parquet
+auto sioWriter = podio::makeWriter(filename, "sio");            // Use SIO
 ```
+
+An explicitly provided type takes precedence over the file extension. Unknown
+types result in an exception.
 
 The format can also be set by the environment variable `PODIO_DEFAULT_WRITE_RNTUPLE`. If
 the environment variable is set **to a non-empty string**, RNTuples will be the default.
@@ -69,6 +73,30 @@ the environment variable is set **to a non-empty string**, RNTuples will be the 
 - `.sio`: Uses the SIO writer.
 - `.podio_parquet`: Uses the Arrow/Parquet writer.
 - Other extensions are not allowed.
+
+#### Configuring writers with `WriterFor`
+
+To configure backend specific options, use `WriterFor`. It allows for a more
+flexible selection of the backend as well, which will take precedence over types
+derived from filenames and / or environment variables. When using options for
+configuring the underlying low level reader, these options also fully determine
+the type. If specifying options and a type (using `withBackend` or `withType`)
+they have to match, otherwise an exception will be thrown. Only one of
+`withBackend` and `withType` can be used, combining them throws an exception.
+
+```cpp
+#include <podio/RNTupleWriter.h> // only necessary when passing its options
+#include <podio/Writer.h>
+
+// Explicitly select the RNTuple backend
+auto rntupleWriter = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create();
+// Equivalent, selecting via name, as with podio::makeWriter(filename, "rntuple")
+auto sameWriter = podio::WriterFor{filename}.withType("rntuple").create();
+// The options type selects the RNTuple backend
+auto configuredWriter = podio::WriterFor{filename}
+                            .withOptions(podio::RNTupleWriter::Options{.compressionSettings = 505})
+                            .create();
+```
 
 Specific writers for each backend are also available:
 

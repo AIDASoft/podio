@@ -32,6 +32,8 @@ class ROOTWriter {
 public:
   /// Configuration options for ROOTWriter.
   struct Options {
+    using WriterType = ROOTWriter; ///< The writer these options belong to
+
     /// ROOT compression setting: algorithm*100+level (0 disables compression).
     /// Use ROOT::RCompressionSetting::EDefaults values, e.g.:
     ///   kUseGeneralPurpose=505 (ZSTD-5), kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7).

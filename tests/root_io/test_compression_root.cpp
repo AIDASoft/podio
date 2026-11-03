@@ -6,7 +6,7 @@
 #include "Compression.h"
 #include "TFile.h"
 
-#include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <string>
 
@@ -44,8 +44,8 @@ static void writeDefault(const std::string& filename) {
   writer.writeFrame(frame, "events");
 }
 
-static void writeWithMakeWriter(const std::string& filename, const podio::WriterOptions& opts) {
-  auto writer = podio::makeWriter(filename, opts);
+static void writeWithWriterFor(const std::string& filename, const podio::ROOTWriter::Options& opts) {
+  auto writer = podio::WriterFor{filename}.withOptions(opts).create();
   podio::Frame frame;
   frame.putParameter("sentinel", 42);
   writer.writeEvent(frame);
@@ -74,10 +74,10 @@ int main() {
   verifyFileCompression("compression_none.root", 0);
   verifyRoundtrip("compression_none.root");
 
-  // Options passed through the generic makeWriter select the ROOT backend
-  writeWithMakeWriter("compression_makewriter.root", podio::ROOTWriter::Options{.compressionSettings = D::kUseAnalysis});
-  verifyFileCompression("compression_makewriter.root", D::kUseAnalysis);
-  verifyRoundtrip("compression_makewriter.root");
+  // Options passed through WriterFor select the ROOT backend
+  writeWithWriterFor("compression_writerfor.root", {.compressionSettings = D::kUseAnalysis});
+  verifyFileCompression("compression_writerfor.root", D::kUseAnalysis);
+  verifyRoundtrip("compression_writerfor.root");
 
   std::cout << "All compression tests passed.\n";
   return 0;
