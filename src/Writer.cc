@@ -12,6 +12,7 @@
 #endif
 
 #include <algorithm>
+#include <any>
 #include <cctype>
 #include <cstdlib>
 #include <memory>
@@ -19,7 +20,6 @@
 #include <stdexcept>
 #include <string>
 #include <string_view>
-#include <typeindex>
 
 namespace podio {
 
@@ -78,86 +78,98 @@ namespace {
     throw std::runtime_error("Unknown file type for file " + filename);
   }
 
-  /// Check whether the low level writer type belongs to the backend
-  bool isWriterFor(Backend backend, std::type_index writerType) {
+  /// Make sure that support for the backend has been built
+  ///
+  /// @returns The backend for convenient chaining
+  /// @throws std::runtime_error if the backend is not available
+  Backend ensureAvailable(Backend backend) {
+    auto notAvailable = [backend](std::string_view requirement) {
+      return std::runtime_error("Writer type '" + std::string(backendName(backend)) +
+                                "' is not available. Please recompile with " + std::string(requirement) + " support.");
+    };
     switch (backend) {
     case Backend::TTree:
-      return writerType == typeid(ROOTWriter);
+      break;
     case Backend::RNTuple:
-#if PODIO_ENABLE_RNTUPLE
-      return writerType == typeid(RNTupleWriter);
-#else
-      return false;
+#if !PODIO_ENABLE_RNTUPLE
+      throw notAvailable("ROOT RNTuple");
 #endif
+      break;
     case Backend::SIO:
-#if PODIO_ENABLE_SIO
-      return writerType == typeid(SIOWriter);
-#else
-      return false;
+#if !PODIO_ENABLE_SIO
+      throw notAvailable("SIO");
 #endif
+      break;
     case Backend::Arrow:
-#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
-      return writerType == typeid(ArrowWriter);
-#else
-      return false;
+#if !(PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET)
+      throw notAvailable("Arrow and Parquet");
 #endif
-    }
-    return false;
-  }
-
-  /// Create a ROOT based writer with the given options
-  Writer makeROOTWriter(Backend backend, const std::string& filename, const ROOTWriteOptions& options) {
-    switch (backend) {
-    case Backend::TTree:
-      return Writer{std::make_unique<ROOTWriter>(filename, options)};
-    case Backend::RNTuple:
-#if PODIO_ENABLE_RNTUPLE
-      return Writer{std::make_unique<RNTupleWriter>(filename, options)};
-#else
-      throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
-#endif
-    case Backend::SIO:
-    case Backend::Arrow:
       break;
     }
-    throw std::invalid_argument("ROOTWriteOptions cannot be used for writer type '" +
+    return backend;
+  }
+
+  [[noreturn]] void throwOptionsMismatch(Backend backend) {
+    throw std::invalid_argument("The provided options cannot be used for writer type '" +
                                 std::string(backendName(backend)) + "'");
   }
 
-  /// Create a writer with default options for the given backend
-  Writer makeDefaultWriter(Backend backend, const std::string& filename) {
+  /// Get the options for a backend that takes options of type OptionsT
+  ///
+  /// @returns A pointer to the options, or a nullptr if no options have been set
+  /// @throws std::invalid_argument if the options are not of type OptionsT
+  template <typename OptionsT>
+  const OptionsT* getOptions(Backend backend, const std::any& options) {
+    if (!options.has_value()) {
+      return nullptr;
+    }
+    if (const auto* opts = std::any_cast<OptionsT>(&options)) {
+      return opts;
+    }
+    throwOptionsMismatch(backend);
+  }
+
+  /// Create a low level writer, passing on the options if there are any
+  template <typename WriterT, typename OptionsT>
+  Writer makeWriter(const std::string& filename, const OptionsT* options) {
+    if (options) {
+      return Writer{std::make_unique<WriterT>(filename, *options)};
+    }
+    return Writer{std::make_unique<WriterT>(filename)};
+  }
+
+  /// Create the writer for the backend with the (optional) options
+  ///
+  /// @note The backend has to be available, see ensureAvailable()
+  Writer makeWriterFor(Backend backend, const std::string& filename, const std::any& options) {
     switch (backend) {
     case Backend::TTree:
-      return Writer{std::make_unique<ROOTWriter>(filename)};
+      return makeWriter<ROOTWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));
     case Backend::RNTuple:
 #if PODIO_ENABLE_RNTUPLE
-      return Writer{std::make_unique<RNTupleWriter>(filename)};
+      return makeWriter<RNTupleWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));
 #else
-      throw std::runtime_error("ROOT RNTuple writer not available. Please recompile with ROOT RNTuple support.");
+      break;
 #endif
     case Backend::SIO:
 #if PODIO_ENABLE_SIO
+      if (options.has_value()) {
+        throwOptionsMismatch(backend);
+      }
       return Writer{std::make_unique<SIOWriter>(filename)};
 #else
-      throw std::runtime_error("SIO writer not available. Please recompile with SIO support.");
+      break;
 #endif
     case Backend::Arrow:
 #if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
-      return Writer{std::make_unique<ArrowWriter>(filename)};
+      return makeWriter<ArrowWriter>(filename, getOptions<ArrowWriter::Options>(backend, options));
 #else
-      throw std::runtime_error("Arrow writer not available. Please recompile with Arrow and Parquet support.");
+      break;
 #endif
     }
-    throw std::logic_error("Unhandled writer backend");
+    throw std::logic_error("Unhandled or unavailable writer backend '" + std::string(backendName(backend)) + "'");
   }
 } // namespace
-
-WriterFor& WriterFor::withOptions(const ROOTWriteOptions& options) {
-  m_writerType.reset();
-  m_makeWriter = nullptr;
-  m_rootOptions = options;
-  return *this;
-}
 
 void WriterFor::ensureNoBackendSelected() const {
   if (m_backend) {
@@ -168,30 +180,21 @@ void WriterFor::ensureNoBackendSelected() const {
 
 WriterFor& WriterFor::withBackend(Backend backend) {
   ensureNoBackendSelected();
-  m_backend = backend;
+  m_backend = ensureAvailable(backend);
   return *this;
 }
 
 WriterFor& WriterFor::withType(const std::string& type) {
   ensureNoBackendSelected();
-  m_backend = backendFromType(type);
+  if (const auto backend = backendFromType(type)) {
+    m_backend = ensureAvailable(*backend);
+  }
   return *this;
 }
 
 Writer WriterFor::create() const {
-  if (m_makeWriter) {
-    if (m_backend && !isWriterFor(*m_backend, *m_writerType)) {
-      throw std::invalid_argument("Options of a different writer cannot be used for writer type '" +
-                                  std::string(backendName(*m_backend)) + "'");
-    }
-    return m_makeWriter(m_filename);
-  }
-
-  const auto backend = m_backend ? *m_backend : backendFromFilename(m_filename);
-  if (m_rootOptions) {
-    return makeROOTWriter(backend, m_filename, *m_rootOptions);
-  }
-  return makeDefaultWriter(backend, m_filename);
+  const auto backend = m_backend ? *m_backend : ensureAvailable(backendFromFilename(m_filename));
+  return makeWriterFor(backend, m_filename, m_options);
 }
 
 Writer makeWriter(const std::string& filename, const std::string& type) {

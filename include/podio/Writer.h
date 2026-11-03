@@ -5,13 +5,12 @@
 #include "podio/FrameCategories.h"
 #include "podio/ROOTWriteOptions.h"
 
+#include <any>
 #include <concepts>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
-#include <typeindex>
 #include <utility>
 #include <vector>
 
@@ -136,26 +135,17 @@ public:
   }
 };
 
-namespace detail {
-  /// Options of a low level writer, i.e. they define the WriterType they belong
-  /// to and that writer can be constructed from a filename and these options
-  template <typename OptionsT>
-  concept LowLevelWriterOptions = requires { typename OptionsT::WriterType; } &&
-      std::constructible_from<typename OptionsT::WriterType, const std::string&, const OptionsT&>;
-} // namespace detail
-
 /// Builder for a Writer that allows to configure the backend and its options.
 ///
 /// The backend is determined when create() is called, in the following order
 /// - An explicitly selected backend (via either withBackend() or withType()) is
-///   used. If options have been passed via withOptions() as well, they have to
-///   be usable with that backend.
-/// - Options of a specific low level writer (e.g. ArrowWriter::Options) select
-///   that writer. ROOTWriteOptions do not select a backend, since they can be
-///   used for TTree and RNTuple based files.
+///   used.
 /// - The extension of the filename selects the backend. For ".root" files the
 ///   PODIO_DEFAULT_WRITE_RNTUPLE environment variable switches from TTree to
 ///   RNTuple, if it is set to a non-empty value.
+///
+/// Options passed via withOptions() never select a backend, but they have to be
+/// usable with the backend that has been determined as described above.
 ///
 /// All configuration errors are detected before any file is created.
 ///
@@ -193,6 +183,7 @@ public:
   /// @param backend The backend to use
   ///
   /// @throws std::invalid_argument If a backend has already been selected
+  /// @throws std::runtime_error If support for the backend has not been built
   WriterFor& withBackend(Backend backend);
 
   /// Explicitly select the backend via its name
@@ -201,7 +192,8 @@ public:
   ///             (case insensitive). "default" does not select a backend, it
   ///             is determined from the options or the filename instead
   ///
-  /// @throws std::runtime_error If the type is not known
+  /// @throws std::runtime_error If the type is not known or if support for
+  ///         the backend has not been built
   /// @throws std::invalid_argument If a backend has already been selected
   WriterFor& withType(const std::string& type);
 
@@ -214,27 +206,28 @@ public:
   ///
   /// Replaces any previously set options.
   ///
+  /// @note This overload exists to allow passing the options as a braced
+  /// initializer list, e.g. `withOptions({.compressionSettings = 505})`
+  ///
   /// @param options The options for the ROOT based writers
-  WriterFor& withOptions(const ROOTWriteOptions& options);
+  WriterFor& withOptions(const ROOTWriteOptions& options) {
+    m_options = options;
+    return *this;
+  }
 
   /// Set the options of a specific low level writer
   ///
-  /// The writer these options belong to determines the backend, unless an
-  /// explicit backend is selected, in which case they have to match.
+  /// The options do not select a backend. They are only checked against the
+  /// backend that has been determined when create() is called.
   ///
   /// Replaces any previously set options.
   ///
   /// @tparam OptionsT The options of a low level writer, e.g.
   ///                  ArrowWriter::Options
   /// @param options   The backend specific options
-  template <detail::LowLevelWriterOptions OptionsT>
+  template <std::copy_constructible OptionsT>
   WriterFor& withOptions(const OptionsT& options) {
-    m_rootOptions.reset();
-    using WriterT = typename OptionsT::WriterType;
-    m_writerType = typeid(WriterT);
-    m_makeWriter = [options](const std::string& filename) {
-      return Writer{std::make_unique<WriterT>(filename, options)};
-    };
+    m_options = options;
     return *this;
   }
 
@@ -257,12 +250,9 @@ private:
   std::string m_filename;
   /// The explicitly selected backend (if any)
   std::optional<Backend> m_backend{};
-  /// The type of the low level writer that the options belong to
-  std::optional<std::type_index> m_writerType{};
-  /// Create the writer with the configured options
-  std::function<Writer(const std::string&)> m_makeWriter{};
-  /// The options for the ROOT based writers (if set)
-  std::optional<ROOTWriteOptions> m_rootOptions{};
+  /// The options for the low level writer (if any). These are only resolved
+  /// in create() once the backend is known
+  std::any m_options{};
 };
 
 /// Create a Writer that is able to write files for the desired backend

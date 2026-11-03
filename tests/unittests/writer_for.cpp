@@ -180,15 +180,9 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
   const TemporaryFile file{".root"};
   const auto& filename = file.name();
 
+#if PODIO_ENABLE_SIO
   SECTION("Options not matching the explicit type") {
     auto builder = podio::WriterFor{filename}.withType("sio").withOptions(podio::ROOTWriteOptions{});
-    REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
-    REQUIRE_FALSE(std::filesystem::exists(filename));
-  }
-
-  SECTION("Options not matching the explicit backend") {
-    auto builder =
-        podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::Arrow).withOptions(podio::ROOTWriteOptions{});
     REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
     REQUIRE_FALSE(std::filesystem::exists(filename));
   }
@@ -199,6 +193,41 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
     REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
     REQUIRE_FALSE(std::filesystem::exists(sioFile.name()));
   }
+#else
+  SECTION("SIO not available") {
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withType("sio"), std::runtime_error);
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::SIO), std::runtime_error);
+    REQUIRE_THROWS_AS(podio::makeWriter(filename, "sio"), std::runtime_error);
+    const TemporaryFile sioFile{".sio"};
+    REQUIRE_THROWS_AS(podio::WriterFor{sioFile.name()}.create(), std::runtime_error);
+    REQUIRE_FALSE(std::filesystem::exists(sioFile.name()));
+  }
+#endif
+
+#if PODIO_ENABLE_ARROW && PODIO_ENABLE_PARQUET
+  SECTION("Options not matching the explicit backend") {
+    auto builder =
+        podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::Arrow).withOptions(podio::ROOTWriteOptions{});
+    REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
+    REQUIRE_FALSE(std::filesystem::exists(filename));
+  }
+#else
+  SECTION("Arrow not available") {
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withType("parquet"), std::runtime_error);
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::Arrow), std::runtime_error);
+    const TemporaryFile arrowFile{".podio_parquet"};
+    REQUIRE_THROWS_AS(podio::WriterFor{arrowFile.name()}.create(), std::runtime_error);
+    REQUIRE_FALSE(std::filesystem::exists(arrowFile.name()));
+  }
+#endif
+
+#if !PODIO_ENABLE_RNTUPLE
+  SECTION("RNTuple not available") {
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withType("rntuple"), std::runtime_error);
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple),
+                      std::runtime_error);
+  }
+#endif
 
   SECTION("Backend can only be selected once") {
     auto builder = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::TTree);
@@ -210,6 +239,17 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
     REQUIRE_THROWS_AS(otherBuilder.withBackend(podio::WriterFor::Backend::TTree), std::invalid_argument);
     REQUIRE_THROWS_AS(otherBuilder.withType("rntuple"), std::invalid_argument);
 
+    REQUIRE_FALSE(std::filesystem::exists(filename));
+  }
+
+  SECTION("Options of an unrelated type") {
+    struct NotWriterOptions {
+      int value{0};
+    };
+    auto builder = podio::WriterFor{filename}.withOptions(NotWriterOptions{});
+    REQUIRE_THROWS_AS(builder.create(), std::invalid_argument);
+    REQUIRE_THROWS_AS(podio::WriterFor{filename}.withType("root").withOptions(NotWriterOptions{}).create(),
+                      std::invalid_argument);
     REQUIRE_FALSE(std::filesystem::exists(filename));
   }
 

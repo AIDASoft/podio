@@ -31,8 +31,6 @@ class ArrowWriter {
 public:
   /// Configure the ArrowWriter
   struct Options {
-    using WriterType = ArrowWriter; ///< The writer these options belong to
-
     size_t maxBufferedRows = 1000;
     std::string compression = "";
   };
