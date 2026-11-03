@@ -128,7 +128,7 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.create(), filename) == StorageType::TTree);
     REQUIRE(writeAndGetStorage(podio::makeWriter(filename), filename) == StorageType::TTree);
 
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("default").create(), filename) ==
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("DEFAULT").create(), filename) ==
             StorageType::TTree);
   }
 
@@ -174,7 +174,7 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
     DefaultRNTupleEnv env{false};
     REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create(),
                                filename) == StorageType::RNTuple);
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("rntuple").create(), filename) ==
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("RNTuple").create(), filename) ==
             StorageType::RNTuple);
   }
 #endif

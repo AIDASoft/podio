@@ -41,17 +41,13 @@ namespace {
   }
 
   /// Get the explicitly requested backend (if any) from the type
-  std::optional<Backend> backendFromType(const std::string& type) {
-    auto lower = [](std::string str) {
-      std::ranges::transform(str, str.begin(), [](unsigned char c) { return std::tolower(c); });
-      return str;
-    };
-    const auto lowerType = lower(type);
-    if (lowerType == "default") {
+  std::optional<Backend> backendFromType(std::string type) {
+    std::ranges::transform(type, type.begin(), [](unsigned char c) { return std::tolower(c); });
+    if (type == "default") {
       return std::nullopt;
     }
     for (const auto backend : {Backend::TTree, Backend::RNTuple, Backend::SIO, Backend::Arrow}) {
-      if (lowerType == backendName(backend)) {
+      if (type == backendName(backend)) {
         return backend;
       }
     }
