@@ -79,9 +79,8 @@ the environment variable is set **to a non-empty string**, RNTuples will be the 
 To configure backend specific options, use `WriterFor`. It allows for a more
 flexible selection of the backend as well, which will take precedence over types
 derived from filenames and / or environment variables. If specifying options and
-a type (using `withBackend` or `withType`) they have to match, otherwise an
-exception will be thrown. Only one of `withBackend` and `withType` can be used,
-combining them throws an exception.
+a type (using either `withBackend` or `withType`) they have to match, otherwise
+an exception will be thrown.
 
 ```cpp
 #include <podio/Writer.h>

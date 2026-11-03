@@ -159,20 +159,21 @@ WriterFor& WriterFor::withOptions(const ROOTWriteOptions& options) {
   return *this;
 }
 
-WriterFor& WriterFor::withBackend(Backend backend) {
-  if (m_backendSelection == BackendSelection::ViaType) {
-    throw std::invalid_argument("WriterFor: withBackend() cannot be combined with withType()");
+void WriterFor::ensureNoBackendSelected() const {
+  if (m_backend) {
+    throw std::invalid_argument("WriterFor: backend has already been set to '" + std::string(backendName(*m_backend)) +
+                                "'");
   }
-  m_backendSelection = BackendSelection::ViaBackend;
+}
+
+WriterFor& WriterFor::withBackend(Backend backend) {
+  ensureNoBackendSelected();
   m_backend = backend;
   return *this;
 }
 
 WriterFor& WriterFor::withType(const std::string& type) {
-  if (m_backendSelection == BackendSelection::ViaBackend) {
-    throw std::invalid_argument("WriterFor: withType() cannot be combined with withBackend()");
-  }
-  m_backendSelection = BackendSelection::ViaType;
+  ensureNoBackendSelected();
   m_backend = backendFromType(type);
   return *this;
 }

@@ -190,23 +190,19 @@ public:
 
   /// Explicitly select the backend
   ///
-  /// @note Cannot be combined with withType()
-  ///
   /// @param backend The backend to use
   ///
-  /// @throws std::invalid_argument If withType() has already been used
+  /// @throws std::invalid_argument If a backend has already been selected
   WriterFor& withBackend(Backend backend);
 
   /// Explicitly select the backend via its name
   ///
-  /// @note Cannot be combined with withBackend()
-  ///
   /// @param type One of "default", "root", "rntuple", "sio" or "parquet"
-  ///             (case insensitive). "default" removes any explicitly selected
-  ///             backend and determines it from the options or the filename
+  ///             (case insensitive). "default" does not select a backend, it
+  ///             is determined from the options or the filename instead
   ///
   /// @throws std::runtime_error If the type is not known
-  /// @throws std::invalid_argument If withBackend() has already been used
+  /// @throws std::invalid_argument If a backend has already been selected
   WriterFor& withType(const std::string& type);
 
   /// Set the options for the ROOT based writers (TTree and RNTuple)
@@ -255,14 +251,12 @@ public:
   Writer create() const;
 
 private:
-  std::string m_filename;
-  /// How the backend has been explicitly selected (if at all)
-  enum class BackendSelection { None, ViaBackend, ViaType };
+  /// Throw if a backend has already been explicitly selected
+  void ensureNoBackendSelected() const;
 
+  std::string m_filename;
   /// The explicitly selected backend (if any)
   std::optional<Backend> m_backend{};
-  /// Which of withBackend() or withType() has been used to select the backend
-  BackendSelection m_backendSelection{BackendSelection::None};
   /// The type of the low level writer that the options belong to
   std::optional<std::type_index> m_writerType{};
   /// Create the writer with the configured options

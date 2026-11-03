@@ -122,10 +122,13 @@ TEST_CASE("WriterFor backend selection", "[writer-for]") {
                                filename) == StorageType::TTree);
   }
 
-  SECTION("Default type resets explicit backend") {
+  SECTION("Default type does not select a backend") {
     DefaultRNTupleEnv env{false};
-    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("sio").withType("default").create(), filename) ==
+    REQUIRE(writeAndGetStorage(podio::WriterFor{filename}.withType("default").create(), filename) ==
             StorageType::TTree);
+    REQUIRE(writeAndGetStorage(
+                podio::WriterFor{filename}.withType("default").withBackend(podio::WriterFor::Backend::TTree).create(),
+                filename) == StorageType::TTree);
   }
 
   SECTION("ROOT options follow the default backend") {
@@ -197,14 +200,15 @@ TEST_CASE("WriterFor configuration errors", "[writer-for]") {
     REQUIRE_FALSE(std::filesystem::exists(sioFile.name()));
   }
 
-  SECTION("withBackend and withType cannot be combined") {
+  SECTION("Backend can only be selected once") {
     auto builder = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::TTree);
+    REQUIRE_THROWS_AS(builder.withBackend(podio::WriterFor::Backend::RNTuple), std::invalid_argument);
     REQUIRE_THROWS_AS(builder.withType("root"), std::invalid_argument);
     REQUIRE_THROWS_AS(builder.withType("default"), std::invalid_argument);
 
     auto otherBuilder = podio::WriterFor{filename}.withType("root");
     REQUIRE_THROWS_AS(otherBuilder.withBackend(podio::WriterFor::Backend::TTree), std::invalid_argument);
-    REQUIRE_NOTHROW(otherBuilder.withType("rntuple"));
+    REQUIRE_THROWS_AS(otherBuilder.withType("rntuple"), std::invalid_argument);
 
     REQUIRE_FALSE(std::filesystem::exists(filename));
   }
