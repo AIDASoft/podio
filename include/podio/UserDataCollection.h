@@ -78,10 +78,7 @@ class UserDataCollection : public CollectionBase {
 
 private:
   std::vector<BasicType> _vec{};
-  // Pointer to the actual storage, necessary for I/O. In order to have
-  // simpler move-semantics this will be set and properly initialized on
-  // demand during the call to getBuffers
-  std::vector<BasicType>* _vecPtr{nullptr};
+
   uint32_t m_collectionID{0};
   CollRefCollection m_refCollections{};
   VectorMembersInfo m_vecmem_info{};
@@ -158,8 +155,7 @@ public:
 
   /// Get the collection buffers for this collection
   podio::CollectionWriteBuffers getBuffers() override {
-    _vecPtr = &_vec; // Set the pointer to the correct internal vector
-    return {&_vecPtr, _vecPtr, &m_refCollections, &m_vecmem_info};
+    return {&_vec, &m_refCollections, &m_vecmem_info};
   }
 
   /// check if the collection has a valid ID
