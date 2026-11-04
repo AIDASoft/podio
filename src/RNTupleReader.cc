@@ -238,6 +238,11 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
 
         const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
         for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
+          // Relations that are not stored in this schema version stay empty
+          if (!collBuffers.references->at(j)) {
+            collBuffers.references->at(j) = std::make_unique<std::vector<podio::ObjectID>>();
+            continue;
+          }
           const auto relName = relVecNames.relations[j];
           const auto vec = new std::vector<podio::ObjectID>;
           const auto brName = root_utils::refBranch(coll.name, relName);

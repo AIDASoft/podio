@@ -487,6 +487,9 @@ std::optional<std::map<std::string, SizeStats>> ROOTReader::getSizeStats(std::st
       totalTotBytes += br->GetTotBytes("*");
     }
     for (const auto& br : branches.refs) {
+      if (!br) { // missing for relations that are not stored in this schema version
+        continue;
+      }
       totalZipBytes += br->GetZipBytes("*");
       totalTotBytes += br->GetTotBytes("*");
     }

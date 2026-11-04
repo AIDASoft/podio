@@ -8,6 +8,7 @@ from collections import defaultdict
 from collections.abc import Mapping
 
 from podio_schema_evolution import (
+    AddedMultiRelation,
     DataModelComparator,
     SchemaEvolutionJudge,
     RootIoRule,
@@ -192,6 +193,7 @@ class CPPClassGenerator(ClassGeneratorBaseMixin):
         datatype["old_versions"] = old_versions
         for old_dt in old_versions:
             data_includes.update(self._get_member_includes(old_dt["definition"]["Members"]))
+        datatype["absent_relations"] = self._get_absent_relations(name, datatype)
 
         datatype["includes_data"] = self._sort_includes(data_includes)
         self._preprocess_for_class(datatype)
@@ -719,6 +721,19 @@ have resolvable schema evolution incompatibilities:")
                         )
 
         return old_datamodels
+
+    def _get_absent_relations(self, name, datatype):
+        """Map old schema versions to the indices of the relations that have been
+        added after them, i.e. that are not stored in files of that version"""
+        relations = datatype["OneToManyRelations"] + datatype["OneToOneRelations"]
+        relation_names = [rel.name for rel in relations]
+        absent_relations = defaultdict(list)
+        for change in self.changed_datatypes.get(name, []):
+            if isinstance(change["schema_change"], AddedMultiRelation):
+                absent_relations[change["version"]].append(
+                    relation_names.index(change["schema_change"].member.name)
+                )
+        return dict(absent_relations)
 
     def _invert_interfaces(self):
         """'Invert' the interfaces to have a mapping of types and their usage in

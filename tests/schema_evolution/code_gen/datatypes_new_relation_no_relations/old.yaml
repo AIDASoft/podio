@@ -1,0 +1,13 @@
+options:
+  includeSubfolder: true
+
+schema_version: 1
+
+datatypes:
+  ExampleHit:
+    Description: "A hit"
+    Author: "B. Hegner"
+    Members:
+      - int num // hit number
+    VectorMembers:
+      - int values // some values
