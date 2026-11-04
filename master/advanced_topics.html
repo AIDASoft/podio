@@ -1015,6 +1015,9 @@ RNTuple based
 I/O</a>.</p>
 <p>All evolutions that are not covered by this are currently not supported, unless
 they are listed below in the table for manual evolutions.</p>
+<p>Adding a <code class="docutils literal notranslate"><span class="pre">OneToManyRelation</span></code> to an existing datatype is also supported (ROOT
+backends only): the new relation is empty when reading data written with an
+older schema version.</p>
 <section id="manual-evolutions">
 <h4>Manual evolutions<a class="headerlink" href="#manual-evolutions" title="Link to this heading"></a></h4>
 <p>The following table lists the evolutions that require manual intervention, but
