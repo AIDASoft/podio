@@ -24,7 +24,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Struct podio::ROOTWriter::CategoryInfo" href="structpodio_1_1_r_o_o_t_writer_1_1_category_info.html" />
+    <link rel="next" title="Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier" href="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html" />
     <link rel="prev" title="Struct podio::RNTupleWriter::CategoryInfo" href="structpodio_1_1_r_n_tuple_writer_1_1_category_info.html" /> 
 </head>
 
@@ -520,6 +520,10 @@
 <li class="toctree-l4"><a class="reference internal" href="#_CPPv4N5podio10ROOTReader12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html">Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo::TreeChangeNotifier</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="structpodio_1_1_r_o_o_t_writer_1_1_category_info.html#_CPPv4N5podio10ROOTWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriter::CategoryInfo</span></code></a></li>
 </ul>
@@ -871,9 +875,27 @@
 <dd><p>constructor from chain for more convenient map insertion </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio10ROOTReader12CategoryInfo16branchesOutdatedE6size_t">
+<span id="_CPPv3NK5podio10ROOTReader12CategoryInfo16branchesOutdatedE6size_t"></span><span id="_CPPv2NK5podio10ROOTReader12CategoryInfo16branchesOutdatedE6size_t"></span><span id="podio::ROOTReader::CategoryInfo::branchesOutdated__sC"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1ab0320a4c0530cc018259b9a9f96dd2ca"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">branchesOutdated</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK5podio10ROOTReader12CategoryInfo16branchesOutdatedE6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether the branches at index i have been obtained from a TTree that is no longer loaded and need to be reloaded before they can be used. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo19markBranchesCurrentE6size_t">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo19markBranchesCurrentE6size_t"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo19markBranchesCurrentE6size_t"></span><span id="podio::ROOTReader::CategoryInfo::markBranchesCurrent__s"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1ae71cd970cfb246807cf7e7acf7b8edcd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">markBranchesCurrent</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">i</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo19markBranchesCurrentE6size_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Mark the branches at index i as obtained from the currently loaded TTree. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo12treeNotifierE">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo12treeNotifierE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo12treeNotifierE"></span><span id="podio::ROOTReader::CategoryInfo::treeNotifier__std::unique_ptr:TreeChangeNotifier:"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1a3f39f032147fc29cb13c4062ac26573f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE" title="podio::ROOTReader::CategoryInfo::TreeChangeNotifier"><span class="n"><span class="pre">TreeChangeNotifier</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">treeNotifier</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">make_unique</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE" title="podio::ROOTReader::CategoryInfo::TreeChangeNotifier"><span class="n"><span class="pre">TreeChangeNotifier</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">(</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo12treeNotifierE" title="Link to this definition"></a><br /></dt>
+<dd><p>Needs to outlive the chain, since the chain keeps a pointer to it. </p>
+</dd></dl>
+
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo5chainE">
 <span id="_CPPv3N5podio10ROOTReader12CategoryInfo5chainE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo5chainE"></span><span id="podio::ROOTReader::CategoryInfo::chain__std::unique_ptr:TChain:"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1a098f82348b59b50212b700c7ba5c348e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">TChain</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">chain</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo5chainE" title="Link to this definition"></a><br /></dt>
@@ -899,18 +921,41 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo17branchGenerationsE">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo17branchGenerationsE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo17branchGenerationsE"></span><span id="podio::ROOTReader::CategoryInfo::branchGenerations__std::vector:uint64_t:"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1a7aa4141872c2bd4b72c30b1ed4708e29"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">branchGenerations</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo17branchGenerationsE" title="Link to this definition"></a><br /></dt>
+<dd><p>The notifier generation for which each entry in branches has been obtained. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo5tableE">
 <span id="_CPPv3N5podio10ROOTReader12CategoryInfo5tableE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo5tableE"></span><span id="podio::ROOTReader::CategoryInfo::table__std::shared_ptr:CollectionIDTable:"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1a5875be61bd20bdd40f46f6e97ad3adcd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="../class/classpodio_1_1_collection_i_d_table.html#_CPPv4N5podio17CollectionIDTableE" title="podio::CollectionIDTable"><span class="n"><span class="pre">CollectionIDTable</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">table</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="k"><span class="pre">nullptr</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo5tableE" title="Link to this definition"></a><br /></dt>
 <dd><p>The collection ID table for this category. </p>
 </dd></dl>
 
+</div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"></span><span id="podio::ROOTReader::CategoryInfo::TreeChangeNotifier"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TreeChangeNotifier</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">TObject</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE" title="Link to this definition"></a><br /></dt>
+<dd><p>ROOT calls Notify whenever the TChain loads a new TTree, which invalidates all branch pointers that have been obtained before. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier6NotifyEv">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier6NotifyEv"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier6NotifyEv"></span><span id="podio::ROOTReader::CategoryInfo::TreeChangeNotifier::Notify"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier_1a8dfc2921699c95ca62613fbaad0d1406"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Notify</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier6NotifyEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo10treeNumberE">
-<span id="_CPPv3N5podio10ROOTReader12CategoryInfo10treeNumberE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo10treeNumberE"></span><span id="podio::ROOTReader::CategoryInfo::treeNumber__i"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1a9bf4eaab22c5889b2d507768e690aac1"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">treeNumber</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="o"><span class="pre">-</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo10treeNumberE" title="Link to this definition"></a><br /></dt>
-<dd><p>The tree number in the chain for which the branches have been set up. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier10generationE">
+<span id="_CPPv3N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier10generationE"></span><span id="_CPPv2N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier10generationE"></span><span id="podio::ROOTReader::CategoryInfo::TreeChangeNotifier::generation__uint64_t"></span><span class="target" id="structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier_1ae1854d1002cc166f6a6eff2183bf2a9f"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">generation</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">1</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifier10generationE" title="Link to this definition"></a><br /></dt>
+<dd><p>Incremented every time a new TTree is loaded. </p>
 </dd></dl>
 
 </div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
