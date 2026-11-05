@@ -107,7 +107,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#reading">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#writing">Writing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../reading_writing.html#configuring-writers-with-writerfor">Configuring writers with <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
@@ -465,6 +468,10 @@
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1_writer_for.html">Class podio::WriterFor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE"><code class="docutils literal notranslate"><span class="pre">podio::WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="class/classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
@@ -522,6 +529,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html">Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo::TreeChangeNotifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_r_o_o_t_write_options.html">Struct podio::ROOTWriteOptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="struct/structpodio_1_1_r_o_o_t_write_options.html#_CPPv4N5podio16ROOTWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriteOptions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
@@ -1482,6 +1493,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13RNTupleWriterE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringERK16ROOTWriteOptions"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13RNTupleWriterD0Ev"><code class="docutils literal notranslate"><span class="pre">~RNTupleWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio13RNTupleWriter13RNTupleWriterERK13RNTupleWriter"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter()</span></code></a></li>
@@ -1543,7 +1555,12 @@
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio10ROOTReader22getAvailableCategoriesEv"><code class="docutils literal notranslate"><span class="pre">getAvailableCategories()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio16ROOTWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriteOptions</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio16ROOTWriteOptions19compressionSettingsE"><code class="docutils literal notranslate"><span class="pre">compressionSettings</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ROOTWriterE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions"><code class="docutils literal notranslate"><span class="pre">ROOTWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">ROOTWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ROOTWriterD0Ev"><code class="docutils literal notranslate"><span class="pre">~ROOTWriter()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10ROOTWriter10ROOTWriterERK10ROOTWriter"><code class="docutils literal notranslate"><span class="pre">ROOTWriter()</span></code></a></li>
@@ -1803,6 +1820,21 @@
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio6Writer6finishEv"><code class="docutils literal notranslate"><span class="pre">finish()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterForE"><code class="docutils literal notranslate"><span class="pre">podio::WriterFor</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor7BackendE"><code class="docutils literal notranslate"><span class="pre">Backend</span></code></a><ul>
+<li class="toctree-l5"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor7Backend5TTreeE"><code class="docutils literal notranslate"><span class="pre">TTree</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor7Backend7RNTupleE"><code class="docutils literal notranslate"><span class="pre">RNTuple</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor7Backend3SIOE"><code class="docutils literal notranslate"><span class="pre">SIO</span></code></a></li>
+<li class="toctree-l5"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor7Backend5ArrowE"><code class="docutils literal notranslate"><span class="pre">Arrow</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor9WriterForENSt6stringE"><code class="docutils literal notranslate"><span class="pre">WriterFor()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor11withBackendE7Backend"><code class="docutils literal notranslate"><span class="pre">withBackend()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio9WriterFor8withTypeERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">withType()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4I_NSt18copy_constructibleEEN5podio9WriterFor11withOptionsER9WriterForRK8OptionsT"><code class="docutils literal notranslate"><span class="pre">withOptions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4NK5podio9WriterFor6createEv"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11arrow_utilsE"><code class="docutils literal notranslate"><span class="pre">podio::arrow_utils</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11arrow_utils11checkStatusERKN5arrow6StatusERKNSt6stringE"><code class="docutils literal notranslate"><span class="pre">checkStatus()</span></code></a></li>
 </ul>
@@ -1829,6 +1861,7 @@
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11root_compat6REntryE"><code class="docutils literal notranslate"><span class="pre">REntry</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11root_compat12RNTupleModelE"><code class="docutils literal notranslate"><span class="pre">RNTupleModel</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11root_compat13RNTupleWriterE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio11root_compat19RNTupleWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriteOptions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio.html#_CPPv4N5podio10root_utilsE"><code class="docutils literal notranslate"><span class="pre">podio::root_utils</span></code></a><ul>
@@ -1989,6 +2022,7 @@
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio_1_1root__compat.html#_CPPv4N5podio11root_compat6REntryE"><code class="docutils literal notranslate"><span class="pre">REntry</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio_1_1root__compat.html#_CPPv4N5podio11root_compat12RNTupleModelE"><code class="docutils literal notranslate"><span class="pre">RNTupleModel</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio_1_1root__compat.html#_CPPv4N5podio11root_compat13RNTupleWriterE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriter</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="namespace/namespacepodio_1_1root__compat.html#_CPPv4N5podio11root_compat19RNTupleWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">RNTupleWriteOptions</span></code></a></li>
 </ul>
 </li>
 </ul>

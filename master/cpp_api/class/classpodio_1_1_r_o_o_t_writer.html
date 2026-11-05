@@ -107,7 +107,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#reading">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#writing">Writing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reading_writing.html#configuring-writers-with-writerfor">Configuring writers with <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
@@ -465,6 +468,10 @@
 <li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="classpodio_1_1_writer_for.html">Class podio::WriterFor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE"><code class="docutils literal notranslate"><span class="pre">podio::WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
@@ -522,6 +529,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html">Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo::TreeChangeNotifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_write_options.html">Struct podio::ROOTWriteOptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_write_options.html#_CPPv4N5podio16ROOTWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriteOptions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
@@ -871,9 +882,27 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions">
+<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR.ROOTWriteOptionsCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a980fa9dcc1f96eec6314d331e5f418be"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv4N5podio16ROOTWriteOptionsE" title="podio::ROOTWriteOptions"><span class="n"><span class="pre">ROOTWriteOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions" title="Link to this definition"></a><br /></dt>
+<dd><p>Create a ROOTWriter to write to a file with custom options. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The path to the file that will be created. </p></li>
+<li><p><strong>options</strong> – Configuration options (compression etc.). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE">
-<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1acb04b1b78b2465b07a5c3b51a13c8fd1"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Create a ROOTWriter to write to a file. </p>
+<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1acb04b1b78b2465b07a5c3b51a13c8fd1"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Create a ROOTWriter to write to a file with default options. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Existing files will be overwritten without warning.</p>

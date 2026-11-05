@@ -107,7 +107,10 @@
 <li class="toctree-l1"><a class="reference internal" href="../../reading_writing.html">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../reading_writing.html#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#reading">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#writing">Writing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../../reading_writing.html#configuring-writers-with-writerfor">Configuring writers with <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../../reading_writing.html#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
@@ -465,6 +468,10 @@
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1_writer_for.html">Class podio::WriterFor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE"><code class="docutils literal notranslate"><span class="pre">podio::WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../class/classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
@@ -522,6 +529,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html">Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo::TreeChangeNotifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_write_options.html">Struct podio::ROOTWriteOptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_write_options.html#_CPPv4N5podio16ROOTWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriteOptions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
@@ -1192,16 +1203,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE">
 <span id="_CPPv3N5podio10makeWriterERKNSt6stringERKNSt6stringE"></span><span id="_CPPv2N5podio10makeWriterERKNSt6stringERKNSt6stringE"></span><span id="podio::makeWriter__ssCR.ssCR"></span><span class="target" id="namespacepodio_1adf04ad40573c44070c745104224ff3ef"></span><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE" title="podio::Writer"><span class="n"><span class="pre">Writer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">makeWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">type</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;default&quot;</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N5podio10makeWriterERKNSt6stringERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd><p>Create a Writer that is able to write files for the desired backend. </p>
-<p>Will look at the desired filename as well as the type argument to decide on the backend.</p>
+<p>Will look at the desired filename as well as the type argument to decide on the backend. Equivalent to <code class="docutils literal notranslate"><span class="pre">WriterFor{filename}.withType(type).create()</span></code>, see WriterFor for more details.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filename</strong> – The filename of the output file that will be created. </p></li>
-<li><p><strong>type</strong> – The (optional) type argument to switch between RNTuple and TTree based backend in case the suffix is “.root”. Will be ignored in case the suffix is “.sio”</p></li>
+<li><p><strong>type</strong> – The (optional) type argument to explicitly select a backend; see WriterFor::withType()</p></li>
 </ul>
 </dd>
 <dt class="field-even">Throws<span class="colon">:</span></dt>
-<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – In case the suffix can not be associated to an I/O backend or if support for the desired I/O backend has not been built </p>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – In case the suffix or the type can not be associated to an I/O backend or if support for the desired I/O backend has not been built </p>
 </dd>
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p>A fully initialized Writer for the I/O backend that has been determined</p>
@@ -4997,9 +5008,27 @@ Does not invalidate iterators. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringERK16ROOTWriteOptions">
+<span id="_CPPv3N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="_CPPv2N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="podio::RNTupleWriter::RNTupleWriter__ssCR.ROOTWriteOptionsCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a008927772fb2d84f0ccb4116ccc1af60"></span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio16ROOTWriteOptionsE" title="podio::ROOTWriteOptions"><span class="n"><span class="pre">ROOTWriteOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a RNTupleWriter to write to a file with custom options. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The path to the file that will be created. </p></li>
+<li><p><strong>options</strong> – Configuration options (compression etc.). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE">
-<span id="_CPPv3N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="_CPPv2N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="podio::RNTupleWriter::RNTupleWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a387b4f5fd2e5ce4478dcae5f9879bceb"></span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Create a RNTupleWriter to write to a file. </p>
+<span id="_CPPv3N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="_CPPv2N5podio13RNTupleWriter13RNTupleWriterERKNSt6stringE"></span><span id="podio::RNTupleWriter::RNTupleWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_n_tuple_writer_1a387b4f5fd2e5ce4478dcae5f9879bceb"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a RNTupleWriter to write to a file with default options. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Existing files will be overwritten without warning.</p>
@@ -5524,6 +5553,25 @@ Does not invalidate iterators. </p>
 </div>
 </dd></dl>
 
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16ROOTWriteOptionsE">
+<span id="_CPPv3N5podio16ROOTWriteOptionsE"></span><span id="_CPPv2N5podio16ROOTWriteOptionsE"></span><span id="podio::ROOTWriteOptions"></span><span class="target" id="structpodio_1_1_r_o_o_t_write_options"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriteOptions</span></span></span><a class="headerlink" href="#_CPPv4N5podio16ROOTWriteOptionsE" title="Link to this definition"></a><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/ROOTWriteOptions.h&gt;</em></div>
+<p>Common configuration options for the ROOT based writers, i.e. </p>
+<p>the ROOTWriter (TTree based) and the RNTupleWriter. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio16ROOTWriteOptions19compressionSettingsE">
+<span id="_CPPv3N5podio16ROOTWriteOptions19compressionSettingsE"></span><span id="_CPPv2N5podio16ROOTWriteOptions19compressionSettingsE"></span><span id="podio::ROOTWriteOptions::compressionSettings__std::optional:i:"></span><span class="target" id="structpodio_1_1_r_o_o_t_write_options_1ad5a0c6ead13460341a88e23dae1680a0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">compressionSettings</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="p"><span class="pre">}</span></span><a class="headerlink" href="#_CPPv4N5podio16ROOTWriteOptions19compressionSettingsE" title="Link to this definition"></a><br /></dt>
+<dd><p>ROOT compression setting: algorithm*100+level (0 disables compression). </p>
+<p>Use ROOT::RCompressionSetting::EDefaults values, e.g.: kUseGeneralPurpose=505 (ZSTD-5), kUseAnalysis=404 (LZ4-4), kUseSmallest=207 (LZMA-7). If unset, the default of the respective writer is used. </p>
+</dd></dl>
+
+</div>
+</dd></dl>
+
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriterE">
 <span id="_CPPv3N5podio10ROOTWriterE"></span><span id="_CPPv2N5podio10ROOTWriterE"></span><span id="podio::ROOTWriter"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><br /></dt>
@@ -5535,9 +5583,27 @@ Does not invalidate iterators. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions">
+<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringERK16ROOTWriteOptions"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR.ROOTWriteOptionsCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1a980fa9dcc1f96eec6314d331e5f418be"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N5podio16ROOTWriteOptionsE" title="podio::ROOTWriteOptions"><span class="n"><span class="pre">ROOTWriteOptions</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a ROOTWriter to write to a file with custom options. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Existing files will be overwritten without warning.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The path to the file that will be created. </p></li>
+<li><p><strong>options</strong> – Configuration options (compression etc.). </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio10ROOTWriter10ROOTWriterERKNSt6stringE">
-<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1acb04b1b78b2465b07a5c3b51a13c8fd1"></span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
-<dd><p>Create a ROOTWriter to write to a file. </p>
+<span id="_CPPv3N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="_CPPv2N5podio10ROOTWriter10ROOTWriterERKNSt6stringE"></span><span id="podio::ROOTWriter::ROOTWriter__ssCR"></span><span class="target" id="classpodio_1_1_r_o_o_t_writer_1acb04b1b78b2465b07a5c3b51a13c8fd1"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROOTWriter</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Create a ROOTWriter to write to a file with default options. </p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Existing files will be overwritten without warning.</p>
@@ -7081,7 +7147,7 @@ Does not invalidate iterators. </p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The recommended way to construct is to use the makeWriter() function since that handles the instantiation of the correct low level writers </p>
+<p>The recommended way to construct is to use WriterFor or the makeWriter() function since they handle the instantiation of the correct low level writers </p>
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -7192,6 +7258,151 @@ Does not invalidate iterators. </p>
 <p class="admonition-title">Note</p>
 <p>The destructor will also call this, so letting a Writer go out of scope is also a viable way to write a readable file </p>
 </div>
+</dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterForE">
+<span id="_CPPv3N5podio9WriterForE"></span><span id="_CPPv2N5podio9WriterForE"></span><span id="podio::WriterFor"></span><span class="target" id="classpodio_1_1_writer_for"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriterFor</span></span></span><br /></dt>
+<dd><div class="docutils container">
+<em>#include &lt;podio/Writer.h&gt;</em></div>
+<p>Builder for a Writer that allows to configure the backend and its options. </p>
+<p>The backend is determined when create() is called, in the following order<ul class="simple">
+<li><p>An explicitly selected backend (via either withBackend() or withType()) is used.</p></li>
+<li><p>The extension of the filename selects the backend. For “.root” files the PODIO_DEFAULT_WRITE_RNTUPLE environment variable switches from TTree to RNTuple, if it is set to a non-empty value.</p></li>
+</ul>
+</p>
+<p>Options passed via withOptions() have to be usable with the backend that has been determined as described above.</p>
+<p>All configuration errors are detected before any file is created.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Writer.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ROOTWriteOptions.h&gt;</span>
+
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="s">&quot;output.root&quot;</span><span class="p">}.</span><span class="n">withBackend</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="o">::</span><span class="n">Backend</span><span class="o">::</span><span class="n">RNTuple</span><span class="p">).</span><span class="n">create</span><span class="p">();</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="s">&quot;output.root&quot;</span><span class="p">}.</span><span class="n">withType</span><span class="p">(</span><span class="s">&quot;rntuple&quot;</span><span class="p">).</span><span class="n">create</span><span class="p">();</span>
+<span class="c1">// TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="s">&quot;output.root&quot;</span><span class="p">}</span>
+<span class="w">                  </span><span class="p">.</span><span class="n">withOptions</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriteOptions</span><span class="p">{.</span><span class="n">compressionSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">505</span><span class="p">})</span>
+<span class="w">                  </span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
+<span class="c1">// Always RNTuple</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="s">&quot;output.root&quot;</span><span class="p">}</span>
+<span class="w">                  </span><span class="p">.</span><span class="n">withBackend</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="o">::</span><span class="n">Backend</span><span class="o">::</span><span class="n">RNTuple</span><span class="p">)</span>
+<span class="w">                  </span><span class="p">.</span><span class="n">withOptions</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriteOptions</span><span class="p">{.</span><span class="n">compressionSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">505</span><span class="p">})</span>
+<span class="w">                  </span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
+</pre></div>
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp enum-class">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor7BackendE">
+<span id="_CPPv3N5podio9WriterFor7BackendE"></span><span id="_CPPv2N5podio9WriterFor7BackendE"></span><span class="target" id="classpodio_1_1_writer_for_1a1cb08fb856f2429981794b81a5561f65"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Backend</span></span></span><br /></dt>
+<dd><p>The I/O backends that can be explicitly selected. </p>
+<p><em>Values:</em></p>
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor7Backend5TTreeE">
+<span id="_CPPv3N5podio9WriterFor7Backend5TTreeE"></span><span id="_CPPv2N5podio9WriterFor7Backend5TTreeE"></span><span class="target" id="classpodio_1_1_writer_for_1a1cb08fb856f2429981794b81a5561f65a09ebd86f74accbd1017dd46b0c5c9716"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TTree</span></span></span><br /></dt>
+<dd><p>TTree based ROOT files (ROOTWriter). </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor7Backend7RNTupleE">
+<span id="_CPPv3N5podio9WriterFor7Backend7RNTupleE"></span><span id="_CPPv2N5podio9WriterFor7Backend7RNTupleE"></span><span class="target" id="classpodio_1_1_writer_for_1a1cb08fb856f2429981794b81a5561f65a1467ed8c5c55cfc6840bd40e2a31983d"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTuple</span></span></span><br /></dt>
+<dd><p>RNTuple based ROOT files (RNTupleWriter). </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor7Backend3SIOE">
+<span id="_CPPv3N5podio9WriterFor7Backend3SIOE"></span><span id="_CPPv2N5podio9WriterFor7Backend3SIOE"></span><span class="target" id="classpodio_1_1_writer_for_1a1cb08fb856f2429981794b81a5561f65ab2a303bb948b58961895b9797ee116c8"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SIO</span></span></span><br /></dt>
+<dd><p>SIO files (SIOWriter). </p>
+</dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor7Backend5ArrowE">
+<span id="_CPPv3N5podio9WriterFor7Backend5ArrowE"></span><span id="_CPPv2N5podio9WriterFor7Backend5ArrowE"></span><span class="target" id="classpodio_1_1_writer_for_1a1cb08fb856f2429981794b81a5561f65a0f4e1aaabd074689b7d3ead824d1ee8e"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Arrow</span></span></span><br /></dt>
+<dd><p>Arrow / Parquet directories (ArrowWriter). </p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor9WriterForENSt6stringE">
+<span id="_CPPv3N5podio9WriterFor9WriterForENSt6stringE"></span><span id="_CPPv2N5podio9WriterFor9WriterForENSt6stringE"></span><span id="podio::WriterFor::WriterFor__ss"></span><span class="target" id="classpodio_1_1_writer_for_1a590305129f18fc14f917127fedc8ba5b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriterFor</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">filename</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Start configuring a Writer for the given file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> – The filename of the output file that will be created </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor11withBackendE7Backend">
+<span id="_CPPv3N5podio9WriterFor11withBackendE7Backend"></span><span id="_CPPv2N5podio9WriterFor11withBackendE7Backend"></span><span id="podio::WriterFor::withBackend__Backend"></span><span class="target" id="classpodio_1_1_writer_for_1abe4f31f9afb36d9bf704bce9b8861898"></span><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE" title="podio::WriterFor"><span class="n"><span class="pre">WriterFor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">withBackend</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterFor7BackendE" title="podio::WriterFor::Backend"><span class="n"><span class="pre">Backend</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">backend</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Explicitly select the backend. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>backend</strong> – The backend to use</p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If a backend has already been selected </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – If support for the backend has not been built </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio9WriterFor8withTypeERKNSt6stringE">
+<span id="_CPPv3N5podio9WriterFor8withTypeERKNSt6stringE"></span><span id="_CPPv2N5podio9WriterFor8withTypeERKNSt6stringE"></span><span id="podio::WriterFor::withType__ssCR"></span><span class="target" id="classpodio_1_1_writer_for_1a6185a7a7b75801e917029de02105c3c3"></span><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE" title="podio::WriterFor"><span class="n"><span class="pre">WriterFor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">withType</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">type</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Explicitly select the backend via its name. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>type</strong> – One of “default”, “root”, “rntuple”, “sio” or “parquet” (case insensitive). “default” does not select a backend, it is determined from the filename instead</p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – If the type is not known or if support for the backend has not been built </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If a backend has already been selected </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I_NSt18copy_constructibleEEN5podio9WriterFor11withOptionsER9WriterForRK8OptionsT">
+<span id="_CPPv3I_NSt18copy_constructibleEEN5podio9WriterFor11withOptionsERK8OptionsT"></span><span id="_CPPv2I_NSt18copy_constructibleEEN5podio9WriterFor11withOptionsERK8OptionsT"></span><span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">copy_constructible</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OptionsT</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classpodio_1_1_writer_for_1a2279d5c9312249256d131293fcd74680"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE" title="podio::WriterFor"><span class="n"><span class="pre">WriterFor</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">withOptions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="../class/classpodio_1_1_writer_for.html#_CPPv4I_NSt18copy_constructibleEEN5podio9WriterFor11withOptionsER9WriterForRK8OptionsT" title="podio::WriterFor::withOptions::OptionsT"><span class="n"><span class="pre">OptionsT</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">options</span></span><span class="sig-paren">)</span><br /></dt>
+<dd><p>Set the options of a specific low level writer. </p>
+<p>The options are only checked against the backend that has been determined when create() is called.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Template Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>OptionsT</strong> – The options of a low level writer, e.g. ROOTWriteOptions or ArrowWriter::Options </p>
+</dd>
+<dt class="field-even">Parameters<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>options</strong> – The backend specific options </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK5podio9WriterFor6createEv">
+<span id="_CPPv3NK5podio9WriterFor6createEv"></span><span id="_CPPv2NK5podio9WriterFor6createEv"></span><span id="podio::WriterFor::createC"></span><span class="target" id="classpodio_1_1_writer_for_1ab8237cf4b103b7e18d251863459f63f9"></span><a class="reference internal" href="../class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE" title="podio::Writer"><span class="n"><span class="pre">Writer</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">create</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><br /></dt>
+<dd><p>Create the Writer. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If the options can not be used with the selected backend </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">runtime_error</span></span></span> – If the filename can not be associated to an I/O backend or if support for the desired I/O backend has not been built </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A fully initialized Writer for the I/O backend that has been determined</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -7309,6 +7520,11 @@ Does not invalidate iterators. </p>
 <dl class="cpp type">
 <dt class="sig sig-object cpp" id="_CPPv4N5podio11root_compat13RNTupleWriterE">
 <span id="_CPPv3N5podio11root_compat13RNTupleWriterE"></span><span id="_CPPv2N5podio11root_compat13RNTupleWriterE"></span><span class="target" id="namespacepodio_1_1root__compat_1afb18466638b1887177be99c258aebfad"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriter</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_r_o_o_t.html#_CPPv44ROOT" title="ROOT"><span class="n"><span class="pre">ROOT</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RNTupleWriter</span></span><a class="headerlink" href="#_CPPv4N5podio11root_compat13RNTupleWriterE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N5podio11root_compat19RNTupleWriteOptionsE">
+<span id="_CPPv3N5podio11root_compat19RNTupleWriteOptionsE"></span><span id="_CPPv2N5podio11root_compat19RNTupleWriteOptionsE"></span><span class="target" id="namespacepodio_1_1root__compat_1a8383ecbdd2aceff75b8dc32749691886"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleWriteOptions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><a class="reference internal" href="namespace_r_o_o_t.html#_CPPv44ROOT" title="ROOT"><span class="n"><span class="pre">ROOT</span></span></a><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">RNTupleWriteOptions</span></span><a class="headerlink" href="#_CPPv4N5podio11root_compat19RNTupleWriteOptionsE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

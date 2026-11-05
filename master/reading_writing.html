@@ -107,7 +107,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Reading and writing podio files</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#c">C++</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#reading">Reading</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#writing">Writing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing">Writing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#configuring-writers-with-writerfor">Configuring writers with <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#arrow-parquet-i-o">Arrow/Parquet I/O</a></li>
 </ul>
 </li>
@@ -465,6 +468,10 @@
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_writer.html#_CPPv4N5podio6WriterE"><code class="docutils literal notranslate"><span class="pre">podio::Writer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1_writer_for.html">Class podio::WriterFor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1_writer_for.html#_CPPv4N5podio9WriterForE"><code class="docutils literal notranslate"><span class="pre">podio::WriterFor</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html">Class podio::utilities::BackendLibraryLoader</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/class/classpodio_1_1utilities_1_1_backend_library_loader.html#_CPPv4N5podio9utilities20BackendLibraryLoaderE"><code class="docutils literal notranslate"><span class="pre">podio::utilities::BackendLibraryLoader</span></code></a></li>
 </ul>
@@ -522,6 +529,10 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html">Struct podio::ROOTReader::CategoryInfo::TreeChangeNotifier</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_o_o_t_reader_1_1_category_info_1_1_tree_change_notifier.html#_CPPv4N5podio10ROOTReader12CategoryInfo18TreeChangeNotifierE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTReader::CategoryInfo::TreeChangeNotifier</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_o_o_t_write_options.html">Struct podio::ROOTWriteOptions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_o_o_t_write_options.html#_CPPv4N5podio16ROOTWriteOptionsE"><code class="docutils literal notranslate"><span class="pre">podio::ROOTWriteOptions</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="cpp_api/struct/structpodio_1_1_r_o_o_t_writer_1_1_category_info.html">Struct podio::ROOTWriter::CategoryInfo</a><ul>
@@ -908,8 +919,11 @@ the type:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">ttreeWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;root&quot;</span><span class="p">);</span><span class="w">         </span><span class="c1">// Use TTree</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">rntupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;rntuple&quot;</span><span class="p">);</span><span class="w">    </span><span class="c1">// Use RNTuple</span>
 <span class="k">auto</span><span class="w"> </span><span class="n">parquetWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;parquet&quot;</span><span class="p">);</span><span class="w">    </span><span class="c1">// Use Arrow/Parquet</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">sioWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">makeWriter</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;sio&quot;</span><span class="p">);</span><span class="w">            </span><span class="c1">// Use SIO</span>
 </pre></div>
 </div>
+<p>An explicitly provided type takes precedence over the file extension. Unknown
+types result in an exception.</p>
 <p>The format can also be set by the environment variable <code class="docutils literal notranslate"><span class="pre">PODIO_DEFAULT_WRITE_RNTUPLE</span></code>. If
 the environment variable is set <strong>to a non-empty string</strong>, RNTuples will be the default.</p>
 <p><strong>File extensions:</strong></p>
@@ -920,6 +934,28 @@ is set to a non-empty string), unless specified.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.podio_parquet</span></code>: Uses the Arrow/Parquet writer.</p></li>
 <li><p>Other extensions are not allowed.</p></li>
 </ul>
+<section id="configuring-writers-with-writerfor">
+<h4>Configuring writers with <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code><a class="headerlink" href="#configuring-writers-with-writerfor" title="Link to this heading"></a></h4>
+<p>To configure backend specific options, use <code class="docutils literal notranslate"><span class="pre">WriterFor</span></code>. It allows for a more
+flexible selection of the backend as well, which will take precedence over types
+derived from filenames and / or environment variables. If specifying options and
+a type (using either <code class="docutils literal notranslate"><span class="pre">withBackend</span></code> or <code class="docutils literal notranslate"><span class="pre">withType</span></code>) they have to match, otherwise
+an exception will be thrown.</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/Writer.h&gt;</span>
+
+<span class="c1">// Explicitly select the RNTuple backend</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">rntupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="n">filename</span><span class="p">}.</span><span class="n">withBackend</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="o">::</span><span class="n">Backend</span><span class="o">::</span><span class="n">RNTuple</span><span class="p">).</span><span class="n">create</span><span class="p">();</span>
+<span class="c1">// Equivalent, selecting via name, as with podio::makeWriter(filename, &quot;rntuple&quot;)</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">sameWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="n">filename</span><span class="p">}.</span><span class="n">withType</span><span class="p">(</span><span class="s">&quot;rntuple&quot;</span><span class="p">).</span><span class="n">create</span><span class="p">();</span>
+<span class="c1">// Configure compression, TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">configuredWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="n">filename</span><span class="p">}.</span><span class="n">withOptions</span><span class="p">({.</span><span class="n">compressionSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">505</span><span class="p">}).</span><span class="n">create</span><span class="p">();</span>
+<span class="c1">// Configure compression and always use RNTuple</span>
+<span class="k">auto</span><span class="w"> </span><span class="n">configuredRNTupleWriter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="p">{</span><span class="n">filename</span><span class="p">}</span>
+<span class="w">                                   </span><span class="p">.</span><span class="n">withBackend</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">WriterFor</span><span class="o">::</span><span class="n">Backend</span><span class="o">::</span><span class="n">RNTuple</span><span class="p">)</span>
+<span class="w">                                   </span><span class="p">.</span><span class="n">withOptions</span><span class="p">(</span><span class="n">podio</span><span class="o">::</span><span class="n">ROOTWriteOptions</span><span class="p">{.</span><span class="n">compressionSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">505</span><span class="p">})</span>
+<span class="w">                                   </span><span class="p">.</span><span class="n">create</span><span class="p">();</span>
+</pre></div>
+</div>
 <p>Specific writers for each backend are also available:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/ROOTWriter.h&gt;</span><span class="c1">     // For TTree output</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;podio/RNTupleWriter.h&gt;</span><span class="c1">  // For RNTuple output</span>
@@ -930,6 +966,8 @@ is set to a non-empty string), unless specified.</p></li>
 <span class="n">podio</span><span class="o">::</span><span class="n">ArrowWriter</span><span class="w"> </span><span class="nf">parquetWriter</span><span class="p">(</span><span class="n">directoryName</span><span class="p">);</span><span class="w"> </span><span class="c1">// For Arrow/Parquet output</span>
 </pre></div>
 </div>
+<p>These also offer a constructor that takes writer specific options.</p>
+</section>
 </section>
 <section id="arrow-parquet-i-o">
 <h3>Arrow/Parquet I/O<a class="headerlink" href="#arrow-parquet-i-o" title="Link to this heading"></a></h3>
