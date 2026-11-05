@@ -123,7 +123,6 @@ using ReaderT = podio::ROOTReader;
     reader.openFile(FILENAME);                                                                                         \
     auto event = podio::Frame(reader.readEntry(podio::Category::Event, 0));                                            \
     {__VA_ARGS__};                                                                                                     \
-    return 0;                                                                                                          \
     }                                                                                                                  \
     }
 
