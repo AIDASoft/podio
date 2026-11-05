@@ -3,8 +3,12 @@
 
 #include "podio/Frame.h"
 #include "podio/FrameCategories.h"
+#include "podio/ROOTWriteOptions.h"
 
+#include <any>
+#include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -23,8 +27,9 @@ namespace podio {
 /// of the wrapped writers will still apply, e.g. if used for writing ROOT files
 /// frames of a given category will have to have the same contents.
 ///
-/// @note The recommended way to construct is to use the makeWriter() function
-/// since that handles the instantiation of the correct low level writers
+/// @note The recommended way to construct is to use WriterFor or the
+/// makeWriter() function since they handle the instantiation of the correct low
+/// level writers
 class Writer {
 private:
   struct WriterConcept {
@@ -130,21 +135,125 @@ public:
   }
 };
 
+/// Builder for a Writer that allows to configure the backend and its options.
+///
+/// The backend is determined when create() is called, in the following order
+/// - An explicitly selected backend (via either withBackend() or withType()) is
+///   used.
+/// - The extension of the filename selects the backend. For ".root" files the
+///   PODIO_DEFAULT_WRITE_RNTUPLE environment variable switches from TTree to
+///   RNTuple, if it is set to a non-empty value.
+///
+/// Options passed via withOptions() have to be usable with the backend that has
+/// been determined as described above.
+///
+/// All configuration errors are detected before any file is created.
+///
+/// @code{.cpp}
+/// #include <podio/Writer.h>
+/// #include <podio/ROOTWriteOptions.h>
+///
+/// auto writer = podio::WriterFor{"output.root"}.withBackend(podio::WriterFor::Backend::RNTuple).create();
+/// auto writer = podio::WriterFor{"output.root"}.withType("rntuple").create();
+/// // TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE
+/// auto writer = podio::WriterFor{"output.root"}
+///                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
+///                   .create();
+/// // Always RNTuple
+/// auto writer = podio::WriterFor{"output.root"}
+///                   .withBackend(podio::WriterFor::Backend::RNTuple)
+///                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
+///                   .create();
+/// @endcode
+class WriterFor {
+public:
+  /// The I/O backends that can be explicitly selected
+  enum class Backend {
+    TTree,   ///< TTree based ROOT files (ROOTWriter)
+    RNTuple, ///< RNTuple based ROOT files (RNTupleWriter)
+    SIO,     ///< SIO files (SIOWriter)
+    Arrow,   ///< Arrow / Parquet directories (ArrowWriter)
+  };
+
+  /// Start configuring a Writer for the given file
+  ///
+  /// @param filename The filename of the output file that will be created
+  explicit WriterFor(std::string filename) : m_filename(std::move(filename)) {
+  }
+
+  /// Explicitly select the backend
+  ///
+  /// @param backend The backend to use
+  ///
+  /// @throws std::invalid_argument If a backend has already been selected
+  /// @throws std::runtime_error If support for the backend has not been built
+  WriterFor& withBackend(Backend backend);
+
+  /// Explicitly select the backend via its name
+  ///
+  /// @param type One of "default", "root", "rntuple", "sio" or "parquet"
+  ///             (case insensitive). "default" does not select a backend, it
+  ///             is determined from the filename instead
+  ///
+  /// @throws std::runtime_error If the type is not known or if support for
+  ///         the backend has not been built
+  /// @throws std::invalid_argument If a backend has already been selected
+  WriterFor& withType(const std::string& type);
+
+  /// Set the options of a specific low level writer
+  ///
+  /// The options are only checked against the backend that has been determined
+  /// when create() is called.
+  ///
+  /// @tparam OptionsT The options of a low level writer, e.g.
+  ///                  ROOTWriteOptions or ArrowWriter::Options
+  /// @param options   The backend specific options
+  template <std::copy_constructible OptionsT>
+  WriterFor& withOptions(const OptionsT& options) {
+    m_options = options;
+    return *this;
+  }
+
+  /// Create the Writer
+  ///
+  /// @returns A fully initialized Writer for the I/O backend that has been
+  ///          determined
+  ///
+  /// @throws std::invalid_argument If the options can not be used with the
+  ///         selected backend
+  /// @throws std::runtime_error If the filename can not be associated to an I/O
+  ///         backend or if support for the desired I/O backend has not been
+  ///         built
+  Writer create() const;
+
+private:
+  /// Throw if a backend has already been explicitly selected
+  void ensureNoBackendSelected() const;
+
+  std::string m_filename;
+  /// The explicitly selected backend (if any)
+  std::optional<Backend> m_backend{};
+  /// The options for the low level writer (if any). These are only resolved
+  /// in create() once the backend is known
+  std::any m_options{};
+};
+
 /// Create a Writer that is able to write files for the desired backend
 ///
 /// Will look at the desired filename as well as the type argument to decide on
-/// the backend.
+/// the backend. Equivalent to `WriterFor{filename}.withType(type).create()`, see
+/// WriterFor for more details.
 ///
 /// @param filename The filename of the output file that will be created.
-/// @param type     The (optional) type argument to switch between RNTuple and TTree
-///                 based backend in case the suffix is ".root". Will be ignored
-///                 in case the suffix is ".sio"
+/// @param type     The (optional) type argument to explicitly select a
+///                 backend; see WriterFor::withType()
 ///
 /// @returns A fully initialized Writer for the I/O backend that has been
 ///         determined
 ///
-/// @throws std::runtime_error In case the suffix can not be associated to an
-///         I/O backend or if support for the desired I/O backend has not been built
+/// @throws std::runtime_error In case the suffix or the type can not be
+///         associated to an I/O backend or if support for the desired I/O
+///         backend has not been built
 Writer makeWriter(const std::string& filename, const std::string& type = "default");
 
 } // namespace podio

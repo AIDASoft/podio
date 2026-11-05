@@ -6,6 +6,7 @@
 
 #include "TFile.h"
 
+#include "podio/ROOTWriteOptions.h"
 #include "podio/utilities/StringKeyMap.h"
 
 #include <string>
@@ -29,12 +30,20 @@ class GenericParameters;
 /// Files written with the ROOTWriter can be read with the ROOTReader.
 class ROOTWriter {
 public:
-  /// Create a ROOTWriter to write to a file.
+  /// Create a ROOTWriter to write to a file with custom options.
   ///
   /// @note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
-  ROOTWriter(const std::string& filename);
+  /// @param options  Configuration options (compression etc.).
+  ROOTWriter(const std::string& filename, const ROOTWriteOptions& options);
+
+  /// Create a ROOTWriter to write to a file with default options.
+  ///
+  /// @note Existing files will be overwritten without warning.
+  ///
+  /// @param filename The path to the file that will be created.
+  explicit ROOTWriter(const std::string& filename);
 
   /// ROOTWriter destructor
   ///

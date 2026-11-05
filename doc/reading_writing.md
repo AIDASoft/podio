@@ -58,7 +58,11 @@ the type:
 auto ttreeWriter = podio::makeWriter(filename, "root");         // Use TTree
 auto rntupleWriter = podio::makeWriter(filename, "rntuple");    // Use RNTuple
 auto parquetWriter = podio::makeWriter(filename, "parquet");    // Use Arrow/Parquet
+auto sioWriter = podio::makeWriter(filename, "sio");            // Use SIO
 ```
+
+An explicitly provided type takes precedence over the file extension. Unknown
+types result in an exception.
 
 The format can also be set by the environment variable `PODIO_DEFAULT_WRITE_RNTUPLE`. If
 the environment variable is set **to a non-empty string**, RNTuples will be the default.
@@ -69,6 +73,30 @@ the environment variable is set **to a non-empty string**, RNTuples will be the 
 - `.sio`: Uses the SIO writer.
 - `.podio_parquet`: Uses the Arrow/Parquet writer.
 - Other extensions are not allowed.
+
+#### Configuring writers with `WriterFor`
+
+To configure backend specific options, use `WriterFor`. It allows for a more
+flexible selection of the backend as well, which will take precedence over types
+derived from filenames and / or environment variables. If specifying options and
+a type (using either `withBackend` or `withType`) they have to match, otherwise
+an exception will be thrown.
+
+```cpp
+#include <podio/Writer.h>
+
+// Explicitly select the RNTuple backend
+auto rntupleWriter = podio::WriterFor{filename}.withBackend(podio::WriterFor::Backend::RNTuple).create();
+// Equivalent, selecting via name, as with podio::makeWriter(filename, "rntuple")
+auto sameWriter = podio::WriterFor{filename}.withType("rntuple").create();
+// Configure compression, TTree or RNTuple depending on PODIO_DEFAULT_WRITE_RNTUPLE
+auto configuredWriter = podio::WriterFor{filename}.withOptions({.compressionSettings = 505}).create();
+// Configure compression and always use RNTuple
+auto configuredRNTupleWriter = podio::WriterFor{filename}
+                                   .withBackend(podio::WriterFor::Backend::RNTuple)
+                                   .withOptions(podio::ROOTWriteOptions{.compressionSettings = 505})
+                                   .create();
+```
 
 Specific writers for each backend are also available:
 
@@ -81,6 +109,8 @@ podio::ROOTWriter writer(filename);              // For TTree output
 podio::RNTupleWriter rntupleWriter(filename);    // For RNTuple output
 podio::ArrowWriter parquetWriter(directoryName); // For Arrow/Parquet output
 ```
+
+These also offer a constructor that takes writer specific options.
 
 ### Arrow/Parquet I/O
 
