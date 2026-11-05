@@ -26,6 +26,32 @@ int checkCommon(const ExampleClusterCollection& clusters) {
   }
   return 0;
 }
+
+// READ_AS_FROM_VERSION returns on success, so each version needs its own function.
+int checkOldest() {
+  READ_AS_FROM_VERSION(ExampleClusterCollection, "oldest", {
+    if (checkCommon(coll)) {
+      return 1;
+    }
+    for (const auto c : coll) {
+      ASSERT_EQUAL(c.Clusters().size(), 0, "New relation should be empty");
+    }
+  });
+}
+
+int checkOld() {
+  READ_AS_FROM_VERSION(ExampleClusterCollection, "old", {
+    if (checkCommon(coll)) {
+      return 1;
+    }
+    ASSERT_EQUAL(coll[0].Clusters().size(), 2, "Relation of the old version should be unchanged");
+    ASSERT_EQUAL(coll[0].Clusters()[0].num(), 20, "Relation of the old version should be unchanged");
+    ASSERT_EQUAL(coll[0].Clusters()[1].num(), 30, "Relation of the old version should be unchanged");
+    ASSERT_EQUAL(coll[1].Clusters().size(), 1, "Relation of the old version should be unchanged");
+    ASSERT_EQUAL(coll[1].Clusters()[0].num(), 10, "Relation of the old version should be unchanged");
+    ASSERT_EQUAL(coll[2].Clusters().size(), 0, "Relation of the old version should be unchanged");
+  });
+}
 #endif
 
 int main() {
@@ -76,26 +102,11 @@ int main() {
     event.put(std::move(hits), "hits");
   });
 
-  READ_AS_FROM_VERSION(ExampleClusterCollection, "oldest", {
-    if (checkCommon(coll)) {
-      return 1;
-    }
-    for (const auto c : coll) {
-      ASSERT_EQUAL(c.Clusters().size(), 0, "New relation should be empty");
-    }
-  });
-
-  READ_AS_FROM_VERSION(ExampleClusterCollection, "old", {
-    if (checkCommon(coll)) {
-      return 1;
-    }
-    ASSERT_EQUAL(coll[0].Clusters().size(), 2, "Relation of the old version should be unchanged");
-    ASSERT_EQUAL(coll[0].Clusters()[0].num(), 20, "Relation of the old version should be unchanged");
-    ASSERT_EQUAL(coll[0].Clusters()[1].num(), 30, "Relation of the old version should be unchanged");
-    ASSERT_EQUAL(coll[1].Clusters().size(), 1, "Relation of the old version should be unchanged");
-    ASSERT_EQUAL(coll[1].Clusters()[0].num(), 10, "Relation of the old version should be unchanged");
-    ASSERT_EQUAL(coll[2].Clusters().size(), 0, "Relation of the old version should be unchanged");
-  });
+#ifdef PODIO_SCHEMA_EVOLUTION_TEST_READ
+  if (checkOldest() || checkOld()) {
+    return 1;
+  }
+#endif
 
   return 0;
 }
