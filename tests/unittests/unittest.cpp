@@ -467,6 +467,14 @@ TEST_CASE("UserDataCollection basics", "[basics]") {
     REQUIRE(std::as_const(coll).at(0) == 44);
     REQUIRE(std::as_const(coll)[0] == 44);
   }
+
+  SECTION("emplace_back") {
+    auto coll = podio::UserDataCollection<int32_t>();
+    auto& x = coll.emplace_back(42);
+    REQUIRE(coll.size() == 1);
+    REQUIRE(x == 42);
+    REQUIRE(coll[0] == 42);
+  }
 }
 
 TEST_CASE("UserDataCollection construct from range", "[basics]") {
@@ -723,6 +731,25 @@ TEST_CASE("Collection size and empty", "[basics][collections]") {
   coll.create();
   coll.create();
   REQUIRE(coll.size() == 2u);
+}
+
+TEST_CASE("Collection emplace_back", "[basics][collections]") {
+  ExampleHitCollection coll{};
+  auto hit = coll.emplace_back(42ull, 1.0, 2.0, 3.0, 4.0);
+  REQUIRE(coll.size() == 1u);
+  REQUIRE(hit.cellID() == 42ull);
+  REQUIRE(hit.x() == 1.0);
+  REQUIRE(coll[0].cellID() == 42ull);
+
+  auto defaultHit = coll.emplace_back();
+  REQUIRE(coll.size() == 2u);
+  defaultHit.cellID(43ull);
+  REQUIRE(coll[1].cellID() == 43ull);
+
+  ExampleHitCollection subsetColl{};
+  subsetColl.setSubsetCollection();
+  REQUIRE_THROWS_AS(subsetColl.emplace_back(), std::logic_error);
+  REQUIRE_THROWS_AS(subsetColl.emplace_back(44ull, 0.0, 0.0, 0.0, 0.0), std::logic_error);
 }
 
 TEST_CASE("Collection construction from range", "[basics][collections]") {
