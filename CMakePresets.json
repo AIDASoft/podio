@@ -43,6 +43,16 @@
                 "CMAKE_CXX_FLAGS": " -fdiagnostics-color=always -Werror -Wno-error=deprecated-declarations",
                 "PODIO_USE_CLANG_FORMAT": "AUTO"
             }
+        },
+        {
+            "name": "ci-build-no-root",
+            "displayName": "Full build with warnings as errors, without ROOT",
+            "inherits": "ci-build",
+            "cacheVariables": {
+                "ENABLE_ROOT": "OFF",
+                "ENABLE_RNTUPLE": "OFF",
+                "ENABLE_DATASOURCE": "OFF"
+            }
         }
     ],
 
@@ -51,6 +61,12 @@
             "name": "ci-build",
             "displayName": "Building like on CI",
             "configurePreset": "ci-build",
+            "nativeToolOptions": ["-k0"]
+        },
+        {
+            "name": "ci-build-no-root",
+            "displayName": "Building like on CI, without ROOT",
+            "configurePreset": "ci-build-no-root",
             "nativeToolOptions": ["-k0"]
         }
     ],
@@ -69,6 +85,19 @@
                 "outputOnFailure": true
             }
 
+        },
+        {
+            "name": "ci-build-no-root",
+            "displayName": "Testing like on CI, without ROOT",
+            "configurePreset": "ci-build-no-root",
+            "execution": {
+                "stopOnFailure": false,
+                "scheduleRandom": true,
+                "timeout": 600
+            },
+            "output": {
+                "outputOnFailure": true
+            }
         }
     ]
 }
