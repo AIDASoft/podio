@@ -16,11 +16,11 @@
 #  podio::podioDict         ROOT dictionary for the core podio classes
 #  podio::podioRootIO       ROOT I/O backend (ROOTReader, ROOTWriter,
 #                           ROOTLegacyReader) and, if podio has been built
-#                           with RNTuple support, also RNTupleReader and
-#                           RNTupleWriter
+#                           with RNTuple support (PODIO_ENABLE_RNTUPLE), also
+#                           RNTupleReader and RNTupleWriter
 #  podio::podioRootIODict   ROOT dictionary for the ROOT I/O classes
 #
-# Only if podio has been built with the ROOT DataSource (ENABLE_DATASOURCE):
+# Only if podio has been built with the ROOT DataSource (PODIO_ENABLE_DATASOURCE):
 #  podio::podioDataSource      ROOT RDataFrame DataSource for podio files
 #  podio::podioDataSourceDict  ROOT dictionary for the DataSource
 #
@@ -48,6 +48,10 @@
 #                           modules (and the code generator)
 #  PODIO_IO_HANDLERS        List of available I/O backends (ROOT, SIO, ARROW)
 #  PODIO_ENABLE_ROOT        Whether podio has been built with ROOT support
+#  PODIO_ENABLE_RNTUPLE     Whether podio has been built with RNTuple support
+#                           (implies PODIO_ENABLE_ROOT)
+#  PODIO_ENABLE_DATASOURCE  Whether podio has been built with the ROOT
+#                           DataSource (implies PODIO_ENABLE_ROOT)
 #  PODIO_ENABLE_SIO         Whether podio has been built with SIO support
 #  PODIO_ENABLE_ARROW       Whether podio has been built with Arrow support
 #  PODIO_ENABLE_PARQUET     Whether podio has been built with Parquet support
@@ -81,6 +85,8 @@ set(PODIO_IO_HANDLERS "@PODIO_IO_HANDLERS@")
 include(CMakeFindDependencyMacro)
 
 SET(PODIO_ENABLE_ROOT @ENABLE_ROOT@)
+SET(PODIO_ENABLE_RNTUPLE @ENABLE_RNTUPLE@)
+SET(PODIO_ENABLE_DATASOURCE @ENABLE_DATASOURCE@)
 if(PODIO_ENABLE_ROOT)
   find_dependency(ROOT @ROOT_VERSION@)
 endif()
