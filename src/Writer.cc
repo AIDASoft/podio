@@ -88,7 +88,7 @@ namespace {
     switch (backend) {
     case Backend::TTree:
 #if !PODIO_ENABLE_ROOT
-      throw notAvailable("ROOT");  
+      throw notAvailable("ROOT");
 #endif
       break;
     case Backend::RNTuple:
@@ -143,7 +143,7 @@ namespace {
     case Backend::TTree:
 #if PODIO_ENABLE_ROOT
       return makeWriter<ROOTWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));
-#else 
+#else
       break;
 #endif
     case Backend::RNTuple:
