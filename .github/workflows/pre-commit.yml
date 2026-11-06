@@ -29,8 +29,7 @@ jobs:
           git config --global --add safe.directory $(pwd)
           echo "::endgroup::"
           echo "::group::Run CMake"
-          cmake -B build -S . \
-            --preset ci-build \
+          cmake --preset ci-build \
             -DENABLE_JULIA=ON \
             -DENABLE_ARROW=ON \
             -DENABLE_PARQUET=ON \
