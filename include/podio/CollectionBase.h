@@ -10,10 +10,17 @@
 namespace podio {
 // forward declarations
 class ICollectionProvider;
+class Frame;
 
 struct RelationNames;
 
 class CollectionBase {
+  friend class Frame;
+
+private:
+  virtual bool isOwnedByFrame() const = 0;
+  virtual void markOwnedByFrame() = 0;
+
 protected:
   /// default constructor
   CollectionBase() = default;
