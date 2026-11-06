@@ -3,17 +3,72 @@
 #
 # Exported Targets
 #
-#  podio::podio         Base library for podio
-#  podio::podioDict     Root Dictionary for base podio classes
-#  podio::podioRootIO
-#         RootWriter and RootReader classes, needed for python,
-#         contains podio::podio and podio::podioDict and the
-#         required ROOT:: libraries
+# Always available:
+#  podio::podio             Core podio library (Frame, GenericParameters,
+#                           UserDataCollection, ...) without any I/O backend
+#  podio::podioIO           Generic podio::Reader and podio::Writer
+#                           interfaces. Links all enabled I/O backend libraries
+#                           (podioRootIO, podioSioIO, podioArrow)
+#  podio::podio-dump-tool   Executable backing the podio-dump script
+#  podio::podio-test-hashes Executable to check for collision of hashes
+#
+# Only if podio has been built with ROOT support (PODIO_ENABLE_ROOT):
+#  podio::podioDict         ROOT dictionary for the core podio classes
+#  podio::podioRootIO       ROOT I/O backend (ROOTReader, ROOTWriter,
+#                           ROOTLegacyReader) and, if podio has been built
+#                           with RNTuple support, also RNTupleReader and
+#                           RNTupleWriter
+#  podio::podioRootIODict   ROOT dictionary for the ROOT I/O classes
+#
+# Only if podio has been built with the ROOT DataSource (ENABLE_DATASOURCE):
+#  podio::podioDataSource      ROOT RDataFrame DataSource for podio files
+#  podio::podioDataSourceDict  ROOT dictionary for the DataSource
+#
+# Only if podio has been built with SIO support (PODIO_ENABLE_SIO):
+#  podio::podioSioIO        SIO I/O backend (SIOReader, SIOWriter,
+#                           SIOLegacyReader)
+#  podio::podioSioIODict    ROOT dictionary for the SIO I/O classes (only if
+#                           podio has also been built with ROOT support)
+#
+# Only if podio has been built with Arrow support (PODIO_ENABLE_ARROW):
+#  podio::podioArrow        Arrow conversion functionality and, if podio has
+#                           been built with Parquet support
+#                           (PODIO_ENABLE_PARQUET), the ArrowReader and
+#                           ArrowWriter for Parquet files
+#  podio::podioArrowDict    ROOT dictionary for the Arrow I/O classes (only
+#                           if podio has been built with Parquet and ROOT
+#                           support)
+#
+# Variables
+#
+#  podio_VERSION            The version of podio
+#  podio_INCLUDE_DIR        The podio include directory
+#  podio_LIBRARY_DIR        The podio library directory
+#  podio_PYTHON_DIR         The directory containing the podio python
+#                           modules (and the code generator)
+#  PODIO_IO_HANDLERS        List of available I/O backends (ROOT, SIO, ARROW)
+#  PODIO_ENABLE_ROOT        Whether podio has been built with ROOT support
+#  PODIO_ENABLE_SIO         Whether podio has been built with SIO support
+#  PODIO_ENABLE_ARROW       Whether podio has been built with Arrow support
+#  PODIO_ENABLE_PARQUET     Whether podio has been built with Parquet support
+#                           (implies PODIO_ENABLE_ARROW)
+#  PODIO_ARROW_TARGET       The Arrow target podio links against (only set if
+#                           PODIO_ENABLE_ARROW)
 #
 # Macros: see podioMacros.cmake for complete documentation
 #
-#  PODIO_GENERATE_DATAMODEL
-#  PODIO_GENERATE_ROOTDICT
+#  PODIO_GENERATE_DATAMODEL     Generate the code for a datamodel from a YAML
+#                               definition
+#  PODIO_ADD_DATAMODEL_CORE_LIB Create the core library for a generated
+#                               datamodel
+#  PODIO_ADD_ROOT_IO_DICT       Create the ROOT dictionary for a generated
+#                               datamodel (no-op without ROOT support)
+#  PODIO_ADD_SIO_IO_BLOCKS      Create the SIO blocks library for a generated
+#                               datamodel (no-op without SIO support)
+#  PODIO_ADD_ARROW              Create the Arrow library for a generated
+#                               datamodel (no-op without Arrow support)
+#  PODIO_GENERATE_DICTIONARY    Generate a ROOT dictionary (wrapper around
+#                               REFLEX_GENERATE_DICTIONARY, requires ROOT)
 #
 ###############################################################################
 @PACKAGE_INIT@
