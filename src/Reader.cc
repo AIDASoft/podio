@@ -114,7 +114,7 @@ Reader makeReader(const std::vector<std::string>& filenames) {
   throw std::runtime_error("Unknown file extension: " + suffix);
 }
 
-std::optional<std::map<std::string, SizeStats>> Reader::getSizeStats(std::string_view category) {
+std::optional<std::map<std::string, SizeStats>> Reader::getSizeStats(std::string_view category [[maybe_unused]]) {
 #if PODIO_ENABLE_ROOT
   if (const auto* rootReader = dynamic_cast<ReaderModel<ROOTReader>*>(m_self.get())) {
     return rootReader->m_reader->getSizeStats(category);
