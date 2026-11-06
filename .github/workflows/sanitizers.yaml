@@ -17,6 +17,7 @@ concurrency:
 
 jobs:
   build-and-test:
+    name: ${{ matrix.compiler }} (${{ matrix.sanitizer }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -36,29 +37,30 @@ jobs:
         #   - compiler: clang10
         #     sanitizer: MemoryWithOrigin
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Reduce ASLR entropy for ThreadSanitizer
-        if: matrix.sanitizer == 'Thread'
-        # TSan cannot disable ASLR under the container's default seccomp profile.
-        run: sudo sysctl -w vm.mmap_rnd_bits=28
-      - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8 # v5.6
-      - uses: key4hep/key4hep-actions/cache-external-data@main
-      - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6 # v6
-        with:
-          release-platform: LCG_110/x86_64-el9-${{ matrix.compiler }}-opt
-          ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
-          run: |
-            echo "::group::Run CMake"
-            cmake -B build -S . \
-              --preset ci-build \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DENABLE_ARROW=ON \
-              -DUSE_SANITIZER=${{ matrix.sanitizer }} \
-              -DCMAKE_CXX_STANDARD=23
-            echo "::endgroup::"
-            echo "::group::Build"
-            cmake --build --preset ci-build
-            echo "::endgroup::"
-            echo "::group::Run tests"
-            ctest --test-dir build --output-on-failure --schedule-random -j$(nproc)
-            echo "::endgroup::"
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - name: Reduce ASLR entropy for ThreadSanitizer
+      if: matrix.sanitizer == 'Thread'
+      # TSan cannot disable ASLR under the container's default seccomp profile.
+      run: sudo sysctl -w vm.mmap_rnd_bits=28
+    - uses: ./.github/actions/podio-build
+      with:
+        release-platform: LCG_110/x86_64-el9-${{ matrix.compiler }}-opt
+        ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
+        cmake-args: >-
+          -DCMAKE_BUILD_TYPE=Debug
+          -DCMAKE_CXX_STANDARD=23
+          -DENABLE_ARROW=ON
+          -DUSE_SANITIZER=${{ matrix.sanitizer }}
+        # Tests run (considerably) slower with sanitizers
+        ctest-args: --timeout 1500
+        install: false
+
+  # Single job that can be used as required check, independent of the matrix
+  sanitizers-ok:
+    if: always()
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check that all jobs succeeded
+      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+      run: exit 1

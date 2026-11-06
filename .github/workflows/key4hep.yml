@@ -17,10 +17,12 @@ concurrency:
 
 jobs:
   build-and-test:
+    name: ${{ matrix.image }} (${{ matrix.cvmfs_repo }})
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        # sw.hsf.org: releases, sw-nightlies.hsf.org: nightlies
         image: ["el9"]
         cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
@@ -28,31 +30,23 @@ jobs:
             cvmfs_repo: "sw-nightlies.hsf.org"
           - image: "ubuntu2204"  # gcc-11 compatibility
             cvmfs_repo: "sw.hsf.org"
-
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8 # v5.6
-    - uses: key4hep/key4hep-actions/cache-external-data@main
-    - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6 # v6
+    - uses: ./.github/actions/podio-build
       with:
-        container: ${{ matrix.image }}
         view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
+        container: ${{ matrix.image }}
         ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
-        run: |
-          echo "::group::Run k4_local_repo"
-          k4_local_repo
-          echo "::group::Run CMake"
-          cmake --preset ci-build \
-            -DCMAKE_INSTALL_PREFIX=$(pwd)/install \
-            -DUSE_EXTERNAL_CATCH2=AUTO \
-            -DPODIO_RUN_STRACE_TEST=ON
-          echo "::endgroup::"
-          echo "::group::Build"
-          cmake --build --preset ci-build
-          echo "::endgroup"
-          echo "::group::Run tests"
-          ctest --preset ci-build --parallel
-          echo "::endgroup::"
-          echo "::group::Install"
-          cmake --build --preset ci-build --target install
-          echo "::endgroup::"
+        # Remove the podio of the Key4hep stack from the environment
+        setup: k4_local_repo
+        cmake-args: -DPODIO_RUN_STRACE_TEST=ON
+
+  # Single job that can be used as required check, independent of the matrix
+  key4hep-ok:
+    if: always()
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check that all jobs succeeded
+      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+      run: exit 1
