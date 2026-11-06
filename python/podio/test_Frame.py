@@ -3,7 +3,6 @@
 
 import unittest
 
-# pylint: disable=import-error
 from ROOT import ExampleHitCollection
 
 from podio.frame import Frame

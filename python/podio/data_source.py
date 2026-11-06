@@ -8,6 +8,6 @@ if (
 ):
     raise ImportError("Error when loading libpodioDataSourceDict")
 
-from ROOT import podio  # pylint: disable=wrong-import-position
+from ROOT import podio
 
 CreateDataFrame = podio.CreateDataFrame

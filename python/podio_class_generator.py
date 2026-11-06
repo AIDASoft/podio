@@ -88,7 +88,6 @@ def parse_version(version_str):
 
 
 if __name__ == "__main__":
-    # pylint: disable=invalid-name # before 2.5.0 pylint is too strict with the naming here
     parser = argparse.ArgumentParser(
         description="Given a description yaml file this script generates "
         "the necessary c++ or julia files in the target directory"
@@ -204,5 +203,3 @@ if __name__ == "__main__":
             gen.formatter_func = clang_format_file
 
     gen.process()
-
-    # pylint: enable=invalid-name

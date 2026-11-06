@@ -18,8 +18,8 @@ except ImportError:
 #
 # We check whether we can actually load the header to not break python bindings
 # in environments with *ancient* podio versions
-if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:  # noqa: E402
-    from ROOT import podio  # noqa: E402 # pylint: disable=wrong-import-position
+if ROOT.gInterpreter.LoadFile("podio/Frame.h") == 0:
+    from ROOT import podio
 else:
     raise ImportError(
         "Could not load podio/Frame.h. Make sure it is available on ROOT_INCLUDE_PATH."
@@ -180,7 +180,6 @@ class Frame:
             # first one will throw an invalid_argument (as expected), which then
             # makes cppyy try the second one which fails with a type conversion.
             # Hence we catch the TypeError here and return a ValueError.
-            # pylint: disable-next=raise-missing-from
             raise ValueError(f"An object with key {name} already exists in the Frame")
 
     @property
@@ -353,7 +352,7 @@ class Frame:
             for key in keys:
                 # Make sure to convert to a python string here to not have a dangling
                 # reference here for the key.
-                key = str(key)
+                key = str(key)  # noqa: PLW2901
                 # In order to support the use case of having the same key for multiple
                 # types create a list of available types for the key, so that we can
                 # disambiguate later. Storing a vector<type> here, and check later how

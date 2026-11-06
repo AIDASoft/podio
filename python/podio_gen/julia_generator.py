@@ -143,7 +143,7 @@ class JuliaClassGenerator(ClassGeneratorBaseMixin):
                 sorted_components.append(bare_types_mapping[component])
 
             for deps in dependencies.values():
-                deps -= ready
+                deps -= ready  # noqa: PLW2901
 
         # Return the Sorted Components (bare_types)
         return sorted_components

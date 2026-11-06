@@ -3,7 +3,6 @@
 
 import unittest
 
-# pylint: disable-next=import-error
 from test_Reader import (
     ReaderTestCaseMixin,
     LegacyReaderTestCaseMixin,
