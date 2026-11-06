@@ -353,7 +353,7 @@ if (ENABLE_DATASOURCE)
     )
 endif()
 
-if (ENABLE_PARQUET)
+if (ENABLE_PARQUET AND ENABLE_ROOT)
   install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/podioArrowDictDict.rootmap
     ${CMAKE_CURRENT_BINARY_DIR}/libpodioArrowDict_rdict.pcm
