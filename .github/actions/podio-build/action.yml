@@ -29,6 +29,12 @@ inputs:
     description: Location of the podio sources relative to the workspace
     required: false
     default: .
+  setup:
+    description: >-
+      Script to run before configuring podio, e.g. to adapt the environment
+      of the view. The working directory is the podio source directory
+    required: false
+    default: ''
   preset:
     description: >-
       CMake preset to use for configuring, building and testing. Needs to have
@@ -80,6 +86,12 @@ runs:
         run: |
           WORKSPACE_DIR=$(pwd)
           cd ${{ inputs.source-dir }}
+
+          if [ "${{ inputs.setup != '' }}" == "true" ]; then
+            echo "::group::Setup"
+            ${{ inputs.setup }}
+            echo "::endgroup::"
+          fi
 
           echo "::group::Configure podio"
           cmake --preset ${{ inputs.preset }} \
