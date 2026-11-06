@@ -40,7 +40,7 @@ else()
   set_target_properties(Catch2::Catch2 PROPERTIES INTERFACE_SYSTEM_INCLUDE_DIRECTORIES "${CATCH2_IF_INC_DIRS}")
 endif()
 
-add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp)
+add_executable(unittest_podio unittest.cpp frame.cpp buffer_factory.cpp interface_types.cpp std_interoperability.cpp links.cpp test_json_output.cpp writer_for.cpp)
 target_link_libraries(unittest_podio PUBLIC TestDataModel ExtensionDataModel InterfaceExtensionDataModel PRIVATE Catch2::Catch2WithMain Threads::Threads podio::podioIO)
 if (ENABLE_ROOT)
   target_link_libraries(unittest_podio PRIVATE podio::podioRootIO)
@@ -108,5 +108,9 @@ else()
         LD_LIBRARY_PATH=${CMAKE_CURRENT_BINARY_DIR}:${PROJECT_BINARY_DIR}/src:${PROJECT_BINARY_DIR}/tests:$<$<TARGET_EXISTS:ROOT::Tree>:$<TARGET_FILE_DIR:ROOT::Tree>>:$<$<TARGET_EXISTS:SIO::sio>:$<TARGET_FILE_DIR:SIO::sio>>:$ENV{LD_LIBRARY_PATH}
       ENVIRONMENT
       LSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/lsan_suppressions.txt
+      ENVIRONMENT
+      TSAN_OPTIONS=suppressions=${PROJECT_SOURCE_DIR}/tests/tsan_suppressions.txt:$ENV{TSAN_OPTIONS}
+      ENVIRONMENT
+      ASAN_OPTIONS=detect_stack_use_after_return=1:$ENV{ASAN_OPTIONS}
   )
 endif()

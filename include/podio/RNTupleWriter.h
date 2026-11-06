@@ -1,6 +1,7 @@
 #ifndef PODIO_RNTUPLEWRITER_H
 #define PODIO_RNTUPLEWRITER_H
 
+#include "podio/ROOTWriteOptions.h"
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 #include "podio/utilities/RootHelpers.h"
 #include "podio/utilities/StringKeyMap.h"
@@ -8,6 +9,7 @@
 #include "TFile.h"
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleModel.hxx>
+#include <ROOT/RNTupleWriteOptions.hxx>
 #include <ROOT/RNTupleWriter.hxx>
 #include <ROOT/RVersion.hxx>
 
@@ -26,10 +28,12 @@ namespace root_compat {
   using REntry = ROOT::Experimental::REntry;
   using RNTupleModel = ROOT::Experimental::RNTupleModel;
   using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
+  using RNTupleWriteOptions = ROOT::Experimental::RNTupleWriteOptions;
 #else
   using REntry = ROOT::REntry;
   using RNTupleModel = ROOT::RNTupleModel;
   using RNTupleWriter = ROOT::RNTupleWriter;
+  using RNTupleWriteOptions = ROOT::RNTupleWriteOptions;
 #endif
 } // namespace root_compat
 
@@ -43,12 +47,20 @@ namespace root_compat {
 /// Files written with the RNTupleWriter can be read with the RNTupleReader.
 class RNTupleWriter {
 public:
-  /// Create a RNTupleWriter to write to a file.
+  /// Create a RNTupleWriter to write to a file with custom options.
   ///
   /// @note Existing files will be overwritten without warning.
   ///
   /// @param filename The path to the file that will be created.
-  RNTupleWriter(const std::string& filename);
+  /// @param options  Configuration options (compression etc.).
+  RNTupleWriter(const std::string& filename, const ROOTWriteOptions& options);
+
+  /// Create a RNTupleWriter to write to a file with default options.
+  ///
+  /// @note Existing files will be overwritten without warning.
+  ///
+  /// @param filename The path to the file that will be created.
+  explicit RNTupleWriter(const std::string& filename);
 
   /// RNTupleWriter destructor
   ///
@@ -140,6 +152,7 @@ private:
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
+  root_compat::RNTupleWriteOptions m_options{}; ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};

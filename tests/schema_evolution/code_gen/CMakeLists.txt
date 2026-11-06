@@ -33,12 +33,16 @@ ADD_SCHEMA_EVOLUTION_TEST(datatypes_remove_type)
 ADD_SCHEMA_EVOLUTION_TEST(drop_component)
 
 ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_relation NO_EVOLUTION_CHECKS)
+ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation)
+ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation_before_single)
+ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation_no_relations)
 
 # Tests involving multiple older schema versions
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_component_new_member OLD_MODELS old oldest)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_datatypes_new_member OLD_MODELS old oldest)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_components_rename_member OLD_MODELS old oldest WITH_EVOLUTION)
 ADD_SCHEMA_EVOLUTION_TEST(multi_schema_drop_component OLD_MODELS old oldest)
+ADD_SCHEMA_EVOLUTION_TEST(multi_schema_datatypes_new_relation OLD_MODELS old oldest)
 
 if(ENABLE_RNTUPLE)
   ADD_SCHEMA_EVOLUTION_TEST(no_change RNTUPLE NO_GENERATE_MODELS)
@@ -58,9 +62,13 @@ if(ENABLE_RNTUPLE AND ROOT_VERSION VERSION_GREATER_EQUAL 6.36)
   ADD_SCHEMA_EVOLUTION_TEST(datatypes_remove_type RNTUPLE NO_GENERATE_MODELS)
 
   ADD_SCHEMA_EVOLUTION_TEST(datatypes_rename_relation RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation_before_single RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(datatypes_new_relation_no_relations RNTUPLE NO_GENERATE_MODELS)
 
   ADD_SCHEMA_EVOLUTION_TEST(multi_schema_component_new_member OLD_MODELS old oldest RNTUPLE NO_GENERATE_MODELS)
   ADD_SCHEMA_EVOLUTION_TEST(multi_schema_datatypes_new_member OLD_MODELS old oldest RNTUPLE NO_GENERATE_MODELS)
+  ADD_SCHEMA_EVOLUTION_TEST(multi_schema_datatypes_new_relation OLD_MODELS old oldest RNTUPLE NO_GENERATE_MODELS)
 endif()
 
 # These do not yet work.

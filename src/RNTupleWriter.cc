@@ -34,8 +34,14 @@ using ROOT::Experimental::RNTupleWriteOptions;
 namespace podio {
 class GenericParameters;
 
-RNTupleWriter::RNTupleWriter(const std::string& filename) :
-    m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+RNTupleWriter::RNTupleWriter(const std::string& filename, const ROOTWriteOptions& options) :
+    m_options(RNTupleWriteOptions{}), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+  if (options.compressionSettings.has_value()) {
+    m_options.SetCompression(options.compressionSettings.value());
+  }
+}
+
+RNTupleWriter::RNTupleWriter(const std::string& filename) : RNTupleWriter(filename, ROOTWriteOptions{}) {
 }
 
 RNTupleWriter::~RNTupleWriter() {
@@ -101,7 +107,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   if (new_category) {
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), {});
+    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), m_options);
 
     catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
@@ -118,13 +124,10 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
 
   const auto entry = catInfo.writer->GetModel().CreateBareEntry();
 
-  RNTupleWriteOptions options;
-  options.SetCompression(ROOT::RCompressionSetting::EDefaults::kUseGeneralPurpose);
-
   for (const auto& [name, coll] : collections) {
     const auto collBuffers = coll->getBuffers();
-    if (collBuffers.vecPtr) {
-      entry->BindRawPtr(name, static_cast<void*>(collBuffers.vecPtr));
+    if (collBuffers.data) {
+      entry->BindRawPtr(name, collBuffers.data);
     }
 
     if (coll->isSubsetCollection()) {
@@ -179,7 +182,7 @@ RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& coll
 
     const auto collBuffers = coll->getBuffers();
 
-    if (collBuffers.vecPtr) {
+    if (collBuffers.data) {
       const auto collClassName = "std::vector<" + std::string(coll->getDataTypeName()) + ">";
       auto field = RFieldBase::Create(name, collClassName).Unwrap();
       model->AddField(std::move(field));
@@ -283,7 +286,7 @@ void RNTupleWriter::finish() {
 
     metadata->Freeze();
     const auto metadataWriter =
-        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, {});
+        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, m_options);
 
     metadataWriter->Fill();
 

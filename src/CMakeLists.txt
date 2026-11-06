@@ -93,6 +93,7 @@ endif()
 
 
 # --- Root I/O functionality and corresponding dictionary
+
 if(ENABLE_ROOT)
   SET(root_sources
     rootUtils.h
@@ -113,6 +114,7 @@ if(ENABLE_ROOT)
     ${PROJECT_SOURCE_DIR}/include/podio/ROOTReader.h
     ${PROJECT_SOURCE_DIR}/include/podio/ROOTLegacyReader.h
     ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriter.h
+    ${PROJECT_SOURCE_DIR}/include/podio/ROOTWriteOptions.h
     ${PROJECT_SOURCE_DIR}/include/podio/ROOTFrameData.h
     ${PROJECT_SOURCE_DIR}/include/podio/utilities/RootHelpers.h
     )

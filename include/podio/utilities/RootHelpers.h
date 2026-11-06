@@ -53,6 +53,7 @@ namespace root_utils {
     }
 
     TBranch* data{nullptr};
+    void* dataPtr{nullptr};
     std::vector<TBranch*> refs{};
     std::vector<TBranch*> vecs{};
     std::vector<std::string> refNames{}; ///< The names of the relation branches

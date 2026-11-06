@@ -38,6 +38,9 @@ DIFF_EXTRA_ARGS=()
 if [ ${ENABLE_SIO} = "OFF" ]; then
     DIFF_EXTRA_ARGS+=(--exclude "*SIO*")
 fi
+if [ ${ENABLE_ARROW} = "OFF" ]; then
+    DIFF_EXTRA_ARGS+=(--exclude "*Arrow*")
+fi
 
 diff -ru ${OUTPUT_FOLDER}/${EDM_NAME} ${COMP_BASE_FOLDER}/${EDM_NAME} "${DIFF_EXTRA_ARGS[@]}"
 diff -ru ${OUTPUT_FOLDER}/src ${COMP_BASE_FOLDER}/src "${DIFF_EXTRA_ARGS[@]}"

@@ -10,7 +10,7 @@ babel==2.17.0
     # via sphinx
 breathe==4.36.0
     # via -r requirements.in
-certifi==2025.11.12
+certifi==2026.10.19
     # via requests
 charset-normalizer==3.4.4
     # via requests

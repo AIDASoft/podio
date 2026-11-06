@@ -8,12 +8,14 @@
 #include "podio/utilities/TypeHelpers.h"
 
 #include "TBranch.h"
+#include "TFile.h"
 #include "TTree.h"
 
 #include <algorithm>
 #include <iostream>
 #include <iterator>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -190,19 +192,35 @@ inline std::string getStorageTypeName(const podio::CollectionBase* coll) {
 }
 
 /**
+ * Get a branch from the currently loaded TTree again, to replace a branch that
+ * has been obtained from a previously loaded one. Throws if the branch was
+ * present previously but is not present in the current TTree
+ */
+inline TBranch* reloadBranch(TTree* chain, const TBranch* previous, const std::string& name) {
+  auto* branch = getBranch(chain, name);
+  if (previous && !branch) {
+    const auto* tree = chain->GetTree();
+    const auto* file = tree ? tree->GetCurrentFile() : nullptr;
+    throw std::runtime_error("Branch '" + name + "' is not present in file '" + (file ? file->GetName() : "<unknown>") +
+                             "'. All files that are read together have to have the same contents");
+  }
+  return branch;
+}
+
+/**
  * Reset all the branches that by getting them from the TTree again
  */
 inline void resetBranches(TTree* chain, CollectionBranches& branches, const std::string& name) {
   if (branches.data) {
-    branches.data = getBranch(chain, name);
+    branches.data = reloadBranch(chain, branches.data, name);
   }
 
   for (size_t i = 0; i < branches.refs.size(); ++i) {
-    branches.refs[i] = getBranch(chain, branches.refNames[i]);
+    branches.refs[i] = reloadBranch(chain, branches.refs[i], branches.refNames[i]);
   }
 
   for (size_t i = 0; i < branches.vecs.size(); ++i) {
-    branches.vecs[i] = getBranch(chain, branches.vecNames[i]);
+    branches.vecs[i] = reloadBranch(chain, branches.vecs[i], branches.vecNames[i]);
   }
 }
 
@@ -215,6 +233,11 @@ inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffe
 
   if (const auto refCollections = collBuffers.references) {
     for (size_t i = 0; i < refCollections->size(); ++i) {
+      // Relations that are not stored in this schema version stay empty
+      if (!(*refCollections)[i]) {
+        (*refCollections)[i] = std::make_unique<std::vector<podio::ObjectID>>();
+        continue;
+      }
       if (!branches.refs[i]) {
         return false;
       }
@@ -235,10 +258,11 @@ inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffe
 }
 
 inline bool setCollectionAddressesWriter(const podio::CollectionWriteBuffers& collBuffers,
-                                         const CollectionBranches& branches) {
+                                         CollectionBranches& branches) {
 
   if (collBuffers.data) {
-    branches.data->SetAddress(collBuffers.data);
+    branches.dataPtr = collBuffers.data;
+    branches.data->SetAddress(&branches.dataPtr);
   }
 
   if (const auto refCollections = collBuffers.references) {
@@ -268,7 +292,9 @@ inline void readBranchesData(const CollectionBranches& branches, Long64_t entry)
     branches.data->GetEntry(entry);
   }
   for (auto* br : branches.refs) {
-    br->GetEntry(entry);
+    if (br) { // missing for relations that are not stored in this schema version
+      br->GetEntry(entry);
+    }
   }
   for (auto* br : branches.vecs) {
     br->GetEntry(entry);
