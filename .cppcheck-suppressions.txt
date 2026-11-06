@@ -1,4 +1,5 @@
 noExplicitConstructor:*
+*:*.ixx
 unusedFunction:*
 missingInclude:*
 missingIncludeSystem:*
@@ -6,6 +7,9 @@ missingIncludeSystem:*
 *:*Dict.cxx
 *:MurmurHash3.cpp
 preprocessorErrorDirective:cpython/
+syntaxError:RNTupleReader.h
+syntaxError:RNTupleWriter.h
+
 # These functions implement instance-bound APIs without reading instance state.
 functionStatic:ROOTLegacyReader.cc
 functionStatic:Frame.h
