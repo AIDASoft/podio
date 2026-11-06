@@ -24,7 +24,11 @@ set_and_check(podio_PYTHON_DIR "@PACKAGE_podio_PYTHON_INSTALLDIR@")
 set(PODIO_IO_HANDLERS "@PODIO_IO_HANDLERS@")
 
 include(CMakeFindDependencyMacro)
-find_dependency(ROOT @ROOT_VERSION@)
+
+SET(PODIO_ENABLE_ROOT @ENABLE_ROOT@)
+if(PODIO_ENABLE_ROOT)
+  find_dependency(ROOT @ROOT_VERSION@)
+endif()
 find_dependency(Threads)
 if(NOT "@REQUIRE_PYTHON_VERSION@" STREQUAL "")
   find_dependency(Python3 @REQUIRE_PYTHON_VERSION@ COMPONENTS Interpreter Development)
