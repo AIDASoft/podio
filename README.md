@@ -96,6 +96,8 @@ Podio uses CMake presets to simplify the build process. The following presets ar
 - `base-build`: Base build with RNTuple backend and DataSource support
 - `full-build`: Full build including SIO and schema evolution tests
 - `ci-build`: Full build with warnings as errors (used for continuous integration)
+- `ci-build-no-root`: Same as `ci-build`, but with ROOT (and the RNTuple backend and
+  DataSource support that require it) disabled
 
 ### Basic build
 

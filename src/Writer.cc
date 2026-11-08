@@ -1,6 +1,8 @@
 #include "podio/Writer.h"
 
-#include "podio/ROOTWriter.h"
+#if PODIO_ENABLE_ROOT
+  #include "podio/ROOTWriter.h"
+#endif
 #if PODIO_ENABLE_RNTUPLE
   #include "podio/RNTupleWriter.h"
 #endif
@@ -85,6 +87,9 @@ namespace {
     };
     switch (backend) {
     case Backend::TTree:
+#if !PODIO_ENABLE_ROOT
+      throw notAvailable("ROOT");
+#endif
       break;
     case Backend::RNTuple:
 #if !PODIO_ENABLE_RNTUPLE
@@ -136,7 +141,11 @@ namespace {
   Writer makeWriter(Backend backend, const std::string& filename, const std::any& options) {
     switch (backend) {
     case Backend::TTree:
+#if PODIO_ENABLE_ROOT
       return makeWriter<ROOTWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));
+#else
+      break;
+#endif
     case Backend::RNTuple:
 #if PODIO_ENABLE_RNTUPLE
       return makeWriter<RNTupleWriter>(filename, getOptions<ROOTWriteOptions>(backend, options));

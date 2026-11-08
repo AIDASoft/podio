@@ -40,8 +40,8 @@ PODIO_ADD_DATAMODEL_CORE_LIB(ExtensionDataModel "${ext_headers}" "${ext_sources}
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 target_link_libraries(ExtensionDataModel PUBLIC TestDataModel)
 
-PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
+  PODIO_ADD_ROOT_IO_DICT(ExtensionDataModelDict ExtensionDataModel "${ext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/extension_model/src/selection.xml
+    OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
 
 PODIO_ADD_SIO_IO_BLOCKS(ExtensionDataModel "${ext_headers}" "${ext_sources}")
 PODIO_ADD_ARROW(ExtensionDataModel "${ext_headers}" "${ext_sources}" OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/extension_model)
@@ -56,8 +56,8 @@ PODIO_ADD_DATAMODEL_CORE_LIB(InterfaceExtensionDataModel "${iext_headers}" "${ie
   OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
 target_link_libraries(InterfaceExtensionDataModel PUBLIC TestDataModel)
 
-PODIO_ADD_ROOT_IO_DICT(InterfaceExtensionDataModelDict InterfaceExtensionDataModel "${iext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model/src/selection.xml
-  OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
+  PODIO_ADD_ROOT_IO_DICT(InterfaceExtensionDataModelDict InterfaceExtensionDataModel "${iext_headers}" ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model/src/selection.xml
+    OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
 
 PODIO_ADD_SIO_IO_BLOCKS(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}")
 PODIO_ADD_ARROW(InterfaceExtensionDataModel "${iext_headers}" "${iext_sources}" OUTPUT_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/interface_extension_model)
@@ -83,7 +83,9 @@ set(root_legacy_test_versions
   v01-02
 )
 
-add_subdirectory(root_io)
+if (ENABLE_ROOT)
+  add_subdirectory(root_io)
+endif()
 if (ENABLE_SIO)
   set(sio_legacy_test_versions
     v00-16-05
@@ -101,7 +103,9 @@ endif()
 
 add_subdirectory(unittests)
 add_subdirectory(dumpmodel)
-add_subdirectory(schema_evolution)
+if (ENABLE_ROOT)
+  add_subdirectory(schema_evolution)
+endif()
 
 # Tests that don't fit into one of the broad categories above
 CREATE_PODIO_TEST(ostream_operator.cpp "")
