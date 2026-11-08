@@ -62,7 +62,7 @@ options:
 )";
 
 void printUsageAndExit() {
-  fmt::println(stderr, "{}", usageMsg);
+  fmt::print(stderr, "{}\n", usageMsg);
   std::exit(1);
 }
 
@@ -77,7 +77,7 @@ auto getArgumentValueOrExit(const std::vector<std::string>& argv, std::vector<st
 
 std::vector<size_t> parseEventRange(const std::string_view evtRange) {
   auto parseError = [evtRange]() {
-    fmt::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
+    fmt::print(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries\n", evtRange);
     std::exit(1);
   };
 
@@ -133,9 +133,9 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
   // find help or version
   if (const auto it = findFlags(argv, "-h", "--help", "--version"); it != argv.end()) {
     if (*it == "--version") {
-      fmt::println("podio {}", podio::version::build_version);
+      fmt::print("podio {}\n", podio::version::build_version);
     } else {
-      fmt::print("{}\n{}", usageMsg, helpMsg);
+      fmt::print("{}\n{}\n", usageMsg, helpMsg);
     }
     std::exit(0);
   }
@@ -200,7 +200,7 @@ void getParameterOverview(const podio::Frame& frame,
 }
 
 void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
-  fmt::println("Collections:");
+  fmt::print("Collections:\n");
   const auto collNames = frame.getAvailableCollections();
 
   std::vector<std::tuple<std::string, std::string_view, size_t, std::string, std::string>> rows;
@@ -221,7 +221,7 @@ void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<
       rows,
       {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression factor)" : ""});
 
-  fmt::println("\nParameters:");
+  fmt::print("\nParameters:\n");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
   getParameterOverview<int>(frame, paramRows);
   getParameterOverview<float>(frame, paramRows);
@@ -232,30 +232,30 @@ void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<
 }
 
 void printFrameDetailed(const podio::Frame& frame) {
-  fmt::println("Collections:");
+  fmt::print("Collections:\n");
   const auto collNames = frame.getAvailableCollections();
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
-    fmt::println("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
+    fmt::print("{}{}\n", name, coll->isSubsetCollection() ? " (s)" : "");
     coll->print();
-    fmt::println("");
+    fmt::print("\n");
   }
 
-  fmt::println("\nParameters:");
+  fmt::print("\nParameters:\n");
   frame.getParameters().print();
-  fmt::println("");
+  fmt::print("\n");
 }
 
 void printGeneralInfo(const podio::Reader& reader, const std::string& filename) {
-  fmt::println("input file: {}", filename);
-  fmt::println("            (written with podio version: {})", reader.currentFileVersion());
-  fmt::println("\ndatamodel model definitions stored in this file:");
+  fmt::print("input file: {}\n", filename);
+  fmt::print("            (written with podio version: {})\n", reader.currentFileVersion());
+  fmt::print("\ndatamodel model definitions stored in this file:\n");
   for (const auto& modelName : reader.getAvailableDatamodels()) {
     const auto modelVersion = reader.currentFileVersion(modelName);
     if (modelVersion) {
-      fmt::println(" - {} ({})", modelName, modelVersion.value());
+      fmt::print(" - {} ({})\n", modelName, modelVersion.value());
     } else {
-      fmt::println(" - {}", modelName);
+      fmt::print(" - {}\n", modelName);
     }
   }
 
@@ -265,23 +265,23 @@ void printGeneralInfo(const podio::Reader& reader, const std::string& filename) 
        podio::utils::sortAlphabeticaly(std::vector<std::string>(availCats.begin(), availCats.end()))) {
     rows.emplace_back(cat, reader.getEntries(cat));
   }
-  fmt::println("\nFrame categories in this file:");
+  fmt::print("\nFrame categories in this file:\n");
   printTable(rows, {"Name", "Entries"});
 }
 
 int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName) {
   const auto availModels = reader.getAvailableDatamodels();
   if (const auto it = std::ranges::find(availModels, modelName); it == availModels.end()) {
-    fmt::println(stderr, "ERROR: cannot dump model '{}' (not present in file)", modelName);
+    fmt::print(stderr, "ERROR: cannot dump model '{}' (not present in file)\n", modelName);
     return 1;
   }
-  fmt::println("{}", reader.getDatamodelDefinition(modelName));
+  fmt::print("{}\n", reader.getDatamodelDefinition(modelName));
   return 0;
 }
 
 void printFrame(const podio::Frame& frame, const std::string& category, size_t iEntry, bool detailed,
                 const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
-  fmt::println("{:#^82}", fmt::format(" {}: {} ", category, iEntry));
+  fmt::print("{:#^82}\n", fmt::format(" {}: {} ", category, iEntry));
   if (detailed) {
     printFrameDetailed(frame);
   } else {
@@ -313,7 +313,7 @@ int main(int argc, char* argv[]) {
 
     return 0;
   } catch (const std::exception& err) {
-    fmt::println(stderr, "ERROR: {}", err.what());
+    fmt::print(stderr, "ERROR: {}\n", err.what());
     return 1;
   }
 }
