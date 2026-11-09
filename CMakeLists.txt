@@ -227,7 +227,7 @@ if(BUILD_TESTING)
   add_subdirectory(tests)
 endif()
 
-find_package(fmt 9 REQUIRED)
+find_package(fmt 10 REQUIRED)
 
 add_subdirectory(tools)
 add_subdirectory(python)
