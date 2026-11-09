@@ -36,8 +36,13 @@ endif()
 # ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
 set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
 
-if(NOT CMAKE_CXX_STANDARD MATCHES "20|23")
-  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}")
+# podio requires at least c++20, any newer standard is allowed.
+if(NOT CMAKE_CXX_STANDARD MATCHES "^[0-9]+$" OR CMAKE_CXX_STANDARD LESS 20 OR CMAKE_CXX_STANDARD EQUAL 98)
+  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}. podio requires c++20 or newer")
+endif()
+
+if(CMAKE_CXX_STANDARD EQUAL 20)
+  message(DEPRECATION "Building podio with c++20 is deprecated and support for it will be removed in a future version. Please consider switching to c++23 or newer (-DCMAKE_CXX_STANDARD=23). See https://github.com/AIDASoft/podio/issues/1073 for more details")
 endif()
 
 # Prevent CMake falls back to the latest standard the compiler does support
@@ -102,7 +107,7 @@ if(ENABLE_ROOT)
   if(NOT DEFINED ROOT_CXX_STANDARD)
     message(STATUS "ROOT c++ standard not yet available. Determining from compile features")
     get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-    foreach(cxxstd IN ITEMS 20;17;14;11)
+    foreach(cxxstd IN ITEMS 26;23;20;17;14;11)
       if ("cxx_std_${cxxstd}" IN_LIST ROOT_COMPILE_FEATURES)
         set(ROOT_CXX_STANDARD ${cxxstd})
         break()
