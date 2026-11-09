@@ -64,6 +64,7 @@
 
 // STL
 #include <array>
+#include <barrier>
 #include <cstddef>
 #include <cstdint>
 #include <filesystem>
@@ -1353,6 +1354,45 @@ TEST_CASE("GenericParameters", "[generic-parameters]") {
     REQUIRE(gp.getN<float>("aFloat") == 1);
     REQUIRE(gp.getN<int>("nonExistent") == 0);
   }
+}
+
+TEMPLATE_TEST_CASE("GenericParameters concurrent map-wide operations", "[generic-parameters][multithreading]", int,
+                   float, double, std::string) {
+  auto params = podio::GenericParameters{};
+  params.set("initial", TestType{});
+  constexpr int iterations = 1000;
+  auto start = std::barrier(2);
+  auto writer = std::jthread([&] {
+    start.arrive_and_wait();
+    for (int i = 0; i < iterations; ++i) {
+      params.set(std::to_string(i % 32), std::vector<TestType>(1 + i % 8));
+    }
+  });
+  start.arrive_and_wait();
+
+  SECTION("clear") {
+    for (int i = 0; i < iterations; ++i) {
+      params.clear();
+    }
+  }
+
+  SECTION("empty") {
+    for (int i = 0; i < iterations; ++i) {
+      REQUIRE_FALSE(params.empty());
+    }
+  }
+
+  SECTION("print") {
+    auto output = std::ostringstream{};
+    for (int i = 0; i < iterations; ++i) {
+      output.str("");
+      params.print(output, false);
+    }
+  }
+
+  writer.join();
+  params.clear();
+  REQUIRE(params.empty());
 }
 
 TEST_CASE("GenericParameters constructors", "[generic-parameters]") {

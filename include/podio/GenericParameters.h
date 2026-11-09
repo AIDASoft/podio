@@ -112,6 +112,7 @@ public:
 
   /// erase all elements
   void clear() {
+    std::scoped_lock lock(getMutex<int>(), getMutex<float>(), getMutex<std::string>(), getMutex<double>());
     _intMap.clear();
     _floatMap.clear();
     _doubleMap.clear();
@@ -122,6 +123,7 @@ public:
 
   /// Check if no parameter is stored (i.e. if all internal maps are empty)
   bool empty() const {
+    std::scoped_lock lock(getMutex<int>(), getMutex<float>(), getMutex<std::string>(), getMutex<double>());
     return _intMap.empty() && _floatMap.empty() && _doubleMap.empty() && _stringMap.empty();
   }
 

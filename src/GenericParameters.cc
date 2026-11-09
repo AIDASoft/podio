@@ -45,6 +45,7 @@ void printMap(const MapType& map, std::ostream& os) {
 }
 
 void GenericParameters::print(std::ostream& os, bool flush) const {
+  std::scoped_lock lock(getMutex<int>(), getMutex<float>(), getMutex<std::string>(), getMutex<double>());
   os << "int parameters\n\n";
   printMap(getMap<int>(), os);
   os << "\nfloat parameters\n";
