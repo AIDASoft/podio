@@ -508,6 +508,7 @@ bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& 
     inserted = m_retrievedIDs.insert(collectionID).second;
   }
   // Release the map lock before doGet, which also locks the map and can recurse.
+  // Holding even a recursive mutex here would serialize unpacking and relation resolution.
 
   if (inserted) {
     auto coll = doGet(name.value());

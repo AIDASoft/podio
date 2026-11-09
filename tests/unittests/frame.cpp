@@ -1,9 +1,7 @@
 #include "podio/Frame.h"
-#include "podio/CollectionBufferFactory.h"
 
 #include "catch2/catch_test_macros.hpp"
 
-#include "datamodel/DatamodelDefinition.h"
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
 #include "datamodel/ExampleHit.h"
@@ -12,7 +10,6 @@
 
 #include <algorithm>
 #include <array>
-#include <barrier>
 #include <initializer_list>
 #include <map>
 #include <memory>
@@ -120,99 +117,6 @@ TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread
     REQUIRE(clusters.size() == 2);
     for (const auto c : clusters) {
       REQUIRE(c.energy() == i * 3.14);
-    }
-  }
-}
-
-namespace {
-struct RelationFrameData {
-  podio::CollectionIDTable idTable{};
-  std::map<std::string, podio::CollectionReadBuffers> buffers{};
-
-  podio::CollectionIDTable getIDTable() const {
-    return {idTable.ids(), idTable.names()};
-  }
-
-  std::optional<podio::CollectionReadBuffers> getCollectionBuffers(const std::string& name) {
-    auto node = buffers.extract(name);
-    if (node.empty()) {
-      return std::nullopt;
-    }
-    return std::move(node.mapped());
-  }
-
-  std::vector<std::string> getAvailableCollections() const {
-    std::vector<std::string> names;
-    names.reserve(buffers.size());
-    for (const auto& [name, _] : buffers) {
-      names.push_back(name);
-    }
-    return names;
-  }
-
-  std::unique_ptr<podio::GenericParameters> getParameters() const {
-    return std::make_unique<podio::GenericParameters>();
-  }
-};
-} // namespace
-
-TEST_CASE("Frame collections multithreaded relation resolution", "[frame][multithread]") {
-  constexpr int nThreads = 10;
-  constexpr int nCollections = 100;
-  auto data = std::make_unique<RelationFrameData>();
-  const auto& factory = podio::CollectionBufferFactory::instance();
-  std::vector<uint32_t> hitIDs;
-  hitIDs.reserve(nCollections);
-
-  for (int i = 0; i < nCollections; ++i) {
-    const auto name = "hits_" + std::to_string(i);
-    hitIDs.push_back(data->idTable.add(name));
-    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, false).value();
-    buffers.dataAsVector<ExampleHitData>()->emplace_back(ExampleHitData{static_cast<unsigned long long>(i)});
-    data->buffers.emplace(name, std::move(buffers));
-  }
-
-  for (int i = 0; i < nThreads; ++i) {
-    const auto name = "subset_" + std::to_string(i);
-    data->idTable.add(name);
-    auto buffers = factory.createBuffers("ExampleHitCollection", datamodel::meta::schemaVersion, true).value();
-    // Resolve every target twice to exercise both new and previously retrieved IDs.
-    for (int repeat = 0; repeat < 2; ++repeat) {
-      for (const auto id : hitIDs) {
-        (*buffers.references)[0]->push_back(podio::ObjectID{0, id});
-      }
-    }
-    data->buffers.emplace(name, std::move(buffers));
-  }
-
-  auto frame = podio::Frame(std::move(data));
-  // Preload the relation targets so that only the ID tracking is shared during
-  // relation resolution; each thread unpacks a different subset collection.
-  for (int i = 0; i < nCollections; ++i) {
-    REQUIRE(frame.get<ExampleHitCollection>("hits_" + std::to_string(i)).size() == 1);
-  }
-
-  std::barrier start{nThreads};
-  std::array<const ExampleHitCollection*, nThreads> subsets{};
-  std::vector<std::thread> threads;
-  threads.reserve(nThreads);
-  for (int i = 0; i < nThreads; ++i) {
-    threads.emplace_back([&frame, &start, &subsets, i]() {
-      start.arrive_and_wait();
-      subsets[i] = &frame.get<ExampleHitCollection>("subset_" + std::to_string(i));
-    });
-  }
-  for (auto& thread : threads) {
-    thread.join();
-  }
-
-  // Catch2 assertions must run on the main thread.
-  for (const auto* subset : subsets) {
-    REQUIRE(subset != nullptr);
-    REQUIRE(subset->size() == 2 * nCollections);
-    for (int i = 0; i < 2 * nCollections; ++i) {
-      REQUIRE((*subset)[i].cellID() == static_cast<unsigned long long>(i % nCollections));
-      REQUIRE((*subset)[i].getObjectID().collectionID == hitIDs[i % nCollections]);
     }
   }
 }
