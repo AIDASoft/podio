@@ -301,6 +301,7 @@ void RNTupleWriter::finish() {
 
   // ROOT's RNTupleWriter destructors log write failures instead of throwing.
   // Check after all writers have been destroyed and the file has been closed.
+  // Move ownership to a local so the file is destroyed even if the check throws.
   auto file = std::move(m_file);
   file->Close();
   if (file->TestBit(TFile::kWriteError)) {
