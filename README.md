@@ -1,7 +1,8 @@
 # podio
 
-[![linux](https://github.com/AIDASoft/podio/actions/workflows/test.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/test.yml)
-[![ubuntu](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/ubuntu.yml)
+[![lcg](https://github.com/AIDASoft/podio/actions/workflows/lcg.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/lcg.yml)
+[![key4hep](https://github.com/AIDASoft/podio/actions/workflows/key4hep.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/key4hep.yml)
+[![downstream](https://github.com/AIDASoft/podio/actions/workflows/downstream.yml/badge.svg)](https://github.com/AIDASoft/podio/actions/workflows/downstream.yml)
 [![coverity](https://scan.coverity.com/projects/22634/badge.svg)](https://scan.coverity.com/projects/aidasoft-podio)
 [![docs](https://img.shields.io/badge/docs-master-blue.svg)](https://key4hep.web.cern.ch/podio/)
 
