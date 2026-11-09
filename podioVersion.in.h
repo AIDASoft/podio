@@ -15,11 +15,11 @@
 #define PODIO_VERSION(major, minor, patch)                                                                             \
   ((UINT64_C(major) << 32) | (UINT64_C(minor) << 16) | UINT64_C(patch))
 /// Get the major version from a preprocessor defined version
-#define PODIO_MAJOR_VERSION(v) (((v) & (-1UL >> 16)) >> 32)
+#define PODIO_MAJOR_VERSION(v) (((v) >> 32) & UINT64_C(0xFFFF))
 /// Get the minor version from a preprocessor defined version
-#define PODIO_MINOR_VERSION(v) (((v) & (-1UL >> 32)) >> 16)
+#define PODIO_MINOR_VERSION(v) (((v) >> 16) & UINT64_C(0xFFFF))
 /// Get the patch version from a preprocessor defined version
-#define PODIO_PATCH_VERSION(v) ((v) & (-1UL >> 48))
+#define PODIO_PATCH_VERSION(v) ((v) & UINT64_C(0xFFFF))
 
 // Some helper constants that are populated by the cmake configure step
 #define podio_VERSION_MAJOR @podio_VERSION_MAJOR@
@@ -84,7 +84,7 @@ inline std::ostream& operator<<(std::ostream& os, const Version& v) {
 static constexpr Version build_version{podio_VERSION_MAJOR, podio_VERSION_MINOR, podio_VERSION_PATCH};
 
 /// Decode a version from a 64 bit unsigned
-static consteval Version decode_version(unsigned long version) noexcept {
+static consteval Version decode_version(uint64_t version) noexcept {
   return Version{static_cast<uint16_t>(PODIO_MAJOR_VERSION(version)),
                  static_cast<uint16_t>(PODIO_MINOR_VERSION(version)),
                  static_cast<uint16_t>(PODIO_PATCH_VERSION(version))};
