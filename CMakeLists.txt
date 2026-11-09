@@ -42,7 +42,7 @@ if(NOT CMAKE_CXX_STANDARD MATCHES "^[0-9]+$" OR CMAKE_CXX_STANDARD LESS 20 OR CM
 endif()
 
 if(CMAKE_CXX_STANDARD EQUAL 20)
-  message(DEPRECATION "Building podio with c++20 is deprecated and support for it will be removed in a future version. Please consider switching to c++23 or newer (-DCMAKE_CXX_STANDARD=23). See https://github.com/AIDASoft/podio/issues/1073 for more details")
+  message(WARNING "Building podio with c++20 is deprecated and support for it will be removed in a future version. Please consider switching to c++23 or newer (-DCMAKE_CXX_STANDARD=23). See https://github.com/AIDASoft/podio/issues/1073 for more details")
 endif()
 
 # Prevent CMake falls back to the latest standard the compiler does support
