@@ -47,7 +47,7 @@
         },
         {
             "name": "ci-build-no-root",
-            "displayName": "Full build with warnings as errors, without ROOT (and RNTuple and DataSource)",
+            "displayName": "Full build with warnings as errors, without ROOT and python bindings",
             "inherits": "ci-build",
             "cacheVariables": {
                 "ENABLE_ROOT": "OFF"
@@ -58,9 +58,7 @@
         {
             "name": "ci-base",
             "hidden": true,
-            "nativeToolOptions": [
-                "-k0"
-            ]
+            "nativeToolOptions": ["-k0"]
         },
         {
             "name": "ci-build",

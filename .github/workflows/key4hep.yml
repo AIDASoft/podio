@@ -3,7 +3,7 @@ name: key4hep
 on:
   push:
     branches:
-    - master
+      - master
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -22,24 +22,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # sw.hsf.org: releases, sw-nightlies.hsf.org: nightlies
         image: ["el9"]
         cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
         include:
           - image: "ubuntu2404"
             cvmfs_repo: "sw-nightlies.hsf.org"
-          - image: "ubuntu2204"  # gcc-11 compatibility
+          - image: "ubuntu2204" # gcc-11 compatibility
             cvmfs_repo: "sw.hsf.org"
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - uses: ./.github/actions/podio-build
-      with:
-        view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
-        container: ${{ matrix.image }}
-        ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
-        # Remove the podio of the Key4hep stack from the environment
-        setup: k4_local_repo
-        cmake-args: -DPODIO_RUN_STRACE_TEST=ON
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: ./.github/actions/podio-build
+        with:
+          view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
+          container: ${{ matrix.image }}
+          ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
+          # Remove the podio of the Key4hep stack from the environment
+          setup: k4_local_repo
+          cmake-args: -DPODIO_RUN_STRACE_TEST=ON
 
   # Single job that can be used as required check, independent of the matrix
   key4hep-ok:
@@ -47,6 +46,6 @@ jobs:
     needs: build-and-test
     runs-on: ubuntu-latest
     steps:
-    - name: Check that all jobs succeeded
-      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
-      run: exit 1
+      - name: Check that all jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1

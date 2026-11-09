@@ -7,7 +7,7 @@ name: downstream
 on:
   push:
     branches:
-    - master
+      - master
   pull_request:
   merge_group:
   workflow_dispatch:
@@ -36,34 +36,34 @@ jobs:
           - platform: dev3/x86_64-el9-clang22-opt
             cxx-std: 20
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        path: podio
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        repository: key4hep/EDM4hep
-        path: edm4hep
-    - uses: ./podio/.github/actions/podio-build
-      with:
-        source-dir: podio
-        release-platform: ${{ matrix.platform }}
-        ccache-key: ccache-edm4hep-${{ matrix.platform }}
-        julia: true
-        cmake-args: >-
-          -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }}
-          -DUSE_EXTERNAL_CATCH2=ON
-          ${{ matrix.cmake-args }}
-        post-install: |
-          echo "::group::Build and test EDM4hep"
-          cmake -S edm4hep -B edm4hep/build \
-            -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }} \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DUSE_EXTERNAL_CATCH2=ON \
-            -G Ninja
-          cmake --build edm4hep/build -- -k0
-          ctest --test-dir edm4hep/build --output-on-failure
-          echo "::endgroup::"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: podio
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: key4hep/EDM4hep
+          path: edm4hep
+      - uses: ./podio/.github/actions/podio-build
+        with:
+          source-dir: podio
+          release-platform: ${{ matrix.platform }}
+          ccache-key: ccache-edm4hep-${{ matrix.platform }}
+          julia: true
+          cmake-args: >-
+            -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }}
+            -DUSE_EXTERNAL_CATCH2=ON
+            ${{ matrix.cmake-args }}
+          post-install: |
+            echo "::group::Build and test EDM4hep"
+            cmake -S edm4hep -B edm4hep/build \
+              -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }} \
+              -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DUSE_EXTERNAL_CATCH2=ON \
+              -G Ninja
+            cmake --build edm4hep/build -- -k0
+            ctest --test-dir edm4hep/build --output-on-failure
+            echo "::endgroup::"
 
   edm4eic:
     name: EDM4eic ${{ matrix.image }}
@@ -74,48 +74,48 @@ jobs:
       matrix:
         image: [el9, ubuntu2404]
     steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        path: podio
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        repository: key4hep/EDM4hep
-        path: edm4hep
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      with:
-        repository: eic/EDM4eic
-        path: edm4eic
-    - uses: ./podio/.github/actions/podio-build
-      with:
-        source-dir: podio
-        view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
-        container: ${{ matrix.image }}
-        ccache-key: ccache-edm4eic-${{ matrix.image }}
-        cmake-args: -DBUILD_TESTING=OFF
-        test: false
-        post-install: |
-          echo "::group::Build EDM4hep"
-          cmake -S edm4hep -B edm4hep/build \
-            -DCMAKE_INSTALL_PREFIX=$(pwd)/edm4hep/install \
-            -DCMAKE_CXX_STANDARD=20 \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-            -DUSE_EXTERNAL_CATCH2=ON \
-            -DBUILD_TESTING=OFF \
-            -G Ninja
-          cmake --build edm4hep/build --target install
-          cd edm4hep && k4_local_repo && cd ..
-          echo "::endgroup::"
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: podio
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: key4hep/EDM4hep
+          path: edm4hep
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: eic/EDM4eic
+          path: edm4eic
+      - uses: ./podio/.github/actions/podio-build
+        with:
+          source-dir: podio
+          view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
+          container: ${{ matrix.image }}
+          ccache-key: ccache-edm4eic-${{ matrix.image }}
+          cmake-args: -DBUILD_TESTING=OFF
+          test: false
+          post-install: |
+            echo "::group::Build EDM4hep"
+            cmake -S edm4hep -B edm4hep/build \
+              -DCMAKE_INSTALL_PREFIX=$(pwd)/edm4hep/install \
+              -DCMAKE_CXX_STANDARD=20 \
+              -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+              -DUSE_EXTERNAL_CATCH2=ON \
+              -DBUILD_TESTING=OFF \
+              -G Ninja
+            cmake --build edm4hep/build --target install
+            cd edm4hep && k4_local_repo && cd ..
+            echo "::endgroup::"
 
-          echo "::group::Build and test EDM4eic"
-          cmake -S edm4eic -B edm4eic/build \
-            -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
-            -DBUILD_TESTING=ON \
-            -DGENERATE_DOCS=OFF \
-            -G Ninja
-          cmake --build edm4eic/build
-          ctest --test-dir edm4eic/build -j$(nproc) --output-on-failure
-          echo "::endgroup::"
+            echo "::group::Build and test EDM4eic"
+            cmake -S edm4eic -B edm4eic/build \
+              -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always -Werror " \
+              -DBUILD_TESTING=ON \
+              -DGENERATE_DOCS=OFF \
+              -G Ninja
+            cmake --build edm4eic/build
+            ctest --test-dir edm4eic/build -j$(nproc) --output-on-failure
+            echo "::endgroup::"
 
   # Single job that can be used as required check. Jobs marked as
   # continue-on-error: true above will not fail this even if they failed
@@ -124,6 +124,6 @@ jobs:
     needs: [edm4hep, edm4eic]
     runs-on: ubuntu-latest
     steps:
-    - name: Check that all (non-monitoring) jobs succeeded
-      if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
-      run: exit 1
+      - name: Check that all (non-monitoring) jobs succeeded
+        if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')
+        run: exit 1

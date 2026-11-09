@@ -13,11 +13,11 @@ inputs:
   release-platform:
     description: LCG release and platform string (e.g. LCG_107/x86_64-el9-gcc13-opt)
     required: false
-    default: ''
+    default: ""
   view-path:
     description: Path to a view setup script (e.g. /cvmfs/sw.hsf.org/key4hep). Alternative to release-platform
     required: false
-    default: ''
+    default: ""
   container:
     description: Container to use with view-path (default 'auto', which infers it from view-path)
     required: false
@@ -34,7 +34,7 @@ inputs:
       Script to run before configuring podio, e.g. to adapt the environment
       of the view. The working directory is the podio source directory
     required: false
-    default: ''
+    default: ""
   preset:
     description: >-
       CMake preset to use for configuring, building and testing. Needs to have
@@ -44,30 +44,30 @@ inputs:
   cmake-args:
     description: Additional arguments for configuring podio
     required: false
-    default: ''
+    default: ""
   julia:
     description: Enable Julia code generation and install the packages that are necessary for testing it
     required: false
-    default: 'false'
+    default: "false"
   test:
     description: Run the podio tests
     required: false
-    default: 'true'
+    default: "true"
   ctest-args:
     description: Additional arguments for ctest
     required: false
-    default: ''
+    default: ""
   install:
     description: Install podio
     required: false
-    default: 'true'
+    default: "true"
   post-install:
     description: >-
       Script to run after podio has been installed (requires install). The
       environment is setup via init.sh and the working directory is the
       workspace
     required: false
-    default: ''
+    default: ""
 
 runs:
   using: composite
