@@ -37,6 +37,7 @@
 #include <arrow/api.h>
 
 #include <array>
+#include <barrier>
 #include <cstddef>
 #include <cstdint>
 #include <limits>
@@ -44,12 +45,72 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
 namespace arrow {
 class Array;
 } // namespace arrow
+
+// Run with -DUSE_SANITIZER=Thread to detect races even when the assertions pass.
+TEST_CASE("Frame collections multithreaded relation resolution", "[frame][arrow][multithread]") {
+  constexpr int nThreads = 10;
+  constexpr int nCollections = 100;
+  auto originalFrame = podio::Frame();
+  std::array<std::uint32_t, nCollections> hitIDs{};
+
+  for (int i = 0; i < nCollections; ++i) {
+    auto hits = ExampleHitCollection();
+    hits.create(static_cast<unsigned long long>(i));
+    hitIDs[i] = originalFrame.put(std::move(hits), "hits_" + std::to_string(i)).getID();
+  }
+
+  for (int i = 0; i < nThreads; ++i) {
+    auto subset = ExampleHitCollection();
+    subset.setSubsetCollection();
+    // Resolve every target twice to exercise both new and previously retrieved IDs.
+    for (int repeat = 0; repeat < 2; ++repeat) {
+      for (int j = 0; j < nCollections; ++j) {
+        subset.push_back(originalFrame.get<ExampleHitCollection>("hits_" + std::to_string(j))[0]);
+      }
+    }
+    originalFrame.put(std::move(subset), "subset_" + std::to_string(i));
+  }
+
+  // Round-trip in memory to obtain lazy collection buffers without file I/O.
+  const auto table = podio::convertFrameToTable(originalFrame, originalFrame.getAvailableCollections());
+  auto frame = podio::convertTableToFrame(table, 0);
+  // Preload the relation targets so that only the ID tracking is shared during
+  // relation resolution; each thread unpacks a different subset collection.
+  for (int i = 0; i < nCollections; ++i) {
+    REQUIRE(frame.get<ExampleHitCollection>("hits_" + std::to_string(i)).size() == 1);
+  }
+
+  // Start all threads resolving relations at the same time to expose races.
+  std::barrier start{nThreads};
+  std::array<const ExampleHitCollection*, nThreads> subsets{};
+  {
+    std::vector<std::jthread> threads;
+    threads.reserve(nThreads);
+    for (int i = 0; i < nThreads; ++i) {
+      threads.emplace_back([&frame, &start, &subsets, i]() {
+        start.arrive_and_wait();
+        subsets[i] = &frame.get<ExampleHitCollection>("subset_" + std::to_string(i));
+      });
+    }
+  }
+
+  // Catch2 assertions must run on the main thread, after all jthreads have joined.
+  for (const auto* subset : subsets) {
+    REQUIRE(subset != nullptr);
+    REQUIRE(subset->size() == 2 * nCollections);
+    for (int i = 0; i < 2 * nCollections; ++i) {
+      REQUIRE((*subset)[i].cellID() == static_cast<unsigned long long>(i % nCollections));
+      REQUIRE((*subset)[i].getObjectID().collectionID == hitIDs[i % nCollections]);
+    }
+  }
+}
 
 TEST_CASE("ArrowFrameConverter - convertFrameToTable Verification", "[arrow][converter]") {
   auto originalFrame = makeFrame(0);

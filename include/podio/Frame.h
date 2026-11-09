@@ -152,7 +152,7 @@ class Frame {
     podio::CollectionIDTable m_idTable{};                   ///< The collection ID table
     std::unique_ptr<podio::GenericParameters> m_parameters{nullptr}; ///< The generic parameter store for this frame
     mutable std::set<uint32_t> m_retrievedIDs{}; ///< The IDs of the collections that we have already read (but not yet
-                                                 ///< put into the map)
+                                                 ///< put into the map). Guarded by m_mapMtx.
   };
 
   std::unique_ptr<FrameConcept> m_self; ///< The internal concept pointer through which all the work is done
@@ -502,7 +502,13 @@ bool Frame::FrameModel<FrameDataT>::get(uint32_t collectionID, CollectionBase*& 
   if (!name) {
     return false;
   }
-  const auto& [_, inserted] = m_retrievedIDs.insert(collectionID);
+  bool inserted = false;
+  {
+    std::lock_guard lock{*m_mapMtx};
+    inserted = m_retrievedIDs.insert(collectionID).second;
+  }
+  // Release the map lock before doGet, which also locks the map and can recurse.
+  // Holding even a recursive mutex here would serialize unpacking and relation resolution.
 
   if (inserted) {
     auto coll = doGet(name.value());
