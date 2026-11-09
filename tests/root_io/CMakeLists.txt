@@ -123,6 +123,16 @@ if (ENABLE_RNTUPLE)
   set_tests_properties(read_python_frame_rntuple PROPERTIES FIXTURES_REQUIRED podio_write_python_rntuple_fixture)
 endif()
 
+# RLIMIT_FSIZE and SIGXFSZ are only available on Unix platforms.
+if(UNIX)
+  add_test(NAME write_error_root COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/write_error.py Writer)
+  PODIO_SET_TEST_ENV(write_error_root PYTHON)
+  if(ENABLE_RNTUPLE)
+    add_test(NAME write_error_rntuple COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/write_error.py RNTupleWriter)
+    PODIO_SET_TEST_ENV(write_error_rntuple PYTHON)
+  endif()
+endif()
+
 add_test(NAME param_reading_rdataframe COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/param_reading_rdataframe.py example_frame.root)
 PODIO_SET_TEST_ENV(param_reading_rdataframe PYTHON)
 set_tests_properties(param_reading_rdataframe PROPERTIES FIXTURES_REQUIRED podio_write_root_fixture)

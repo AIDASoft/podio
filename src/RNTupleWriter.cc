@@ -299,7 +299,13 @@ void RNTupleWriter::finish() {
     }
   }
 
-  m_file.reset();
+  // ROOT's RNTupleWriter destructors log write failures instead of throwing.
+  // Check after all writers have been destroyed and the file has been closed.
+  auto file = std::move(m_file);
+  file->Close();
+  if (file->TestBit(TFile::kWriteError)) {
+    throw std::runtime_error("Failed to write RNTuple file '" + std::string(file->GetName()) + "'");
+  }
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>
