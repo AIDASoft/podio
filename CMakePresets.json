@@ -29,10 +29,12 @@
         },
         {
             "name": "full-build",
-            "displayName": "Full build including schema evolution tests and SIO",
+            "displayName": "Full build including schema evolution tests, SIO, Arrow and Parquet",
             "inherits": "base-build",
             "cacheVariables": {
                 "ENABLE_SIO": "ON",
+                "ENABLE_ARROW": "ON",
+                "ENABLE_PARQUET": "ON",
                 "PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS": "ON"
             }
         },

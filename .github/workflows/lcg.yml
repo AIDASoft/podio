@@ -25,13 +25,9 @@ jobs:
         include:
           # Nightlies
           - platform: dev3/x86_64-el9-gcc15-opt
-            cmake-args: -DENABLE_PARQUET=ON
           - platform: dev4/x86_64-el9-clang22-opt
-            cmake-args: -DENABLE_PARQUET=ON
           - platform: dev4/x86_64-el9-gcc15-opt
-            cmake-args: -DENABLE_PARQUET=ON
           - platform: dev4/x86_64-el9-gcc16-opt
-            cmake-args: -DENABLE_PARQUET=ON
           - platform: dev3/x86_64-ubuntu2404-gcc13-opt
 
           # Explicit build that requires fetching an external Catch2 to keep
@@ -43,7 +39,6 @@ jobs:
           - platform: dev4/x86_64-el9-gcc16-opt
             label: no ROOT
             preset: ci-build-no-root
-            cmake-args: -DENABLE_PARQUET=ON
 
           # Releases
           - platform: LCG_108/x86_64-el9-gcc15-opt # ROOT 6.36.02 (built with C++23)
@@ -60,7 +55,7 @@ jobs:
           ccache-key: ccache-lcg-${{ matrix.platform }}-${{ matrix.preset || 'ci-build' }}
           preset: ${{ matrix.preset || 'ci-build' }}
           julia: true
-          cmake-args: -DENABLE_ARROW=ON ${{ matrix.cmake-args }}
+          cmake-args: ${{ matrix.cmake-args }}
 
   # Single job that can be used as required check, independent of the matrix
   lcg-ok:

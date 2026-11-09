@@ -29,6 +29,7 @@ jobs:
             cvmfs_repo: "sw-nightlies.hsf.org"
           - image: "ubuntu2204" # gcc-11 compatibility
             cvmfs_repo: "sw.hsf.org"
+            cmake-args: -DENABLE_ARROW=OFF -DENABLE_PARQUET=OFF
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/podio-build
@@ -38,7 +39,7 @@ jobs:
           ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
           # Remove the podio of the Key4hep stack from the environment
           setup: k4_local_repo
-          cmake-args: -DPODIO_RUN_STRACE_TEST=ON
+          cmake-args: -DPODIO_RUN_STRACE_TEST=ON ${{ matrix.cmake-args }}
 
   # Single job that can be used as required check, independent of the matrix
   key4hep-ok:

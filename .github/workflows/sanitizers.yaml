@@ -47,7 +47,6 @@ jobs:
           cmake-args: >-
             -DCMAKE_BUILD_TYPE=Debug
             -DCMAKE_CXX_STANDARD=23
-            -DENABLE_ARROW=ON
             -DUSE_SANITIZER=${{ matrix.sanitizer }}
           # Tests run (considerably) slower with sanitizers
           ctest-args: --timeout 1500
