@@ -220,6 +220,9 @@ void ROOTWriter::finish() {
   m_file.Write();
   metaTree.SetDirectory(nullptr);
   m_file.Close();
+  if (m_file.TestBit(TFile::kWriteError)) {
+    throw std::runtime_error("Failed to write ROOT file '" + std::string(m_file.GetName()) + "'");
+  }
 }
 
 std::tuple<std::vector<std::string>, std::vector<std::string>>

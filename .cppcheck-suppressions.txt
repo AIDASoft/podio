@@ -6,6 +6,11 @@ missingIncludeSystem:*
 *:*Dict.cxx
 *:MurmurHash3.cpp
 preprocessorErrorDirective:cpython/
+# Writer destructors intentionally terminate if implicit finalization fails.
+# Call finish() explicitly to handle write errors before destruction.
+throwInNoexceptFunction:ROOTWriter.cc
+throwInNoexceptFunction:RNTupleWriter.cc
+
 # These functions implement instance-bound APIs without reading instance state.
 functionStatic:ROOTLegacyReader.cc
 functionStatic:Frame.h
