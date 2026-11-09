@@ -33,7 +33,9 @@ jobs:
           - platform: dev4/x86_64-el9-gcc16-opt
             cmake-args: -DENABLE_PARQUET=ON
           - platform: dev3/x86_64-ubuntu2404-gcc13-opt
-            cmake-args: -DUSE_EXTERNAL_CATCH2=OFF
+
+          # Explicit build that requires fetching an external Catch2 to keep
+          # that option exercised
           - platform: dev4/x86_64-ubuntu2404-gcc13-opt
             cmake-args: -DUSE_EXTERNAL_CATCH2=OFF
 

@@ -51,7 +51,6 @@ jobs:
           julia: true
           cmake-args: >-
             -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }}
-            -DUSE_EXTERNAL_CATCH2=ON
             ${{ matrix.cmake-args }}
           post-install: |
             echo "::group::Build and test EDM4hep"
