@@ -138,7 +138,8 @@ namespace {
   /// Create the writer for the backend with the (optional) options
   ///
   /// @note The backend has to be available, see ensureAvailable()
-  Writer makeWriter(Backend backend, const std::string& filename, const std::any& options) {
+  Writer makeWriter(Backend backend, const std::string& filename [[maybe_unused]],
+                    const std::any& options [[maybe_unused]]) {
     switch (backend) {
     case Backend::TTree:
 #if PODIO_ENABLE_ROOT
