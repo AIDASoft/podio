@@ -1,8 +1,8 @@
 name: downstream
 
-# Build (and test) downstream packages against podio. Failures of jobs that
-# are marked as monitoring are visible, but do not fail the downstream-ok job
-# (which is the one that is used as required check)
+# Build (and test) downstream packages against podio. continue-on-error is used
+# to signal whether a build is allowed to fail and still pass CI (true) or
+# whether a failing build should also fail CI (false)
 
 on:
   push:
@@ -21,9 +21,9 @@ concurrency:
 
 jobs:
   edm4hep:
-    name: EDM4hep ${{ matrix.platform }}${{ matrix.monitoring && ' (monitoring)' || '' }}
+    name: EDM4hep ${{ matrix.platform }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.monitoring }}
+    continue-on-error: false # We want to make sure EDM4hep builds
     strategy:
       fail-fast: false
       matrix:
@@ -31,13 +31,10 @@ jobs:
           - platform: LCG_107/x86_64-el9-gcc13-opt
             cxx-std: 20
             cmake-args: -DPODIO_RUN_STRACE_TEST=ON
-            monitoring: false
           - platform: dev4/x86_64-el9-gcc15-opt
             cxx-std: 23
-            monitoring: false
           - platform: dev3/x86_64-el9-clang22-opt
             cxx-std: 20
-            monitoring: false
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -69,17 +66,13 @@ jobs:
           echo "::endgroup::"
 
   edm4eic:
-    name: EDM4eic ${{ matrix.image }}${{ matrix.monitoring && ' (monitoring)' || '' }}
+    name: EDM4eic ${{ matrix.image }}
     runs-on: ubuntu-latest
-    continue-on-error: ${{ matrix.monitoring }}
+    continue-on-error: true # We are OK with EDM4eic failing for now
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - image: el9
-            monitoring: true
-          - image: ubuntu2404
-            monitoring: true
+        image: [el9, ubuntu2404]
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -124,9 +117,8 @@ jobs:
           ctest --test-dir edm4eic/build -j$(nproc) --output-on-failure
           echo "::endgroup::"
 
-  # Single job that can be used as required check. Jobs marked as monitoring
-  # cannot make this fail, as they are reported as successful to dependent
-  # jobs (via continue-on-error)
+  # Single job that can be used as required check. Jobs marked as
+  # continue-on-error: true above will not fail this even if they failed
   downstream-ok:
     if: always()
     needs: [edm4hep, edm4eic]
