@@ -12,7 +12,8 @@
                 "PODIO_USE_CLANG_FORMAT": "OFF",
                 "PODIO_SET_RPATH": "ON",
                 "PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS": "OFF"
-            }
+            },
+            "installDir": "${sourceDir}/install"
         },
         {
             "name": "base-build",
@@ -28,10 +29,12 @@
         },
         {
             "name": "full-build",
-            "displayName": "Full build including schema evolution tests and SIO",
+            "displayName": "Full build including schema evolution tests, SIO, Arrow and Parquet",
             "inherits": "base-build",
             "cacheVariables": {
                 "ENABLE_SIO": "ON",
+                "ENABLE_ARROW": "ON",
+                "ENABLE_PARQUET": "ON",
                 "PODIO_ENABLE_SCHEMA_EVOLUTION_TESTS": "ON"
             }
         },
@@ -46,36 +49,36 @@
         },
         {
             "name": "ci-build-no-root",
-            "displayName": "Full build with warnings as errors, without ROOT",
+            "displayName": "Full build with warnings as errors, without ROOT and python bindings",
             "inherits": "ci-build",
             "cacheVariables": {
-                "ENABLE_ROOT": "OFF",
-                "ENABLE_RNTUPLE": "OFF",
-                "ENABLE_DATASOURCE": "OFF"
+                "ENABLE_ROOT": "OFF"
             }
         }
     ],
-
     "buildPresets": [
+        {
+            "name": "ci-base",
+            "hidden": true,
+            "nativeToolOptions": ["-k0"]
+        },
         {
             "name": "ci-build",
             "displayName": "Building like on CI",
-            "configurePreset": "ci-build",
-            "nativeToolOptions": ["-k0"]
+            "inherits": "ci-base",
+            "configurePreset": "ci-build"
         },
         {
             "name": "ci-build-no-root",
             "displayName": "Building like on CI, without ROOT",
-            "configurePreset": "ci-build-no-root",
-            "nativeToolOptions": ["-k0"]
+            "inherits": "ci-base",
+            "configurePreset": "ci-build-no-root"
         }
     ],
-
     "testPresets": [
         {
-            "name": "ci-build",
-            "displayName": "Testing like on CI",
-            "configurePreset": "ci-build",
+            "name": "ci-base",
+            "hidden": true,
             "execution": {
                 "stopOnFailure": false,
                 "scheduleRandom": true,
@@ -84,20 +87,18 @@
             "output": {
                 "outputOnFailure": true
             }
-
+        },
+        {
+            "name": "ci-build",
+            "displayName": "Testing like on CI",
+            "inherits": "ci-base",
+            "configurePreset": "ci-build"
         },
         {
             "name": "ci-build-no-root",
             "displayName": "Testing like on CI, without ROOT",
-            "configurePreset": "ci-build-no-root",
-            "execution": {
-                "stopOnFailure": false,
-                "scheduleRandom": true,
-                "timeout": 600
-            },
-            "output": {
-                "outputOnFailure": true
-            }
+            "inherits": "ci-base",
+            "configurePreset": "ci-build-no-root"
         }
     ]
 }

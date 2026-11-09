@@ -4,3 +4,6 @@ race:ROOT::Internal::RCluster::~RCluster
 race:ROOT::Internal::RClusterPool::WaitFor
 race:ROOT::Internal::RRawFileUnix::ReadAtImpl
 race:libROOTNTuple.so
+
+# Affecting tests with Arrow / Parquet
+race:libarrow.so
