@@ -126,8 +126,8 @@ TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread
 
 namespace {
 struct RelationFrameData {
-  podio::CollectionIDTable idTable;
-  std::map<std::string, podio::CollectionReadBuffers> buffers;
+  podio::CollectionIDTable idTable{};
+  std::map<std::string, podio::CollectionReadBuffers> buffers{};
 
   podio::CollectionIDTable getIDTable() const {
     return {idTable.ids(), idTable.names()};
@@ -143,6 +143,7 @@ struct RelationFrameData {
 
   std::vector<std::string> getAvailableCollections() const {
     std::vector<std::string> names;
+    names.reserve(buffers.size());
     for (const auto& [name, _] : buffers) {
       names.push_back(name);
     }
@@ -161,6 +162,7 @@ TEST_CASE("Frame collections multithreaded relation resolution", "[frame][multit
   auto data = std::make_unique<RelationFrameData>();
   const auto& factory = podio::CollectionBufferFactory::instance();
   std::vector<uint32_t> hitIDs;
+  hitIDs.reserve(nCollections);
 
   for (int i = 0; i < nCollections; ++i) {
     const auto name = "hits_" + std::to_string(i);
@@ -193,6 +195,7 @@ TEST_CASE("Frame collections multithreaded relation resolution", "[frame][multit
   std::barrier start{nThreads};
   std::array<const ExampleHitCollection*, nThreads> subsets{};
   std::vector<std::thread> threads;
+  threads.reserve(nThreads);
   for (int i = 0; i < nThreads; ++i) {
     threads.emplace_back([&frame, &start, &subsets, i]() {
       start.arrive_and_wait();
