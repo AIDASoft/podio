@@ -9,6 +9,9 @@
 
 #include "MurmurHash3.h"
 
+#include <cstddef>
+#include <cstring>
+
 //-----------------------------------------------------------------------------
 // Platform-specific functions and macros
 
@@ -54,12 +57,16 @@ inline uint64_t rotl64(uint64_t x, int8_t r) {
 // Block read - if your platform needs to do endian-swapping or can only
 // handle aligned reads, do the conversion here
 
-FORCE_INLINE uint32_t getblock32(const uint32_t* p, int i) {
-  return p[i];
+FORCE_INLINE uint32_t getblock32(const uint8_t* p, std::ptrdiff_t i) {
+  uint32_t value;
+  std::memcpy(&value, p + i * 4, sizeof(value));
+  return value;
 }
 
-FORCE_INLINE uint64_t getblock64(const uint64_t* p, int i) {
-  return p[i];
+FORCE_INLINE uint64_t getblock64(const uint8_t* p, std::ptrdiff_t i) {
+  uint64_t value;
+  std::memcpy(&value, p + i * 8, sizeof(value));
+  return value;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,7 +108,7 @@ void MurmurHash3_x86_32(const void* key, int len, uint32_t seed, void* out) {
   //----------
   // body
 
-  const auto blocks = (const uint32_t*)(data + nblocks * 4);
+  const auto blocks = data + nblocks * 4;
 
   for (int i = -nblocks; i; i++) {
     uint32_t k1 = getblock32(blocks, i);
@@ -166,7 +173,7 @@ void MurmurHash3_x86_128(const void* key, const int len, uint32_t seed, void* ou
   //----------
   // body
 
-  const auto blocks = (const uint32_t*)(data + nblocks * 16);
+  const auto blocks = data + nblocks * 16;
 
   for (int i = -nblocks; i; i++) {
     uint32_t k1 = getblock32(blocks, i * 4 + 0);
@@ -335,7 +342,7 @@ void MurmurHash3_x64_128(const void* key, const int len, const uint32_t seed, vo
   //----------
   // body
 
-  const auto blocks = (const uint64_t*)(data);
+  const auto blocks = data;
 
   for (int i = 0; i < nblocks; i++) {
     uint64_t k1 = getblock64(blocks, i * 2 + 0);
