@@ -67,9 +67,7 @@ def find_versions(site_dir):
         for entry in site_dir.iterdir()
         if entry.is_dir() and (entry / "index.html").is_file()
     ]
-    ignored = sorted(
-        name for name in candidates if name != DEV_VERSION and not TAG_RE.match(name)
-    )
+    ignored = sorted(name for name in candidates if name != DEV_VERSION and not TAG_RE.match(name))
     for name in ignored:
         print(
             f"::warning::Ignoring directory '{name}': it is neither '{DEV_VERSION}' nor a "
