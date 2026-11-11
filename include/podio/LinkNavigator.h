@@ -83,15 +83,11 @@ public:
   /// Get all the *From* objects and weights that have links with the passed
   /// object
   ///
-  /// You will get this overload if you pass the podio::ReturnFrom tag as second
-  /// argument
-  ///
   /// @note This overload works always, even if the LinkCollection that was used
   /// to construct this instance of the LinkNavigator has the same From and To
   /// types.
   ///
   /// @param object The object that is labeled *To* in the link
-  /// @param . tag variable for selecting this overload
   ///
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
@@ -144,15 +140,11 @@ public:
   /// Get all the *To* objects and weights that have links with the passed
   /// object
   ///
-  /// You will get this overload if you pass the podio::ReturnTo tag as second
-  /// argument
-  ///
   /// @note This overload works always, even if the LinkCollection that was used
   /// to construct this instance of the LinkNavigator has the same From and To
   /// types.
   ///
   /// @param object The object that is labeled *From* in the link
-  /// @param . tag variable for selecting this overload
   ///
   /// @returns A vector of all objects and their weights that have links with
   ///          the passed object
