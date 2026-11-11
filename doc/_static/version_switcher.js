@@ -12,6 +12,17 @@
   const SWITCHER_FILE = "switcher.json";
   const VERSION_RE = /^[\w.-]+$/;
 
+  // The theme styles the switcher rather faint, make it a bit more visible
+  const SWITCHER_STYLE = `
+    .wy-side-nav-search > div.switch-menus,
+    .wy-side-nav-search > div.switch-menus > div.version-switch select {
+      color: hsla(0, 0%, 100%, 0.6);
+    }
+    .wy-side-nav-search > div.switch-menus > div.version-switch select:hover,
+    .wy-side-nav-search > div.switch-menus > div.version-switch select:focus {
+      color: hsla(0, 0%, 100%, 0.9);
+    }`;
+
   function setup() {
     const contentRoot = document.documentElement.dataset.content_root;
     if (contentRoot === undefined || window.location.protocol === "file:") {
@@ -69,6 +80,10 @@
     if (!sideNav) {
       return;
     }
+    const style = document.createElement("style");
+    style.textContent = SWITCHER_STYLE;
+    document.head.append(style);
+
     const search = sideNav.querySelector("div[role='search']");
     sideNav.insertBefore(menus, search);
   }
