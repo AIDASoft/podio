@@ -60,6 +60,7 @@ exclude_patterns = [
     "_build",
     "Thumbs.db",
     ".DS_Store",
+    ".venv",
     "cpp_api.rst",
     "py_api.rst",
     "ReleaseNotes.md",
