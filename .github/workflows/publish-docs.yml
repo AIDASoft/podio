@@ -92,6 +92,17 @@ jobs:
             git add --all "${TARGET_DIR}" switcher.json index.html
             echo "::endgroup::"
 
+            site_size=$(du -sb --exclude=.git . | cut -f1)
+            site_size_mb=$((site_size / 1000000))
+            echo "gh-pages size (after this version): ${site_size_mb} MB" >> $GITHUB_STEP_SUMMARY
+            if (( site_size_mb > 950 )); then
+                echo "::error::Published site is ${site_size_mb} MB, close to the 1GB github pages limit"
+                exit 1
+            fi
+            if (( site_size_mb > 750 )); then
+                echo "::warning::Published site is ${site_size_mb} MB. The github pages limit is 1GB"
+            fi
+
             if git diff --cached --quiet; then
               echo "Documentation is already up to date"
               exit 0
