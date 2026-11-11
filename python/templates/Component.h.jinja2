@@ -35,13 +35,16 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 #endif
 
+{{ utils.doc_internal_begin(package_name) }}
 namespace v{{ schema_version }} {
 using {{ class.bare_type }} = {{ class.full_type }};
 } // namespace v{{ schema_version }}
+{{ utils.doc_internal_end(package_name) }}
 {% endif %}
 
 {% if old_versions %}
 // Definitions for older versions
+{{ utils.doc_internal_begin(package_name) }}
 {% endif %}
 {% for old_version in old_versions %}
 namespace v{{ old_version.version }} {
@@ -55,6 +58,9 @@ public:
 
 } // namespace v{{ old_version.version }}
 {% endfor %}
+{% if old_versions %}
+{{ utils.doc_internal_end(package_name) }}
+{% endif %}
 
 {{ utils.namespace_close(class.namespace) }}
 

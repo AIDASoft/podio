@@ -15,6 +15,7 @@
 #include "podio/ObjectID.h"
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_internal_begin() }}
 {% with obj_type = class.bare_type + 'Obj' %}
 {{ obj_type }}::{{ obj_type }}() :
   data(){{ single_relations_initialize(OneToOneRelations) }}
@@ -59,4 +60,5 @@
 {%- endif %}
 
 {% endwith %}
+{{ utils.doc_internal_end() }}
 {{ utils.namespace_close(class.namespace) }}
