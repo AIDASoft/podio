@@ -127,7 +127,12 @@ print(f"Doxygen version: {doxygen_version}")
 env = os.environ.copy()
 env["DOXYGEN_WARN_AS_ERROR"] = "NO"
 
-os.makedirs("_build/cpp", exist_ok=True)
+# Neither doxygen nor breathe.apidoc remove outputs from previous runs, so
+# start from a clean slate to avoid picking up stale (e.g. now excluded)
+# symbols
+shutil.rmtree(doc_dir / "_build/cpp/doxygen-xml", ignore_errors=True)
+shutil.rmtree(doc_dir / "cpp_api", ignore_errors=True)
+os.makedirs(doc_dir / "_build/cpp", exist_ok=True)
 
 doxygen_output = subprocess.check_output(
     ["doxygen", "Doxyfile"], cwd=doc_dir, env=env, encoding="utf-8"
