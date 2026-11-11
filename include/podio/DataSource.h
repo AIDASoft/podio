@@ -152,6 +152,7 @@ private:
   /// @brief Setup input for the podio::DataSource.
   ///
   /// @param[in] nEvents Number of events.
+  /// @param[in] collsToRead The collections to read (all if empty).
   ///
   void SetupInput(int nEvents, const std::vector<std::string>& collsToRead);
 };
