@@ -78,11 +78,14 @@ private:
 };
 } // namespace podio
 
+/// @cond
+// Doxygen cannot handle these specializations of std variable templates
 // Opt-in to view concept
 template <typename ReferenceType>
 inline constexpr bool std::ranges::enable_view<podio::RelationRange<ReferenceType>> = true;
 // Opt-in to borrowed_range concept
 template <typename ReferenceType>
 inline constexpr bool std::ranges::enable_borrowed_range<podio::RelationRange<ReferenceType>> = true;
+/// @endcond
 
 #endif // PODIO_RELATIONRANGE_H
