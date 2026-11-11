@@ -68,8 +68,9 @@ def get_reader(filenames):
         filenames (str or list[str]): The input file(s)
 
     Returns:
-        root_io.[Legacy]Reader, sio_io.[Legacy]Reader: an initialized reader that
-            is able to process the input file(s).
+        BaseReaderMixin: an initialized reader that is able to process the input
+            file(s). One of root_io.Reader, root_io.RNTupleReader,
+            root_io.LegacyReader, sio_io.Reader or sio_io.LegacyReader
 
     Raises:
         ValueError: If the files cannot be recognized, or if podio has not been
