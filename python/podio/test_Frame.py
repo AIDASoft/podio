@@ -156,10 +156,24 @@ class FrameTest(unittest.TestCase):
 
     def test_frame_empty_parameters(self):
         """Check that working with empty parameters works"""
-        frame = Frame()
-        frame.put_parameter("empty_param", [], as_type="int")
-        vals = frame.get_parameter("empty_param")
-        self.assertEqual(len(vals), 0)
+        for value in ([], ()):
+            with self.subTest(value=value):
+                frame = Frame()
+                with self.assertRaisesRegex(ValueError, "explicit as_type"):
+                    frame.put_parameter("empty_param", value)
+                self.assertEqual(frame.parameters, ())
+
+            for as_type in ("int", "float", "double", "str"):
+                with self.subTest(value=value, as_type=as_type):
+                    frame = Frame()
+                    frame.put_parameter("empty_param", value, as_type=as_type)
+                    self.assertEqual(frame.get_parameter("empty_param"), [])
+
+            for as_type in ("", "unsupported"):
+                with self.subTest(value=value, as_type=as_type):
+                    frame = Frame()
+                    with self.assertRaises(ValueError):
+                        frame.put_parameter("empty_param", value, as_type=as_type)
 
 
 class FrameReadTest(unittest.TestCase):

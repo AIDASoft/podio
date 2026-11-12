@@ -251,7 +251,8 @@ class Frame:
 
         Puts a parameter into the Frame after doing some (incomplete) type checks.
         If a list is passed the parameter type is determined from looking at the
-        first element of the list only. Additionally, since python doesn't
+        first element of the list only. Empty lists and tuples require as_type
+        because their element type cannot be inferred. Additionally, since python doesn't
         differentiate between floats and doubles, floats will always be stored as
         doubles by default, use the as_type argument to change this if necessary.
 
@@ -265,12 +266,15 @@ class Frame:
                 pretty much face-value and there are only limited checks for this.
 
         Raises:
-            ValueError: If a non-supported parameter type is passed
+            ValueError: If a non-supported parameter type is passed, or an empty
+                list or tuple is passed without as_type
         """
         # For lists we determine the c++ vector type and use that to call the
         # correct template overload explicitly
         if isinstance(value, (list, tuple)):
-            type_name = as_type or type(value[0]).__name__
+            if not value and as_type is None:
+                raise ValueError("Empty parameter sequences require an explicit as_type")
+            type_name = as_type if as_type is not None else type(value[0]).__name__
             vec_types = _get_cpp_vector_types(type_name)
             if len(vec_types) == 0:
                 raise ValueError(f"Cannot put a parameter of type {type_name} into a Frame")
