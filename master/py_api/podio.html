@@ -21,6 +21,7 @@
       <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
       <script src="../_static/copybutton.js?v=f281be69"></script>
       <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script defer="defer" src="../_static/version_switcher.js?v=2f1f20aa"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -1355,7 +1356,8 @@ available afterwards.</p>
 <dd><p>Put a parameter into the Frame.</p>
 <p>Puts a parameter into the Frame after doing some (incomplete) type checks.
 If a list is passed the parameter type is determined from looking at the
-first element of the list only. Additionally, since python doesn’t
+first element of the list only. Empty lists and tuples require as_type
+because their element type cannot be inferred. Additionally, since python doesn’t
 differentiate between floats and doubles, floats will always be stored as
 doubles by default, use the as_type argument to change this if necessary.</p>
 <dl class="field-list simple">
@@ -1371,7 +1373,8 @@ pretty much face-value and there are only limited checks for this.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If a non-supported parameter type is passed</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If a non-supported parameter type is passed, or an empty
+    list or tuple is passed without as_type</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1912,7 +1915,8 @@ available afterwards.</p>
 <dd><p>Put a parameter into the Frame.</p>
 <p>Puts a parameter into the Frame after doing some (incomplete) type checks.
 If a list is passed the parameter type is determined from looking at the
-first element of the list only. Additionally, since python doesn’t
+first element of the list only. Empty lists and tuples require as_type
+because their element type cannot be inferred. Additionally, since python doesn’t
 differentiate between floats and doubles, floats will always be stored as
 doubles by default, use the as_type argument to change this if necessary.</p>
 <dl class="field-list simple">
@@ -1928,7 +1932,8 @@ pretty much face-value and there are only limited checks for this.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If a non-supported parameter type is passed</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If a non-supported parameter type is passed, or an empty
+    list or tuple is passed without as_type</p>
 </dd>
 </dl>
 </dd></dl>

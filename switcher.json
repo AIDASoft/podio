@@ -1,0 +1,73 @@
+[
+  {
+    "name": "master (development)",
+    "version": "master",
+    "url": "https://AIDASoft.github.io/podio/master/"
+  },
+  {
+    "name": "v01-09 (latest)",
+    "version": "v01-09",
+    "url": "https://AIDASoft.github.io/podio/v01-09/",
+    "preferred": true
+  },
+  {
+    "name": "v01-08",
+    "version": "v01-08",
+    "url": "https://AIDASoft.github.io/podio/v01-08/"
+  },
+  {
+    "name": "v01-07",
+    "version": "v01-07",
+    "url": "https://AIDASoft.github.io/podio/v01-07/"
+  },
+  {
+    "name": "v01-06",
+    "version": "v01-06",
+    "url": "https://AIDASoft.github.io/podio/v01-06/"
+  },
+  {
+    "name": "v01-05",
+    "version": "v01-05",
+    "url": "https://AIDASoft.github.io/podio/v01-05/"
+  },
+  {
+    "name": "v01-04-01",
+    "version": "v01-04-01",
+    "url": "https://AIDASoft.github.io/podio/v01-04-01/"
+  },
+  {
+    "name": "v01-04",
+    "version": "v01-04",
+    "url": "https://AIDASoft.github.io/podio/v01-04/"
+  },
+  {
+    "name": "v01-03",
+    "version": "v01-03",
+    "url": "https://AIDASoft.github.io/podio/v01-03/"
+  },
+  {
+    "name": "v01-02",
+    "version": "v01-02",
+    "url": "https://AIDASoft.github.io/podio/v01-02/"
+  },
+  {
+    "name": "v01-01",
+    "version": "v01-01",
+    "url": "https://AIDASoft.github.io/podio/v01-01/"
+  },
+  {
+    "name": "v01-00-01",
+    "version": "v01-00-01",
+    "url": "https://AIDASoft.github.io/podio/v01-00-01/"
+  },
+  {
+    "name": "v01-00",
+    "version": "v01-00",
+    "url": "https://AIDASoft.github.io/podio/v01-00/"
+  },
+  {
+    "name": "v00-99",
+    "version": "v00-99",
+    "url": "https://AIDASoft.github.io/podio/v00-99/"
+  }
+]
