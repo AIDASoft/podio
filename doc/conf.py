@@ -90,10 +90,15 @@ myst_heading_anchors = 3
 #
 html_theme = "sphinx_rtd_theme"
 
-# # Add any paths that contain custom static files (such as style sheets) here,
-# # relative to this directory. They are copied after the builtin static files,
-# # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path tml_static_path = ["_static"]
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ["_static"]
+
+# Version switcher for the documentation published on GitHub Pages. It reads
+# the list of versions from switcher.json at the root of the published site,
+# which is maintained by .github/scripts/docs_versions.py
+html_js_files = [("version_switcher.js", {"defer": "defer"})]
 
 # Do not copy the source markdown / rst files to the generated documentation
 html_copy_source = False
