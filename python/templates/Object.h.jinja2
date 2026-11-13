@@ -34,6 +34,7 @@ class Mutable{{ class.bare_type }};
 class {{ class.bare_type }}Collection;
 class {{ class.bare_type }}CollectionData;
 
+{{ utils.doc_user_facing_begin(package_name) }}
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 
@@ -75,6 +76,7 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 
 {{ macros.json_output(class.bare_type) }}
 
+{{ utils.doc_user_facing_end(package_name) }}
 {{ utils.namespace_close(class.namespace) }}
 
 {{ macros.std_hash(class) }}

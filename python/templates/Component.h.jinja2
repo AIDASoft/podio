@@ -19,6 +19,7 @@
 {{ utils.namespace_open(class.namespace) }}
 
 {% if generate_current_version %}
+{{ utils.doc_user_facing_begin(package_name) }}
 {{ macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
 public:
@@ -34,14 +35,18 @@ std::ostream& operator<<(std::ostream& o, const {{ class.bare_type }}& value);
 #if defined(PODIO_JSON_OUTPUT) && !defined(__CLING__)
 void to_json(nlohmann::json& j, const {{ class.bare_type }}& value);
 #endif
+{{ utils.doc_user_facing_end(package_name) }}
 
+{{ utils.doc_internal_begin(package_name) }}
 namespace v{{ schema_version }} {
 using {{ class.bare_type }} = {{ class.full_type }};
 } // namespace v{{ schema_version }}
+{{ utils.doc_internal_end(package_name) }}
 {% endif %}
 
 {% if old_versions %}
 // Definitions for older versions
+{{ utils.doc_internal_begin(package_name) }}
 {% endif %}
 {% for old_version in old_versions %}
 namespace v{{ old_version.version }} {
@@ -55,6 +60,9 @@ public:
 
 } // namespace v{{ old_version.version }}
 {% endfor %}
+{% if old_versions %}
+{{ utils.doc_internal_end(package_name) }}
+{% endif %}
 
 {{ utils.namespace_close(class.namespace) }}
 

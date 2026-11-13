@@ -21,6 +21,7 @@
 {{ utils.forward_decls(forward_declarations_obj) }}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_internal_begin(package_name) }}
 class {{ class.bare_type }};
 
 {% with obj_type = class.bare_type + 'Obj' %}
@@ -53,6 +54,7 @@ public:
 };
 {% endwith %}
 
+{{ utils.doc_internal_end(package_name) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif

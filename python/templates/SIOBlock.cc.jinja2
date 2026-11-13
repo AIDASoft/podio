@@ -13,6 +13,7 @@
 #include <sio/version.h>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_internal_begin() }}
 {% with block_class = class.bare_type + 'SIOBlock' %}
 
 void {{ block_class }}::read(sio::read_device& device, sio::version_type version) {
@@ -90,4 +91,5 @@ namespace {
 }
 
 {% endwith %}
+{{ utils.doc_internal_end() }}
 {{ utils.namespace_close(class.namespace) }}

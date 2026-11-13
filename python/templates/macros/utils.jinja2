@@ -11,6 +11,31 @@ namespace {{ nsp }} {
 {%- endmacro %}
 
 
+{% macro doc_internal_begin(package_name=None) %}
+/// \cond PODIO_INTERNAL
+{% if package_name %}
+/// \addtogroup {{ package_name }}_podio_internal
+/// @{
+{% endif %}
+{%- endmacro %}
+
+{% macro doc_internal_end(package_name=None) %}
+{% if package_name %}
+/// @}
+{% endif %}
+/// \endcond
+{%- endmacro %}
+
+{% macro doc_user_facing_begin(package_name) %}
+/// \addtogroup {{ package_name }}_user_facing
+/// @{
+{%- endmacro %}
+
+{% macro doc_user_facing_end(package_name) %}
+/// @}
+{%- endmacro %}
+
+
 {% macro if_present(content, field) %}
 {% if content and content[field] %}
 {{ content[field] }}

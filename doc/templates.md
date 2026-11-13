@@ -50,6 +50,23 @@ The presence of a `[<package>]` subdirectory for the header files is controlled 
 Jinja allows the definition of additional macros and supports importing them similar to python modules.
 These are stored in the `macros` subfolder under `<prefix>/python/templates` and are imported directly by the main templates where necessary.
 
+### Hiding internal classes from the doxygen documentation
+
+The generated classes that are not part of the user facing API (e.g. the `Obj`, `Data`, `CollectionData` and `SIOBlock` classes and the versioned definitions that are kept for schema evolution) are wrapped in a doxygen [conditional section](https://www.doxygen.nl/manual/commands.html#cmdcond) named `PODIO_INTERNAL`.
+Hence, they do not show up in the doxygen documentation of a generated datamodel by default.
+To include them, add the following to the `Doxyfile` of the datamodel
+```
+ENABLED_SECTIONS = PODIO_INTERNAL
+```
+In this case they are additionally grouped in a dedicated `<package> podio internals` topic.
+
+When adding new templates (or parts of templates) that are not user facing, wrap them in the `doc_internal_begin` and `doc_internal_end` macros from `macros/utils.jinja2`.
+Passing the `package_name` to both of them also adds them to the topic mentioned above (this should not be done in `.cc` files).
+
+The user facing classes (i.e. the handle and collection types, links, components, etc.) are always grouped in a dedicated `<package> datamodel` topic.
+This topic is not hidden behind a conditional section, and gives a counterpart to the `<package> podio internals` topic in case the latter is enabled.
+When adding new templates (or parts of templates) that are user facing, wrap them in the `doc_user_facing_begin` and `doc_user_facing_end` macros from `macros/utils.jinja2` (again, not in `.cc` files).
+
 ## Adding a new template
 All templates that are placed in the templates directory mentioned [above](#existing-templates) become immediately available to the template engine if it ends on `.jinja2`
 However, it is still necessary to actively fill them from the class generator.

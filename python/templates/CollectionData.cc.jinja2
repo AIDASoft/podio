@@ -12,6 +12,7 @@
 #include <podio/detail/RelationIOHelpers.h>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_internal_begin() }}
 {% with class_type = class.bare_type + 'CollectionData' %}
 
 {{ class_type }}::{{ class_type }}() :
@@ -244,4 +245,5 @@ void {{ class_type }}::makeSubsetCollection() {
 
 {% endwith %}
 
+{{ utils.doc_internal_end() }}
 {{ utils.namespace_close(class.namespace) }}

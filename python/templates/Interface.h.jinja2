@@ -19,6 +19,7 @@
 #include <stdexcept>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_user_facing_begin(package_name) }}
 
 {{ common_macros.class_description(class.bare_type, Description, Author) }}
 class {{ class.bare_type }} {
@@ -181,6 +182,7 @@ public:
   friend std::hash<{{ class.bare_type }}>;
 };
 
+{{ utils.doc_user_facing_end(package_name) }}
 {{ utils.namespace_close(class.namespace) }}
 
 template<>

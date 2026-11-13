@@ -10,6 +10,7 @@
 {% endfor %}
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_internal_begin(package_name) }}
 
 {{ macros.class_description(class.bare_type, Description, Author, postfix='Data') }}
 class {{ class.bare_type }}Data {
@@ -48,6 +49,7 @@ public:
 } // namespace v{{ old_version.version }}
 {% endfor %}
 
+{{ utils.doc_internal_end(package_name) }}
 {{ utils.namespace_close(class.namespace) }}
 
 #endif
