@@ -26,6 +26,15 @@ namespace {{ nsp }} {
 /// \endcond
 {%- endmacro %}
 
+{% macro doc_user_facing_begin(package_name) %}
+/// \addtogroup {{ package_name }}_user_facing
+/// @{
+{%- endmacro %}
+
+{% macro doc_user_facing_end(package_name) %}
+/// @}
+{%- endmacro %}
+
 
 {% macro if_present(content, field) %}
 {% if content and content[field] %}

@@ -63,6 +63,10 @@ In this case they are additionally grouped in a dedicated `<package> podio inter
 When adding new templates (or parts of templates) that are not user facing, wrap them in the `doc_internal_begin` and `doc_internal_end` macros from `macros/utils.jinja2`.
 Passing the `package_name` to both of them also adds them to the topic mentioned above (this should not be done in `.cc` files).
 
+The user facing classes (i.e. the handle and collection types, links, components, etc.) are always grouped in a dedicated `<package> datamodel` topic.
+This topic is not hidden behind a conditional section, and gives a counterpart to the `<package> podio internals` topic in case the latter is enabled.
+When adding new templates (or parts of templates) that are user facing, wrap them in the `doc_user_facing_begin` and `doc_user_facing_end` macros from `macros/utils.jinja2` (again, not in `.cc` files).
+
 ## Adding a new template
 All templates that are placed in the templates directory mentioned [above](#existing-templates) become immediately available to the template engine if it ends on `.jinja2`
 However, it is still necessary to actively fill them from the class generator.

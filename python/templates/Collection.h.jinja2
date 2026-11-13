@@ -35,7 +35,7 @@ namespace podio {
 }
 
 {{ utils.namespace_open(class.namespace) }}
-
+{{ utils.doc_user_facing_begin(package_name) }}
 
 {{ iterator_declaration(class) }}
 
@@ -281,6 +281,7 @@ template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::valu
 void to_json(nlohmann::json& j, const {{ class.bare_type }}Collection& collection);
 #endif
 
+{{ utils.doc_user_facing_end(package_name) }}
 {{ utils.namespace_close(class.namespace) }}
 
 {{ workarounds.ld_library_path(class, "Collection", ["valueTypeName", "dataTypeName"]) }}

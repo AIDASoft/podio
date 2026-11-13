@@ -11,9 +11,11 @@
 #include <podio/LinkCollection.h>
 
 {{ utils.namespace_open(class.namespace) }}
+{{ utils.doc_user_facing_begin(package_name) }}
 using {{ class.bare_type }}Collection = podio::LinkCollection<{{ From }}, {{ To }}>;
 using {{ class.bare_type }} = typename {{ class.bare_type }}Collection::value_type;
 using Mutable{{ class.bare_type }} = typename {{ class.bare_type }}Collection::mutable_type;
+{{ utils.doc_user_facing_end(package_name) }}
 
 {{ utils.namespace_close(class.namespace) }}
 
