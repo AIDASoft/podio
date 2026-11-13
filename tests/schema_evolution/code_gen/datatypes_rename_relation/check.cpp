@@ -14,7 +14,9 @@ int main() {
 
     auto clusters = ExampleClusterCollection();
     auto cluster = clusters.create();
+    cluster.addhits(hit);
     cluster.addoldHits(hit);
+    cluster.addweights(0.5f);
 
     event.put(std::move(hits), "related_collection");
     event.put(std::move(clusters), "evolution_collection");

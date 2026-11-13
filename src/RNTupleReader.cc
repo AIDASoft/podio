@@ -227,14 +227,18 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
     }
     auto& collBuffers = maybeBuffers.value();
 
+    std::vector<std::string> boundBranches;
+    const auto bindBuffer = [&](const std::string& name, auto* buffer) {
+      dentry->BindRawPtr(name, buffer);
+      boundBranches.push_back(name);
+    };
+
     try {
       if (coll.isSubset) {
         const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
+        bindBuffer(brName, collBuffers.references->at(0).get());
       } else {
-        dentry->BindRawPtr(coll.name, collBuffers.data);
+        bindBuffer(coll.name, collBuffers.data);
 
         const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
         for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
@@ -244,24 +248,23 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
             continue;
           }
           const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
           const auto brName = root_utils::refBranch(coll.name, relName);
-          dentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
+          bindBuffer(brName, collBuffers.references->at(j).get());
         }
 
         for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
           const auto vecName = relVecNames.vectorMembers[j];
           const auto brName = root_utils::vecBranch(coll.name, vecName);
-          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
+          bindBuffer(brName, collBuffers.vectorMembers->at(j).second);
         }
       }
     } catch (const RException&) {
-      // We disable the automatic cleanup by clearing the delete function,
-      // because it seems ROOT still calls the destructor of the collection
-      // buffers when LoadEntry fails, which leads to a double deletion in case
-      // of a partial binding in BindRawPtr.
-      collBuffers.deleteBuffers = {};
+      // BindRawPtr leaves ownership with collBuffers. Restore ROOT-owned values
+      // for any fields already bound so LoadEntry cannot access freed buffers
+      // after collBuffers is destroyed when skipping this collection.
+      for (const auto& name : boundBranches) {
+        dentry->EmplaceNewValue(name);
+      }
       continue;
     }
 
