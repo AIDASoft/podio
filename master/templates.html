@@ -232,7 +232,10 @@
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Changing / creating new templates</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#preprocessing-of-yaml-file">Preprocessing of yaml file</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#existing-templates">Existing templates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#existing-templates">Existing templates</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#hiding-internal-classes-from-the-doxygen-documentation">Hiding internal classes from the doxygen documentation</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#adding-a-new-template">Adding a new template</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#available-information-in-the-templates">Available information in the templates</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#general-information">General information</a></li>
@@ -942,6 +945,21 @@ They are broadly split along the classes that are generated for each datatype or
 <p>The presence of a <code class="docutils literal notranslate"><span class="pre">[&lt;package&gt;]</span></code> subdirectory for the header files is controlled by the <code class="docutils literal notranslate"><span class="pre">includeSubfolder</span></code> option in the yaml definition file.</p>
 <p>Jinja allows the definition of additional macros and supports importing them similar to python modules.
 These are stored in the <code class="docutils literal notranslate"><span class="pre">macros</span></code> subfolder under <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;/python/templates</span></code> and are imported directly by the main templates where necessary.</p>
+<section id="hiding-internal-classes-from-the-doxygen-documentation">
+<h3>Hiding internal classes from the doxygen documentation<a class="headerlink" href="#hiding-internal-classes-from-the-doxygen-documentation" title="Link to this heading"></a></h3>
+<p>The generated classes that are not part of the user facing API (e.g. the <code class="docutils literal notranslate"><span class="pre">Obj</span></code>, <code class="docutils literal notranslate"><span class="pre">Data</span></code>, <code class="docutils literal notranslate"><span class="pre">CollectionData</span></code> and <code class="docutils literal notranslate"><span class="pre">SIOBlock</span></code> classes and the versioned definitions that are kept for schema evolution) are wrapped in a doxygen <a class="reference external" href="https://www.doxygen.nl/manual/commands.html#cmdcond">conditional section</a> named <code class="docutils literal notranslate"><span class="pre">PODIO_INTERNAL</span></code>.
+Hence, they do not show up in the doxygen documentation of a generated datamodel by default.
+To include them, add the following to the <code class="docutils literal notranslate"><span class="pre">Doxyfile</span></code> of the datamodel</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="n">ENABLED_SECTIONS</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PODIO_INTERNAL</span>
+</pre></div>
+</div>
+<p>In this case they are additionally grouped in a dedicated <code class="docutils literal notranslate"><span class="pre">&lt;package&gt;</span> <span class="pre">podio</span> <span class="pre">internals</span></code> topic.</p>
+<p>When adding new templates (or parts of templates) that are not user facing, wrap them in the <code class="docutils literal notranslate"><span class="pre">doc_internal_begin</span></code> and <code class="docutils literal notranslate"><span class="pre">doc_internal_end</span></code> macros from <code class="docutils literal notranslate"><span class="pre">macros/utils.jinja2</span></code>.
+Passing the <code class="docutils literal notranslate"><span class="pre">package_name</span></code> to both of them also adds them to the topic mentioned above (this should not be done in <code class="docutils literal notranslate"><span class="pre">.cc</span></code> files).</p>
+<p>The user facing classes (i.e. the handle and collection types, links, components, etc.) are always grouped in a dedicated <code class="docutils literal notranslate"><span class="pre">&lt;package&gt;</span> <span class="pre">datamodel</span></code> topic.
+This topic is not hidden behind a conditional section, and gives a counterpart to the <code class="docutils literal notranslate"><span class="pre">&lt;package&gt;</span> <span class="pre">podio</span> <span class="pre">internals</span></code> topic in case the latter is enabled.
+When adding new templates (or parts of templates) that are user facing, wrap them in the <code class="docutils literal notranslate"><span class="pre">doc_user_facing_begin</span></code> and <code class="docutils literal notranslate"><span class="pre">doc_user_facing_end</span></code> macros from <code class="docutils literal notranslate"><span class="pre">macros/utils.jinja2</span></code> (again, not in <code class="docutils literal notranslate"><span class="pre">.cc</span></code> files).</p>
+</section>
 </section>
 <section id="adding-a-new-template">
 <h2>Adding a new template<a class="headerlink" href="#adding-a-new-template" title="Link to this heading"></a></h2>
