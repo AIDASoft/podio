@@ -15,7 +15,7 @@ class FrameCategoryIterator:
         """Construct the iterator from the reader and the category.
 
         Args:
-            reader (Reader): Any podio reader offering access to Frames
+            reader: Any (C++) podio reader offering access to Frames
             category (str): The category name of the Frames to be iterated over
             coll_names (list[str]): The list of collections to read (optional,
                 all available collections will by default)
