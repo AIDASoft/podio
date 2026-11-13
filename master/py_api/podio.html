@@ -576,10 +576,6 @@
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1_writer_1_1_writer_model.html#_CPPv4I0EN5podio6Writer11WriterModelE"><code class="docutils literal notranslate"><span class="pre">podio::Writer::WriterModel</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html">Struct podio::det::nonesuch</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1det_1_1nonesuch.html#_CPPv4N5podio3det8nonesuchE"><code class="docutils literal notranslate"><span class="pre">podio::det::nonesuch</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html">Struct podio::root_utils::CollectionBranches</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/struct/structpodio_1_1root__utils_1_1_collection_branches.html#_CPPv4N5podio10root_utils18CollectionBranchesE"><code class="docutils literal notranslate"><span class="pre">podio::root_utils::CollectionBranches</span></code></a></li>
 </ul>
@@ -611,18 +607,6 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../cpp_api/namespacelist.html">Namespace list</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t.html">Namespace ROOT</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t.html#_CPPv44ROOT"><code class="docutils literal notranslate"><span class="pre">ROOT</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t_1_1_r_d_f.html">Namespace ROOT::RDF</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespace_r_o_o_t_1_1_r_d_f.html#_CPPv4N4ROOT3RDFE"><code class="docutils literal notranslate"><span class="pre">ROOT::RDF</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacearrow.html">Namespace arrow</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacearrow.html#_CPPv45arrow"><code class="docutils literal notranslate"><span class="pre">arrow</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio.html">Namespace podio</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio.html#_CPPv45podio"><code class="docutils literal notranslate"><span class="pre">podio</span></code></a></li>
 </ul>
@@ -633,10 +617,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1arrow__utils.html">Namespace podio::arrow_utils</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1arrow__utils.html#_CPPv4N5podio11arrow_utilsE"><code class="docutils literal notranslate"><span class="pre">podio::arrow_utils</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html">Namespace podio::det</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1det.html#_CPPv4N5podio3detE"><code class="docutils literal notranslate"><span class="pre">podio::det</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1root__compat.html">Namespace podio::root_compat</a><ul>
@@ -661,10 +641,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1version.html">Namespace podio::version</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacepodio_1_1version.html#_CPPv4N5podio7versionE"><code class="docutils literal notranslate"><span class="pre">podio::version</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="../cpp_api/namespace/namespacesio.html">Namespace sio</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="../cpp_api/namespace/namespacesio.html#_CPPv43sio"><code class="docutils literal notranslate"><span class="pre">sio</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -1395,7 +1371,7 @@ reader as well as accessing specific entries</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>reader</strong> (<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader"><em>Reader</em></a>) – Any podio reader offering access to Frames</p></li>
+<li><p><strong>reader</strong> – Any (C++) podio reader offering access to Frames</p></li>
 <li><p><strong>category</strong> (<em>str</em>) – The category name of the Frames to be iterated over</p></li>
 <li><p><strong>coll_names</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – The list of collections to read (optional,
 all available collections will by default)</p></li>
@@ -1474,13 +1450,14 @@ All files are assumed to be of the same I/O format.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><dl class="simple">
-<dt>an initialized reader that</dt><dd><p>is able to process the input file(s).</p>
+<dt>an initialized reader that is able to process the input</dt><dd><p>file(s). One of root_io.Reader, root_io.RNTupleReader,
+root_io.LegacyReader, sio_io.Reader or sio_io.LegacyReader</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>root_io.[Legacy]<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader">Reader</a>, sio_io.[Legacy]<a class="reference internal" href="#podio.arrow_io.Reader" title="podio.arrow_io.Reader">Reader</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="#podio.base_reader.BaseReaderMixin" title="podio.base_reader.BaseReaderMixin">BaseReaderMixin</a></p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
