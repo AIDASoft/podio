@@ -607,6 +607,29 @@ void checkCollections(const TestLColl& links, const ExampleHitCollection& hits,
   }
 }
 
+TEST_CASE("LinkCollection emplace_back", "[links][basics]") {
+  auto hits = ExampleHitCollection();
+  auto clusters = ExampleClusterCollection();
+  auto hit = hits.create();
+  auto cluster = clusters.create();
+
+  auto links = TestLColl();
+  auto link = links.emplace_back(hit, cluster, 2.0f);
+  REQUIRE(links.size() == 1);
+  REQUIRE(link.getFrom() == hit);
+  REQUIRE(link.getTo() == cluster);
+  REQUIRE(link.getWeight() == 2.0f);
+
+  auto defaultLink = links.emplace_back();
+  REQUIRE(links.size() == 2);
+  REQUIRE(defaultLink.getWeight() == 1.0f);
+
+  auto subsetLinks = TestLColl();
+  subsetLinks.setSubsetCollection();
+  REQUIRE_THROWS_AS(subsetLinks.emplace_back(), std::logic_error);
+  REQUIRE_THROWS_AS(subsetLinks.emplace_back(hit, cluster), std::logic_error);
+}
+
 TEST_CASE("LinkCollection access and iteration", "[links][basics]") {
   const auto [linkColl, hitColl, clusterColl] = createLinkCollections();
 
