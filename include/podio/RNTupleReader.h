@@ -2,18 +2,23 @@
 #define PODIO_RNTUPLEREADER_H
 
 #include "podio/GenericParameters.h"
+#include "podio/ObjectID.h"
 #include "podio/ROOTFrameData.h"
 #include "podio/utilities/ReaderCommon.h"
 #include "podio/utilities/RootHelpers.h"
 
+#include <cstddef>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleReader.hxx>
+#include <ROOT/RNTupleView.hxx>
 #include <ROOT/RVersion.hxx>
 
 namespace podio {
@@ -24,8 +29,10 @@ class CollectionIDTable;
 namespace root_compat {
 #if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
   using RNTupleReader = ROOT::Experimental::RNTupleReader;
+  using ROOT::Experimental::RNTupleView;
 #else
   using RNTupleReader = ROOT::RNTupleReader;
+  using ROOT::RNTupleView;
 #endif
 } // namespace root_compat
 
@@ -34,6 +41,15 @@ namespace root_compat {
 ///
 /// The RNTupleReader provides the data as ROOTFrameData from which a podio::Frame
 /// can be constructed. It can be used to read files written by the RNTupleWriter.
+/// Only fields of selected collections that can be bound to read buffers are
+/// deserialized. Frame parameters are always read, independently of the selection.
+///
+/// The fields of a collection stay connected to the file once the collection
+/// has been read from it, to avoid setting them up again for every entry. ROOT
+/// fetches the data of all connected fields from storage, so after narrowing the
+/// selection, the data of collections that are no longer requested is still
+/// fetched, although it is not deserialized. Reading with a constant selection,
+/// or using a separate reader for a different selection, avoids this.
 class RNTupleReader : public ReaderCommon {
 
 public:
@@ -111,14 +127,46 @@ private:
    */
   bool initCategory(std::string_view category);
 
+  template <typename T>
+  struct ParameterViews {
+    explicit ParameterViews(root_compat::RNTupleReader& reader);
+    root_compat::RNTupleView<std::vector<std::string>> keys;
+    root_compat::RNTupleView<std::vector<std::vector<T>>> values;
+  };
+
+  struct FrameParameterViews {
+    explicit FrameParameterViews(root_compat::RNTupleReader& reader);
+    ParameterViews<int> ints;
+    ParameterViews<float> floats;
+    ParameterViews<double> doubles;
+    ParameterViews<std::string> strings;
+  };
+
   /**
    * Read and reconstruct the generic parameters of the Frame
    */
-  static GenericParameters readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry);
+  static GenericParameters readEventMetaData(FrameParameterViews& views, const unsigned localEntry);
 
   std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
 
-  std::unordered_map<std::string_view, std::vector<std::unique_ptr<root_compat::RNTupleReader>>> m_readers{};
+  struct CollectionViews {
+    // The first data view is the collection data, followed by vector members.
+    std::vector<root_compat::RNTupleView<void>> data{};
+    // Keep the buffer index: relations absent from an older schema have no view.
+    std::vector<std::pair<std::size_t, root_compat::RNTupleView<std::vector<podio::ObjectID>>>> references{};
+  };
+
+  struct ReaderWithViews {
+    std::unique_ptr<root_compat::RNTupleReader> reader{};
+    // Views borrow buffers only during readEntry and are rebound before use.
+    // An empty optional marks a collection whose fields could not be bound, so
+    // that the binding is not retried for every entry.
+    std::unordered_map<std::string, std::optional<CollectionViews>> collectionViews{};
+    // Created on first use, since views cannot be default constructed
+    std::optional<FrameParameterViews> parameterViews{};
+  };
+
+  std::unordered_map<std::string_view, std::vector<ReaderWithViews>> m_readers{};
   std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
