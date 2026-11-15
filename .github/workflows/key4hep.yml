@@ -27,9 +27,9 @@ jobs:
         include:
           - image: "ubuntu2404"
             cvmfs_repo: "sw-nightlies.hsf.org"
-          - image: "ubuntu2204" # gcc-11 compatibility
+          - image: "ubuntu2204" # gcc-11 compatibility, ROOT 6.32 is too old for RNTuple
             cvmfs_repo: "sw.hsf.org"
-            cmake-args: -DENABLE_ARROW=OFF -DENABLE_PARQUET=OFF
+            cmake-args: -DENABLE_ARROW=OFF -DENABLE_PARQUET=OFF -DENABLE_RNTUPLE=OFF
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/podio-build
