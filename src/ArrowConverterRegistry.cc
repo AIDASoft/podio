@@ -19,6 +19,7 @@
 
 namespace podio {
 
+namespace {
 template <typename T, typename BuilderType, typename ArrayType>
 void registerPrimitiveConverter(ArrowConverterRegistry& registry) {
   const std::string typeName = userDataTypeName<T>();
@@ -66,6 +67,7 @@ void registerPrimitiveConverter(ArrowConverterRegistry& registry) {
                             return buffers;
                           });
 }
+} // namespace
 
 ArrowConverterRegistry& ArrowConverterRegistry::mutInstance() {
   static ArrowConverterRegistry registry;

@@ -32,6 +32,7 @@
 
 namespace podio {
 
+namespace {
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
                          const std::vector<root_utils::CollectionWriteInfo>& collInfo);
@@ -39,6 +40,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfo>& collInfo);
+} // namespace
 
 bool ROOTReader::CategoryInfo::TreeChangeNotifier::Notify() {
   ++generation;
@@ -281,6 +283,7 @@ void ROOTReader::initCategory(CategoryInfo& catInfo, std::string_view category) 
   catInfo.branchGenerations.assign(catInfo.branches.size(), catInfo.treeNotifier->generation);
 }
 
+namespace {
 std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   const auto* branches = metaChain->GetListOfBranches();
   std::vector<std::string> brNames;
@@ -298,6 +301,7 @@ std::vector<std::string> getAvailableCategories(TChain* metaChain) {
   brNames.erase(std::unique(brNames.begin(), brNames.end()), brNames.end());
   return brNames;
 }
+} // namespace
 
 void ROOTReader::openFile(const std::string& filename) {
   openFiles({filename});
@@ -369,6 +373,7 @@ unsigned ROOTReader::getEntries(std::string_view name) const {
   return 0;
 }
 
+namespace {
 std::tuple<std::vector<root_utils::CollectionBranches>, std::vector<detail::NamedCollInfo>>
 createCollectionBranchesIndexBased(TChain* chain, const podio::CollectionIDTable& idTable,
                                    const std::vector<root_utils::CollectionWriteInfo>& collInfo) {
@@ -466,6 +471,7 @@ createCollectionBranches(TChain* chain, const podio::CollectionIDTable& idTable,
 
   return {std::move(collBranches), storedClasses};
 }
+} // namespace
 
 std::optional<std::map<std::string, SizeStats>> ROOTReader::getSizeStats(std::string_view category) {
   std::map<std::string, SizeStats> stats;

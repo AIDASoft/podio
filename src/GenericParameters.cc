@@ -18,6 +18,7 @@ GenericParameters::GenericParameters(const GenericParameters& other) {
   _doubleMap = other._doubleMap;
 }
 
+namespace {
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
   os << "[";
@@ -43,6 +44,7 @@ void printMap(const MapType& map, std::ostream& os) {
 
   os.flags(osflags);
 }
+} // namespace
 
 void GenericParameters::print(std::ostream& os, bool flush) const {
   std::scoped_lock lock(getMutex<int>(), getMutex<float>(), getMutex<std::string>(), getMutex<double>());
