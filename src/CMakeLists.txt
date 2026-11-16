@@ -91,10 +91,17 @@ if (ENABLE_ROOT AND ROOT_VERSION VERSION_LESS 6.36)
   target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
 endif()
 
-# Add C++20 module support (if enabled)
+# Add C++20 module support (if enabled). The module interface lives in a
+# separate library to keep it opt-in for consumers. Exported targets carrying
+# C++ modules require consumers to use a toolchain that supports modules, even
+# if they never import them.
 if(PODIO_ENABLE_CXX_MODULES)
-  message(STATUS "Adding podio.core module interface to podio library")
-  PODIO_ADD_MODULE_INTERFACE(podio podio.core ${CMAKE_CURRENT_SOURCE_DIR}/podio_core_module.ixx)
+  message(STATUS "Adding podio.core module interface in podioModules library")
+  add_library(podioModules SHARED)
+  add_library(podio::podioModules ALIAS podioModules)
+  target_link_libraries(podioModules PUBLIC podio::podio)
+  PODIO_ADD_MODULE_INTERFACE(podioModules podio.core ${CMAKE_CURRENT_SOURCE_DIR}/podio_core_module.ixx)
+  list(APPEND INSTALL_LIBRARIES podioModules)
 endif()
 
 
@@ -290,13 +297,13 @@ endif()
 if (NOT ENABLE_DATASOURCE)
   install(TARGETS ${PODIO_CORE_TARGETS} ${INSTALL_LIBRARIES}
     EXPORT podioTargets
-    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules)
 else()
   install(TARGETS ${PODIO_CORE_TARGETS} podioDataSource podioDataSourceDict ${INSTALL_LIBRARIES}
     EXPORT podioTargets
-    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    FILE_SET CXX_MODULES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/podio/modules)
 endif()
 
 # Only install the necessary headers

@@ -37,13 +37,23 @@ The build system will verify all requirements and warn if modules cannot be enab
 
 ### In Downstream Projects
 
-Downstream projects can link to podio in the usual way; if podio was built with `PODIO_ENABLE_CPP_MODULES=ON` and your toolchain supports modules, the installed module interfaces will be used transparently:
+If podio was built with `PODIO_ENABLE_CXX_MODULES=ON`, the `podio.core` module is provided by the separate `podio::podioModules` target. Link against it to be able to `import podio.core;`:
 
 ```cmake
 find_package(podio REQUIRED)
 
-target_link_libraries(myapp PRIVATE podio::podio)
+target_link_libraries(myapp PRIVATE podio::podioModules)
 ```
+
+Linking against `podio::podioModules` requires a toolchain that supports modules (see [Requirements](#requirements)), since CMake builds the module interface for each consumer. Downstream projects that only link against `podio::podio` (or any other podio target) are not affected and can continue to use headers with any toolchain.
+
+`find_package(podio)` also defines the `PODIO_ENABLE_CXX_MODULES` cache variable, which controls whether `PODIO_GENERATE_DATAMODEL` and `PODIO_ADD_DATAMODEL_CORE_LIB` generate and build a module interface for a downstream datamodel. It defaults to the value podio has been built with, and can be overridden when configuring the downstream project, e.g.
+
+```bash
+cmake -GNinja -DPODIO_ENABLE_CXX_MODULES=OFF <downstream-source-dir>
+```
+
+No toolchain checks are done for downstream projects, i.e. the toolchain used for the downstream project is expected to support modules if `PODIO_ENABLE_CXX_MODULES` is `ON`.
 
 ## Using Modules in Code
 
@@ -143,7 +153,7 @@ Benefits increase with:
 ┌──────────────────────────────────────┐
 │ podio.core (C++20 Module)            │
 │ • ROOT-independent                   │
-│ • Compiled once into libpodio.so     │
+│ • Compiled into libpodioModules.so   │
 │ • Used by all datamodels             │
 └──────────────────────────────────────┘
                 ↓ import
@@ -177,11 +187,11 @@ When modules are enabled, podio generates:
 - **Compiled module interfaces**: `*.gcm` binary files (implementation detail)
 - **Shared libraries**: Same `.so` files as without modules (ABI identical)
 
-Module interface files are installed alongside headers:
+Module interface files are installed alongside headers. Compiled module interfaces are not installed, as they are compiler (and flag) specific. CMake builds them for each consumer that links against `podio::podioModules`:
 ```
 <prefix>/include/podio/
   ├── modules/
-  │   └── podio.core.gcm        # Compiled module interface
+  │   └── podio_core_module.ixx  # Module interface source
   ├── ObjectID.h                 # Traditional headers
   └── ...
 ```
@@ -200,17 +210,20 @@ The generator:
 
 ### CMake Integration
 
-Two CMake functions support module generation:
+If `PODIO_ENABLE_CXX_MODULES` is `ON`, `PODIO_GENERATE_DATAMODEL` additionally generates the module interface for the datamodel, and `PODIO_ADD_DATAMODEL_CORE_LIB(<lib> ...)` creates an additional `<lib>Modules` library that contains it as a `CXX_MODULES` file set and links against `<lib>`. Link against `<lib>Modules` to be able to `import <package>.datamodel;`.
+
+The module lives in a separate library to keep `<lib>` usable for consumers whose toolchain does not support modules, and to keep existing install rules working. To make the module available to downstream consumers, install and export the `<lib>Modules` target including its file set, e.g. for EDM4hep:
 
 ```cmake
-# Add a module interface to a target
-PODIO_ADD_MODULE_INTERFACE(target module_name module_file)
+install(TARGETS edm4hepModules
+  EXPORT EDM4HEPTargets
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  FILE_SET CXX_MODULES DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/edm4hep/modules")
 
-# Generate module interface for a datamodel
-PODIO_GENERATE_MODULE_INTERFACE(datamodel OUTPUT_FILE)
+install(EXPORT EDM4HEPTargets
+  # ...
+  CXX_MODULES_DIRECTORY cxx-modules)
 ```
-
-These are used internally by `PODIO_GENERATE_DATAMODEL` when modules are enabled.
 
 ### Namespace Handling
 

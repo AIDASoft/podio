@@ -116,7 +116,7 @@ if(PODIO_ENABLE_CXX_MODULES)
     message(STATUS "Adding simple C++20 module import test")
 
     add_executable(test_module_import test_module_import.cpp)
-    target_link_libraries(test_module_import PRIVATE TestDataModel podio)
+    target_link_libraries(test_module_import PRIVATE TestDataModelModules podio::podioModules)
     target_compile_features(test_module_import PRIVATE cxx_std_20)
 
     # Enable module scanning for this file

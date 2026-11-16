@@ -39,6 +39,12 @@
 #                           if podio has been built with Parquet and ROOT
 #                           support)
 #
+# Only if podio has been built with C++20 module support (PODIO_ENABLE_CXX_MODULES):
+#  podio::podioModules      The podio.core module interface. Link against this
+#                           to be able to `import podio.core;`. Linking
+#                           against it requires a toolchain with C++20 module
+#                           support
+#
 # Variables
 #
 #  podio_VERSION            The version of podio
@@ -58,6 +64,10 @@
 #                           (implies PODIO_ENABLE_ARROW)
 #  PODIO_ARROW_TARGET       The Arrow target podio links against (only set if
 #                           PODIO_ENABLE_ARROW)
+#  PODIO_ENABLE_CXX_MODULES Whether C++20 module interfaces are generated for
+#                           datamodels. Cache variable that defaults to the
+#                           value podio has been built with and that can be
+#                           overridden by downstream projects
 #
 # Macros: see podioMacros.cmake for complete documentation
 #
@@ -127,6 +137,9 @@ endif()
 
 if(NOT TARGET podio::podio)
   include("${CMAKE_CURRENT_LIST_DIR}/podioTargets.cmake")
+  # Default to generating C++20 modules for datamodels if podio has been built
+  # with them, but leave it possible to override this downstream
+  set(PODIO_ENABLE_CXX_MODULES @PODIO_ENABLE_CXX_MODULES@ CACHE BOOL "Generate C++20 module interface files (.ixx) for datamodels")
   include("${CMAKE_CURRENT_LIST_DIR}/podioMacros.cmake")
 endif()
 

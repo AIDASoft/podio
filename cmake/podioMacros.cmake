@@ -187,6 +187,13 @@ endfunction()
 # Add the core datamodel library linking only to the core podio::podio library
 # without any I/O backend specific dependencies.
 #
+# If PODIO_ENABLE_CXX_MODULES is ON, an additional ${lib_name}Modules library is
+# created that contains the C++20 module interface of the datamodel and links
+# against ${lib_name}. It is kept separate to not force a toolchain with C++20
+# module support onto all consumers of ${lib_name}. Downstream projects that
+# want to make the module available have to install (and export) this target
+# themselves, including its CXX_MODULES file set.
+#
 # Arguments:
 #    lib_name             Name of the library
 #    HEADERS              The list of all header files created by PODIO_GENERATE_DATAMODEL
@@ -218,18 +225,25 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
                       # TODO: Update generation to generate compliant code already
     )
 
-  # Add C++20 module interface if it was generated
+  # Add C++20 module interface in a separate library if it was generated
   if(PODIO_ENABLE_CXX_MODULES)
     # Check if module files were generated
     include(${ARG_OUTPUT_FOLDER}/podio_generated_files.cmake)
     if(DEFINED module_files AND module_files)
-      message(STATUS "Adding C++20 module interface to ${lib_name}")
-      target_sources(${lib_name}
+      message(STATUS "Adding C++20 module interface in ${lib_name}Modules")
+      add_library(${lib_name}Modules SHARED)
+      target_link_libraries(${lib_name}Modules PUBLIC ${lib_name})
+      target_sources(${lib_name}Modules
         PUBLIC
           FILE_SET CXX_MODULES
           BASE_DIRS ${ARG_OUTPUT_FOLDER}/src
           FILES ${module_files}
       )
+      # CMake decides whether to scan for modules based on the compile features
+      target_compile_features(${lib_name}Modules PUBLIC cxx_std_20)
+      set_target_properties(${lib_name}Modules PROPERTIES
+        CXX_CLANG_TIDY "" # Do not run clang-tidy on generated sources
+        )
     endif()
   endif()
 endfunction()
