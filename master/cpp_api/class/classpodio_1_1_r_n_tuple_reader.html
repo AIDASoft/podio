@@ -523,6 +523,22 @@
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_link_data.html#_CPPv4N5podio8LinkDataE"><code class="docutils literal notranslate"><span class="pre">podio::LinkData</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_views.html">Struct podio::RNTupleReader::CollectionViews</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_collection_views.html#_CPPv4N5podio13RNTupleReader15CollectionViewsE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleReader::CollectionViews</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_frame_parameter_views.html">Struct podio::RNTupleReader::FrameParameterViews</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_frame_parameter_views.html#_CPPv4N5podio13RNTupleReader19FrameParameterViewsE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleReader::FrameParameterViews</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_parameter_views.html">Struct podio::RNTupleReader::ParameterViews</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_parameter_views.html#_CPPv4I0EN5podio13RNTupleReader14ParameterViewsE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleReader::ParameterViews</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_reader_with_views.html">Struct podio::RNTupleReader::ReaderWithViews</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_reader_1_1_reader_with_views.html#_CPPv4N5podio13RNTupleReader15ReaderWithViewsE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleReader::ReaderWithViews</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html">Struct podio::RNTupleWriter::CategoryInfo</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="../struct/structpodio_1_1_r_n_tuple_writer_1_1_category_info.html#_CPPv4N5podio13RNTupleWriter12CategoryInfoE"><code class="docutils literal notranslate"><span class="pre">podio::RNTupleWriter::CategoryInfo</span></code></a></li>
 </ul>
@@ -857,7 +873,8 @@
 <dt class="sig sig-object cpp" id="_CPPv4N5podio13RNTupleReaderE">
 <span id="_CPPv3N5podio13RNTupleReaderE"></span><span id="_CPPv2N5podio13RNTupleReaderE"></span><span id="podio::RNTupleReader"></span><span class="target" id="classpodio_1_1_r_n_tuple_reader"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RNTupleReader</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><a class="reference internal" href="../namespace/namespacepodio.html#_CPPv45podio" title="podio"><span class="n"><span class="pre">podio</span></span></a><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classpodio_1_1_reader_common.html#_CPPv4N5podio12ReaderCommonE" title="podio::ReaderCommon"><span class="n"><span class="pre">ReaderCommon</span></span></a><a class="headerlink" href="#_CPPv4N5podio13RNTupleReaderE" title="Link to this definition"></a><br /></dt>
 <dd><p>The RNTupleReader can be used to read files that have been written with the RNTuple backend. </p>
-<p>The RNTupleReader provides the data as ROOTFrameData from which a podio::Frame can be constructed. It can be used to read files written by the RNTupleWriter. </p>
+<p>The RNTupleReader provides the data as ROOTFrameData from which a podio::Frame can be constructed. It can be used to read files written by the RNTupleWriter. Only fields of selected collections that can be bound to read buffers are deserialized. Frame parameters are always read, independently of the selection.</p>
+<p>The fields of a collection stay connected to the file once the collection has been read from it, to avoid setting them up again for every entry. ROOT fetches the data of all connected fields from storage, so after narrowing the selection, the data of collections that are no longer requested is still fetched, although it is not deserialized. Reading with a constant selection, or using a separate reader for a different selection, avoids this. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
