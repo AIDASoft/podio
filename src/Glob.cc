@@ -29,10 +29,10 @@ bool is_glob_pattern(const std::string& pattern) {
 #if __has_include(<glob.h>)
 
 namespace {
-int glob_err_handler(const char* epath, int eerrno) {
-  std::cerr << "Glob expansion error accessing path: " << epath << " (error code: " << eerrno << ")\n";
-  return 0;
-}
+  int glob_err_handler(const char* epath, int eerrno) {
+    std::cerr << "Glob expansion error accessing path: " << epath << " (error code: " << eerrno << ")\n";
+    return 0;
+  }
 } // namespace
 
 std::vector<std::string> expand_glob(const std::string& pattern) {
