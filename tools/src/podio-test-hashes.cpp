@@ -112,7 +112,7 @@ int main(int argc, const char* argv[]) {
   }
 
   const auto collNames = readCollNames(argv[1]);
-  const auto collisions = getCollisions(collNames, MurmurHash3_x86_32);
+  const auto collisions = getCollisions(collNames, podio::detail::MurmurHash3_x86_32);
 
   if (!collisions.empty()) {
     std::cerr << "Found collisions between names" << std::endl;

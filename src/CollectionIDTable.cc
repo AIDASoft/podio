@@ -62,7 +62,7 @@ uint32_t CollectionIDTable::add(std::string_view collectionName) {
   uint32_t ID = 0;
   if (result == m_names.end()) {
     m_names.emplace_back(collectionName);
-    MurmurHash3_x86_32(collectionName.data(), collectionName.size(), 0, &ID);
+    detail::MurmurHash3_x86_32(collectionName.data(), collectionName.size(), 0, &ID);
     m_collectionIDs.emplace_back(ID);
   } else {
     const auto index = std::distance(m_names.begin(), result);
