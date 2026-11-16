@@ -28,6 +28,9 @@ copyCtorPointerCopying:MaybeSharedPtr.h
 noCopyConstructor:Link.h
 knownConditionTrueFalse:LinkCollectionImpl.h
 
+# RNTupleView::operator() is not const, but cppcheck doesn't see the ROOT headers
+constVariableReference:RNTupleReader.cc
+
 useStlAlgorithm:*Reader.cc
 useStlAlgorithm:LinkCollectionImpl.h
 useStlAlgorithm:podio-dump-tool.cpp

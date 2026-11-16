@@ -35,20 +35,28 @@ using ROOT::Experimental::RException;
 namespace podio {
 
 template <typename T>
-void readParams(root_compat::RNTupleReader* reader, const unsigned localEntry, GenericParameters& params) {
-  auto keyView = reader->GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>());
-  auto valueView = reader->GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>());
-
-  params.loadFrom(keyView(localEntry), valueView(localEntry));
+RNTupleReader::ParameterViews<T>::ParameterViews(root_compat::RNTupleReader& reader) :
+    keys(reader.GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>())),
+    values(reader.GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>())) {
 }
 
-GenericParameters RNTupleReader::readEventMetaData(root_compat::RNTupleReader* reader, const unsigned localEntry) {
+RNTupleReader::FrameParameterViews::FrameParameterViews(root_compat::RNTupleReader& reader) :
+    ints(reader), floats(reader), doubles(reader), strings(reader) {
+}
+
+namespace {
+  void readParams(auto& views, const unsigned localEntry, GenericParameters& params) {
+    params.loadFrom(views.keys(localEntry), views.values(localEntry));
+  }
+} // namespace
+
+GenericParameters RNTupleReader::readEventMetaData(FrameParameterViews& views, const unsigned localEntry) {
   GenericParameters params;
 
-  readParams<int>(reader, localEntry, params);
-  readParams<float>(reader, localEntry, params);
-  readParams<double>(reader, localEntry, params);
-  readParams<std::string>(reader, localEntry, params);
+  readParams(views.ints, localEntry, params);
+  readParams(views.floats, localEntry, params);
+  readParams(views.doubles, localEntry, params);
+  readParams(views.strings, localEntry, params);
 
   return params;
 }
@@ -119,16 +127,11 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
     m_readerEntries[category].push_back(0);
     for (const auto& filename : m_filenames) {
       try {
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 36, 0)
-        ROOT::RNTupleDescriptor::RCreateModelOptions options;
-        // Read unknown types (like deleted ones) without errors
-        options.SetEmulateUnknownTypes(true);
-        m_readers[category].emplace_back(root_compat::RNTupleReader::Open(options, category, filename));
-#else
-        m_readers[category].emplace_back(root_compat::RNTupleReader::Open(category, filename));
-#endif
+        // Models are not needed: collection fields and parameters are read via
+        // views, so unknown types in skipped collections need not be emulated.
+        m_readers[category].push_back({root_compat::RNTupleReader::Open(category, filename), {}});
         m_readerEntries[category].push_back(m_readerEntries[category].back() +
-                                            m_readers[category].back()->GetNEntries());
+                                            m_readers[category].back().reader->GetNEntries());
       } catch (const RException&) {
         std::cout << "Category " << category << " not found in file " << filename << std::endl;
       }
@@ -203,19 +206,20 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
   const auto upper = std::ranges::upper_bound(readerEntries, entNum);
   const auto localEntry = entNum - *(upper - 1);
   const auto readerIndex = upper - 1 - readerEntries.begin();
-  const auto& reader = m_readers[stableCategory][readerIndex];
+  auto& readerInfo = m_readers[stableCategory][readerIndex];
+  const auto& reader = readerInfo.reader;
 
   ROOTFrameData::BufferMap buffers;
-  // We need to create a non-bare entry here, because the entries for the
-  // parameters are not explicitly (re)set and we need them default initialized.
-  // In principle we would only need a bare entry for the collection data, since
-  // we set all the fields there in any case.
-  const auto dentry = reader->GetModel().CreateEntry();
-
   for (const auto& coll : collInfo) {
     if (!dedupedCollsToRead.empty() && std::ranges::find(dedupedCollsToRead, coll.name) == dedupedCollsToRead.end()) {
       continue;
     }
+    auto viewsIt = readerInfo.collectionViews.find(coll.name);
+    if (viewsIt != readerInfo.collectionViews.end() && !viewsIt->second) {
+      // Binding already failed for this file, skip without creating buffers
+      continue;
+    }
+
     const auto& collType = coll.dataType;
     const auto& bufferFactory = podio::CollectionBufferFactory::instance();
     auto maybeBuffers = bufferFactory.createBuffers(collType, coll.schemaVersion, coll.isSubset);
@@ -227,50 +231,80 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
     }
     auto& collBuffers = maybeBuffers.value();
 
-    try {
-      if (coll.isSubset) {
-        const auto brName = root_utils::subsetBranch(coll.name);
-        const auto vec = new std::vector<podio::ObjectID>;
-        dentry->BindRawPtr(brName, vec);
-        collBuffers.references->at(0) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-      } else {
-        dentry->BindRawPtr(coll.name, collBuffers.data);
+    if (viewsIt == readerInfo.collectionViews.end()) {
+      // Only connect fields of this collection. Cache the views once all fields
+      // bind successfully, so a failure cannot leave partially connected views.
+      CollectionViews views;
+      try {
+        if (coll.isSubset) {
+          const auto brName = root_utils::subsetBranch(coll.name);
+          views.references.emplace_back(0, reader->GetView(brName, collBuffers.references->at(0).get()));
+        } else {
+          views.data.emplace_back(reader->GetView<void>(coll.name, collBuffers.data));
 
-        const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
-        for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
-          // Relations that are not stored in this schema version stay empty
-          if (!collBuffers.references->at(j)) {
-            collBuffers.references->at(j) = std::make_unique<std::vector<podio::ObjectID>>();
-            continue;
+          const auto relVecNames = podio::DatamodelRegistry::instance().getRelationNames(collType);
+          for (size_t j = 0; j < relVecNames.relations.size(); ++j) {
+            // Relations that are not stored in this schema version have no view.
+            if (!collBuffers.references->at(j)) {
+              continue;
+            }
+            const auto brName = root_utils::refBranch(coll.name, relVecNames.relations[j]);
+            views.references.emplace_back(j, reader->GetView(brName, collBuffers.references->at(j).get()));
           }
-          const auto relName = relVecNames.relations[j];
-          const auto vec = new std::vector<podio::ObjectID>;
-          const auto brName = root_utils::refBranch(coll.name, relName);
-          dentry->BindRawPtr(brName, vec);
-          collBuffers.references->at(j) = std::unique_ptr<std::vector<podio::ObjectID>>(vec);
-        }
 
-        for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
-          const auto vecName = relVecNames.vectorMembers[j];
-          const auto brName = root_utils::vecBranch(coll.name, vecName);
-          dentry->BindRawPtr(brName, collBuffers.vectorMembers->at(j).second);
+          for (size_t j = 0; j < relVecNames.vectorMembers.size(); ++j) {
+            const auto brName = root_utils::vecBranch(coll.name, relVecNames.vectorMembers[j]);
+            views.data.emplace_back(reader->GetView<void>(brName, collBuffers.vectorMembers->at(j).second));
+          }
+        }
+      } catch (const RException&) {
+        // No fields have been read yet. Discard the views before collBuffers
+        // cleans up, without reading any part of this collection, and remember
+        // the failure to avoid retrying the binding for every entry.
+        readerInfo.collectionViews.emplace(coll.name, std::nullopt);
+        continue;
+      }
+      viewsIt = readerInfo.collectionViews.emplace(coll.name, std::move(views)).first;
+    }
+
+    // Missing relations in an older schema still need empty buffers in every
+    // event, including when reusing views connected for an earlier event.
+    if (collBuffers.references) {
+      for (auto& ref : *collBuffers.references) {
+        if (!ref) {
+          ref = std::make_unique<std::vector<podio::ObjectID>>();
         }
       }
-    } catch (const RException&) {
-      // We disable the automatic cleanup by clearing the delete function,
-      // because it seems ROOT still calls the destructor of the collection
-      // buffers when LoadEntry fails, which leads to a double deletion in case
-      // of a partial binding in BindRawPtr.
-      collBuffers.deleteBuffers = {};
-      continue;
+    }
+
+    auto& views = *viewsIt->second;
+    if (!coll.isSubset) {
+      views.data.front().BindRawPtr(collBuffers.data);
+      for (size_t j = 1; j < views.data.size(); ++j) {
+        views.data[j].BindRawPtr(collBuffers.vectorMembers->at(j - 1).second);
+      }
+    }
+    for (auto& [index, view] : views.references) {
+      view.BindRawPtr(collBuffers.references->at(index).get());
+    }
+
+    // Keep read errors outside the binding catch: a collection that was bound
+    // successfully must not be silently dropped if deserialization fails.
+    // Cached views borrow these buffers; they are rebound before the next read.
+    for (auto& view : views.data) {
+      view(localEntry);
+    }
+    for (auto& [index, view] : views.references) {
+      view(localEntry);
     }
 
     buffers.emplace(coll.name, std::move(collBuffers));
   }
 
-  reader->LoadEntry(localEntry, *dentry);
-
-  auto parameters = readEventMetaData(reader.get(), localEntry);
+  if (!readerInfo.parameterViews) {
+    readerInfo.parameterViews.emplace(*reader);
+  }
+  auto parameters = readEventMetaData(*readerInfo.parameterViews, localEntry);
 
   return std::make_unique<ROOTFrameData>(std::move(buffers), m_idTables[category], std::move(parameters));
 }

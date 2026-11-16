@@ -19,4 +19,7 @@ datatypes:
     Members:
       - double energy // cluster energy
     OneToManyRelations:
+      - ExampleHit hits // unchanged relation bound before the renamed one
       - ExampleHit newHits // hits in this cluster (renamed from oldHits)
+    VectorMembers:
+      - float weights // buffer allocated even when relation binding fails
