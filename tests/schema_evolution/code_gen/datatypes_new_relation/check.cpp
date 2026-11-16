@@ -33,7 +33,7 @@ int main() {
     ASSERT_EQUAL(cluster.Clusters()[0].energy(), 7.89, "Existing relation after the new one should be unchanged");
     ASSERT_EQUAL(clusterColl[1].OtherHits().size(), 0, "New relation should be empty");
 
-    // Reusing connected fields must still initialize absent relation buffers,
+    // RNTuple: Reusing connected fields must still initialize absent relation buffers,
     // and must retain the buffer indices of relations after the missing one.
     const auto repeated = podio::Frame(reader.readEntry(podio::Category::Event, 0));
     const auto& repeatedClusters = repeated.get<ExampleClusterCollection>("evolution_collection");

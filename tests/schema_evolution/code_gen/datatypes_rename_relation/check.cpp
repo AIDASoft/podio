@@ -45,7 +45,7 @@ int main() {
       return 1;
     }
 
-    // Reading again goes through the remembered binding failure instead of
+    // RNTuple: Reading again goes through the remembered binding failure instead of
     // trying to bind the collection again
     const auto repeated = podio::Frame(reader.readEntry(podio::Category::Event, 0));
     if (checkEvent(repeated) != 0) {
