@@ -249,6 +249,13 @@ public:
     return _vec.emplace_back();
   }
 
+  /// Append a new element to the collection, initialized with the parameters given.
+  /// Invalidates iterators if the underlying vector reallocates.
+  template <typename... Args>
+  decltype(auto) emplace_back(Args&&... args) {
+    return _vec.emplace_back(std::forward<Args>(args)...);
+  }
+
   iterator begin() {
     return _vec.begin();
   }

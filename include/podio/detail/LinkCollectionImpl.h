@@ -175,6 +175,14 @@ public:
     return link;
   }
 
+  /// Append a new link to the collection, and return this link.
+  /// Initialized with the parameters given.
+  /// Does not invalidate iterators.
+  template <typename... Args>
+  mutable_type emplace_back(Args&&... args) {
+    return create(std::forward<Args>(args)...);
+  }
+
   /// Returns the immutable object of given index
   value_type operator[](std::size_t index) const {
     return value_type(m_storage.entries[index]);

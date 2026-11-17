@@ -272,7 +272,7 @@ The following table lists which operations invalidate collections' iterators. No
 
 | Operation | Generated collections and `LinkCollection` | `UserDataCollection` |
 |-----------|--------------------------------------------|----------------------|
-| `create()`, `push_back()` | ✔️ not invalidated (a previously obtained `end()` does not include the new elements) | ❌ invalidated if reallocation happens |
+| `create()`, `emplace_back()`, `push_back()` | ✔️ not invalidated (a previously obtained `end()` does not include the new elements) | ❌ invalidated if reallocation happens |
 | `resize()` | not available | ❌ invalidated if reallocation happens |
 | `clear()` | ❌ invalidated | ❌ invalidated |
 | Move construction / assignment | ❌ invalidated (they refer to the moved-from collection) | ✔️ not invalidated (they refer to the new collection) |

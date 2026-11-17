@@ -306,6 +306,7 @@ concept CollectionType = !std::is_abstract_v<T> && std::derived_from<T, Collecti
       requires std::same_as<std::remove_reference_t<decltype(t.create())>,
                             typename T::mutable_type>; // UserDataCollection::create() returns reference which has to be
                                                        // stripped to be same as expected typedef
+      requires std::same_as<std::remove_reference_t<decltype(t.emplace_back())>, typename T::mutable_type>;
       { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::mutable_type>>>()) };
       { t.push_back(std::declval<std::add_lvalue_reference_t<std::add_const_t<typename T::value_type>>>()) };
       { t.begin() } -> std::same_as<typename T::iterator>;

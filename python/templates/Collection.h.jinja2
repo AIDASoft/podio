@@ -103,6 +103,14 @@ public:
   template<typename... Args>
   Mutable{{ class.bare_type }} create(Args&&... args);
 
+  /// Append a new object to the collection, and return this object.
+  /// Initialized with the parameters given.
+  /// Does not invalidate iterators.
+  template<typename... Args>
+  Mutable{{ class.bare_type }} emplace_back(Args&&... args) {
+    return create(std::forward<Args>(args)...);
+  }
+
   /// number of elements in the collection
   std::size_t size() const final;
 
