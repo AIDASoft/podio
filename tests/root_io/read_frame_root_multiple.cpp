@@ -14,6 +14,8 @@
 #include <utility>
 #include <vector>
 
+namespace {
+
 int read_frames(podio::ROOTReader& reader) {
   if (reader.currentFileVersion() != podio::version::build_version) {
     std::cerr << "The podio build version could not be read back correctly. "
@@ -274,6 +276,8 @@ int read_files_with_different_contents() {
 
   return 0;
 }
+
+} // namespace
 
 int main() {
   auto reader = podio::ROOTReader();

@@ -4,6 +4,8 @@
 #include "check_base.h"
 
 #ifdef PODIO_SCHEMA_EVOLUTION_TEST_READ
+namespace {
+
 // Checks everything that is present in all versions of the datamodel
 int checkCommon(const ExampleClusterCollection& clusters) {
   ASSERT_EQUAL(clusters.size(), 3, "Collection with new relations should be readable");
@@ -26,6 +28,8 @@ int checkCommon(const ExampleClusterCollection& clusters) {
   }
   return 0;
 }
+
+} // namespace
 #endif
 
 int main() {

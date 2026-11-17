@@ -15,6 +15,8 @@
 #include <string>
 #include <utility>
 
+namespace {
+
 void writeCollection() {
   podio::ROOTWriter writer("associations.root");
 
@@ -112,6 +114,8 @@ void readCollection() {
     }
   }
 }
+
+} // namespace
 
 int main() {
 

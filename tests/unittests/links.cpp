@@ -570,6 +570,8 @@ TEST_CASE("LinkCollection create with linked objects", "[links][basics]") {
 }
 // NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
+namespace {
+
 auto createLinkCollections(const size_t nElements = 3u) {
   auto colls = std::make_tuple(TestLColl(), ExampleHitCollection(), ExampleClusterCollection());
 
@@ -606,6 +608,8 @@ void checkCollections(const TestLColl& links, const ExampleHitCollection& hits,
     index++;
   }
 }
+
+} // namespace
 
 TEST_CASE("LinkCollection access and iteration", "[links][basics]") {
   const auto [linkColl, hitColl, clusterColl] = createLinkCollections();

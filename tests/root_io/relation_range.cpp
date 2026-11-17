@@ -36,6 +36,8 @@
     ASSERT_CONDITION(left == right, msg.str())                                                                         \
   }
 
+namespace {
+
 void fillExampleMCCollection(ExampleMCCollection& collection) {
   for (int i = 0; i < 10; ++i) {
     MutableExampleMC mcp;
@@ -232,6 +234,8 @@ void testWithIO() {
     doTestExampleMC(readColl);
   }
 }
+
+} // namespace
 
 int main(int, char**) {
   try {

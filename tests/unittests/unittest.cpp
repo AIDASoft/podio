@@ -961,6 +961,8 @@ TEST_CASE("Subset collections", "[subset-colls]") {
   }
 }
 
+namespace {
+
 // Helper functionality to keep the tests below with a common setup a bit shorter
 auto createCollections(const size_t nElements = 3u) {
   auto colls = std::make_tuple(ExampleHitCollection(), ExampleClusterCollection(), ExampleWithVectorMemberCollection(),
@@ -1057,6 +1059,8 @@ void checkCollections(/*const*/ ExampleHitCollection& hits, /*const*/ ExampleClu
     }
   }
 }
+
+} // namespace
 
 TEST_CASE("Move-only collections", "[collections][move-semantics]") {
   // Setup a few collections that will be used throughout below
@@ -1459,6 +1463,8 @@ TEST_CASE("Missing files", "[basics]") {
 #endif
 }
 
+namespace {
+
 template <typename ReaderT, typename WriterT>
 void runOpenOnlyOnceCheck(const std::string& filename) {
   {
@@ -1478,6 +1484,8 @@ void runOpenOnlyOnceCheck(const std::string& filename) {
   REQUIRE_THROWS_AS(reader.openFile(filename), std::logic_error);
   REQUIRE(reader.getEntries(podio::Category::Event) == 1);
 }
+
+} // namespace
 
 #if PODIO_ENABLE_ROOT
 TEST_CASE("Readers can only open files once with TTrees", "[ASAN-FAIL][UBSAN-FAIL][basics][root]") {
@@ -1567,6 +1575,8 @@ TEST_CASE("JSON output", "[json]") {
 }
 
 #endif
+
+namespace {
 
 // Write a template function that can be used with different writers in order to
 // be able to tag the unittests differently. This is necessary because the
@@ -1784,6 +1794,8 @@ void runRelationAfterCloneCheck(const std::string& filename = "unittest_relation
   REQUIRE(nEmptyCluster.Hits()[3].cellID() == 423);
 }
 
+} // namespace
+
 #if PODIO_ENABLE_ROOT
 TEST_CASE("Relations after cloning with TTrees", "[ASAN-FAIL][UBSAN-FAIL][relations][basics]") {
   runRelationAfterCloneCheck<podio::ROOTReader, podio::ROOTWriter>("unittests_relations_after_cloning.root");
@@ -1858,6 +1870,8 @@ TEST_CASE("Clone empty relations", "[relations][basics]") {
   REQUIRE(clonedImmCluster.Hits().size() == 2);
 }
 
+namespace {
+
 template <typename T>
 void addType(std::vector<std::string>& collectionTypes) {
   collectionTypes.push_back(std::string(T::typeName));
@@ -1867,6 +1881,8 @@ template <typename... T>
 void addTypeAll(podio::utils::TypeList<T...>&&, std::vector<std::string>& collectionTypes) {
   (addType<T>(collectionTypes), ...);
 }
+
+} // namespace
 
 TEST_CASE("Add type lists", "[basics][code-gen]") {
   using Catch::Matchers::UnorderedEquals;
