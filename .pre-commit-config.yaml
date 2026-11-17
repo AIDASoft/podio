@@ -1,3 +1,9 @@
+# Fast linting and formatting checks that are fully self-contained, i.e. they
+# do not need any dedicated environment or a configured build. Running
+#
+#   pre-commit run --all-files
+#
+# should work on any host with pre-commit installed.
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: cef0300fd0fc4d2a87a85fa2093c6b283ea36f4b # frozen: v5.0.0
@@ -6,36 +12,17 @@ repos:
       - id: trailing-whitespace
         exclude: (doc/ReleaseNotes.md)
   - repo: https://github.com/psf/black
-    rev: 2a1c67e0b2f81df602ec1f6e7aeb030b9709dc7c # frozen: 23.11.0
+    rev: 258e7dbf348bc23cb70b8cdf693481c04634ebcc # frozen: 26.10.1
     hooks:
       - id: black
-  - repo: local
+  - repo: https://github.com/pycqa/flake8
+    rev: 1c7fec1973ed3a7c192dbe1e96906fbbd1dbe49e # frozen: 7.5.0
+    hooks:
+      - id: flake8
+        args: [--config=.flake8]
+  - repo: https://github.com/pre-commit/mirrors-clang-format
+    rev: cd481d7b0bfb5c7b3090c21846317f9a8262e891 # frozen: v22.1.0
     hooks:
       - id: clang-format
-        name: clang-format
-        entry: .github/scripts/clang-format-hook
+        types_or: [c++]
         exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)$|podioVersion.in.h)
-        types: [c++]
-        language: system
-      - id: pylint
-        name: pylint
-        entry: 'pylint --rcfile=.github/scripts/pylint.rc --msg-template="{path}:{line}: [{msg_id}({symbol}), {obj}] {msg}"'
-        types: [python]
-        language: system
-      - id: flake8
-        name: flake8
-        entry: 'flake8 --config=.flake8'
-        types: [python]
-        language: system
-      - id: cppcheck
-        name: cppcheck
-        entry: cppcheck --project=build/compile_commands.json --enable=all --std=c++20 --cppcheck-build-dir=build --config-exclude="build/src/" --suppressions-list=.cppcheck-suppressions.txt -DROOT_VERSION(major,minor,patch)=(((major)<<16)+((minor)<<8)+(patch)) -i "build/_deps/*" --error-exitcode=1 --check-level=exhaustive -j 4
-        types: [c++]
-        language: system
-        pass_filenames: false
-      - id: clang-tidy
-        name: clang-tidy
-        entry: .github/scripts/clang-tidy-hook
-        types: [c++]
-        exclude: (tests/(datamodel|src|extra_code)/.*(h|cc)|podioVersion.in.h)
-        language: system

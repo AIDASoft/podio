@@ -231,6 +231,23 @@ from intermediate versions to arrive at the current version.
 
     `$ pre-commit run --all-files`
 
+The default configuration (`.pre-commit-config.yaml`) only contains fast
+linting and formatting checks that are completely self-contained, i.e. they do
+not require any dedicated environment and should work on any host where
+pre-commit is available.
+
+The more expensive static analysis checks (`pylint`, `cppcheck` and
+`clang-tidy`) are in a separate configuration
+(`.pre-commit-config-static-analysis.yaml`). These need a full development
+environment (e.g. Key4hep) as well as a configured build that exports the
+compile commands
+
+```bash
+cmake --preset ci-build
+ln -s build/compile_commands.json compile_commands.json
+pre-commit run --config .pre-commit-config-static-analysis.yaml --all-files
+```
+
 ## Retrieving the EDM definition from a data file
 It is possible to get the EDM definition(s) that was used to generate the
 datatypes that are stored in a data file. This makes it possible to re-generate
