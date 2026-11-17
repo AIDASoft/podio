@@ -2017,14 +2017,18 @@ TEST_CASE("Add type lists", "[basics][code-gen]") {
   #include <catch2/catch_tostring.hpp>
   #include <catch2/matchers/catch_matchers.hpp>
 
+namespace {
+
 // Helper lambda to extract the struct type from a registered List type
-inline std::shared_ptr<arrow::StructType> getArrowStructType(const std::shared_ptr<arrow::DataType>& type) {
+std::shared_ptr<arrow::StructType> getArrowStructType(const std::shared_ptr<arrow::DataType>& type) {
   if (!type || type->id() != arrow::Type::LIST) {
     return nullptr;
   }
   auto listType = std::static_pointer_cast<arrow::ListType>(type);
   return std::static_pointer_cast<arrow::StructType>(listType->value_type());
 }
+
+} // namespace
 
 TEST_CASE("ArrowTypeRegistry - Comprehensive Verification", "[arrow]") {
   auto const& reg = podio::ArrowTypeRegistry::instance();

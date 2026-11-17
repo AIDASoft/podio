@@ -283,6 +283,8 @@ TEST_CASE("ArrowFrameConverter - convertTableToFrame Reader-Only Verification", 
   REQUIRE(recHits[1].energy() == 0.5);
 }
 
+namespace {
+
 void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
   const float evtWeight = event.getParameter<float>("UserEventWeight").value();
   REQUIRE(evtWeight == 100.f * eventNum);
@@ -425,6 +427,8 @@ void verifyEventNoUserData(const podio::Frame& event, int eventNum) {
   REQUIRE(arbComps.fixedInteger32 == std::int64_t{-1234567890});
   REQUIRE(arbComps.fixedUnsigned16 == std::uint16_t{12345});
 }
+
+} // namespace
 
 TEST_CASE("ArrowFrameConverter - Comprehensive Round-Trip (No-UserData)", "[arrow][converter][common]") {
   auto originalFrame = makeFrame(0);
