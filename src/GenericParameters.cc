@@ -18,31 +18,33 @@ GenericParameters::GenericParameters(const GenericParameters& other) {
   _doubleMap = other._doubleMap;
 }
 
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
-  os << "[";
-  if (!values.empty()) {
-    os << values[0];
-    for (size_t i = 1; i < values.size(); ++i) {
-      os << ", " << values[i];
+namespace {
+  template <typename T>
+  std::ostream& operator<<(std::ostream& os, const std::vector<T>& values) {
+    os << "[";
+    if (!values.empty()) {
+      os << values[0];
+      for (size_t i = 1; i < values.size(); ++i) {
+        os << ", " << values[i];
+      }
     }
+
+    return os << "]";
   }
 
-  return os << "]";
-}
+  template <typename MapType>
+  void printMap(const MapType& map, std::ostream& os) {
+    const auto osflags = os.flags();
+    os << std::left << std::setw(30) << "Key "
+       << "Value " << '\n';
+    os << "--------------------------------------------------------------------------------\n";
+    for (const auto& [key, value] : map) {
+      os << std::left << std::setw(30) << key << value << '\n';
+    }
 
-template <typename MapType>
-void printMap(const MapType& map, std::ostream& os) {
-  const auto osflags = os.flags();
-  os << std::left << std::setw(30) << "Key "
-     << "Value " << '\n';
-  os << "--------------------------------------------------------------------------------\n";
-  for (const auto& [key, value] : map) {
-    os << std::left << std::setw(30) << key << value << '\n';
+    os.flags(osflags);
   }
-
-  os.flags(osflags);
-}
+} // namespace
 
 void GenericParameters::print(std::ostream& os, bool flush) const {
   std::scoped_lock lock(getMutex<int>(), getMutex<float>(), getMutex<std::string>(), getMutex<double>());

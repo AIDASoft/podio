@@ -30,12 +30,12 @@ TEST_CASE("MurmurHash3 accepts unaligned input", "[basics]") {
   };
 
   SECTION("x86 32-bit") {
-    checkAlignment(MurmurHash3_x86_32, std::array<uint32_t, 1>{});
+    checkAlignment(podio::detail::MurmurHash3_x86_32, std::array<uint32_t, 1>{});
   }
   SECTION("x86 128-bit") {
-    checkAlignment(MurmurHash3_x86_128, std::array<uint32_t, 4>{});
+    checkAlignment(podio::detail::MurmurHash3_x86_128, std::array<uint32_t, 4>{});
   }
   SECTION("x64 128-bit") {
-    checkAlignment(MurmurHash3_x64_128, std::array<uint64_t, 2>{});
+    checkAlignment(podio::detail::MurmurHash3_x64_128, std::array<uint64_t, 2>{});
   }
 }
