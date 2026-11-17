@@ -11,6 +11,8 @@
 #include <string>
 #include <vector>
 
+namespace {
+
 ROOT::VecOps::RVec<float> getEnergy(const ExampleClusterCollection& inColl) {
   ROOT::VecOps::RVec<double> result;
 
@@ -20,6 +22,8 @@ ROOT::VecOps::RVec<float> getEnergy(const ExampleClusterCollection& inColl) {
 
   return result;
 }
+
+} // namespace
 
 int main(int argc, const char* argv[]) {
   std::string inputFile = "example_frame.root";

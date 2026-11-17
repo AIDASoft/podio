@@ -12,6 +12,8 @@
 #include <utility>
 #include <vector>
 
+namespace {
+
 auto readCollNames(const std::string& fileName) {
   std::vector<std::string> collNames{};
 
@@ -90,8 +92,8 @@ std::ostream& operator<<(std::ostream& os, const std::vector<T, A>& vec) {
   return os << ']';
 }
 
-constexpr static auto usage = R"USAGE(usage: podio-test-hashes [-h] collNameFile)USAGE";
-constexpr static auto help = R"HELP(
+constexpr auto usage = R"USAGE(usage: podio-test-hashes [-h] collNameFile)USAGE";
+constexpr auto help = R"HELP(
 Check if any of the collection names provided lead to a collision in the collection IDs
 
 positional arguments:
@@ -100,6 +102,8 @@ positional arguments:
 optional arguments:
   -h, --help        show this help message and exit
 )HELP";
+
+} // namespace
 
 int main(int argc, const char* argv[]) {
   if (argc == 1) {

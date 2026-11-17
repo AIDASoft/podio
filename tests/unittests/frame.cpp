@@ -121,6 +121,8 @@ TEST_CASE("Frame collections multithreaded insert", "[frame][basics][multithread
   }
 }
 
+namespace {
+
 // Helper function to create a frame in the tests below
 auto createFrame() {
   auto frame = podio::Frame();
@@ -167,6 +169,8 @@ void CHECK_INCREASE(const bool condition, int& counter) {
     counter++;
   }
 }
+
+} // namespace
 
 TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][multithread]") {
   constexpr int nThreads = 10;
@@ -234,6 +238,8 @@ TEST_CASE("Frame collections multithreaded insert and read", "[frame][basics][mu
   }
 }
 
+namespace {
+
 // Helper function to keep the tests below a bit easier to read and not having
 // to repeat this bit all the time. This checks that the contents are the ones
 // that would be expected from the createFrame above
@@ -266,6 +272,8 @@ void checkFrame(const podio::Frame& frame) {
   REQUIRE(floats[1] == 2.34f);
   REQUIRE(floats[2] == 3.45f);
 }
+
+} // namespace
 
 TEST_CASE("Frame movability", "[frame][move-semantics]") {
   auto frame = createFrame();

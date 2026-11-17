@@ -32,6 +32,8 @@
 template <>
 struct fmt::formatter<podio::version::Version> : ostream_formatter {};
 
+namespace {
+
 struct ParsedArgs {
   std::string inputFile{};
   std::string category{"events"};
@@ -288,6 +290,8 @@ void printFrame(const podio::Frame& frame, const std::string& category, size_t i
     printFrameOverview(frame, stats);
   }
 }
+
+} // namespace
 
 int main(int argc, char* argv[]) {
   try {

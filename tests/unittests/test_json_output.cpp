@@ -20,10 +20,14 @@
 #include <initializer_list>
 #include <vector>
 
+namespace {
+
 template <typename T>
 nlohmann::json toJson(const T& obj) {
   return nlohmann::json(obj);
 }
+
+} // namespace
 
 TEST_CASE("JSON output - plain objects", "[json]") {
   SECTION("plain POD members") {
