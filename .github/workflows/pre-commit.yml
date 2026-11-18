@@ -16,6 +16,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      with:
+        path: ~/.cache/pre-commit
+        key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+    - name: Install pre-commit
+      run: python -m pip install pre-commit
+    - name: Run pre-commit
+      run: |
+        pre-commit run --show-diff-on-failure \
+          --color=always \
+          --all-files
+
+  static-analysis:
+    needs: pre-commit
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8 # v5.6
     - uses: aidasoft/run-lcg-view@d8db17c61216548c9192889942d46ff2d7c3a3b6 # v6
       with:
@@ -34,8 +54,9 @@ jobs:
             -DUSE_EXTERNAL_CATCH2=OFF
           ln -s build/compile_commands.json compile_commands.json
           echo "::endgroup::"
-          echo "::group::Run pre-commit"
-          pre-commit run --show-diff-on-failure \
+          echo "::group::Run static analysis via pre-commit"
+          pre-commit run --config .pre-commit-config-static-analysis.yaml \
+            --show-diff-on-failure \
             --color=always \
             --all-files
           echo "::endgroup::"
