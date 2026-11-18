@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="186.09605mm"
+   height="470.46384mm"
+   viewBox="0 0 186.09605 470.46384"
+   version="1.1"
+   id="svg1614"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04)"
+   sodipodi:docname="file_layout_sio.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1616"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="mm"
+     showgrid="false"
+     inkscape:zoom="0.24630192"
+     inkscape:cx="-757.20076"
+     inkscape:cy="785.62116"
+     inkscape:window-width="1920"
+     inkscape:window-height="1016"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1611" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(4.6397518,174.1875)">
+    <rect
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       style="fill:#f58512;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect835"
+       width="150.10522"
+       height="38.489151"
+       x="11.211584"
+       y="-110.65507"
+       ry="6.6823697" />
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="24.212305"
+       y="-85.162102"
+       id="text845"><tspan
+         sodipodi:role="line"
+         id="tspan843"
+         x="24.212305"
+         y="-85.162102"
+         style="font-size:16.9333px;stroke-width:0.264583">Frame Metadata</tspan></text>
+    <rect
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       style="fill:#f58512;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+       id="rect833"
+       width="149.79207"
+       height="87.918266"
+       x="11.368162"
+       y="-72.165916"
+       ry="6.6823826" />
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       xml:space="preserve"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       x="43.016674"
+       y="-21.958393"
+       id="text849"><tspan
+         sodipodi:role="line"
+         id="tspan847"
+         x="43.016674"
+         y="-21.958393"
+         style="font-size:16.9333px;stroke-width:0.264583">Frame data</tspan></text>
+    <rect
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       ry="6.6823697"
+       y="15.752201"
+       x="11.211584"
+       height="38.489151"
+       width="150.10522"
+       id="rect835-3"
+       style="fill:#00aded;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke" />
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       id="text845-7"
+       y="41.245167"
+       x="24.212305"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"><tspan
+         style="font-size:16.9333px;stroke-width:0.264583"
+         y="41.245167"
+         x="24.212305"
+         id="tspan843-5"
+         sodipodi:role="line">Frame Metadata</tspan></text>
+    <rect
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       ry="6.6823826"
+       y="54.241352"
+       x="11.368162"
+       height="87.918266"
+       width="149.79207"
+       id="rect833-2"
+       style="fill:#00aded;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke" />
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       id="text849-2"
+       y="104.44888"
+       x="43.016674"
+       style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"><tspan
+         style="font-size:16.9333px;stroke-width:0.264583"
+         y="104.44888"
+         x="43.016674"
+         id="tspan847-8"
+         sodipodi:role="line">Frame data</tspan></text>
+    <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       transform="translate(-578.12167,108.29192)"
+       id="g2230">
+      <circle
+         r="4.0519776"
+         cy="-77.607918"
+         cx="-664.38586"
+         id="path5967-20-5"
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         transform="scale(-1)" />
+      <circle
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-3-5-6"
+         cx="-664.38586"
+         cy="-66.24762"
+         r="4.0519776"
+         transform="scale(-1)" />
+      <circle
+         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.84403;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none"
+         id="path5967-1-5-2"
+         cx="-664.38586"
+         cy="-54.887318"
+         r="4.0519776"
+         transform="scale(-1)" />
+    </g>
+    <rect
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:export-filename="/home/tmadlener/work/presentations/2022/ftx_sft/frame_prototype/frame_sio_file.png"
+       ry="6.6823697"
+       y="-173.30556"
+       x="-3.7578068"
+       height="468.69995"
+       width="184.33217"
+       id="rect1241-8"
+       style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke" />
+    <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       id="g854-9-5-4"
+       transform="translate(54.643011,-110.94443)">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+         id="rect835-1-2-3"
+         width="150.10522"
+         height="38.489151"
+         x="-43.431427"
+         y="-45.078957"
+         ry="6.6823697" />
+      <text
+         xml:space="preserve"
+         style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+         x="-30.430706"
+         y="-19.585993"
+         id="text845-2-5-1"><tspan
+           sodipodi:role="line"
+           id="tspan843-7-4-4"
+           x="-30.430706"
+           y="-19.585993"
+           style="font-size:16.9333px;stroke-width:0.264583">podio Metadata</tspan></text>
+    </g>
+    <g
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       transform="translate(54.643011,-285.18124)"
+       id="g2657">
+      <rect
+         style="fill:none;stroke:#000000;stroke-width:1.76389;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:1;paint-order:markers fill stroke"
+         id="rect835-1-2-2"
+         width="150.10522"
+         height="38.489151"
+         x="-43.431427"
+         y="482.12408"
+         ry="6.6823697" />
+      <text
+         xml:space="preserve"
+         style="font-size:16.9333px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+         x="-17.773129"
+         y="507.61707"
+         id="text845-2-5-0"><tspan
+           sodipodi:role="line"
+           id="tspan843-7-4-6"
+           x="-17.773129"
+           y="507.61707"
+           style="font-size:16.9333px;stroke-width:0.264583">sio Metadata</tspan></text>
+    </g>
+    <text
+       inkscape:export-ydpi="300"
+       inkscape:export-xdpi="300"
+       inkscape:transform-center-y="-447.43485"
+       inkscape:transform-center-x="-616.65671"
+       id="text1245-4"
+       y="283.02676"
+       x="46.992439"
+       style="font-size:25.4px;line-height:1.25;font-family:'Fira Sans';-inkscape-font-specification:'Fira Sans';stroke-width:0.264583"
+       xml:space="preserve"><tspan
+         style="font-size:25.4px;stroke-width:0.264583"
+         y="283.02676"
+         x="46.992439"
+         id="tspan1243-9"
+         sodipodi:role="line">SIO file</tspan></text>
+  </g>
+</svg>

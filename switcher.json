@@ -5,10 +5,15 @@
     "url": "https://AIDASoft.github.io/podio/master/"
   },
   {
-    "name": "v01-09 (latest)",
-    "version": "v01-09",
-    "url": "https://AIDASoft.github.io/podio/v01-09/",
+    "name": "v01-10 (latest)",
+    "version": "v01-10",
+    "url": "https://AIDASoft.github.io/podio/v01-10/",
     "preferred": true
+  },
+  {
+    "name": "v01-09",
+    "version": "v01-09",
+    "url": "https://AIDASoft.github.io/podio/v01-09/"
   },
   {
     "name": "v01-08",
