@@ -1,3 +1,103 @@
+# v01-10
+
+* 2026-11-17 Juan Miguel Carceller ([PR#1084](https://github.com/AIDASoft/podio/pull/1084))
+  - Use unnamed namespaces for file-local tool and test helpers found with clang-tidy. Unlike #1083, this only changes executable linkage and does not affect shared-library exports.
+  - Enable the `misc-use-internal-linkage` check in `.clang-tidy`.
+
+* 2026-11-17 Juan Miguel Carceller ([PR#1083](https://github.com/AIDASoft/podio/pull/1083))
+  - Put file-local helper functions in unnamed namespaces so they are not exported.
+   - Move `MurmurHash3_x86_32` and friends into `podio::detail` and their helpers (`rotl32`, ...) into an unnamed namespace. They were exported as global symbols from `libpodio.so`, which could clash with other libraries bundling MurmurHash3 (e.g. EDM4hep).
+
+* 2026-11-16 Juan Miguel Carceller ([PR#1082](https://github.com/AIDASoft/podio/pull/1082))
+  - `RNTupleReader` now only reads the fields of the requested collections. Collections whose fields cannot be bound are skipped without reading any of their data, and are not retried for later entries.
+  - Cache the RNTuple views of collections and Frame parameters per file. Reading is about 5x faster (20k events, 3 collections, 11 parameters: 565 ms → 100 ms with a Release build).
+  - Stop emulating unknown types when opening files, since the full model is not created anymore. The `datatypes_remove_type` schema evolution test now also runs for ROOT < 6.36.
+
+* 2026-11-13 Thomas Madlener ([PR#1080](https://github.com/AIDASoft/podio/pull/1080))
+  - Generate doxygen directives that hide the podio internal classes from generated EDM documentation by default. This uses a conditional `PODIO_INTERNAL` section and it also introduces a `<datamodel>_podio_internals` group for easier separation if that is enabled. **If you generate doxygen documentation from podio generated EDMs the podio internals will be hidden unless you opt-in from now on.**
+
+* 2026-11-13 Thomas Madlener ([PR#1078](https://github.com/AIDASoft/podio/pull/1078))
+  - Remove deploying of documentation via gitlab as it is no longer necessary after switching to github pages
+
+* 2026-11-13 Thomas Madlener ([PR#1077](https://github.com/AIDASoft/podio/pull/1077))
+  - Fix a few minor documentation issues
+
+* 2026-11-12 Juan Miguel Carceller ([PR#1081](https://github.com/AIDASoft/podio/pull/1081))
+  - Raise a descriptive ValueError when an empty Python parameter sequence is passed without an explicit as_type.
+
+* 2026-11-12 Thomas Madlener ([PR#1076](https://github.com/AIDASoft/podio/pull/1076))
+  - Add a version selector to the documentation on GitHub Pages and a script to auto-update the selector when necessary
+
+* 2026-11-10 Thomas Madlener ([PR#1075](https://github.com/AIDASoft/podio/pull/1075))
+  - Fix an unused parameter warning when no backend is configured
+
+* 2026-11-10 Thomas Madlener ([PR#1074](https://github.com/AIDASoft/podio/pull/1074))
+  - Add a deprecation warning for builds using c++20 to cmake
+
+* 2026-11-09 Juan Miguel Carceller ([PR#1072](https://github.com/AIDASoft/podio/pull/1072))
+  - Avoid assuming 64-bit unsigned long when decoding versions.
+
+* 2026-11-09 Juan Miguel Carceller ([PR#1071](https://github.com/AIDASoft/podio/pull/1071))
+  - Report ROOT output write failures during finalization instead of silently succeeding, for both TTree and RNTuple writers.
+  - Add a test that limits the amount of space a file can have and triggers a failure when writing
+
+* 2026-11-09 Juan Miguel Carceller ([PR#1070](https://github.com/AIDASoft/podio/pull/1070))
+  - Fix a data race in Frame relation resolution by synchronizing retrieved collection ID tracking.
+
+* 2026-11-09 Juan Miguel Carceller ([PR#1069](https://github.com/AIDASoft/podio/pull/1069))
+  - Prevent data races in map-wide GenericParameters operations.
+
+* 2026-11-09 Juan Miguel Carceller ([PR#1067](https://github.com/AIDASoft/podio/pull/1067))
+  - Fix unaligned reads in all three MurmurHash3 variants. Hash values do not change.
+
+* 2026-11-09 Thomas Madlener ([PR#1066](https://github.com/AIDASoft/podio/pull/1066))
+  - Simplify CMake prests.
+  - Introduce one common action that is used by most workflows
+
+* 2026-11-09 Debajyoti Tripathy ([PR#1065](https://github.com/AIDASoft/podio/pull/1065))
+  - Bump minimum required fmt version to 10 in CMakeLists.txt
+
+* 2026-11-08 Wouter Deconinck ([PR#1023](https://github.com/AIDASoft/podio/pull/1023))
+  - feat: allow for no ROOT dependency builds (controlled by `ENABLE_ROOT` cmake option and transported downstream via `PODIO_ENABLE_ROOT` cmake variable as well as pre-processor directive). **Disabling ROOT will also disable python bindings for podio and generated EDMs!**.
+  - Document all targets and cmake variables that we export and that are available for downstream consumers.
+
+* 2026-11-06 Juan Miguel Carceller ([PR#1063](https://github.com/AIDASoft/podio/pull/1063))
+  - Remove the successful `return 0` from READ_WITH so READ_AS_FROM_VERSION no longer makes main return before completing all the checks. After https://github.com/AIDASoft/podio/pull/1055.
+
+* 2026-11-05 Juan Miguel Carceller ([PR#1059](https://github.com/AIDASoft/podio/pull/1059))
+  - Fix crashes in the `ROOTReader` when reading from multiple files, caused by using branches from a tree that is no longer loaded. Branches are now reloaded whenever the `TChain` loads a new tree, using a notifier registered via `TChain::SetNotify`
+  - Throw an exception with the missing branch and file name when files with different contents are read together, instead of crashing
+
+* 2026-11-05 David ([PR#1050](https://github.com/AIDASoft/podio/pull/1050))
+  - The `ROOTWriter` and the `RNTupleWriter` can consume compression settings
+  - Introduced a new `WriterFor` builder for a more customizable configuration of the high level `Writer` interface wrapper. This also makes it possible to pass compression (and potentially) other settings to the lower level writers through this interface.
+
+* 2026-11-04 Joshua Beirer ([PR#1055](https://github.com/AIDASoft/podio/pull/1055))
+  - Allow adding a `OneToManyRelation` to an existing datatype. When reading files written with an older schema version, the new relation is simply empty (ROOT and RNTuple).
+
+* 2026-11-02 Juan Miguel Carceller ([PR#1060](https://github.com/AIDASoft/podio/pull/1060))
+  - Fix a data race when enumerating Frame parameter keys during concurrent insertion.
+
+* 2026-11-02 Ishaan Maheshwari ([PR#1049](https://github.com/AIDASoft/podio/pull/1049))
+  - accept `std::string_view` in `CollectionIDTable` methods (`collectionID`, `present`, `add`) to avoid temporary `std::string` allocations.
+
+* 2026-10-28 Juan Miguel Carceller ([PR#1052](https://github.com/AIDASoft/podio/pull/1052))
+  - Preload the UBSan runtime for the python and cling tests when building with `USE_SANITIZER=Undefined`, as is already done for Address and Thread.
+
+* 2026-10-27 Juan Miguel Carceller ([PR#1057](https://github.com/AIDASoft/podio/pull/1057))
+  - Reduce ASLR entropy for ThreadSanitizer CI jobs to prevent startup failures during Catch2 test discovery.
+
+* 2026-10-27 Juan Miguel Carceller ([PR#1054](https://github.com/AIDASoft/podio/pull/1054))
+  - Determine the format of a ROOT file in `podio.reading` from the class name of the `podio_metadata` key instead of reading the object with `TDirectoryFile.Get`. The python `Get` doesn't take ownership of objects that are not owned by the directory, so the RNTuple was leaked (https://github.com/root-project/root/issues/16178, fixed in https://github.com/root-project/root/pull/23798), which is reported under the address sanitizer when reading RNTuple files with `podio.reading.get_reader`.
+
+* 2026-10-27 Juan Miguel Carceller ([PR#1053](https://github.com/AIDASoft/podio/pull/1053))
+  - Pass `TSAN_OPTIONS` (with the TSan suppressions) and `ASAN_OPTIONS` to the unit tests, as is already done for the other tests. The RNTuple data races reported under the thread sanitizer were already suppressed but the suppressions were never applied to the unit tests.
+  - Run `Readers can only open files once with RNTuple` and `Relations after cloning with RNTuple` with the thread sanitizer.
+  - Remove TSan and LSan suppressions that are not matched by any test anymore (checked with gcc16 and clang22 on LCG_110 for the Thread, Address and Undefined sanitizers).
+
+* 2026-10-27 Juan Miguel Carceller ([PR#1051](https://github.com/AIDASoft/podio/pull/1051))
+  - Exclude Arrow files in the `datamodel_def_store_roundtrip_*` tests when Arrow is disabled, as is already done for SIO.
+
 # v01-09
 
 * 2026-10-19 Thomas Madlener ([PR#1048](https://github.com/AIDASoft/podio/pull/1048))
