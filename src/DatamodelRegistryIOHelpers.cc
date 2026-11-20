@@ -4,7 +4,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <iterator>
+#include <ranges>
 
 namespace podio {
 
@@ -21,14 +21,12 @@ void DatamodelDefinitionCollector::registerDatamodelDefinition(const podio::Coll
 }
 
 std::vector<std::tuple<std::string, std::string>> DatamodelDefinitionCollector::getDatamodelDefinitionsToWrite() const {
-  std::vector<std::tuple<std::string, std::string>> edmDefinitions;
-  edmDefinitions.reserve(m_edmDefRegistryIdcs.size());
-  for (const auto& index : m_edmDefRegistryIdcs) {
-    const auto& edmRegistry = podio::DatamodelRegistry::instance();
-    edmDefinitions.emplace_back(edmRegistry.getDatamodelName(index), edmRegistry.getDatamodelDefinition(index));
-  }
-
-  return edmDefinitions;
+  const auto& registry = DatamodelRegistry::instance();
+  using Definition = std::tuple<std::string, std::string>;
+  const auto getDefinition = [&registry](auto index) {
+    return Definition(registry.getDatamodelName(index), registry.getDatamodelDefinition(index));
+  };
+  return m_edmDefRegistryIdcs | std::views::transform(getDefinition) | std::ranges::to<std::vector>();
 }
 
 const std::string_view DatamodelDefinitionHolder::getDatamodelDefinition(std::string_view name) const {
@@ -43,12 +41,7 @@ const std::string_view DatamodelDefinitionHolder::getDatamodelDefinition(std::st
 }
 
 std::vector<std::string> DatamodelDefinitionHolder::getAvailableDatamodels() const {
-  std::vector<std::string> defs{};
-  defs.reserve(m_availEDMDefs.size());
-  std::transform(m_availEDMDefs.cbegin(), m_availEDMDefs.cend(), std::back_inserter(defs),
-                 [](const auto& elem) { return std::get<0>(elem); });
-
-  return defs;
+  return m_availEDMDefs | std::views::elements<0> | std::ranges::to<std::vector>();
 }
 
 std::optional<podio::version::Version> DatamodelDefinitionHolder::getDatamodelVersion(std::string_view name) const {

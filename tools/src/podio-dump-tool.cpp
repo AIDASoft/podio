@@ -111,10 +111,7 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
       parseError();
     }
   } else {
-    std::vector<size_t> events;
-    events.reserve(std::ranges::distance(splitRange));
-    std::ranges::transform(splitRange, std::back_inserter(events), parseSizeOrExit);
-    return events;
+    return splitRange | std::views::transform(parseSizeOrExit) | std::ranges::to<std::vector>();
   }
 
   parseError();
@@ -123,10 +120,7 @@ std::vector<size_t> parseEventRange(const std::string_view evtRange) {
 
 std::vector<size_t> fullEntryList(const ParsedArgs& args, const podio::Reader& reader) {
   if (args.events.size() == 1 && args.events[0] == static_cast<std::size_t>(-1)) {
-    const auto nEntries = reader.getEntries(args.category);
-    std::vector<size_t> allEntries(nEntries);
-    std::iota(allEntries.begin(), allEntries.end(), 0);
-    return allEntries;
+    return std::views::iota(size_t{0}, reader.getEntries(args.category)) | std::ranges::to<std::vector>();
   }
   return args.events;
 }
@@ -262,9 +256,8 @@ void printGeneralInfo(const podio::Reader& reader, const std::string& filename) 
   }
 
   std::vector<std::tuple<std::string, size_t>> rows{};
-  const auto availCats = reader.getAvailableCategories();
-  for (const auto& cat :
-       podio::utils::sortAlphabeticaly(std::vector<std::string>(availCats.begin(), availCats.end()))) {
+  auto categories = std::ranges::to<std::vector<std::string>>(reader.getAvailableCategories());
+  for (const auto& cat : podio::utils::sortAlphabeticaly(std::move(categories))) {
     rows.emplace_back(cat, reader.getEntries(cat));
   }
   fmt::println("\nFrame categories in this file:");
@@ -272,8 +265,7 @@ void printGeneralInfo(const podio::Reader& reader, const std::string& filename) 
 }
 
 int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName) {
-  const auto availModels = reader.getAvailableDatamodels();
-  if (const auto it = std::ranges::find(availModels, modelName); it == availModels.end()) {
+  if (!std::ranges::contains(reader.getAvailableDatamodels(), modelName)) {
     fmt::println(stderr, "ERROR: cannot dump model '{}' (not present in file)", modelName);
     return 1;
   }

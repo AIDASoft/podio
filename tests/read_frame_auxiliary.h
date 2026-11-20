@@ -6,12 +6,13 @@
 #include "podio/Frame.h"
 #include "podio/podioVersion.h"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
 
 bool present(const std::string& elem, const std::vector<std::string>& vec) {
-  return std::ranges::find(vec, elem) != vec.end();
+  return std::ranges::contains(vec, elem);
 }
 
 int testGetAvailableCollections(const podio::Frame& frame, const std::vector<std::string>& expected) {

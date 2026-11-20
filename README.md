@@ -19,13 +19,14 @@ use a recent LCG or Key4hep stack release.
 
 On Mac OS or Ubuntu, you need to install the following software.
 
-### ROOT 6.28.04 (6.34 for RNTuple support)
+### ROOT 6.36 or newer (optional)
 
-Install ROOT 6.28.04 (or later) built with c++20 support and set up your ROOT environment:
+For ROOT I/O or Python bindings, install ROOT 6.36 or later built with C++23
+or newer and set up your ROOT environment:
 
     source <root_path>/bin/thisroot.sh
 
-If you want to build with RNTuple support, you will need 6.34 at least.
+To build without ROOT, configure with `-DENABLE_ROOT=OFF`.
 
 ### Catch2 v3 (optional)
 
@@ -91,6 +92,15 @@ Or you can setup the environment entirely under your control: see `init.sh`
 and `env.sh`.
 
 ## Compiling
+
+Podio requires CMake 3.20 or newer (3.21 or newer for presets) and a C++23
+compiler and standard library with `std::ranges::contains`, `std::ranges::to`,
+`std::from_range` and container `append_range` (for example, GCC 15+ /
+libstdc++ 15+ or libc++ 19+). The build
+defaults to C++23 without ROOT and matches ROOT's C++ standard when ROOT support
+is enabled. To override the selection, pass `-DCMAKE_CXX_STANDARD=<standard>`
+when configuring; for ROOT I/O and Python bindings, use the same standard as
+your ROOT build.
 
 Podio uses CMake presets to simplify the build process. The following presets are available:
 

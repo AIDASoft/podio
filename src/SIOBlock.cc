@@ -85,8 +85,7 @@ std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const std::string& typeSt
 
 std::shared_ptr<SIOBlock> SIOBlockFactory::createBlock(const podio::CollectionBase* col,
                                                        const std::string& name) const {
-  const auto typeStr = std::string(col->getValueTypeName()); // Need c++20 for transparent lookup
-  const auto it = _map.find(typeStr);
+  const auto it = _map.find(std::string(col->getValueTypeName()));
 
   if (it != _map.end()) {
     auto blk = std::shared_ptr<SIOBlock>(it->second->create(name));

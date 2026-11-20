@@ -22,6 +22,7 @@
 #include "nlohmann/json_fwd.hpp"
 #endif
 
+#include <ranges>
 #include <string_view>
 #include <vector>
 #include <algorithm>
@@ -64,10 +65,9 @@ public:
   {{ class.bare_type }}Collection& operator=({{ class.bare_type }}Collection&&) = default;
 
   ~{{ class.bare_type }}Collection() override;
-#if defined(__cpp_lib_containers_ranges)
+
   template<podio::detail::RangeConvertibleTo<value_type> R>
   {{ class.bare_type }}Collection(std::from_range_t, R&& range);
-#endif
 
   /// Construct a {{ class.bare_type }} collection from a range of mutable or
   /// immutable handles
@@ -154,9 +154,9 @@ public:
   void setID(uint32_t ID) final {
     m_collectionID = ID;
     if (!m_isSubsetColl) {
-      std::for_each(m_storage.entries.begin(), m_storage.entries.end(),
-                  [ID] ({{ class.bare_type }}Obj* obj) { obj->id = {obj->id.index, static_cast<uint32_t>(ID)}; }
-      );
+      std::ranges::for_each(m_storage.entries, [ID]({{ class.bare_type }}Obj* obj) {
+        obj->id = {obj->id.index, static_cast<uint32_t>(ID)};
+      });
     }
   }
 
@@ -250,30 +250,21 @@ Mutable{{ class.bare_type }} {{ class.bare_type }}Collection::create(Args&&... a
 }
 
 
-#if defined(__cpp_lib_containers_ranges)
 template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::value_type> R>
-{{ class.bare_type}}Collection::{{ class.bare_type }}Collection(std::from_range_t, R&& range)
+{{ class.bare_type }}Collection::{{ class.bare_type }}Collection(std::from_range_t, R&& range)
   : {{ class.bare_type }}Collection() {
-  setSubsetCollection(podio::detail::RangeOf<R, value_type>);
+  if constexpr (podio::detail::RangeOf<R, value_type>) {
+    setSubsetCollection();
+  }
 
   for (auto&& elem : range) {
     push_back(std::forward<decltype(elem)>(elem));
   }
 }
-#endif
 
 template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::value_type> R>
 {{ class.bare_type }}Collection {{ class.bare_type }}Collection::from(R&& range) {
-  {{ class.bare_type }}Collection coll;
-  if constexpr (podio::detail::RangeOf<R, value_type>) {
-    coll.setSubsetCollection();
-  }
-
-  for (auto&& elem : range) {
-    coll.push_back(std::forward<decltype(elem)>(elem));
-  }
-
-  return coll;
+  return {{ class.bare_type }}Collection(std::from_range, std::forward<R>(range));
 }
 
 

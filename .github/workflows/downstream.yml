@@ -28,13 +28,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: LCG_107/x86_64-el9-gcc13-opt
-            cxx-std: 20
+          - platform: LCG_108/x86_64-el9-gcc15-opt
             cmake-args: -DPODIO_RUN_STRACE_TEST=ON
           - platform: dev4/x86_64-el9-gcc15-opt
-            cxx-std: 23
-          - platform: dev3/x86_64-el9-clang22-opt
-            cxx-std: 20
+          - platform: dev4/x86_64-el9-clang22-opt
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -49,13 +46,10 @@ jobs:
           release-platform: ${{ matrix.platform }}
           ccache-key: ccache-edm4hep-${{ matrix.platform }}
           julia: true
-          cmake-args: >-
-            -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }}
-            ${{ matrix.cmake-args }}
+          cmake-args: ${{ matrix.cmake-args }}
           post-install: |
             echo "::group::Build and test EDM4hep"
             cmake -S edm4hep -B edm4hep/build \
-              -DCMAKE_CXX_STANDARD=${{ matrix.cxx-std }} \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DUSE_EXTERNAL_CATCH2=ON \
@@ -71,7 +65,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        image: [el9, ubuntu2404]
+        image: [el9, ubuntu2604]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -96,7 +90,6 @@ jobs:
             echo "::group::Build EDM4hep"
             cmake -S edm4hep -B edm4hep/build \
               -DCMAKE_INSTALL_PREFIX=$(pwd)/edm4hep/install \
-              -DCMAKE_CXX_STANDARD=20 \
               -DCMAKE_CXX_FLAGS=" -fdiagnostics-color=always " \
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
               -DUSE_EXTERNAL_CATCH2=ON \

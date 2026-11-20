@@ -136,7 +136,7 @@ void DataSource::Finalize() {
 }
 
 std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName, const std::type_info&) {
-  auto itr = std::find(m_columnNames.begin(), m_columnNames.end(), columnName);
+  auto itr = std::ranges::find(m_columnNames, columnName);
   if (itr == m_columnNames.end()) {
     std::string errMsg = "podio::DataSource: Can't find requested column \"";
     errMsg += columnName;
@@ -158,11 +158,11 @@ const std::vector<std::string>& DataSource::GetColumnNames() const {
 }
 
 bool DataSource::HasColumn(std::string_view columnName) const {
-  return std::find(m_columnNames.begin(), m_columnNames.end(), columnName) != m_columnNames.end();
+  return std::ranges::contains(m_columnNames, columnName);
 }
 
 std::string DataSource::GetTypeName(std::string_view columnName) const {
-  auto itr = std::find(m_columnNames.begin(), m_columnNames.end(), columnName);
+  auto itr = std::ranges::find(m_columnNames, columnName);
   if (itr == m_columnNames.end()) {
     std::string errMsg = "podio::DataSource: Type name for \"";
     errMsg += columnName;

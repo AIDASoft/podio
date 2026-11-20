@@ -24,16 +24,11 @@ jobs:
       matrix:
         include:
           # Nightlies
-          - platform: dev3/x86_64-el9-gcc15-opt
           - platform: dev4/x86_64-el9-clang22-opt
+            # Exercise fetching and building Catch2 instead of using the one in the view.
+            cmake-args: -DUSE_EXTERNAL_CATCH2=OFF
           - platform: dev4/x86_64-el9-gcc15-opt
           - platform: dev4/x86_64-el9-gcc16-opt
-          - platform: dev3/x86_64-ubuntu2404-gcc13-opt
-
-          # Explicit build that requires fetching an external Catch2 to keep
-          # that option exercised
-          - platform: dev4/x86_64-ubuntu2404-gcc13-opt
-            cmake-args: -DUSE_EXTERNAL_CATCH2=OFF
 
           # Build w/o ROOT
           - platform: dev4/x86_64-el9-gcc16-opt
@@ -43,10 +38,6 @@ jobs:
           # Releases
           - platform: LCG_108/x86_64-el9-gcc15-opt # ROOT 6.36.02 (built with C++23)
             cmake-args: -DPODIO_RUN_STRACE_TEST=ON
-          - platform: LCG_107/x86_64-el9-gcc13-opt # ROOT 6.34.02, minimal ROOT version for RNTuple
-            cmake-args: -DPODIO_RUN_STRACE_TEST=ON
-          - platform: LCG_104/x86_64-el9-gcc13-opt # ROOT 6.28.04, minimal supported ROOT version
-            cmake-args: -DENABLE_RNTUPLE=OFF
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/podio-build

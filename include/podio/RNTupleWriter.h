@@ -11,7 +11,6 @@
 #include <ROOT/RNTupleModel.hxx>
 #include <ROOT/RNTupleWriteOptions.hxx>
 #include <ROOT/RNTupleWriter.hxx>
-#include <ROOT/RVersion.hxx>
 
 #include <memory>
 #include <string>
@@ -22,20 +21,6 @@
 namespace podio {
 class GenericParameters;
 class Frame;
-
-namespace root_compat {
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-  using REntry = ROOT::Experimental::REntry;
-  using RNTupleModel = ROOT::Experimental::RNTupleModel;
-  using RNTupleWriter = ROOT::Experimental::RNTupleWriter;
-  using RNTupleWriteOptions = ROOT::Experimental::RNTupleWriteOptions;
-#else
-  using REntry = ROOT::REntry;
-  using RNTupleModel = ROOT::RNTupleModel;
-  using RNTupleWriter = ROOT::RNTupleWriter;
-  using RNTupleWriteOptions = ROOT::RNTupleWriteOptions;
-#endif
-} // namespace root_compat
 
 /// The RNTupleWriter writes podio files into ROOT files using the new RNTuple
 /// format.
@@ -127,11 +112,11 @@ public:
   checkConsistency(const std::vector<std::string>& collsToWrite, std::string_view category) const;
 
 private:
-  std::unique_ptr<root_compat::RNTupleModel> createModels(const std::vector<root_utils::StoreCollection>& collections);
+  std::unique_ptr<ROOT::RNTupleModel> createModels(const std::vector<root_utils::StoreCollection>& collections);
 
   /// Helper struct to group all the necessary information for one category.
   struct CategoryInfo {
-    std::unique_ptr<root_compat::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
+    std::unique_ptr<ROOT::RNTupleWriter> writer{nullptr}; ///< The RNTupleWriter for this category
 
     /// Collection info for this category
     std::vector<root_utils::CollectionWriteInfo> collInfo{};
@@ -147,12 +132,12 @@ private:
   CategoryInfo& getCategoryInfo(std::string_view category);
 
   template <typename T>
-  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, root_compat::REntry* entry);
+  void fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::REntry* entry);
 
   template <typename T>
   static root_utils::ParamStorage<T>& getParamStorage(CategoryInfo& catInfo);
 
-  root_compat::RNTupleWriteOptions m_options{}; ///< Writer configuration
+  ROOT::RNTupleWriteOptions m_options{}; ///< Writer configuration
   std::unique_ptr<TFile> m_file{};
 
   DatamodelDefinitionCollector m_datamodelCollector{};
