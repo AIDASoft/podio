@@ -3,15 +3,14 @@
 
 #include "podio/utilities/TypeHelpers.h"
 
-#include <algorithm>
 #include <cstddef>
 #include <initializer_list>
 #include <iostream>
-#include <iterator>
 #include <map>
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <type_traits>
@@ -237,16 +236,10 @@ size_t GenericParameters::getN(const std::string& key) const {
 
 template <ValidGenericDataType T>
 std::vector<std::string> GenericParameters::getKeys() const {
-  std::vector<std::string> keys;
   const auto& map = getMap<T>();
-  {
-    auto& mtx = getMutex<T>();
-    std::lock_guard lock{mtx};
-    keys.reserve(map.size());
-    std::transform(map.begin(), map.end(), std::back_inserter(keys), [](const auto& pair) { return pair.first; });
-  }
-
-  return keys;
+  auto& mtx = getMutex<T>();
+  std::lock_guard lock{mtx};
+  return map | std::views::keys | std::ranges::to<std::vector>();
 }
 
 template <ValidGenericDataType T>
@@ -276,8 +269,8 @@ void GenericParameters::loadFrom(VecLike<std::string> keys, VecLike<std::vector<
   auto& mtx = getMutex<T>();
 
   std::lock_guard lock{mtx};
-  for (size_t i = 0; i < keys.size(); ++i) {
-    map.emplace(std::move(keys[i]), std::move(values[i]));
+  for (auto&& [key, value] : std::views::zip(keys, values)) {
+    map.emplace(std::move(key), std::move(value));
   }
 }
 

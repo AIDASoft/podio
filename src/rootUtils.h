@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <iostream>
 #include <iterator>
+#include <ranges>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -62,7 +63,7 @@ consteval auto getGPKeyName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringKeyName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(false, "Unsupported type for generic parameters");
   }
 }
 
@@ -80,7 +81,7 @@ consteval auto getGPValueName() {
   } else if constexpr (std::is_same<T, std::string>::value) {
     return stringValueName;
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(false, "Unsupported type for generic parameters");
   }
 }
 
@@ -109,7 +110,7 @@ consteval auto getGPBranchOffsets() {
   } else if constexpr (std::is_same_v<T, std::string>) {
     return GPBranchOffsets{7, 8};
   } else {
-    static_assert(podio::detail::always_false<T>, "Unsupported type for generic parameters");
+    static_assert(false, "Unsupported type for generic parameters");
   }
 }
 
@@ -215,12 +216,12 @@ inline void resetBranches(TTree* chain, CollectionBranches& branches, const std:
     branches.data = reloadBranch(chain, branches.data, name);
   }
 
-  for (size_t i = 0; i < branches.refs.size(); ++i) {
-    branches.refs[i] = reloadBranch(chain, branches.refs[i], branches.refNames[i]);
+  for (auto&& [branch, branchName] : std::views::zip(branches.refs, branches.refNames)) {
+    branch = reloadBranch(chain, branch, branchName);
   }
 
-  for (size_t i = 0; i < branches.vecs.size(); ++i) {
-    branches.vecs[i] = reloadBranch(chain, branches.vecs[i], branches.vecNames[i]);
+  for (auto&& [branch, branchName] : std::views::zip(branches.vecs, branches.vecNames)) {
+    branch = reloadBranch(chain, branch, branchName);
   }
 }
 
@@ -232,25 +233,25 @@ inline bool setCollectionAddressesReader(podio::CollectionReadBuffers& collBuffe
   }
 
   if (const auto refCollections = collBuffers.references) {
-    for (size_t i = 0; i < refCollections->size(); ++i) {
+    for (auto&& [refCollection, branch] : std::views::zip(*refCollections, branches.refs)) {
       // Relations that are not stored in this schema version stay empty
-      if (!(*refCollections)[i]) {
-        (*refCollections)[i] = std::make_unique<std::vector<podio::ObjectID>>();
+      if (!refCollection) {
+        refCollection = std::make_unique<std::vector<podio::ObjectID>>();
         continue;
       }
-      if (!branches.refs[i]) {
+      if (!branch) {
         return false;
       }
-      branches.refs[i]->SetAddress(&(*refCollections)[i]);
+      branch->SetAddress(&refCollection);
     }
   }
 
   if (const auto vecMembers = collBuffers.vectorMembers) {
-    for (size_t i = 0; i < vecMembers->size(); ++i) {
-      if (!branches.vecs[i]) {
+    for (auto&& [vecMember, branch] : std::views::zip(*vecMembers, branches.vecs)) {
+      if (!branch) {
         return false;
       }
-      branches.vecs[i]->SetAddress(&(*vecMembers)[i].second);
+      branch->SetAddress(&vecMember.second);
     }
   }
 
@@ -266,20 +267,20 @@ inline bool setCollectionAddressesWriter(const podio::CollectionWriteBuffers& co
   }
 
   if (const auto refCollections = collBuffers.references) {
-    for (size_t i = 0; i < refCollections->size(); ++i) {
-      if (!branches.refs[i]) {
+    for (auto&& [refCollection, branch] : std::views::zip(*refCollections, branches.refs)) {
+      if (!branch) {
         return false;
       }
-      branches.refs[i]->SetAddress(&(*refCollections)[i]);
+      branch->SetAddress(&refCollection);
     }
   }
 
   if (const auto vecMembers = collBuffers.vectorMembers) {
-    for (size_t i = 0; i < vecMembers->size(); ++i) {
-      if (!branches.vecs[i]) {
+    for (auto&& [vecMember, branch] : std::views::zip(*vecMembers, branches.vecs)) {
+      if (!branch) {
         return false;
       }
-      branches.vecs[i]->SetAddress((*vecMembers)[i].second);
+      branch->SetAddress(vecMember.second);
     }
   }
 
@@ -313,10 +314,7 @@ inline void readBranchesData(const CollectionBranches& branches, Long64_t entry)
 inline auto reconstructCollectionInfo(TTree* eventTree, podio::CollectionIDTable const& idTable) {
   std::vector<CollectionWriteInfo> collInfo;
 
-  for (size_t iColl = 0; iColl < idTable.names().size(); ++iColl) {
-    const auto collID = idTable.ids()[iColl];
-    const auto& name = idTable.names()[iColl];
-
+  for (auto&& [collID, name] : std::views::zip(idTable.ids(), idTable.names())) {
     if (const auto branch = getBranch(eventTree, name.c_str())) {
       const std::string_view bufferClassName = branch->GetClassName();
       // this comes with vector<...Data>, where we only care about the ...
@@ -386,14 +384,8 @@ inline std::string getInconsistentCollsMsg(const std::vector<std::string>& exist
 /// Create a collection id table from the information in the
 /// CollectionWriteInfos
 inline std::shared_ptr<podio::CollectionIDTable> makeCollIdTable(const std::vector<CollectionWriteInfo>& collInfo) {
-  std::vector<uint32_t> ids{};
-  ids.reserve(collInfo.size());
-  std::vector<std::string> names{};
-  names.reserve(collInfo.size());
-  for (const auto& [id, _1, _2, _3, name, _5] : collInfo) {
-    ids.emplace_back(id);
-    names.emplace_back(name);
-  }
+  auto ids = collInfo | std::views::transform(&CollectionWriteInfo::collectionID) | std::ranges::to<std::vector>();
+  auto names = collInfo | std::views::transform(&CollectionWriteInfo::name) | std::ranges::to<std::vector>();
 
   return std::make_shared<podio::CollectionIDTable>(std::move(ids), std::move(names));
 }

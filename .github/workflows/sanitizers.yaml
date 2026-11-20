@@ -46,7 +46,6 @@ jobs:
           ccache-key: ccache-sanitizers-el9-${{ matrix.compiler }}-${{ matrix.sanitizer }}
           cmake-args: >-
             -DCMAKE_BUILD_TYPE=Debug
-            -DCMAKE_CXX_STANDARD=23
             -DUSE_SANITIZER=${{ matrix.sanitizer }}
           # Tests run (considerably) slower with sanitizers
           ctest-args: --timeout 1500

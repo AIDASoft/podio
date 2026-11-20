@@ -1,6 +1,5 @@
-# HSF recommends 3.3 to support C/C++ compile features for C/C++11 across all
-# platforms
-cmake_minimum_required(VERSION 3.12)
+# CMake 3.20 introduced support for C++23.
+cmake_minimum_required(VERSION 3.20)
 
 #--- Project name --------------------------------------------------------------
 project(podio LANGUAGES CXX)
@@ -31,28 +30,6 @@ if(NOT CMAKE_CONFIGURATION_TYPES)
       )
   endif()
 endif()
-
-# Set up C++ Standard
-# ``-DCMAKE_CXX_STANDARD=<standard>`` when invoking CMake
-set(CMAKE_CXX_STANDARD 20 CACHE STRING "")
-
-# podio requires at least c++20, any newer standard is allowed.
-if(NOT CMAKE_CXX_STANDARD MATCHES "^[0-9]+$" OR CMAKE_CXX_STANDARD LESS 20 OR CMAKE_CXX_STANDARD EQUAL 98)
-  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}. podio requires c++20 or newer")
-endif()
-
-if(CMAKE_CXX_STANDARD EQUAL 20)
-  message(WARNING "Building podio with c++20 is deprecated and support for it will be removed in a future version. Please consider switching to c++23 or newer (-DCMAKE_CXX_STANDARD=23). See https://github.com/AIDASoft/podio/issues/1073 for more details")
-endif()
-
-# Prevent CMake falls back to the latest standard the compiler does support
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-# Disables the use of compiler-specific extensions, hence makes sure the code
-# works for a wider range of compilers
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-message(STATUS "Setting C++ standard: '${CMAKE_CXX_STANDARD}'.")
 
 set(CMAKE_SHARED_LIBRARY_SUFFIX ".so")
 
@@ -88,43 +65,66 @@ find_package(Threads REQUIRED)
 if(ENABLE_ROOT)
   list(APPEND CMAKE_PREFIX_PATH $ENV{ROOTSYS})
   set(root_components_needed RIO Tree)
-  set(root_min_version 6.28.04)
   if(ENABLE_RNTUPLE)
     list(APPEND root_components_needed ROOTNTuple)
-    set(root_min_version 6.34)
   endif()
   if(ENABLE_DATASOURCE)
     list(APPEND root_components_needed ROOTDataFrame)
   endif()
-  find_package(ROOT ${root_min_version} REQUIRED COMPONENTS ${root_components_needed})
+  # ROOT 6.36 is the first release series supporting C++23 builds.
+  find_package(ROOT 6.36 REQUIRED COMPONENTS ${root_components_needed})
 
-  # ROOT_CXX_STANDARD was introduced in https://github.com/root-project/root/pull/6466
-  # before that it's an empty variable so we check if it's any number > 0
-  if(NOT DEFINED ROOT_CXX_STANDARD)
-    message(STATUS "ROOT c++ standard not yet available. Determining from compile features")
-    get_target_property(ROOT_COMPILE_FEATURES ROOT::Core INTERFACE_COMPILE_FEATURES)
-    foreach(cxxstd IN ITEMS 26;23;20;17;14;11)
-      if ("cxx_std_${cxxstd}" IN_LIST ROOT_COMPILE_FEATURES)
-        set(ROOT_CXX_STANDARD ${cxxstd})
-        break()
-      endif()
-    endforeach()
-  endif()
-
-  if(NOT DEFINED ROOT_CXX_STANDARD)
-    message(WARNING "ROOT c++ standard could not be detected")
+  if(NOT ROOT_CXX_STANDARD)
+    message(FATAL_ERROR "Could not determine ROOT's C++ standard. podio requires ROOT built with C++23 or newer. To build without ROOT, set ENABLE_ROOT=OFF.")
+  elseif(ROOT_CXX_STANDARD LESS 23 OR ROOT_CXX_STANDARD EQUAL 98)
+    message(FATAL_ERROR "podio requires ROOT built with C++23 or newer, but ROOT was built with C++${ROOT_CXX_STANDARD}. To build without ROOT, set ENABLE_ROOT=OFF.")
   else()
-    message(STATUS "Determined ROOT c++ standard: " ${ROOT_CXX_STANDARD})
-  endif()
-
-  if(ROOT_CXX_STANDARD VERSION_LESS 20)
-    message(FATAL_ERROR "You are trying to build podio against a version of ROOT that has not been built with a sufficient c++ standard. podio requires c++20 or higher")
-  endif()
-  if(NOT ROOT_CXX_STANDARD VERSION_EQUAL CMAKE_CXX_STANDARD)
-    message(WARNING "You are trying to build podio with a different c++ standard than ROOT. C++${CMAKE_CXX_STANDARD} was required but ROOT was built with C++${ROOT_CXX_STANDARD}")
+    message(STATUS "Determined ROOT C++ standard: ${ROOT_CXX_STANDARD}")
   endif()
 
   list(APPEND PODIO_IO_HANDLERS ROOT)
+endif()
+
+# Match ROOT's C++ standard by default so the libraries and Cling agree.
+# Without ROOT, default to C++23. Users can override either default with
+# -DCMAKE_CXX_STANDARD=<standard>.
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  if(ENABLE_ROOT)
+    set(CMAKE_CXX_STANDARD "${ROOT_CXX_STANDARD}")
+  else()
+    set(CMAKE_CXX_STANDARD 23)
+  endif()
+endif()
+
+if(NOT CMAKE_CXX_STANDARD MATCHES "^[0-9]+$" OR CMAKE_CXX_STANDARD LESS 23 OR CMAKE_CXX_STANDARD EQUAL 98)
+  message(FATAL_ERROR "Unsupported C++ standard: ${CMAKE_CXX_STANDARD}. podio requires C++23 or newer")
+endif()
+
+if(ENABLE_ROOT AND NOT ROOT_CXX_STANDARD EQUAL CMAKE_CXX_STANDARD)
+  message(WARNING "You are trying to build podio with a different C++ standard than ROOT. C++${CMAKE_CXX_STANDARD} was requested but ROOT was built with C++${ROOT_CXX_STANDARD}")
+endif()
+
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+message(STATUS "Setting C++ standard: '${CMAKE_CXX_STANDARD}'.")
+
+# A compiler accepting -std=c++23 does not guarantee its standard library has
+# the ranges features used by podio and its generated headers.
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles([=[
+  #include <algorithm>
+  #include <ranges>
+  #include <vector>
+
+  int main() {
+    [[maybe_unused]] std::from_range_t tag = std::from_range;
+    auto values = std::ranges::to<std::vector<int>>(std::views::iota(0, 3));
+    values.append_range(std::views::iota(3, 5));
+    return !std::ranges::contains(values, 4);
+  }
+]=] PODIO_HAVE_CXX23_RANGES)
+if(NOT PODIO_HAVE_CXX23_RANGES)
+  message(FATAL_ERROR "podio requires a C++23 standard library with std::ranges::contains, std::ranges::to, std::from_range and container append_range (e.g. libstdc++ 15+ or libc++ 19+).")
 endif()
 
 # python setup (including python package discovery and install dir)
@@ -227,8 +227,6 @@ if(BUILD_TESTING)
   include(cmake/podioTest.cmake)
   add_subdirectory(tests)
 endif()
-
-find_package(fmt 10 REQUIRED)
 
 add_subdirectory(tools)
 add_subdirectory(python)

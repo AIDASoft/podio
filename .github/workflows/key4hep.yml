@@ -17,29 +17,23 @@ concurrency:
 
 jobs:
   build-and-test:
-    name: ${{ matrix.image }} (${{ matrix.cvmfs_repo }})
+    name: ${{ matrix.image }} (Key4hep nightlies)
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        image: ["el9"]
-        cvmfs_repo: ["sw.hsf.org", "sw-nightlies.hsf.org"]
-        include:
-          - image: "ubuntu2404"
-            cvmfs_repo: "sw-nightlies.hsf.org"
-          - image: "ubuntu2204" # gcc-11 compatibility, ROOT 6.32 is too old for RNTuple
-            cvmfs_repo: "sw.hsf.org"
-            cmake-args: -DENABLE_ARROW=OFF -DENABLE_PARQUET=OFF -DENABLE_RNTUPLE=OFF
+        # These platforms use the C++23 LCG-based Key4hep nightlies.
+        image: [el9, ubuntu2604]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: ./.github/actions/podio-build
         with:
-          view-path: /cvmfs/${{ matrix.cvmfs_repo }}/key4hep
+          view-path: /cvmfs/sw-nightlies.hsf.org/key4hep
           container: ${{ matrix.image }}
-          ccache-key: ccache-key4hep-${{ matrix.image }}-${{ matrix.cvmfs_repo }}
+          ccache-key: ccache-key4hep-${{ matrix.image }}-sw-nightlies.hsf.org
           # Remove the podio of the Key4hep stack from the environment
           setup: k4_local_repo
-          cmake-args: -DPODIO_RUN_STRACE_TEST=ON ${{ matrix.cmake-args }}
+          cmake-args: -DPODIO_RUN_STRACE_TEST=ON
 
   # Single job that can be used as required check, independent of the matrix
   key4hep-ok:

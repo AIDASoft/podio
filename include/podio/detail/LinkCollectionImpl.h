@@ -71,20 +71,19 @@ public:
   LinkCollection& operator=(const LinkCollection&) = delete;
   LinkCollection(LinkCollection&&) = default;
   LinkCollection& operator=(LinkCollection&&) = default;
-#if defined(__cpp_lib_containers_ranges)
   /// Constructor from range in order to enable the use of std::ranges::to see
   /// @ref from.
   template <detail::RangeConvertibleTo<value_type> R>
   LinkCollection(std::from_range_t, R&& range) : LinkCollection() {
     if constexpr (detail::RangeOf<R, value_type>) {
-      setSubsetCollection();
+      LinkCollection::setSubsetCollection();
     }
 
+    // Preserve the mutable or immutable handle type to select the right push_back overload.
     for (auto&& elem : range) {
       push_back(std::forward<decltype(elem)>(elem));
     }
   }
-#endif
 
   ~LinkCollection() override {
     // Need to tell the storage how to clean up
@@ -108,21 +107,7 @@ public:
   ///           yet owned by a collection
   template <detail::RangeConvertibleTo<value_type> R>
   static LinkCollection from(R&& range) {
-    LinkCollection coll;
-    if constexpr (detail::RangeOf<R, value_type>) {
-      coll.setSubsetCollection();
-    }
-
-    // NOTE: We cannot use ranges::copy here, because that will always resolve
-    // to only one of the push_back overloads, specifically the one taking
-    // value_type. See, e.g.: https://godbolt.org/z/seqdh79rr
-    // Additionally, we want no reference in the loop variable to make sure we
-    // get the correct handle type depending on the range we pass in
-    for (auto&& elem : range) {
-      coll.push_back(std::forward<decltype(elem)>(elem));
-    }
-
-    return coll;
+    return LinkCollection(std::from_range, std::forward<R>(range));
   }
 
   /// Append a new link to the collection and return this object.

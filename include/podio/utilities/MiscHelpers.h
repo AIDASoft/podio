@@ -61,17 +61,8 @@ inline std::vector<std::string> sortAndDeduplicate(std::vector<std::string> stri
 ///
 /// @returns A range of views into the original view
 inline auto splitString(const std::string_view str, const char delim) {
-  namespace rv = std::ranges::views;
-
-  return str | rv::split(delim) |
-#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 12
-      // gcc 11 is missing a string_view constructor that takes the range
-      // iterators directly, so we construct from a char* and a size
-      rv::transform(
-             [](auto&& subrange) { return std::string_view(&*subrange.begin(), std::ranges::distance(subrange)); });
-#else
-      rv::transform([](auto&& subrange) { return std::string_view(subrange.begin(), subrange.end()); });
-#endif
+  return str | std::views::split(delim) |
+      std::views::transform([](auto subrange) { return std::string_view(subrange); });
 }
 
 } // namespace podio::utils

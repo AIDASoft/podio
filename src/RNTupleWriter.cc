@@ -14,28 +14,19 @@
 #include <ROOT/RNTupleModel.hxx>
 
 #include <Compression.h>
-#include <ROOT/RVersion.hxx>
 
 #include <cstddef>
 #include <stdexcept>
 #include <type_traits>
 #include <utility>
 
-// Adjust for the API stabilization of RNTuple
-// https://github.com/root-project/root/pull/17804
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
-using ROOT::RFieldBase;
-using ROOT::RNTupleWriteOptions;
-#else
-using ROOT::Experimental::RFieldBase;
-using ROOT::Experimental::RNTupleWriteOptions;
-#endif
-
 namespace podio {
 class GenericParameters;
 
+using ROOT::RFieldBase;
+
 RNTupleWriter::RNTupleWriter(const std::string& filename, const ROOTWriteOptions& options) :
-    m_options(RNTupleWriteOptions{}), m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
+    m_file(new TFile(filename.c_str(), "RECREATE", "data file")) {
   if (options.compressionSettings.has_value()) {
     m_options.SetCompression(options.compressionSettings.value());
   }
@@ -64,7 +55,7 @@ root_utils::ParamStorage<T>& RNTupleWriter::getParamStorage(CategoryInfo& catInf
 }
 
 template <typename T>
-void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo, root_compat::REntry* entry) {
+void RNTupleWriter::fillParams(const GenericParameters& params, CategoryInfo& catInfo, ROOT::REntry* entry) {
   auto& paramStorage = getParamStorage<T>(catInfo);
   paramStorage = params.getKeysAndValues<T>();
   entry->BindRawPtr(root_utils::getGPKeyName<T>(), &paramStorage.keys);
@@ -107,7 +98,7 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   if (new_category) {
     // Now we have enough info to populate the rest
     auto model = createModels(collections);
-    catInfo.writer = root_compat::RNTupleWriter::Append(std::move(model), category, *m_file.get(), m_options);
+    catInfo.writer = ROOT::RNTupleWriter::Append(std::move(model), category, *m_file, m_options);
 
     catInfo.collInfo.reserve(collections.size());
     for (const auto& [name, coll] : collections) {
@@ -171,9 +162,9 @@ void RNTupleWriter::writeFrame(const podio::Frame& frame, std::string_view categ
   catInfo.writer->Fill(*entry);
 }
 
-std::unique_ptr<root_compat::RNTupleModel>
+std::unique_ptr<ROOT::RNTupleModel>
 RNTupleWriter::createModels(const std::vector<root_utils::StoreCollection>& collections) {
-  auto model = root_compat::RNTupleModel::CreateBare();
+  auto model = ROOT::RNTupleModel::CreateBare();
 
   for (const auto& [name, coll] : collections) {
     // For the first entry in each category we also record the datamodel
@@ -253,7 +244,7 @@ void RNTupleWriter::finish() {
   }
   // Use a scope to make sure everything is destroyed before deleting TFile
   {
-    auto metadata = root_compat::RNTupleModel::Create();
+    auto metadata = ROOT::RNTupleModel::Create();
 
     const auto podioVersion = podio::version::build_version;
     auto versionField = metadata->MakeField<std::vector<uint16_t>>(root_utils::versionBranchName);
@@ -286,7 +277,7 @@ void RNTupleWriter::finish() {
 
     metadata->Freeze();
     const auto metadataWriter =
-        root_compat::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, m_options);
+        ROOT::RNTupleWriter::Append(std::move(metadata), root_utils::metaTreeName, *m_file, m_options);
 
     metadataWriter->Fill();
 

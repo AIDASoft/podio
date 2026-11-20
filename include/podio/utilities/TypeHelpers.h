@@ -1,7 +1,6 @@
 #ifndef PODIO_UTILITIES_TYPEHELPERS_H
 #define PODIO_UTILITIES_TYPEHELPERS_H
 
-#include <algorithm>
 #include <concepts>
 #include <iterator>
 #include <map>
@@ -9,6 +8,7 @@
 #include <tuple>
 #include <type_traits>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 namespace podio {
@@ -43,11 +43,6 @@ namespace det {
 } // namespace det
 
 namespace detail {
-
-  // A helper variable template that is always false, used for static_asserts
-  // and other compile-time checks that should always fail.
-  template <typename T>
-  inline constexpr bool always_false = false;
 
   /// Helper struct to determine whether a given type T is in a tuple of types
   /// that act as a type list in this case
@@ -248,24 +243,6 @@ namespace detail {
   /// A simple check for whether a range R is a range of a type that can convert to type T
   template <typename R, typename T>
   concept RangeConvertibleTo = std::ranges::input_range<R> && std::convertible_to<std::ranges::range_value_t<R>, T>;
-
-#if defined(__cpp_lib_ranges_to_container)
-  template <typename T, std::ranges::input_range R>
-  auto to_vector(R&& r) {
-    return std::ranges::to<std::vector<T>>(std::forward<R>(r));
-  }
-#else
-  // Implement a very simple polyfill to maintain compatibility with c++20
-  template <typename T, std::ranges::input_range R>
-  auto to_vector(R&& range) {
-    std::vector<T> container;
-    if constexpr (std::ranges::sized_range<R>) {
-      container.reserve(std::ranges::size(range));
-    }
-    std::ranges::copy(range, std::back_inserter(container));
-    return container;
-  }
-#endif
 
 } // namespace detail
 

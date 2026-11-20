@@ -14,6 +14,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -45,9 +46,6 @@ concept FrameDataType = requires(T t) {
   { t.getAvailableCollections() } -> std::same_as<std::vector<std::string>>;
   { t.getParameters() } -> std::same_as<std::unique_ptr<podio::GenericParameters>>;
 };
-
-template <typename T>
-concept RValueFrameDataType = FrameDataType<T> && RValueType<T>;
 
 namespace detail {
   /// The minimal interface for raw data types
@@ -171,19 +169,6 @@ public:
   /// @throws std::invalid_argument if the passed pointer is a nullptr.
   template <FrameDataType FrameData>
   Frame(std::unique_ptr<FrameData>);
-
-#ifdef PODIO_ROOT_OLDER_6_36
-  /// Frame constructor from (almost) arbitrary raw data.
-  ///
-  /// This r-value overload is mainly present for enabling the python bindings,
-  /// where cppyy seems to strip the std::unique_ptr somewhere in the process
-  ///
-  /// @tparam FrameData Arbitrary data container that provides access to the
-  ///                   collection buffers as well as the metadata, when
-  ///                   requested by the Frame.
-  template <RValueFrameDataType FrameData>
-  Frame(FrameData&&);
-#endif
 
   /// A Frame is move-only
   Frame(const Frame&) = delete;
@@ -395,12 +380,6 @@ template <FrameDataType FrameData>
 Frame::Frame(std::unique_ptr<FrameData> data) : m_self(std::make_unique<FrameModel<FrameData>>(std::move(data))) {
 }
 
-#ifdef PODIO_ROOT_OLDER_6_36
-template <RValueFrameDataType FrameData>
-Frame::Frame(FrameData&& data) : Frame(std::make_unique<FrameData>(std::move(data))) {
-}
-#endif
-
 template <CollectionType CollT>
 const CollT& Frame::get(const std::string& name) const {
   if (const auto* coll = dynamic_cast<const CollT*>(m_self->get(name))) {
@@ -560,12 +539,7 @@ std::vector<std::string> Frame::FrameModel<FrameDataT>::availableCollections() c
   std::scoped_lock lock{*m_mapMtx, *m_dataMtx};
 
   auto collections = m_data->getAvailableCollections();
-  collections.reserve(collections.size() + m_collections.size());
-
-  for (const auto& [name, _] : m_collections) {
-    collections.push_back(name);
-  }
-
+  collections.append_range(m_collections | std::views::keys);
   return collections;
 }
 

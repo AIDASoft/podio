@@ -79,16 +79,13 @@ SET(core_headers
   )
 
 PODIO_ADD_LIB_AND_DICT(podio "${core_headers}" "${core_sources}" selection.xml)
+target_compile_features(podio PUBLIC cxx_std_${CMAKE_CXX_STANDARD})
 target_link_libraries(podio PUBLIC Threads::Threads)
 target_link_libraries(podio PRIVATE Python3::Python)
 if(ENABLE_ROOT)
   target_compile_definitions(podio PUBLIC PODIO_ENABLE_ROOT=1)
 else()
   target_compile_definitions(podio PUBLIC PODIO_ENABLE_ROOT=0)
-endif()
-# For Frame.h
-if (ENABLE_ROOT AND ROOT_VERSION VERSION_LESS 6.36)
-  target_compile_definitions(podio PUBLIC PODIO_ROOT_OLDER_6_36=1)
 endif()
 
 
