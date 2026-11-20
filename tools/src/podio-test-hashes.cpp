@@ -36,11 +36,12 @@ auto readCollNames(const std::string& fileName) {
 /// the MurmurHash3 methods
 template <typename HashFunc, typename HashT = uint32_t>
 auto hashStrings(const std::vector<std::string>& strings, HashFunc hashFunc) {
-  return strings | std::views::transform([hashFunc](const auto& s) {
+  const auto hash = [hashFunc](const auto& s) {
     HashT id = 0;
     hashFunc(s.c_str(), s.size(), 0, &id);
     return id;
-  }) | std::ranges::to<std::vector>();
+  };
+  return strings | std::views::transform(hash) | std::ranges::to<std::vector>();
 }
 
 /// Hash all the passed in strings and check for collisions. Returns a vector of
@@ -61,8 +62,8 @@ auto getCollisions(const std::vector<std::string>& strings, HashFunc hashFunc) {
   while (firstIt != hashMap.end()) {
     auto rangeIts = hashMap.equal_range(firstIt->first);
     if (std::distance(rangeIts.first, rangeIts.second) != 1) {
-      auto names = std::ranges::subrange(rangeIts.first, rangeIts.second) | std::views::values |
-          std::ranges::to<std::vector>();
+      const auto matching = std::ranges::subrange(rangeIts.first, rangeIts.second);
+      auto names = matching | std::views::values | std::ranges::to<std::vector>();
 
       collidingStrings.emplace_back(rangeIts.first->first, std::move(names));
     }
