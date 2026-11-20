@@ -210,7 +210,7 @@ void ArrowWriter::writeMetadata() {
   metadata["podio_version"] = std::string(podio::version::build_version);
 
   nlohmann::json categoriesJson;
-  for (const auto& [name, catInfo] : m_categories) {
+  for (const auto& [category, catInfo] : m_categories) {
     nlohmann::json catJson;
     catJson["file"] = std::filesystem::path(catInfo.filePath).filename().string();
     catJson["entries"] = catInfo.entries;
@@ -228,7 +228,7 @@ void ArrowWriter::writeMetadata() {
       collectionsJson.push_back(collJson);
     }
     catJson["collections"] = collectionsJson;
-    categoriesJson[name] = catJson;
+    categoriesJson[category] = catJson;
   }
   metadata["categories"] = categoriesJson;
   nlohmann::json edmDefsJson = nlohmann::json::object();
