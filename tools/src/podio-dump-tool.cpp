@@ -9,18 +9,16 @@
 #include "podio/utilities/MiscHelpers.h"
 #include "podio/utilities/ReaderUtils.h"
 
-#include <fmt/core.h>
-#include <fmt/format.h>
-#include <fmt/ostream.h>
-
 #include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <exception>
+#include <format>
 #include <iterator>
 #include <map>
 #include <numeric>
 #include <optional>
+#include <print>
 #include <ranges>
 #include <string>
 #include <string_view>
@@ -28,9 +26,6 @@
 #include <type_traits>
 #include <utility>
 #include <vector>
-
-template <>
-struct fmt::formatter<podio::version::Version> : ostream_formatter {};
 
 namespace {
 
@@ -64,7 +59,7 @@ options:
 )";
 
 void printUsageAndExit() {
-  fmt::println(stderr, "{}", usageMsg);
+  std::println(stderr, "{}", usageMsg);
   std::exit(1);
 }
 
@@ -79,7 +74,7 @@ auto getArgumentValueOrExit(const std::vector<std::string>& argv, std::vector<st
 
 std::vector<size_t> parseEventRange(const std::string_view evtRange) {
   auto parseError = [evtRange]() {
-    fmt::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
+    std::println(stderr, "error: argument -e/--entries: '{}' cannot be parsed into a list of entries", evtRange);
     std::exit(1);
   };
 
@@ -129,9 +124,9 @@ ParsedArgs parseArgs(std::vector<std::string> argv) {
   // find help or version
   if (const auto it = findFlags(argv, "-h", "--help", "--version"); it != argv.end()) {
     if (*it == "--version") {
-      fmt::println("podio {}", podio::version::build_version);
+      std::println("podio {}", std::string(podio::version::build_version));
     } else {
-      fmt::print("{}\n{}", usageMsg, helpMsg);
+      std::print("{}\n{}", usageMsg, helpMsg);
     }
     std::exit(0);
   }
@@ -196,7 +191,7 @@ void getParameterOverview(const podio::Frame& frame,
 }
 
 void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
-  fmt::println("Collections:");
+  std::println("Collections:");
   const auto collNames = frame.getAvailableCollections();
 
   std::vector<std::tuple<std::string, std::string_view, size_t, std::string, std::string>> rows;
@@ -204,20 +199,20 @@ void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<
 
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
-    auto nameWithCollInfo = fmt::format("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
+    auto nameWithCollInfo = std::format("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
     std::string statsStr;
     if (stats) {
       const auto& statPair = stats->at(name);
-      statsStr = fmt::format("{} ({:.2f})", statPair.numBytes, statPair.compressionFactor);
+      statsStr = std::format("{} ({:.2f})", statPair.numBytes, statPair.compressionFactor);
     }
     rows.emplace_back(std::move(nameWithCollInfo), coll->getValueTypeName(), coll->size(),
-                      fmt::format("{:0>8x}", coll->getID()), statsStr);
+                      std::format("{:0>8x}", coll->getID()), statsStr);
   }
   printTable(
       rows,
       {"Name (s = subset collection)", "ValueType", "Size", "ID", stats ? "Bytes on disk (compression factor)" : ""});
 
-  fmt::println("\nParameters:");
+  std::println("\nParameters:");
   std::vector<std::tuple<std::string, std::string_view, size_t>> paramRows{};
   getParameterOverview<int>(frame, paramRows);
   getParameterOverview<float>(frame, paramRows);
@@ -228,30 +223,30 @@ void printFrameOverview(const podio::Frame& frame, const std::optional<std::map<
 }
 
 void printFrameDetailed(const podio::Frame& frame) {
-  fmt::println("Collections:");
+  std::println("Collections:");
   const auto collNames = frame.getAvailableCollections();
   for (const auto& name : podio::utils::sortAlphabeticaly(collNames)) {
     const auto coll = frame.get(name);
-    fmt::println("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
+    std::println("{}{}", name, coll->isSubsetCollection() ? " (s)" : "");
     coll->print();
-    fmt::println("");
+    std::print("\n");
   }
 
-  fmt::println("\nParameters:");
+  std::println("\nParameters:");
   frame.getParameters().print();
-  fmt::println("");
+  std::print("\n");
 }
 
 void printGeneralInfo(const podio::Reader& reader, const std::string& filename) {
-  fmt::println("input file: {}", filename);
-  fmt::println("            (written with podio version: {})", reader.currentFileVersion());
-  fmt::println("\ndatamodel model definitions stored in this file:");
+  std::println("input file: {}", filename);
+  std::println("            (written with podio version: {})", std::string(reader.currentFileVersion()));
+  std::println("\ndatamodel model definitions stored in this file:");
   for (const auto& modelName : reader.getAvailableDatamodels()) {
     const auto modelVersion = reader.currentFileVersion(modelName);
     if (modelVersion) {
-      fmt::println(" - {} ({})", modelName, modelVersion.value());
+      std::println(" - {} ({})", modelName, std::string(*modelVersion));
     } else {
-      fmt::println(" - {}", modelName);
+      std::println(" - {}", modelName);
     }
   }
 
@@ -260,22 +255,22 @@ void printGeneralInfo(const podio::Reader& reader, const std::string& filename) 
   for (const auto& cat : podio::utils::sortAlphabeticaly(std::move(categories))) {
     rows.emplace_back(cat, reader.getEntries(cat));
   }
-  fmt::println("\nFrame categories in this file:");
+  std::println("\nFrame categories in this file:");
   printTable(rows, {"Name", "Entries"});
 }
 
 int dumpEDMDefinition(const podio::Reader& reader, const std::string& modelName) {
   if (!std::ranges::contains(reader.getAvailableDatamodels(), modelName)) {
-    fmt::println(stderr, "ERROR: cannot dump model '{}' (not present in file)", modelName);
+    std::println(stderr, "ERROR: cannot dump model '{}' (not present in file)", modelName);
     return 1;
   }
-  fmt::println("{}", reader.getDatamodelDefinition(modelName));
+  std::println("{}", reader.getDatamodelDefinition(modelName));
   return 0;
 }
 
 void printFrame(const podio::Frame& frame, const std::string& category, size_t iEntry, bool detailed,
                 const std::optional<std::map<std::string, SizeStats>>& stats = {}) {
-  fmt::println("{:#^82}", fmt::format(" {}: {} ", category, iEntry));
+  std::println("{:#^82}", std::format(" {}: {} ", category, iEntry));
   if (detailed) {
     printFrameDetailed(frame);
   } else {
@@ -309,7 +304,7 @@ int main(int argc, char* argv[]) {
 
     return 0;
   } catch (const std::exception& err) {
-    fmt::println(stderr, "ERROR: {}", err.what());
+    std::println(stderr, "ERROR: {}", err.what());
     return 1;
   }
 }

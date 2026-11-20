@@ -95,9 +95,9 @@ and `env.sh`.
 
 Podio requires CMake 3.20 or newer (3.21 or newer for presets) and a C++23
 compiler and standard library with `std::ranges::contains`, `std::ranges::to`,
-`std::from_range` and container `append_range` (for example, GCC 15+ /
-libstdc++ 15+ or libc++ 19+). The build
-defaults to C++23 without ROOT and matches ROOT's C++ standard when ROOT support
+`std::from_range`, container `append_range`, `std::format` and `std::print`
+(for example, GCC 15+ / libstdc++ 15+ or libc++ 19+). The build defaults to
+C++23 without ROOT and matches ROOT's C++ standard when ROOT support
 is enabled. To override the selection, pass `-DCMAKE_CXX_STANDARD=<standard>`
 when configuring; for ROOT I/O and Python bindings, use the same standard as
 your ROOT build.
