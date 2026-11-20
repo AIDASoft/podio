@@ -5,7 +5,7 @@
 #include <fmt/ranges.h>
 
 #include <algorithm>
-#include <iterator>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -20,14 +20,12 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
   }
 
   // Transform all elements into strings first to determine column widths
-  std::vector<std::vector<std::string>> stringRows;
-  stringRows.reserve(rows.size());
-  std::ranges::transform(rows, std::back_inserter(stringRows), [&nCols](const auto& elem) {
+  auto stringRows = rows | std::views::transform([&nCols](const auto& elem) {
     std::vector<std::string> strs;
     strs.reserve(nCols);
     std::apply([&strs](auto&&... args) { (strs.emplace_back(fmt::format("{}", args)), ...); }, elem);
     return strs;
-  });
+  }) | std::ranges::to<std::vector>();
 
   // First figure out how large each column has to be to fit all the content
   std::vector<size_t> colWidths(nCols, 0);

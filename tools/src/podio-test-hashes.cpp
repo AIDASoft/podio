@@ -7,6 +7,7 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <ranges>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -35,16 +36,11 @@ auto readCollNames(const std::string& fileName) {
 /// the MurmurHash3 methods
 template <typename HashFunc, typename HashT = uint32_t>
 auto hashStrings(const std::vector<std::string>& strings, HashFunc hashFunc) {
-  std::vector<HashT> hashes;
-  hashes.reserve(strings.size());
-
-  for (const auto& s : strings) {
+  return strings | std::views::transform([hashFunc](const auto& s) {
     HashT id = 0;
     hashFunc(s.c_str(), s.size(), 0, &id);
-    hashes.emplace_back(id);
-  }
-
-  return hashes;
+    return id;
+  }) | std::ranges::to<std::vector>();
 }
 
 /// Hash all the passed in strings and check for collisions. Returns a vector of
@@ -65,11 +61,8 @@ auto getCollisions(const std::vector<std::string>& strings, HashFunc hashFunc) {
   while (firstIt != hashMap.end()) {
     auto rangeIts = hashMap.equal_range(firstIt->first);
     if (std::distance(rangeIts.first, rangeIts.second) != 1) {
-      std::vector<std::string> names;
-      names.reserve(2); // Most likely case hopefully
-      for (auto it = rangeIts.first; it != rangeIts.second; ++it) {
-        names.emplace_back(it->second);
-      }
+      auto names = std::ranges::subrange(rangeIts.first, rangeIts.second) | std::views::values |
+          std::ranges::to<std::vector>();
 
       collidingStrings.emplace_back(rangeIts.first->first, std::move(names));
     }

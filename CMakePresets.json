@@ -7,7 +7,6 @@
             "binaryDir": "${sourceDir}/build",
             "cacheVariables": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
-                "CMAKE_CXX_STANDARD": "20",
                 "CMAKE_CXX_FLAGS": " -fdiagnostics-color=always ",
                 "PODIO_USE_CLANG_FORMAT": "OFF",
                 "PODIO_SET_RPATH": "ON",

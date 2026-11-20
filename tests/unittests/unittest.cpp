@@ -491,7 +491,6 @@ TEST_CASE("UserDataCollection construct from range", "[basics]") {
   REQUIRE_THAT(coll2.vec(), Equals(std::vector{1.0f, 3.0f, 4.0f}));
 }
 
-#if defined(__cpp_lib_containers_ranges)
 TEST_CASE("UserDataCollection construct from ranges::to", "[basics]") {
   using namespace std::views;
   using Catch::Matchers::Equals;
@@ -503,7 +502,6 @@ TEST_CASE("UserDataCollection construct from ranges::to", "[basics]") {
       std::ranges::to<podio::UserDataCollection<int32_t>>();
   REQUIRE_THAT(coll.vec(), Equals(std::vector{2, 4, 6, 8, 10, 12, 14, 16, 18}));
 }
-#endif
 
 /*
 TEST_CASE("Arrays") {
@@ -759,7 +757,6 @@ TEST_CASE("Collection construction from range", "[basics][collections]") {
   REQUIRE_THROWS_AS(ExampleClusterCollection::from(clusters), std::invalid_argument);
 }
 
-#if defined(__cpp_lib_containers_ranges)
 TEST_CASE("Collection construction via ranges::to", "[basics][collections]") {
   using namespace std::views;
   auto clusterColl = iota(0, 5) | transform([](const auto v) { return MutableExampleCluster(v); }) |
@@ -778,7 +775,6 @@ TEST_CASE("Collection construction via ranges::to", "[basics][collections]") {
     REQUIRE(otherClusterColl[i] == clusterColl[i]);
   }
 }
-#endif
 
 TEST_CASE("Const-correctness of collections", "[const-correctness]") {
   SECTION("const correct indexed access to const collections") {
@@ -1745,6 +1741,12 @@ TEST_CASE("ROOTWriter check consistency", "[ASAN-FAIL][UBSAN-FAIL][basics][root]
   runCheckConsistencyTest<podio::ROOTWriter>("unittests_frame_check_consistency.root");
 }
 #endif
+
+TEST_CASE("Splitting a string preserves empty fields", "[basics]") {
+  const auto fields = podio::utils::splitString(",hits,,clusters,", ',') | std::ranges::to<std::vector>();
+  const std::vector<std::string_view> expected = {"", "hits", "", "clusters", ""};
+  REQUIRE(fields == expected);
+}
 
 TEST_CASE("Collection names normalize deterministically", "[basics]") {
   const std::vector<std::string> expected = {"clusters", "Hits", "hits"};

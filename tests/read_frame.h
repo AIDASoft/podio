@@ -18,6 +18,7 @@
 #include "podio/Frame.h"
 #include "podio/Reader.h"
 
+#include <algorithm>
 #include <iostream>
 #include <stdexcept>
 
@@ -173,7 +174,7 @@ int read_frames(const std::string& filename, bool assertBuildVersion = true) {
     return 1;
   }
   for (const auto& expected : {"events", "other_events"}) {
-    if (std::find(availableCategories.begin(), availableCategories.end(), expected) == availableCategories.end()) {
+    if (!std::ranges::contains(availableCategories, expected)) {
       std::cerr << "Could not find expected category '" << expected << "' in available categories" << std::endl;
       return 1;
     }

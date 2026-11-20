@@ -21,6 +21,7 @@
 #include <fstream>
 #include <iostream>
 #include <optional>
+#include <ranges>
 #include <stdexcept>
 #include <tuple>
 #include <utility>
@@ -114,26 +115,27 @@ void ArrowWriter::validateSchema(const CategoryInfo& catInfo, const podio::Frame
     throw std::runtime_error("Schema drift detected: collection names differ for subsequent frames.");
   }
 
-  for (size_t i = 0; i < collsToWrite.size(); ++i) {
-    const auto* coll = frame.get(collsToWrite[i]);
+  for (auto&& [name, type, isSubset, schemaVersion, id] :
+       std::views::zip(collsToWrite, catInfo.collTypes, catInfo.collIsSubset, catInfo.collSchemaVersions,
+                       catInfo.collIDs)) {
+    const auto* coll = frame.get(name);
     if (!coll) {
-      throw std::runtime_error("Collection " + collsToWrite[i] + " not found in frame.");
+      throw std::runtime_error("Collection " + name + " not found in frame.");
     }
-    if (catInfo.collTypes[i] != coll->getValueTypeName()) {
-      throw std::runtime_error("Type drift detected for collection " + collsToWrite[i] + ": expected " +
-                               catInfo.collTypes[i] + ", got " + std::string(coll->getValueTypeName()));
+    if (type != coll->getValueTypeName()) {
+      throw std::runtime_error("Type drift detected for collection " + name + ": expected " + type + ", got " +
+                               std::string(coll->getValueTypeName()));
     }
-    if (catInfo.collIsSubset[i] != coll->isSubsetCollection()) {
-      throw std::runtime_error("Subset drift detected for collection " + collsToWrite[i]);
+    if (isSubset != coll->isSubsetCollection()) {
+      throw std::runtime_error("Subset drift detected for collection " + name);
     }
-    if (catInfo.collSchemaVersions[i] != coll->getSchemaVersion()) {
-      throw std::runtime_error("Schema version drift detected for collection " + collsToWrite[i] + ": expected " +
-                               std::to_string(catInfo.collSchemaVersions[i]) + ", got " +
-                               std::to_string(coll->getSchemaVersion()));
+    if (schemaVersion != coll->getSchemaVersion()) {
+      throw std::runtime_error("Schema version drift detected for collection " + name + ": expected " +
+                               std::to_string(schemaVersion) + ", got " + std::to_string(coll->getSchemaVersion()));
     }
-    if (catInfo.collIDs[i] != coll->getID()) {
-      throw std::runtime_error("Collection ID drift detected for collection " + collsToWrite[i] + ": expected " +
-                               std::to_string(catInfo.collIDs[i]) + ", got " + std::to_string(coll->getID()));
+    if (id != coll->getID()) {
+      throw std::runtime_error("Collection ID drift detected for collection " + name + ": expected " +
+                               std::to_string(id) + ", got " + std::to_string(coll->getID()));
     }
   }
 }
@@ -214,13 +216,15 @@ void ArrowWriter::writeMetadata() {
     catJson["entries"] = catInfo.entries;
 
     nlohmann::json collectionsJson = nlohmann::json::array();
-    for (size_t i = 0; i < catInfo.collsToWrite.size(); ++i) {
+    for (auto&& [name, type, schemaVersion, isSubset, id] :
+         std::views::zip(catInfo.collsToWrite, catInfo.collTypes, catInfo.collSchemaVersions, catInfo.collIsSubset,
+                         catInfo.collIDs)) {
       nlohmann::json collJson;
-      collJson["name"] = catInfo.collsToWrite[i];
-      collJson["value_type"] = catInfo.collTypes[i];
-      collJson["schema_version"] = catInfo.collSchemaVersions[i];
-      collJson["is_subset"] = catInfo.collIsSubset[i];
-      collJson["id"] = catInfo.collIDs[i];
+      collJson["name"] = name;
+      collJson["value_type"] = type;
+      collJson["schema_version"] = schemaVersion;
+      collJson["is_subset"] = isSubset;
+      collJson["id"] = id;
       collectionsJson.push_back(collJson);
     }
     catJson["collections"] = collectionsJson;

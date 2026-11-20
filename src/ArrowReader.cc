@@ -175,9 +175,7 @@ void ArrowReader::loadCategoryTable(CategoryInfo& catInfo, const std::vector<std
       targetFields.emplace_back(catInfo.fullSchema->field(i)->name());
     }
   } else {
-    for (const auto& collName : collsToRead) {
-      targetFields.push_back(collName);
-    }
+    targetFields.append_range(collsToRead);
     if (catInfo.fullSchema->GetFieldIndex("frame_parameters") != -1) {
       targetFields.emplace_back("frame_parameters");
     }

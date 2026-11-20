@@ -75,7 +75,7 @@ namespace utilities {
 
       for (auto& lib : fs::directory_iterator(dir)) {
         const auto filename = lib.path().filename().string();
-        if (filename.find(m_libraryPattern) != std::string::npos) {
+        if (filename.contains(m_libraryPattern)) {
           libs.emplace_back(std::move(filename), dir);
         }
       }

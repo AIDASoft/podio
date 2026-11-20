@@ -10,7 +10,7 @@
 
 template <typename... Flags>
 auto findFlags(const std::vector<std::string>& argv, Flags... flags) {
-  return std::find_if(argv.begin(), argv.end(), [&](const auto& elem) { return ((elem == flags) || ...); });
+  return std::ranges::find_if(argv, [&](const auto& elem) { return ((elem == flags) || ...); });
 }
 
 inline size_t parseSizeOrExit(std::string_view str) {
