@@ -115,16 +115,19 @@ void ArrowWriter::validateSchema(const CategoryInfo& catInfo, const podio::Frame
     throw std::runtime_error("Schema drift detected: collection names differ for subsequent frames.");
   }
 
-  for (auto&& [name, type, isSubset, schemaVersion, id] :
-       std::views::zip(collsToWrite, catInfo.collTypes, catInfo.collIsSubset, catInfo.collSchemaVersions,
-                       catInfo.collIDs)) {
+  for (auto&& [name, type, isSubset, schemaVersion, id] : std::views::zip(
+           collsToWrite, catInfo.collTypes, catInfo.collIsSubset, catInfo.collSchemaVersions, catInfo.collIDs)) {
     const auto* coll = frame.get(name);
     if (!coll) {
       throw std::runtime_error("Collection " + name + " not found in frame.");
     }
     if (type != coll->getValueTypeName()) {
-      throw std::runtime_error("Type drift detected for collection " + name + ": expected " + type + ", got " +
-                               std::string(coll->getValueTypeName()));
+      throw std::runtime_error(std::string("Type drift detected for collection ")
+                                   .append(name)
+                                   .append(": expected ")
+                                   .append(type)
+                                   .append(", got ")
+                                   .append(coll->getValueTypeName()));
     }
     if (isSubset != coll->isSubsetCollection()) {
       throw std::runtime_error("Subset drift detected for collection " + name);

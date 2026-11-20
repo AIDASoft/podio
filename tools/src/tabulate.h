@@ -20,12 +20,13 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
   }
 
   // Transform all elements into strings first to determine column widths
-  auto stringRows = rows | std::views::transform([&nCols](const auto& elem) {
+  const auto stringifyRow = [nCols](const auto& elem) {
     std::vector<std::string> strs;
     strs.reserve(nCols);
     std::apply([&strs](auto&&... args) { (strs.emplace_back(fmt::format("{}", args)), ...); }, elem);
     return strs;
-  }) | std::ranges::to<std::vector>();
+  };
+  auto stringRows = rows | std::views::transform(stringifyRow) | std::ranges::to<std::vector>();
 
   // First figure out how large each column has to be to fit all the content
   std::vector<size_t> colWidths(nCols, 0);
