@@ -31,8 +31,6 @@ jobs:
           - platform: LCG_108/x86_64-el9-gcc15-opt
             cmake-args: -DPODIO_RUN_STRACE_TEST=ON
           - platform: dev4/x86_64-el9-gcc15-opt
-            # Retry intermittent timeouts in podio's Python frame writer fixtures.
-            ctest-args: --repeat after-timeout:2
           - platform: dev4/x86_64-el9-clang22-opt
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -49,7 +47,6 @@ jobs:
           ccache-key: ccache-edm4hep-${{ matrix.platform }}
           julia: true
           cmake-args: ${{ matrix.cmake-args }}
-          ctest-args: ${{ matrix.ctest-args }}
           post-install: |
             echo "::group::Build and test EDM4hep"
             cmake -S edm4hep -B edm4hep/build \
