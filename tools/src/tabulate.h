@@ -1,11 +1,11 @@
 #ifndef PODIO_TOOLS_TABULATE_H // NOLINT(llvm-header-guard): folder structure not suitable
 #define PODIO_TOOLS_TABULATE_H // NOLINT(llvm-header-guard): folder structure not suitable
 
-#include <fmt/core.h>
-#include <fmt/ranges.h>
-
 #include <algorithm>
+#include <format>
+#include <print>
 #include <ranges>
+#include <stdexcept>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -23,7 +23,7 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
   const auto stringifyRow = [nCols](const auto& elem) {
     std::vector<std::string> strs;
     strs.reserve(nCols);
-    std::apply([&strs](auto&&... args) { (strs.emplace_back(fmt::format("{}", args)), ...); }, elem);
+    std::apply([&strs](auto&&... args) { (strs.emplace_back(std::format("{}", args)), ...); }, elem);
     return strs;
   };
   auto stringRows = rows | std::views::transform(stringifyRow) | std::ranges::to<std::vector>();
@@ -41,20 +41,20 @@ void printTable(const std::vector<std::tuple<Types...>>& rows, const std::vector
 
   // print the table header
   for (size_t iCol = 0; iCol < nCols; ++iCol) {
-    fmt::print("{:<{}}  ", headers[iCol], colWidths[iCol]);
+    std::print("{:<{}}  ", headers[iCol], colWidths[iCol]);
   }
-  fmt::print("\n");
+  std::print("\n");
   for (size_t iCol = 0; iCol < nCols; ++iCol) {
-    fmt::print("{:->{}}  ", "", colWidths[iCol]);
+    std::print("{:->{}}  ", "", colWidths[iCol]);
   }
-  fmt::print("\n");
+  std::print("\n");
 
   // and the contents
   for (const auto& row : stringRows) {
     for (size_t iCol = 0; iCol < nCols; ++iCol) {
-      fmt::print("{:<{}}  ", row[iCol], colWidths[iCol]);
+      std::print("{:<{}}  ", row[iCol], colWidths[iCol]);
     }
-    fmt::print("\n");
+    std::print("\n");
   }
 }
 
