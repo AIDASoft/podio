@@ -166,6 +166,12 @@ if __name__ == "__main__":
         default=None,
         type=parse_version,
     )
+    parser.add_argument(
+        "--enable-modules",
+        action="store_true",
+        default=False,
+        help="Generate C++20 module interface file (.ixx) for the datamodel",
+    )
 
     args = parser.parse_args()
 
@@ -198,6 +204,7 @@ if __name__ == "__main__":
             datamodel_version=args.datamodel_version,
             old_descriptions=args.old_descriptions,
             evolution_file=args.evolution_file,
+            enable_modules=args.enable_modules,
         )
 
         if args.clangformat and has_clang_format():

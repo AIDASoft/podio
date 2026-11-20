@@ -130,6 +130,9 @@ endif()
 # python setup (including python package discovery and install dir)
 podio_python_setup()
 
+#--- enable C++20 module support (if requested) --------------------------------
+include(cmake/podioModules.cmake)
+
 #--- enable podio macros--------------------------------------------------------
 include(cmake/podioMacros.cmake)
 
