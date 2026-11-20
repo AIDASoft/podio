@@ -254,7 +254,7 @@ template<podio::detail::RangeConvertibleTo<{{ class.bare_type }}Collection::valu
 {{ class.bare_type }}Collection::{{ class.bare_type }}Collection(std::from_range_t, R&& range)
   : {{ class.bare_type }}Collection() {
   if constexpr (podio::detail::RangeOf<R, value_type>) {
-    setSubsetCollection();
+    {{ class.bare_type }}Collection::setSubsetCollection();
   }
 
   for (auto&& elem : range) {

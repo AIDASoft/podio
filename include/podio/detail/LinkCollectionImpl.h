@@ -76,7 +76,7 @@ public:
   template <detail::RangeConvertibleTo<value_type> R>
   LinkCollection(std::from_range_t, R&& range) : LinkCollection() {
     if constexpr (detail::RangeOf<R, value_type>) {
-      setSubsetCollection();
+      LinkCollection::setSubsetCollection();
     }
 
     // Preserve the mutable or immutable handle type to select the right push_back overload.
