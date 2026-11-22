@@ -12,6 +12,7 @@
 
 // STL
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -141,6 +142,13 @@ private:
 
   /// Active collections
   std::vector<unsigned int> m_activeCollections = {};
+
+  /// Indices of the collections that the relations of each column point to,
+  /// or an empty optional if they could not be determined from the first event
+  std::vector<std::optional<std::vector<unsigned int>>> m_dependencies = {};
+
+  /// The collections that are read for each entry in the current event loop
+  std::vector<std::string> m_collectionsToRead = {};
 
   /// Root podio readers
   std::vector<std::unique_ptr<podio::Reader>> m_podioReaders = {};
