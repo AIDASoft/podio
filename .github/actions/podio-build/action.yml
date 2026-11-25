@@ -72,7 +72,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - uses: cvmfs-contrib/github-action-cvmfs@72f2a8d366043978d6aebee154bc9ed321c2f2a8 # v5.6
+    - uses: cvmfs-contrib/github-action-cvmfs@d705955b32075b4b0178f3a0160b6fe527483cf8 # v5.7
     # This caches <workspace>/build/ExternalData, so it only works if podio is
     # checked out directly into the workspace
     - uses: key4hep/key4hep-actions/cache-external-data@main
