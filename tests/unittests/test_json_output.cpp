@@ -1,6 +1,7 @@
 // Tests for JSON serialization of generated datamodel types.
 
 #include <podio/ObjectID.h>
+#include <podio/UserDataCollection.h>
 
 #include "datamodel/ExampleCluster.h"
 #include "datamodel/ExampleClusterCollection.h"
@@ -211,5 +212,44 @@ TEST_CASE("JSON output - collection", "[json]") {
 
     REQUIRE(jCol.is_array());
     REQUIRE(jCol.empty());
+  }
+
+  SECTION("subset collection serializes ObjectIDs") {
+    ExampleClusterCollection clusters{};
+    clusters.setID(42);
+    for (int i = 0; i < 5; ++i) {
+      clusters.create(i * 1.0);
+    }
+
+    ExampleClusterCollection subsetClusters{};
+    subsetClusters.setID(123);
+    subsetClusters.setSubsetCollection();
+    for (int i = clusters.size() - 1; i >= 0; i--) {
+      subsetClusters.push_back(clusters[i]);
+    }
+
+    const auto jCol = toJson(subsetClusters);
+
+    REQUIRE(jCol.is_array());
+    REQUIRE(jCol.size() == 5);
+    for (int i = 0; i < 5; ++i) {
+      REQUIRE(jCol[i]["collectionID"] == clusters.getID());
+      REQUIRE(jCol[i]["index"] == 4 - i);
+    }
+  }
+
+  SECTION("UserDataCollection serializes to array") {
+    podio::UserDataCollection<float> userData{};
+    for (int i = 0; i < 3; ++i) {
+      userData.push_back(3.14f * i);
+    }
+
+    const auto jCol = toJson(userData);
+
+    REQUIRE(jCol.is_array());
+    REQUIRE(jCol.size() == 3);
+    for (size_t i = 0; i < jCol.size(); ++i) {
+      REQUIRE(jCol[i] == 3.14f * i);
+    }
   }
 }
