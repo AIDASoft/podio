@@ -106,6 +106,31 @@ class FrameTest(unittest.TestCase):
         # On the other hand the return value of put has the original content
         self.assertEqual(len(hits2), 1)
 
+    def test_frame_rejects_reusing_owned_collection(self):
+        """Check that a collection obtained from one frame cannot be put into another."""
+        source_frame = Frame()
+        hits = ExampleHitCollection()
+        hits.create()
+        stored_hits = source_frame.put(hits, "hits")
+
+        destination_frame = Frame()
+        with self.assertRaises(ValueError):
+            destination_frame.put(stored_hits, "reused_hits")
+
+        self.assertNotIn("reused_hits", destination_frame.getAvailableCollections())
+        self.assertEqual(len(source_frame.get("hits")), 1)
+
+    def test_frame_rejects_reusing_collection_in_same_frame(self):
+        """Check that a frame-owned collection cannot be inserted again."""
+        frame = Frame()
+        hits = ExampleHitCollection()
+        stored_hits = frame.put(hits, "hits")
+
+        with self.assertRaises(ValueError):
+            frame.put(stored_hits, "hits_again")
+
+        self.assertNotIn("hits_again", frame.getAvailableCollections())
+
     def test_frame_put_collection_collision(self):
         """Check that creating a name collision raises the expected exception"""
         frame = Frame()
