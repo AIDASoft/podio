@@ -1,6 +1,8 @@
 #include "podio/DataSource.h"
 #include "podio/CollectionBase.h"
+#include "podio/CollectionBuffers.h"
 #include "podio/Frame.h"
+#include "podio/ObjectID.h"
 #include "podio/Reader.h"
 #include "podio/utilities/Glob.h"
 
@@ -58,12 +60,51 @@ void DataSource::SetupInput(int nEvents, const std::vector<std::string>& collsTo
 
   // Get collections stored in the files
   std::vector<std::string> collNames = frame.getAvailableCollections();
+  std::vector<const podio::CollectionBase*> colls;
   for (auto&& collName : collNames) {
     const podio::CollectionBase* coll = frame.get(collName);
     if (coll) {
       m_columnNames.emplace_back(std::move(collName));
       m_columnTypes.emplace_back(coll->getTypeName());
+      colls.push_back(coll);
     }
+  }
+
+  // Find the collections that the relations of each collection point to, so
+  // that they can be read as well to resolve the relations. The I/O buffers of
+  // a collection that has been read still contain the ObjectIDs of its relations
+  for (const auto* coll : colls) {
+    // getBuffers is not const, but the buffers are only read here
+    const auto buffers = const_cast<podio::CollectionBase*>(coll)->getBuffers();
+    std::vector<unsigned int> deps;
+    if (!buffers.references || buffers.references->empty()) {
+      // No relations, so nothing else is needed to read this collection
+      m_dependencies.emplace_back(std::move(deps));
+      continue;
+    }
+    if (coll->empty()) {
+      // Nothing to look at, so the relations can not be determined
+      m_dependencies.emplace_back(std::nullopt);
+      continue;
+    }
+    for (const auto& refs : *buffers.references) {
+      for (const auto& id : *refs) {
+        if (id.index == podio::ObjectID::invalid) {
+          continue;
+        }
+        const auto name = frame.getName(id.collectionID);
+        const auto it = name ? std::ranges::find(m_columnNames, *name) : m_columnNames.end();
+        if (it == m_columnNames.end()) {
+          // The relation points to a collection that is not available
+          continue;
+        }
+        const auto index = static_cast<unsigned int>(std::distance(m_columnNames.begin(), it));
+        if (std::ranges::find(deps, index) == deps.end()) {
+          deps.push_back(index);
+        }
+      }
+    }
+    m_dependencies.emplace_back(std::move(deps));
   }
 }
 
@@ -95,6 +136,31 @@ void DataSource::SetNSlots(unsigned int nSlots) {
 }
 
 void DataSource::Initialize() {
+  // Read the requested columns and, recursively, the collections that their
+  // relations point to
+  std::vector<bool> toRead(m_columnNames.size(), false);
+  std::vector<unsigned int> todo(m_activeCollections.begin(), m_activeCollections.end());
+  while (!todo.empty()) {
+    const auto index = todo.back();
+    todo.pop_back();
+    if (toRead[index]) {
+      continue;
+    }
+    toRead[index] = true;
+    if (!m_dependencies[index]) {
+      // The relations could not be determined, read everything to be safe
+      toRead.assign(m_columnNames.size(), true);
+      break;
+    }
+    todo.insert(todo.end(), m_dependencies[index]->begin(), m_dependencies[index]->end());
+  }
+
+  m_collectionsToRead.clear();
+  for (size_t i = 0; i < m_columnNames.size(); ++i) {
+    if (toRead[i]) {
+      m_collectionsToRead.push_back(m_columnNames[i]);
+    }
+  }
 }
 
 std::vector<std::pair<ULong64_t, ULong64_t>> DataSource::GetEntryRanges() {
@@ -119,8 +185,12 @@ void DataSource::InitSlot(unsigned int, ULong64_t) {
 }
 
 bool DataSource::SetEntry(unsigned int slot, ULong64_t entry) {
-  m_frames[slot] =
-      std::make_unique<podio::Frame>(m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_columnNames));
+  if (m_collectionsToRead.empty()) {
+    // No columns are used, there is nothing to read
+    return true;
+  }
+  m_frames[slot] = std::make_unique<podio::Frame>(
+      m_podioReaders[slot]->readFrame(podio::Category::Event, entry, m_collectionsToRead));
 
   for (auto& collectionIndex : m_activeCollections) {
     m_Collections[collectionIndex][slot] = m_frames[slot]->get(m_columnNames.at(collectionIndex));
@@ -144,7 +214,9 @@ std::vector<void*> DataSource::GetColumnReadersImpl(std::string_view columnName,
     throw std::runtime_error(errMsg);
   }
   auto columnIndex = std::distance(m_columnNames.begin(), itr);
-  m_activeCollections.emplace_back(columnIndex);
+  if (std::ranges::find(m_activeCollections, static_cast<unsigned int>(columnIndex)) == m_activeCollections.end()) {
+    m_activeCollections.emplace_back(columnIndex);
+  }
 
   std::vector<void*> columnReaders(m_nSlots);
   std::ranges::transform(m_Collections[columnIndex], columnReaders.begin(),
