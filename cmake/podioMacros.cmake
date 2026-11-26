@@ -135,6 +135,12 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
     set(VERSION_ARG "--datamodel-version=${ARG_VERSION}")
   endif()
 
+  # Check if C++20 modules should be generated
+  set(MODULES_ARG "")
+  if(PODIO_ENABLE_CXX_MODULES)
+    set(MODULES_ARG "--enable-modules")
+  endif()
+
   # Make sure that we re run the generation process every time either the
   # templates or the yaml file changes.
   include(${podio_PYTHON_DIR}/templates/CMakeLists.txt)
@@ -155,7 +161,7 @@ function(PODIO_GENERATE_DATAMODEL datamodel YAML_FILE RETURN_HEADERS RETURN_SOUR
   message(STATUS "Creating '${datamodel}' datamodel")
   # we need to bootstrap the data model, so this has to be executed in the cmake run
   execute_process(
-    COMMAND ${Python3_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG}  ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG} ${OLD_DESCRIPTION_ARG}
+    COMMAND ${Python3_EXECUTABLE} ${podio_PYTHON_DIR}/podio_class_generator.py ${CLANG_FORMAT_ARG}  ${SCHEMA_EVOLUTION_ARG} ${UPSTREAM_EDM_ARG} ${YAML_FILE} ${ARG_OUTPUT_FOLDER} ${datamodel} ${ARG_IO_BACKEND_HANDLERS} ${LANGUAGE_ARG} ${VERSION_ARG} ${MODULES_ARG} ${OLD_DESCRIPTION_ARG}
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     RESULT_VARIABLE podio_generate_command_retval
     )
@@ -180,6 +186,13 @@ endfunction()
 #
 # Add the core datamodel library linking only to the core podio::podio library
 # without any I/O backend specific dependencies.
+#
+# If PODIO_ENABLE_CXX_MODULES is ON, an additional ${lib_name}Modules library is
+# created that contains the C++20 module interface of the datamodel and links
+# against ${lib_name}. It is kept separate to not force a toolchain with C++20
+# module support onto all consumers of ${lib_name}. Downstream projects that
+# want to make the module available have to install (and export) this target
+# themselves, including its CXX_MODULES file set.
 #
 # Arguments:
 #    lib_name             Name of the library
@@ -211,6 +224,28 @@ function(PODIO_ADD_DATAMODEL_CORE_LIB lib_name HEADERS SOURCES)
     CXX_CLANG_TIDY "" # Do not run clang-tidy on generated sources
                       # TODO: Update generation to generate compliant code already
     )
+
+  # Add C++20 module interface in a separate library if it was generated
+  if(PODIO_ENABLE_CXX_MODULES)
+    # Check if module files were generated
+    include(${ARG_OUTPUT_FOLDER}/podio_generated_files.cmake)
+    if(DEFINED module_files AND module_files)
+      message(STATUS "Adding C++20 module interface in ${lib_name}Modules")
+      add_library(${lib_name}Modules SHARED)
+      target_link_libraries(${lib_name}Modules PUBLIC ${lib_name})
+      target_sources(${lib_name}Modules
+        PUBLIC
+          FILE_SET CXX_MODULES
+          BASE_DIRS ${ARG_OUTPUT_FOLDER}/src
+          FILES ${module_files}
+      )
+      # CMake decides whether to scan for modules based on the compile features
+      target_compile_features(${lib_name}Modules PUBLIC cxx_std_20)
+      set_target_properties(${lib_name}Modules PROPERTIES
+        CXX_CLANG_TIDY "" # Do not run clang-tidy on generated sources
+        )
+    endif()
+  endif()
 endfunction()
 
 

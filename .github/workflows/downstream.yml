@@ -33,6 +33,7 @@ jobs:
             cmake-args: -DPODIO_RUN_STRACE_TEST=ON
           - platform: dev4/x86_64-el9-gcc15-opt
             cxx-std: 23
+            cmake-args: -DPODIO_ENABLE_CXX_MODULES=ON
           - platform: dev3/x86_64-el9-clang22-opt
             cxx-std: 20
     steps:

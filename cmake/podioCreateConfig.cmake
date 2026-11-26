@@ -7,8 +7,16 @@ write_basic_package_version_file(${PROJECT_BINARY_DIR}/podioConfigVersion.cmake
                                  VERSION ${podio_VERSION}
                                  COMPATIBILITY SameMajorVersion )
 
+# If C++20 modules are enabled we need to export the module information as
+# well, otherwise downstream projects cannot import the installed modules
+set(PODIO_CXX_MODULES_EXPORT_ARGS "")
+if(PODIO_ENABLE_CXX_MODULES)
+  set(PODIO_CXX_MODULES_EXPORT_ARGS CXX_MODULES_DIRECTORY cxx-modules)
+endif()
+
 # Build tree config
-export(EXPORT podioTargets NAMESPACE podio:: FILE ${PROJECT_BINARY_DIR}/podioTargets.cmake)
+export(EXPORT podioTargets NAMESPACE podio:: FILE ${PROJECT_BINARY_DIR}/podioTargets.cmake
+  ${PODIO_CXX_MODULES_EXPORT_ARGS})
 
 # Install tree config
 configure_package_config_file(${PROJECT_SOURCE_DIR}/cmake/podioConfig.cmake.in
@@ -23,4 +31,5 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/podioConfig.cmake
               DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${PROJECT_NAME} )
 install(EXPORT podioTargets
   DESTINATION ${CMAKE_INSTALL_CMAKEDIR}/${PROJECT_NAME}
-  NAMESPACE podio:: )
+  NAMESPACE podio::
+  ${PODIO_CXX_MODULES_EXPORT_ARGS} )
