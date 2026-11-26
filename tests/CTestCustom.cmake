@@ -134,8 +134,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
 
       schema_evol:code_gen:no_change:write_old_rntuple
       schema_evol:code_gen:no_change:read_rntuple
-      schema_evol:code_gen:drop_component:write_old_rntuple
-      schema_evol:code_gen:drop_component:read_rntuple
       schema_evol:code_gen:multi_schema_drop_component:write_old_rntuple
       schema_evol:code_gen:multi_schema_drop_component:write_oldest_rntuple
       schema_evol:code_gen:multi_schema_drop_component:read_rntuple
@@ -155,8 +153,6 @@ if ((NOT "@FORCE_RUN_ALL_TESTS@" STREQUAL "ON") AND (NOT "@USE_SANITIZER@" STREQ
       schema_evol:code_gen:multi_schema_component_new_member:write_oldest_rntuple
       schema_evol:code_gen:multi_schema_datatypes_new_member:write_oldest_rntuple
 
-      schema_evol:code_gen:drop_component:write_old
-      schema_evol:code_gen:drop_component:read
       schema_evol:code_gen:multi_schema_drop_component:write_oldest
       schema_evol:code_gen:multi_schema_drop_component:write_old
       schema_evol:code_gen:multi_schema_drop_component:read
