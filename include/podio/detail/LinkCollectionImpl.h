@@ -79,7 +79,10 @@ public:
       LinkCollection::setSubsetCollection();
     }
 
-    // Preserve the mutable or immutable handle type to select the right push_back overload.
+    // NOTE: Don't use std::ranges::copy(range, std::back_inserter(*this)) here,
+    // that always converts to value_type and resolves to that push_back overload
+    // (see, e.g.: https://godbolt.org/z/seqdh79rr). Forwarding each element
+    // preserves the mutable or immutable handle type to select the right overload.
     for (auto&& elem : range) {
       push_back(std::forward<decltype(elem)>(elem));
     }
