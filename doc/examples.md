@@ -105,8 +105,8 @@ and via direct object access:
 ## Constructing Collections from Ranges
 
 PODIO collections can be constructed from any compatible range (i.e. at least
-`std::input_range`) using the static `from` method or the tagged range
-constructor (C++23).
+`std::ranges::input_range`) using the static `from` method or the constructor
+tagged with `std::from_range`.
 
 ::::{note}
 PODIO collections themselves are compatible ranges.
@@ -123,7 +123,7 @@ auto clusterColl = ExampleClusterCollection::from(clusters);
 const auto subset = ExampleClusterCollection::from(std::as_const(clusterColl));
 ```
 
-The `from` method accepts any C++20 input range whose elements are convertible
+The `from` method accepts any input range whose elements are convertible
 to the collection's handle type. It automatically determines whether to create a
 normal (owned) collection or a subset collection based on the element type:
 
@@ -137,10 +137,9 @@ handles must not be owned by another collection already and immutable handles
 must be owned by another collection already.
 ::::
 
-### Range Pipeline Integration (C++23)
+### Range Pipeline Integration
 
-When compiled with C++23 ranges support, collections support the standard
-`std::ranges::to` interface via a tagged constructor:
+Collections support `std::ranges::to` via their `std::from_range` constructor:
 
 ```cpp
 #include <ranges>

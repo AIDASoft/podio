@@ -25,7 +25,7 @@ SIOFrameData::SIOFrameData(sio::buffer&& collBuffers, std::size_t dataSize, sio:
   // also available
   if (!m_limitColls.empty()) {
     for (const auto& name : m_limitColls) {
-      if (std::ranges::find(m_idTable.names(), name) == m_idTable.names().end()) {
+      if (!std::ranges::contains(m_idTable.names(), name)) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
@@ -99,7 +99,7 @@ void SIOFrameData::unpackBuffers() {
   // not become available
   for (size_t i = 1; i < m_blocks.size(); ++i) {
     const auto name = m_idTable.names()[i - 1];
-    if (std::ranges::find(m_limitColls, name) == m_limitColls.end()) {
+    if (!std::ranges::contains(m_limitColls, name)) {
       m_availableBlocks[i] = 0;
     }
   }

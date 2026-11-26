@@ -24,23 +24,17 @@
 #include <utility>
 #include <vector>
 
-// Adjust for the move of this out of ROOT v7 in
-// https://github.com/root-project/root/pull/17281
-#if ROOT_VERSION_CODE >= ROOT_VERSION(6, 35, 0)
-using ROOT::RException;
-#else
-using ROOT::Experimental::RException;
-#endif
-
 namespace podio {
 
+using ROOT::RException;
+
 template <typename T>
-RNTupleReader::ParameterViews<T>::ParameterViews(root_compat::RNTupleReader& reader) :
+RNTupleReader::ParameterViews<T>::ParameterViews(ROOT::RNTupleReader& reader) :
     keys(reader.GetView<std::vector<std::string>>(root_utils::getGPKeyName<T>())),
     values(reader.GetView<std::vector<std::vector<T>>>(root_utils::getGPValueName<T>())) {
 }
 
-RNTupleReader::FrameParameterViews::FrameParameterViews(root_compat::RNTupleReader& reader) :
+RNTupleReader::FrameParameterViews::FrameParameterViews(ROOT::RNTupleReader& reader) :
     ints(reader), floats(reader), doubles(reader), strings(reader) {
 }
 
@@ -90,10 +84,10 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
 
   decltype(m_metadata_readers) metadataReaders{};
   for (const auto& filename : filenames) {
-    metadataReaders.try_emplace(filename, root_compat::RNTupleReader::Open(root_utils::metaTreeName, filename));
+    metadataReaders.try_emplace(filename, ROOT::RNTupleReader::Open(root_utils::metaTreeName, filename));
   }
 
-  auto metadata = root_compat::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
+  auto metadata = ROOT::RNTupleReader::Open(root_utils::metaTreeName, filenames[0]);
 
   auto versionView = metadata->GetView<std::vector<uint16_t>>(root_utils::versionBranchName);
   const auto version = versionView(0);
@@ -129,7 +123,7 @@ void RNTupleReader::openFiles(const std::vector<std::string>& filenames) {
       try {
         // Models are not needed: collection fields and parameters are read via
         // views, so unknown types in skipped collections need not be emulated.
-        m_readers[category].push_back({root_compat::RNTupleReader::Open(category, filename), {}});
+        m_readers[category].push_back({ROOT::RNTupleReader::Open(category, filename), {}});
         m_readerEntries[category].push_back(m_readerEntries[category].back() +
                                             m_readers[category].back().reader->GetNEntries());
       } catch (const RException&) {
@@ -191,7 +185,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
   // Make sure to not silently ignore non-existant but requested collections
   if (!dedupedCollsToRead.empty()) {
     for (const auto& name : dedupedCollsToRead) {
-      if (std::ranges::find(collInfo, name, &root_utils::CollectionWriteInfo::name) == collInfo.end()) {
+      if (!std::ranges::contains(collInfo, name, &root_utils::CollectionWriteInfo::name)) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
@@ -211,7 +205,7 @@ std::unique_ptr<ROOTFrameData> RNTupleReader::readEntry(std::string_view categor
 
   ROOTFrameData::BufferMap buffers;
   for (const auto& coll : collInfo) {
-    if (!dedupedCollsToRead.empty() && std::ranges::find(dedupedCollsToRead, coll.name) == dedupedCollsToRead.end()) {
+    if (!dedupedCollsToRead.empty() && !std::ranges::contains(dedupedCollsToRead, coll.name)) {
       continue;
     }
     auto viewsIt = readerInfo.collectionViews.find(coll.name);

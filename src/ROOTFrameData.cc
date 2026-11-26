@@ -1,5 +1,6 @@
 #include "podio/ROOTFrameData.h"
 
+#include <ranges>
 #include <utility>
 
 namespace podio {
@@ -27,13 +28,7 @@ std::unique_ptr<podio::GenericParameters> ROOTFrameData::getParameters() {
 }
 
 std::vector<std::string> ROOTFrameData::getAvailableCollections() const {
-  std::vector<std::string> collections;
-  collections.reserve(m_buffers.size());
-  for (const auto& [name, _] : m_buffers) {
-    collections.push_back(name);
-  }
-
-  return collections;
+  return m_buffers | std::views::keys | std::ranges::to<std::vector>();
 }
 
 } // namespace podio

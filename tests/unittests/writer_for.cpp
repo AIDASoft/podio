@@ -142,7 +142,7 @@ StorageType writeAndGetStorage(podio::Writer writer, const std::string& filename
   if (className == "TTree") {
     return StorageType::TTree;
   }
-  if (className.find("RNTuple") != std::string::npos) {
+  if (className.contains("RNTuple")) {
     return StorageType::RNTuple;
   }
   return StorageType::Other;

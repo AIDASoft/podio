@@ -125,7 +125,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
   // Make sure to not silently ignore non-existant but requested collections
   if (!dedupedCollsToRead.empty()) {
     for (const auto& name : dedupedCollsToRead) {
-      if (std::ranges::find(catInfo.storedClasses, name, &detail::NamedCollInfo::name) == catInfo.storedClasses.end()) {
+      if (!std::ranges::contains(catInfo.storedClasses, name, &detail::NamedCollInfo::name)) {
         throw std::invalid_argument(name + " is not available from Frame");
       }
     }
@@ -143,8 +143,7 @@ std::unique_ptr<ROOTFrameData> ROOTReader::readEntry(ROOTReader::CategoryInfo& c
 
   ROOTFrameData::BufferMap buffers;
   for (size_t i = 0; i < catInfo.storedClasses.size(); ++i) {
-    if (!dedupedCollsToRead.empty() &&
-        std::ranges::find(dedupedCollsToRead, catInfo.storedClasses[i].name) == dedupedCollsToRead.end()) {
+    if (!dedupedCollsToRead.empty() && !std::ranges::contains(dedupedCollsToRead, catInfo.storedClasses[i].name)) {
       continue;
     }
     auto collBuffers = getCollectionBuffers(catInfo, i, localEntry);
@@ -291,8 +290,7 @@ namespace {
 
     for (const auto branch : *branches) {
       const std::string name = branch->GetName();
-      const auto fUnder = name.find(root_utils::collInfoName(""));
-      if (fUnder != std::string::npos) {
+      if (const auto fUnder = name.find(root_utils::collInfoName("")); fUnder != std::string::npos) {
         brNames.emplace_back(name.substr(0, fUnder));
       }
     }

@@ -82,9 +82,8 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
   std::vector<std::string> names;
 
   if (!collsToRead.empty()) {
-    auto missing_coll = std::find_if(collsToRead.begin(), collsToRead.end(), [this](const std::string& coll) {
-      return m_table->GetColumnByName(coll) == nullptr;
-    });
+    auto missing_coll = std::ranges::find_if(
+        collsToRead, [this](const std::string& coll) { return m_table->GetColumnByName(coll) == nullptr; });
     if (missing_coll != collsToRead.end()) {
       throw std::runtime_error("Collection '" + *missing_coll + "' not found in category.");
     }
@@ -112,8 +111,7 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
     }
 
     uint32_t collId = std::stoul(metadata->value(collIdIdx));
-    if (std::find(ids.begin(), ids.end(), collId) != ids.end() ||
-        std::find(names.begin(), names.end(), field->name()) != names.end()) {
+    if (std::ranges::contains(ids, collId) || std::ranges::contains(names, field->name())) {
       throw std::runtime_error("Duplicate collection ID or name: " + field->name());
     }
     ids.push_back(collId);
@@ -123,7 +121,7 @@ ArrowFrameData::ArrowFrameData(std::shared_ptr<arrow::Table> table, int64_t rowI
 }
 
 std::optional<podio::CollectionReadBuffers> ArrowFrameData::getCollectionBuffers(const std::string& name) {
-  if (std::find(m_availableCollections.begin(), m_availableCollections.end(), name) == m_availableCollections.end()) {
+  if (!std::ranges::contains(m_availableCollections, name)) {
     return std::nullopt;
   }
 

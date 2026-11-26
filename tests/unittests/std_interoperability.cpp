@@ -1339,7 +1339,6 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
     // TODO add runtime checks here
   }
 
-#if (__cplusplus >= 202302L)
   SECTION("Const iterator") {
     // iterator
     STATIC_REQUIRE(std::is_base_of_v<std::input_iterator_tag, std::iterator_traits<iterator>::iterator_category>);
@@ -1372,7 +1371,6 @@ TEST_CASE("Collection and std iterator adaptors", "[collection][container][adapt
       // REQUIRE(counted.base()->cellID() == 42);
     }
   }
-#endif
 
   SECTION("Move iterator") {
     // iterator
@@ -1453,13 +1451,7 @@ TEST_CASE("Collection as range", "[collection][ranges][std]") {
   DOCUMENTED_STATIC_FAILURE(std::ranges::contiguous_range<CollectionType>);
   // std::range::common_range
   STATIC_REQUIRE(std::ranges::common_range<CollectionType>);
-#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 12
-  // gcc 11 does not yet implement a fix for:
-  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2415r2.html
-  DOCUMENTED_STATIC_FAILURE(std::ranges::viewable_range<CollectionType>);
-#else
   STATIC_REQUIRE(std::ranges::viewable_range<CollectionType>);
-#endif
 }
 
 TEST_CASE("Collection and std algorithms", "[collection][iterator][std]") {
@@ -1686,13 +1678,7 @@ TEST_CASE("LinkCollection and range concepts", "[links][ranges][std]") {
   STATIC_REQUIRE(std::ranges::random_access_range<link_collection>);
   STATIC_REQUIRE(std::ranges::sized_range<link_collection>);
   STATIC_REQUIRE(std::ranges::common_range<link_collection>);
-#if defined(__GNUC__) && !defined(__clang__) && __GNUC__ < 12
-  // gcc 11 does not yet implement a fix for:
-  // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2415r2.html
-  DOCUMENTED_STATIC_FAILURE(std::ranges::viewable_range<link_collection>);
-#else
   STATIC_REQUIRE(std::ranges::viewable_range<link_collection>);
-#endif
 }
 
 TEST_CASE("RelationRange as range", "[relations][ranges][std]") {

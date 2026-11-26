@@ -4,7 +4,7 @@ target_link_libraries(podio-test-hashes PRIVATE podio::podio)
 install(TARGETS podio-test-hashes EXPORT podioTargets DESTINATION "${CMAKE_INSTALL_BINDIR}")
 
 add_executable(podio-dump-tool src/podio-dump-tool.cpp)
-target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO fmt::fmt)
+target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO)
 
 install(TARGETS podio-dump-tool EXPORT podioTargets DESTINATION ${CMAKE_INSTALL_BINDIR})
 
@@ -86,6 +86,9 @@ if(BUILD_TESTING)
   endfunction()
 
   CREATE_DUMP_TEST(podio-dump-help _dummy_target_ --help)
+  CREATE_DUMP_TEST(podio-dump-version "" --version)
+  set_tests_properties(podio-dump-version PROPERTIES
+    PASS_REGULAR_EXPRESSION "podio ${podio_VERSION_MAJOR}[.]${podio_VERSION_MINOR}[.]${podio_VERSION_PATCH}")
   if(ENABLE_ROOT)
     CREATE_DUMP_TEST(podio-dump-root "podio_write_root_fixture" ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)
     CREATE_DUMP_TEST(podio-dump-detailed-root "podio_write_root_fixture" --detailed --category other_events --entries 2:3 ${PROJECT_BINARY_DIR}/tests/root_io/example_frame.root)

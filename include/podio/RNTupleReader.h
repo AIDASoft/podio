@@ -19,22 +19,9 @@
 #include <ROOT/RNTuple.hxx>
 #include <ROOT/RNTupleReader.hxx>
 #include <ROOT/RNTupleView.hxx>
-#include <ROOT/RVersion.hxx>
 
 namespace podio {
 class CollectionIDTable;
-
-/// Introduce a new namespace instead of potentially opening and polluting the
-/// ROOT namespace
-namespace root_compat {
-#if ROOT_VERSION_CODE < ROOT_VERSION(6, 35, 0)
-  using RNTupleReader = ROOT::Experimental::RNTupleReader;
-  using ROOT::Experimental::RNTupleView;
-#else
-  using RNTupleReader = ROOT::RNTupleReader;
-  using ROOT::RNTupleView;
-#endif
-} // namespace root_compat
 
 /// The RNTupleReader can be used to read files that have been written with the
 /// RNTuple backend.
@@ -129,13 +116,13 @@ private:
 
   template <typename T>
   struct ParameterViews {
-    explicit ParameterViews(root_compat::RNTupleReader& reader);
-    root_compat::RNTupleView<std::vector<std::string>> keys;
-    root_compat::RNTupleView<std::vector<std::vector<T>>> values;
+    explicit ParameterViews(ROOT::RNTupleReader& reader);
+    ROOT::RNTupleView<std::vector<std::string>> keys;
+    ROOT::RNTupleView<std::vector<std::vector<T>>> values;
   };
 
   struct FrameParameterViews {
-    explicit FrameParameterViews(root_compat::RNTupleReader& reader);
+    explicit FrameParameterViews(ROOT::RNTupleReader& reader);
     ParameterViews<int> ints;
     ParameterViews<float> floats;
     ParameterViews<double> doubles;
@@ -147,17 +134,17 @@ private:
    */
   static GenericParameters readEventMetaData(FrameParameterViews& views, const unsigned localEntry);
 
-  std::unique_ptr<root_compat::RNTupleReader> m_metadata{};
+  std::unique_ptr<ROOT::RNTupleReader> m_metadata{};
 
   struct CollectionViews {
     // The first data view is the collection data, followed by vector members.
-    std::vector<root_compat::RNTupleView<void>> data{};
+    std::vector<ROOT::RNTupleView<void>> data{};
     // Keep the buffer index: relations absent from an older schema have no view.
-    std::vector<std::pair<std::size_t, root_compat::RNTupleView<std::vector<podio::ObjectID>>>> references{};
+    std::vector<std::pair<std::size_t, ROOT::RNTupleView<std::vector<podio::ObjectID>>>> references{};
   };
 
   struct ReaderWithViews {
-    std::unique_ptr<root_compat::RNTupleReader> reader{};
+    std::unique_ptr<ROOT::RNTupleReader> reader{};
     // Views borrow buffers only during readEntry and are rebound before use.
     // An empty optional marks a collection whose fields could not be bound, so
     // that the binding is not retried for every entry.
@@ -167,7 +154,7 @@ private:
   };
 
   std::unordered_map<std::string_view, std::vector<ReaderWithViews>> m_readers{};
-  std::unordered_map<std::string, std::unique_ptr<root_compat::RNTupleReader>> m_metadata_readers{};
+  std::unordered_map<std::string, std::unique_ptr<ROOT::RNTupleReader>> m_metadata_readers{};
   std::vector<std::string> m_filenames{};
 
   std::unordered_map<std::string_view, unsigned> m_entries{};

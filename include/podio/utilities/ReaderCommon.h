@@ -5,6 +5,7 @@
 #include "podio/utilities/DatamodelRegistryIOHelpers.h"
 
 #include <optional>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -56,7 +57,7 @@ public:
   ///
   /// @returns The names of the available categories from the file
   std::vector<std::string_view> getAvailableCategories() const {
-    return std::vector<std::string_view>(m_availableCategories.cbegin(), m_availableCategories.cend());
+    return std::ranges::to<std::vector<std::string_view>>(m_availableCategories);
   }
 
 protected:
