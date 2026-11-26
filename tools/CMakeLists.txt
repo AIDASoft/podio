@@ -6,29 +6,6 @@ install(TARGETS podio-test-hashes EXPORT podioTargets DESTINATION "${CMAKE_INSTA
 add_executable(podio-dump-tool src/podio-dump-tool.cpp)
 target_link_libraries(podio-dump-tool PRIVATE podio::podio podio::podioIO)
 
-# Some libstdc++ versions provide the terminal I/O support for <print> in libstdc++exp.
-set(podio_std_print_example [=[
-  #include <format>
-  #include <print>
-
-  int main() {
-    std::println("{}", std::format("{}", 42));
-  }
-]=])
-check_cxx_source_compiles("${podio_std_print_example}" PODIO_STD_PRINT_LINKS)
-if(NOT PODIO_STD_PRINT_LINKS)
-  include(CMakePushCheckState)
-  cmake_push_check_state()
-  list(APPEND CMAKE_REQUIRED_LIBRARIES stdc++exp)
-  check_cxx_source_compiles("${podio_std_print_example}" PODIO_STD_PRINT_LINKS_WITH_STDCXXEXP)
-  cmake_pop_check_state()
-  if(NOT PODIO_STD_PRINT_LINKS_WITH_STDCXXEXP)
-    message(FATAL_ERROR "podio-dump requires a C++23 standard library with working std::format and std::print support.")
-  endif()
-  target_link_libraries(podio-dump-tool PRIVATE stdc++exp)
-endif()
-unset(podio_std_print_example)
-
 install(TARGETS podio-dump-tool EXPORT podioTargets DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 install(PROGRAMS ${CMAKE_CURRENT_LIST_DIR}/podio-dump DESTINATION ${CMAKE_INSTALL_BINDIR})

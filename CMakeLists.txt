@@ -108,25 +108,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "Setting C++ standard: '${CMAKE_CXX_STANDARD}'.")
 
-# A compiler accepting -std=c++23 does not guarantee its standard library has
-# the ranges features used by podio and its generated headers.
-include(CheckCXXSourceCompiles)
-check_cxx_source_compiles([=[
-  #include <algorithm>
-  #include <ranges>
-  #include <vector>
-
-  int main() {
-    [[maybe_unused]] std::from_range_t tag = std::from_range;
-    auto values = std::ranges::to<std::vector<int>>(std::views::iota(0, 3));
-    values.append_range(std::views::iota(3, 5));
-    return !std::ranges::contains(values, 4);
-  }
-]=] PODIO_HAVE_CXX23_RANGES)
-if(NOT PODIO_HAVE_CXX23_RANGES)
-  message(FATAL_ERROR "podio requires a C++23 standard library with std::ranges::contains, std::ranges::to, std::from_range and container append_range (e.g. libstdc++ 15+ or libc++ 19+).")
-endif()
-
 # python setup (including python package discovery and install dir)
 podio_python_setup()
 
